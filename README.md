@@ -10,13 +10,14 @@ Ce logiciel vous permet de scraper vos ROMs a fin d'obtenir un fichier XML conte
 	<li>Il se veut simple d'utilisation ;)</li>
 </ul>
 <strong>Comment ça marche : </strong>
-<ol>
-	<li>Décompressez l'archive et lancez le fichier EXE.</li>
-	<li>Dans le menu Fichier/Profil, choisissez un profil.</li>
-	<li>Dans le menu Edition/Configuration, réglez vos chemins.</li>
-	<li>Cliquez sur la flèche verte (qui était rouge avant :p )</li>
-	<li>Et patientez...........</li>
-</ol>
+
+1 - Telechargez la derniere version : [Universal XML Scraper](https://github.com/Universal-Rom-Tools/Universal-XML-Scraper/releases)  
+2 - Décompressez l'archive et lancez le fichier EXE.  
+3 - Dans le menu Fichier/Profil, choisissez un profil.  
+4 - Dans le menu Edition/Configuration, réglez vos chemins.  
+5 - Cliquez sur la flèche verte (qui était rouge avant :p )  
+6 - Et patientez...........  
+
 C'est finit, vous avez un beau fichier gamelist.xml sur votre recalbox ;)
 
 <strong>Problèmes potentiels :</strong>
