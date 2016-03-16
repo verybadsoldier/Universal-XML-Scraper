@@ -29,3 +29,11 @@ C'est finit, vous avez un beau fichier gamelist.xml sur votre recalbox ;)
 <strong>Exemple de chemin pour le repertoire NES d'une Recalbox V4 :</strong>
 
 <img src="http://zupimages.net/up/16/09/48d8.jpg" alt="" width="258" height="384" />
+
+
+__UDF utilisé__  
+[Extended Message Box](https://www.autoitscript.com/forum/topic/109096-extended-message-box-bugfix-version-9-aug-15/) par Melba23  
+[Hash](https://www.autoitscript.com/forum/topic/95558-crc32-md4-md5-sha1-for-files/) par trancexx  
+[MultiLang](https://www.autoitscript.com/forum/topic/118495-multilangau3/) par BrettF  
+[Trim](https://www.autoitscript.com/forum/topic/14173-new-string-trim-functions/) par blitzer99  
+[XMLDomWrapper](https://www.autoitscript.com/forum/topic/19848-xml-dom-wrapper-com/) par eltorro  
