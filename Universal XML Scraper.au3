@@ -2,8 +2,10 @@
 #AutoIt3Wrapper_Icon=Ressources\Universal_Xml_Scraper.ico
 #AutoIt3Wrapper_Outfile=..\BIN\Universal_XML_Scraper.exe
 #AutoIt3Wrapper_Outfile_x64=..\BIN\Universal_XML_Scraper64.exe
+#AutoIt3Wrapper_Compile_Both=y
+#AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper XML Universel
-#AutoIt3Wrapper_Res_Fileversion=1.0.0.1
+#AutoIt3Wrapper_Res_Fileversion=1.0.0.3
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -111,7 +113,7 @@ EndIf
 
 _CREATION_LOG()
 _LANG_LOAD($LANG_DIR, $user_lang)
-_CREATION_LOGMESS("Langue Séléctionnée : " & $user_lang)
+_CREATION_LOGMESS("Langue Selectionnee : " & $user_lang)
 
 #Region ### START Koda GUI section ### Form=
 Local $F_UniversalScraper = GUICreate(_MultiLang_GetText("main_gui"), 350, 181, 215, 143)
@@ -174,7 +176,7 @@ While 1
 			_GUI_REFRESH($INI_P_SOURCE, $INI_P_CIBLE)
 		Case $ME_Langue
 			_LANG_LOAD($LANG_DIR, -1)
-			_CREATION_LOGMESS("Langue Séléctionnée : " & $user_lang)
+			_CREATION_LOGMESS("Langue Selectionnee : " & $user_lang)
 			_GUI_REFRESH($INI_P_SOURCE, $INI_P_CIBLE)
 		Case $B_SCRAPE
 			If _GUI_REFRESH($INI_P_SOURCE, $INI_P_CIBLE, 1) = 1 Then
@@ -211,7 +213,7 @@ Func _CREATION_LOG()
 	$tCur = _Date_Time_GetLocalTime()
 	$dtCur = _Date_Time_SystemTimeToArray($tCur)
 	FileWrite($path_LOG, "Universal XML Scraper [" & $Rev & "]" & @CRLF)
-	FileWrite($path_LOG, "Démarrage le " & StringRight("0" & $dtCur[1], 2) & "/" & StringRight("0" & $dtCur[0], 2) & "/" & StringRight("0" & $dtCur[2], 2) & " - " & StringRight("0" & $dtCur[3], 2) & ":" & StringRight("0" & $dtCur[4], 2) & ":" & StringRight("0" & $dtCur[5], 2) & @CRLF & @CRLF)
+	FileWrite($path_LOG, "Demarrage le " & StringRight("0" & $dtCur[1], 2) & "/" & StringRight("0" & $dtCur[0], 2) & "/" & StringRight("0" & $dtCur[2], 2) & " - " & StringRight("0" & $dtCur[3], 2) & ":" & StringRight("0" & $dtCur[4], 2) & ":" & StringRight("0" & $dtCur[5], 2) & @CRLF & @CRLF)
 EndFunc   ;==>_CREATION_LOG
 
 Func _CREATION_LOGMESS($Mess)
@@ -266,9 +268,6 @@ Func _GUI_Config()
 				GUICtrlSetData($I_PathRom, $PathRom)
 			Case $B_PathXML
 				$PathNew = FileSaveDialog(_MultiLang_GetText("win_config_GroupScrap_PathXML"), GUICtrlRead($I_PathXML), "xml (*.xml)", 18, "", $F_CONFIG)
-				If Not FileExists($PathNew) And $PathNew <> "" Then
-					If Not _FileCreate($PathNew) Then MsgBox($MB_SYSTEMMODAL, "Error", "Error Creating: " & $PathNew & @CRLF & "     error:" & @error)
-				EndIf
 				GUICtrlSetData($I_PathXML, $PathNew)
 			Case $B_PathRomSub
 				GUICtrlSetData($I_PathRomSub, FileSelectFolder(_MultiLang_GetText("win_config_GroupScrap_PathRomSub"), GUICtrlRead($I_PathRomSub), $FSF_CREATEBUTTON, GUICtrlRead($I_PathRomSub), $F_CONFIG))
@@ -295,6 +294,9 @@ Func _GUI_Config()
 				$LargeurImage = GUICtrlRead($I_LargeurImage)
 				If $LargeurImage < 1 Then $LargeurImage = ""
 				IniWrite($PathConfigINI, "LAST_USE", "$LargeurImage", $LargeurImage)
+				If Not FileExists($PathNew) And $PathNew <> "" Then
+					If Not _FileCreate($PathNew) Then MsgBox($MB_SYSTEMMODAL, "Error", "Error Creating: " & $PathNew & @CRLF & "     error:" & @error)
+				EndIf
 				_CREATION_LOGMESS("Modification de la config :" & @CRLF)
 				_CREATION_LOGMESS(" PathRom : " & $PathRom)
 				_CREATION_LOGMESS(" PathRomSub : " & $PathRomSub)
@@ -369,7 +371,7 @@ Func _INI_CREATEARRAY_SCRAPER()
 		_ArrayAdd($A_Profil, IniRead($PathConfigINI, "PROFILS_SCRAPER", "$PROFILS_SCRAPER_" & $B_Profils, "default"))
 		$B_Profils = $B_Profils + 1
 	WEnd
-	_CREATION_LOGMESS("Récupération des Profil")
+	_CREATION_LOGMESS("Recuperation des Profil")
 ;~ 	_ArrayDisplay($A_Profil, '$A_Profil') ; Debug
 	Return $A_Profil
 EndFunc   ;==>_INI_CREATEARRAY_SCRAPER
@@ -521,7 +523,7 @@ Func _ROM_CREATEARRAY($PathRom)
 		Return -1
 	EndIf
 	If @error = 4 Then
-		_CREATION_LOGMESS("/!\ Aucune rom trouvée dans  " & $PathRom)
+		_CREATION_LOGMESS("/!\ Aucune rom trouvee dans  " & $PathRom)
 		MsgBox($MB_SYSTEMMODAL, "", "No file(s) were found.")
 		Return -1
 	EndIf
@@ -530,7 +532,7 @@ Func _ROM_CREATEARRAY($PathRom)
 		_ArrayColInsert($A_ROMList, $B_COLINSRT)
 	Next
 
-	_CREATION_LOGMESS("Nombre de roms trouvées : " & UBound($A_ROMList) - 1)
+	_CREATION_LOGMESS("Nombre de roms trouvees : " & UBound($A_ROMList) - 1)
 	_CREATION_LOGMESS("Calcul des Hash")
 	For $B_ROMList = 1 To UBound($A_ROMList) - 1
 		If GUIGetMsg() = $B_SCRAPE Then
@@ -575,15 +577,15 @@ Func _SCRAPING($No_Profil, $A_Profil, $PathRom, $No_system)
 ;~ 		_ArrayDisplay($A_ROMList, '$A_ROMList') ; Debug
 		$CreateROM = _XML_CREATEROM($PathTmp, $PathNew, $xpath_root_source, $xpath_root_cible, $A_XMLFormat, $A_ROMList, $B_ROMList, $No_system)
 		If $CreateROM = 0 Then
-			_CREATION_LOGMESS("(*)Rom non trouvé : " & $A_ROMList[$B_ROMList][0])
+			_CREATION_LOGMESS("(*)Rom non trouve : " & $A_ROMList[$B_ROMList][0])
 			$A_ROMList[$B_ROMList][7] = 0
 		Else
-			_CREATION_LOGMESS("Rom trouvé : " & $A_ROMList[$B_ROMList][0])
+			_CREATION_LOGMESS("Rom trouve : " & $A_ROMList[$B_ROMList][0])
 			$A_ROMList[$B_ROMList][7] = 1
 		EndIf
 		$A_ROMList[$B_ROMList][6] = Round(TimerDiff($Timer))
 		Local $PercentProgression = Round(($B_ROMList * 100) / $Nb_Roms)
-		$Text = " - Rom n°" & $B_ROMList & "/" & $Nb_Roms
+		$Text = " - Rom no" & $B_ROMList & "/" & $Nb_Roms
 		GUICtrlSetData($PB_SCRAPE, $PercentProgression)
 		_GUICtrlStatusBar_SetText($L_SCRAPE, _MultiLang_GetText("prSET_XML_CREATEROM") & $Text)
 		If GUIGetMsg() = $B_SCRAPE Or $CreateROM = -1 Then
@@ -620,13 +622,13 @@ Func _SCRAPING_BILAN($FullTimer, $A_ROMList)
 	_TicksToTime(Int($FullTimer), $Hour, $Mins, $Secs)
 	If $Cancelled = 1 Then
 		$sMsg = _MultiLang_GetText("win_Cancel_Text") & @CRLF & @CRLF
-		_CREATION_LOGMESS("Scrape Annulé")
+		_CREATION_LOGMESS("Scrape Annule")
 	Else
-		_CREATION_LOGMESS("Scrape Terminé")
+		_CREATION_LOGMESS("Scrape Termine")
 		$sMsg = _MultiLang_GetText("win_Datas_Text") & @CRLF & @CRLF
 	EndIf
 	$sMsg &= _MultiLang_GetText("win_Datas_Roms") & " " & $ROMFound & " / " & $Nb_Roms & @CRLF
-	_CREATION_LOGMESS(" Roms trouvées :" & $ROMFound & " / " & $Nb_Roms)
+	_CREATION_LOGMESS(" Roms trouvees :" & $ROMFound & " / " & $Nb_Roms)
 	$sMsg &= _MultiLang_GetText("win_Datas_MoyTime") & " " & Round($MoyTimer / $Nb_Roms_Scanned, 2) & "s" & @CRLF
 	_CREATION_LOGMESS(" Temps moyen par Rom :" & Round($MoyTimer / $Nb_Roms_Scanned, 2) & "s")
 	$sMsg &= _MultiLang_GetText("win_Datas_FullTime") & " " & $Hour & "h " & $Mins & "m " & $Secs & "s" & @CRLF
@@ -644,7 +646,7 @@ Func _SYSTEM_CREATEARRAY_SCREENSCRAPER($PathTmp)
 	Local $TMP_LastUbound = UBound($A_XMLSources)
 	Local $sNode_Values
 	_GUICtrlStatusBar_SetText($L_SCRAPE, _MultiLang_GetText("prSET_SYSTEM_CREATEARRAY"))
-	_CREATION_LOGMESS("Récupération des informations des systemes")
+	_CREATION_LOGMESS("Recuperation des informations des systemes")
 	InetGet("http://www.screenscraper.fr/api/systemesListe.php?devid=Screech&devpassword=Screech201601281533y&softname=Universal_XML_Scraper&output=XML", $PathTmp)
 	_XMLFileOpen($PathTmp)
 	If @error Then
@@ -717,7 +719,7 @@ Func _SYSTEM_SelectGUI($A_SYSTEM)
 		If StringInStr($A_SYSTEM[$i][0], $_selected) Then
 			GUISetState(@SW_ENABLE, $F_UniversalScraper)
 			WinActivate($F_UniversalScraper)
-			_CREATION_LOGMESS("Systeme séléctionné : " & $A_SYSTEM[$i][0])
+			_CREATION_LOGMESS("Systeme selectionne : " & $A_SYSTEM[$i][0])
 			Return $A_SYSTEM[$i][2]
 		EndIf
 	Next
@@ -729,7 +731,7 @@ EndFunc   ;==>_SYSTEM_SelectGUI
 Func _XML_CREATEFORMAT($Profil)
 	Local $A_XMLFormat[1][4]
 	Local $B_Elements = 1
-	_CREATION_LOGMESS("Récupération des champs du profil")
+	_CREATION_LOGMESS("Recuperation des champs du profil")
 	While IniRead($PathConfigINI, $Profil, "$ELEMENT_" & $B_Elements, "Ending") <> "Ending"
 		_ArrayAdd($A_XMLFormat, IniRead($PathConfigINI, $Profil, "$ELEMENT_" & $B_Elements, ""))
 		$B_Elements = $B_Elements + 1
@@ -741,9 +743,9 @@ EndFunc   ;==>_XML_CREATEFORMAT
 Func _XML_CREATEROM($Path_source, $Path_cible, $xpath_root_source, $xpath_root_cible, $A_XMLFormat, $A_ROMList, $No_ROM, $No_system)
 	Local $XML_Type, $TMP_LastRootChild, $Return = 1
 	$TimerRom = TimerInit()
-	_CREATION_LOGMESS("Récupération des informations de la Rom n° " & $No_ROM)
+	_CREATION_LOGMESS("Recuperation des informations de la Rom no " & $No_ROM)
 	InetGet("http://www.screenscraper.fr/api/jeuInfos.php?devid=Screech&devpassword=Screech201601281533y&softname=Universal_XML_Scraper&output=xml&crc=" & $A_ROMList[$No_ROM][2] & "&md5=" & $A_ROMList[$No_ROM][3] & "sha1=" & $A_ROMList[$No_ROM][4] & "&systemeid=" & $No_system & "&romtype=rom&romnom=" & $A_ROMList[$No_ROM][0] & "&romtaille=" & $A_ROMList[$No_ROM][5], $Path_source)
-	ConsoleWrite("+Debut de la ROM n° : " & $No_ROM & @CRLF) ; Debug
+	ConsoleWrite("+Debut de la ROM no : " & $No_ROM & @CRLF) ; Debug
 	For $B_XMLElements = 1 To UBound($A_XMLFormat) - 1
 		If GUIGetMsg() = $B_SCRAPE Then
 			FileDelete($Path_source)
@@ -760,7 +762,7 @@ Func _XML_CREATEROM($Path_source, $Path_cible, $xpath_root_source, $xpath_root_c
 		If $XML_Value = -2 Then $Return = 0
 	Next
 	ConsoleWrite("+Fin du Node : " & $No_ROM & @CRLF) ; Debug
-	_CREATION_LOGMESS("Fin de l'écriture des informations de la Rom n° " & $No_ROM & " en " & Round((TimerDiff($TimerRom) / 1000), 3) & "s")
+	_CREATION_LOGMESS("Fin de l'ecriture des informations de la Rom no " & $No_ROM & " en " & Round((TimerDiff($TimerRom) / 1000), 3) & "s")
 	FileDelete($Path_source)
 	Return $Return
 EndFunc   ;==>_XML_CREATEROM
