@@ -5,7 +5,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper XML Universel
-#AutoIt3Wrapper_Res_Fileversion=1.0.0.3
+#AutoIt3Wrapper_Res_Fileversion=1.0.0.4
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -100,6 +100,8 @@ Global $No_system = IniRead($PathConfigINI, "LAST_USE", "$No_system", "-1")
 Global $HauteurImage = IniRead($PathConfigINI, "LAST_USE", "$HauteurImage", "")
 Global $LargeurImage = IniRead($PathConfigINI, "LAST_USE", "$LargeurImage", "")
 Global $TMP_LastChild = ''
+Global $DevId = 'Screech'
+Global $DevPassword = 'Screech201601281533y'
 Global $Rev
 If @Compiled Then
 	$Rev = "BETA " & FileGetVersion(@ScriptFullPath)
@@ -647,7 +649,7 @@ Func _SYSTEM_CREATEARRAY_SCREENSCRAPER($PathTmp)
 	Local $sNode_Values
 	_GUICtrlStatusBar_SetText($L_SCRAPE, _MultiLang_GetText("prSET_SYSTEM_CREATEARRAY"))
 	_CREATION_LOGMESS("Recuperation des informations des systemes")
-	InetGet("http://www.screenscraper.fr/api/systemesListe.php?devid=Screech&devpassword=Screech201601281533y&softname=Universal_XML_Scraper&output=XML", $PathTmp)
+	InetGet("http://www.screenscraper.fr/api/systemesListe.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=Universal_XML_Scraper&output=XML", $PathTmp)
 	_XMLFileOpen($PathTmp)
 	If @error Then
 		ConsoleWrite("!_XMLFileOpen : " & _XMLError("") & @CRLF) ; Debug
@@ -744,7 +746,7 @@ Func _XML_CREATEROM($Path_source, $Path_cible, $xpath_root_source, $xpath_root_c
 	Local $XML_Type, $TMP_LastRootChild, $Return = 1
 	$TimerRom = TimerInit()
 	_CREATION_LOGMESS("Recuperation des informations de la Rom no " & $No_ROM)
-	InetGet("http://www.screenscraper.fr/api/jeuInfos.php?devid=Screech&devpassword=Screech201601281533y&softname=Universal_XML_Scraper&output=xml&crc=" & $A_ROMList[$No_ROM][2] & "&md5=" & $A_ROMList[$No_ROM][3] & "sha1=" & $A_ROMList[$No_ROM][4] & "&systemeid=" & $No_system & "&romtype=rom&romnom=" & $A_ROMList[$No_ROM][0] & "&romtaille=" & $A_ROMList[$No_ROM][5], $Path_source)
+	InetGet("http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=Universal_XML_Scraper&output=xml&crc=" & $A_ROMList[$No_ROM][2] & "&md5=" & $A_ROMList[$No_ROM][3] & "sha1=" & $A_ROMList[$No_ROM][4] & "&systemeid=" & $No_system & "&romtype=rom&romnom=" & $A_ROMList[$No_ROM][0] & "&romtaille=" & $A_ROMList[$No_ROM][5], $Path_source)
 	ConsoleWrite("+Debut de la ROM no : " & $No_ROM & @CRLF) ; Debug
 	For $B_XMLElements = 1 To UBound($A_XMLFormat) - 1
 		If GUIGetMsg() = $B_SCRAPE Then
@@ -768,9 +770,6 @@ Func _XML_CREATEROM($Path_source, $Path_cible, $xpath_root_source, $xpath_root_c
 EndFunc   ;==>_XML_CREATEROM
 
 Func _XML_GETROMINFO($PathTmp, $xpath_root, $XML_Type, $B_XMLElements, $A_XMLFormat, $A_ROMList, $No_ROM)
-	Local $maxheight = ""
-	Local $maxwidth = ""
-
 	Switch $XML_Type
 		Case 'child'
 			$XML_Value = $A_XMLFormat[$B_XMLElements][0]
@@ -823,15 +822,16 @@ Func _XML_GETROMINFO($PathTmp, $xpath_root, $XML_Type, $B_XMLElements, $A_XMLFor
 					EndIf
 					$sNode_Values = _XMLGetValue($xpath_root & "/*[1]/" & $A_XMLFormat[$B_XMLElements][2])
 					If IsArray($sNode_Values) Then
-						Local $PathImage_Temp = $PathImage & StringTrimRight($A_ROMList[$No_ROM][0], 4) & "-" & $A_XMLFormat[$B_XMLElements][0] & "." & StringRight($sNode_Values[1], 3)
-						Local $PathImageSub_Temp = $PathImageSub & StringTrimRight($A_ROMList[$No_ROM][0], 4) & "-" & $A_XMLFormat[$B_XMLElements][0] & "." & StringRight($sNode_Values[1], 3)
-						If FileExists($PathImageSub_Temp) = 0 Then
-							_FileCreate($PathImageSub_Temp)
-							If $HauteurImage <> 0 Then $maxheight = "&maxheight=" & $HauteurImage
-							If $LargeurImage <> 0 Then $maxwidth = "&maxwidth=" & $LargeurImage
-							InetGet($sNode_Values[1] & $maxheight & $maxwidth, $PathImage_Temp, 0, 1)
-						EndIf
-						Return $PathImageSub_Temp
+;~ 						Local $PathImage_Temp = $PathImage & StringTrimRight($A_ROMList[$No_ROM][0], 4) & "-" & $A_XMLFormat[$B_XMLElements][0] & "." & StringRight($sNode_Values[1], 3)
+;~ 						Local $PathImageSub_Temp = $PathImageSub & StringTrimRight($A_ROMList[$No_ROM][0], 4) & "-" & $A_XMLFormat[$B_XMLElements][0] & "." & StringRight($sNode_Values[1], 3)
+;~ 						If FileExists($PathImageSub_Temp) = 0 Then
+;~ 							_FileCreate($PathImageSub_Temp)
+;~ 							If $HauteurImage <> 0 Then $maxheight = "&maxheight=" & $HauteurImage
+;~ 							If $LargeurImage <> 0 Then $maxwidth = "&maxwidth=" & $LargeurImage
+;~ 							InetGet($sNode_Values[1] & $maxheight & $maxwidth, $PathImage_Temp, 0, 1)
+;~ 						EndIf
+;~ 						Return $PathImageSub_Temp
+						Return $sNode_Values[1]
 					EndIf
 			EndSwitch
 		Case Else
@@ -841,6 +841,9 @@ EndFunc   ;==>_XML_GETROMINFO
 
 Func _XML_PUTROMINFO($PathTmp, $xpath_root_cible, $XML_Type, $B_XMLElements, $A_XMLFormat, $No_ROM, $XML_Value)
 	Local $TMP_LastChildName = ""
+	Local $maxheight = ""
+	Local $maxwidth = ""
+
 	_XMLFileOpen($PathTmp)
 	If @error Then
 		ConsoleWrite("!_XMLFileOpen : " & _XMLError("") & @CRLF) ; Debug
@@ -860,6 +863,23 @@ Func _XML_PUTROMINFO($PathTmp, $xpath_root_cible, $XML_Type, $B_XMLElements, $A_
 			If IsArray($sNode_Values) = 0 Then
 				_XMLCreateChildNode($xpath_root_cible & '/' & $TMP_LastChild & "[" & $No_ROM & "]", $A_XMLFormat[$B_XMLElements][0], $XML_Value)
 				ConsoleWrite(">_XMLCreateChildNode : " & $A_XMLFormat[$B_XMLElements][0] & " = " & $XML_Value & @CRLF) ; Debug
+			Else
+				ConsoleWrite("-ZAPPER : " & $XML_Value & @CRLF) ; Debug
+			EndIf
+		Case 'path:'
+			If $XML_Value = "0" Then Return
+			Local $sNode_Values = _XMLGetValue($xpath_root_cible & '/' & $TMP_LastChild & "[" & $No_ROM & "]/" & $A_XMLFormat[$B_XMLElements][0])
+			If IsArray($sNode_Values) = 0 Then
+				Local $PathImage_Temp = $PathImage & StringTrimRight($A_ROMList[$No_ROM][0], 4) & "-" & $A_XMLFormat[$B_XMLElements][0] & "." & StringRight($XML_Value, 3)
+				Local $PathImageSub_Temp = $PathImageSub & StringTrimRight($A_ROMList[$No_ROM][0], 4) & "-" & $A_XMLFormat[$B_XMLElements][0] & "." & StringRight($XML_Value, 3)
+				If FileExists($PathImage_Temp) = 0 Then
+					If $HauteurImage <> 0 Then $maxheight = "&maxheight=" & $HauteurImage
+					If $LargeurImage <> 0 Then $maxwidth = "&maxwidth=" & $LargeurImage
+					ConsoleWrite("+ Download : " & $XML_Value & $maxheight & $maxwidth & " dans " & $PathImage_Temp & @CRLF) ; Debug
+					InetGet($XML_Value & $maxheight & $maxwidth, $PathImage_Temp, 0, 0)
+					_XMLCreateChildNode($xpath_root_cible & '/' & $TMP_LastChild & "[" & $No_ROM & "]", $A_XMLFormat[$B_XMLElements][0], $PathImageSub_Temp)
+					ConsoleWrite(">_XMLCreateChildNode : " & $A_XMLFormat[$B_XMLElements][0] & " = " & $PathImageSub_Temp & @CRLF) ; Debug
+				EndIf
 			Else
 				ConsoleWrite("-ZAPPER : " & $XML_Value & @CRLF) ; Debug
 			EndIf
