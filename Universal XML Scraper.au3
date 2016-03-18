@@ -38,6 +38,7 @@
 #include <FileConstants.au3>
 #include <MsgBoxConstants.au3>
 #include <Color.au3>
+#include <Crypt.au3>
 
 #include "./Include/_MultiLang.au3"
 #include "./Include/_ExtMsgBox.au3"
@@ -100,8 +101,8 @@ Global $No_system = IniRead($PathConfigINI, "LAST_USE", "$No_system", "-1")
 Global $HauteurImage = IniRead($PathConfigINI, "LAST_USE", "$HauteurImage", "")
 Global $LargeurImage = IniRead($PathConfigINI, "LAST_USE", "$LargeurImage", "")
 Global $TMP_LastChild = ''
-Global $DevId = 'Screech'
-Global $DevPassword = 'Screech201601281533y'
+Global $DevId = BinaryToString(_Crypt_DecryptData("0x1552EDED2FA9B5", "1gdf1g1gf", $CALG_RC4))
+Global $DevPassword = BinaryToString(_Crypt_DecryptData("0x1552EDED2FA9B547FBD0D9A623D954AE7BEDC681", "1gdf1g1gf", $CALG_RC4))
 Global $Rev
 If @Compiled Then
 	$Rev = "BETA " & FileGetVersion(@ScriptFullPath)
