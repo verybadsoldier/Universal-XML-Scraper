@@ -5,7 +5,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper XML Universel
-#AutoIt3Wrapper_Res_Fileversion=1.0.0.4
+#AutoIt3Wrapper_Res_Fileversion=1.0.0.5
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -148,6 +148,7 @@ GUISetState(@SW_SHOW)
 Local $A_Profil = _INI_CREATEARRAY_SCRAPER()
 Local $INI_P_SOURCE = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$IMAGE_SOURCE", "empty.jpg")
 Local $INI_P_CIBLE = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$IMAGE_CIBLE", "empty.jpg")
+Local $INI_OPTION_MAJ = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$OPTION_MAJ", 0)
 _GUI_REFRESH($INI_P_SOURCE, $INI_P_CIBLE)
 
 While 1
@@ -186,7 +187,7 @@ While 1
 				$FullTimer = TimerInit()
 				$A_SYSTEM = _SYSTEM_CREATEARRAY_SCREENSCRAPER($PathTmp)
 				$No_system = _SYSTEM_SelectGUI($A_SYSTEM)
-				Local $A_ROMList = _SCRAPING($No_Profil, $A_Profil, $PathRom, $No_system)
+				Local $A_ROMList = _SCRAPING($No_Profil, $A_Profil, $PathRom, $No_system, $INI_OPTION_MAJ)
 				$FullTimer = Round(TimerDiff($FullTimer))
 				_SCRAPING_BILAN($FullTimer, $A_ROMList)
 			EndIf
@@ -556,7 +557,7 @@ Func _ROM_CREATEARRAY($PathRom)
 	Return $A_ROMList
 EndFunc   ;==>_ROM_CREATEARRAY
 
-Func _SCRAPING($No_Profil, $A_Profil, $PathRom, $No_system)
+Func _SCRAPING($No_Profil, $A_Profil, $PathRom, $No_system, $INI_OPTION_MAJ)
 	Local $A_ROMList = _ROM_CREATEARRAY($PathRom)
 	If $A_ROMList = -1 Then Return -1
 	$A_Profil = _INI_CREATEARRAY_SCRAPER()
@@ -578,7 +579,7 @@ Func _SCRAPING($No_Profil, $A_Profil, $PathRom, $No_system)
 	For $B_ROMList = 1 To $Nb_Roms
 		$Timer = TimerInit()
 ;~ 		_ArrayDisplay($A_ROMList, '$A_ROMList') ; Debug
-		$CreateROM = _XML_CREATEROM($PathTmp, $PathNew, $xpath_root_source, $xpath_root_cible, $A_XMLFormat, $A_ROMList, $B_ROMList, $No_system)
+		$CreateROM = _XML_CREATEROM($PathTmp, $PathNew, $xpath_root_source, $xpath_root_cible, $A_XMLFormat, $A_ROMList, $B_ROMList, $No_system, $INI_OPTION_MAJ)
 		If $CreateROM = 0 Then
 			_CREATION_LOGMESS("(*)Rom non trouve : " & $A_ROMList[$B_ROMList][0])
 			$A_ROMList[$B_ROMList][7] = 0
@@ -743,7 +744,7 @@ Func _XML_CREATEFORMAT($Profil)
 	Return $A_XMLFormat
 EndFunc   ;==>_XML_CREATEFORMAT
 
-Func _XML_CREATEROM($Path_source, $Path_cible, $xpath_root_source, $xpath_root_cible, $A_XMLFormat, $A_ROMList, $No_ROM, $No_system)
+Func _XML_CREATEROM($Path_source, $Path_cible, $xpath_root_source, $xpath_root_cible, $A_XMLFormat, $A_ROMList, $No_ROM, $No_system, $INI_OPTION_MAJ)
 	Local $XML_Type, $TMP_LastRootChild, $Return = 1
 	$TimerRom = TimerInit()
 	_CREATION_LOGMESS("Recuperation des informations de la Rom no " & $No_ROM)
@@ -756,7 +757,7 @@ Func _XML_CREATEROM($Path_source, $Path_cible, $xpath_root_source, $xpath_root_c
 		EndIf
 		GUICtrlSetImage($B_SCRAPE, $SOURCE_DIRECTORY & "\Ressources\Fleche_IP1.bmp", -1, 0)
 		$XML_Type = StringLeft($A_XMLFormat[$B_XMLElements][3], 5)
-		$XML_Value = _XML_GETROMINFO($Path_source, $xpath_root_source, $XML_Type, $B_XMLElements, $A_XMLFormat, $A_ROMList, $No_ROM)
+		$XML_Value = _XML_GETROMINFO($Path_source, $xpath_root_source, $XML_Type, $B_XMLElements, $A_XMLFormat, $A_ROMList, $No_ROM, $INI_OPTION_MAJ)
 		ConsoleWrite("!" & $A_XMLFormat[$B_XMLElements][2] & " = " & $XML_Value & @CRLF)
 		$XML_Type = StringLeft($A_XMLFormat[$B_XMLElements][1], 5)
 		ConsoleWrite("!" & $A_XMLFormat[$B_XMLElements][0] & " = " & $XML_Value & @CRLF)
@@ -770,7 +771,7 @@ Func _XML_CREATEROM($Path_source, $Path_cible, $xpath_root_source, $xpath_root_c
 	Return $Return
 EndFunc   ;==>_XML_CREATEROM
 
-Func _XML_GETROMINFO($PathTmp, $xpath_root, $XML_Type, $B_XMLElements, $A_XMLFormat, $A_ROMList, $No_ROM)
+Func _XML_GETROMINFO($PathTmp, $xpath_root, $XML_Type, $B_XMLElements, $A_XMLFormat, $A_ROMList, $No_ROM, $INI_OPTION_MAJ)
 	Switch $XML_Type
 		Case 'child'
 			$XML_Value = $A_XMLFormat[$B_XMLElements][0]
@@ -784,7 +785,11 @@ Func _XML_GETROMINFO($PathTmp, $xpath_root, $XML_Type, $B_XMLElements, $A_XMLFor
 			EndIf
 			Local $sNode_Values = _XMLGetValue($xpath_root & "/*[1]/" & $A_XMLFormat[$B_XMLElements][2])
 			If IsArray($sNode_Values) Then
-				$XML_Value = StringUpper($sNode_Values[1])
+				If $INI_OPTION_MAJ = 1 Then
+					$XML_Value = StringUpper($sNode_Values[1])
+				Else
+					$XML_Value = $sNode_Values[1]
+				EndIf
 				If $XML_Value = Null Then
 					Return ""
 				Else
