@@ -5,7 +5,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper XML Universel
-#AutoIt3Wrapper_Res_Fileversion=1.0.0.5
+#AutoIt3Wrapper_Res_Fileversion=1.0.0.6
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -184,10 +184,13 @@ While 1
 			_GUI_REFRESH($INI_P_SOURCE, $INI_P_CIBLE)
 		Case $B_SCRAPE
 			If _GUI_REFRESH($INI_P_SOURCE, $INI_P_CIBLE, 1) = 1 Then
+				$V_Header = 0
 				$FullTimer = TimerInit()
 				$A_SYSTEM = _SYSTEM_CREATEARRAY_SCREENSCRAPER($PathTmp)
 				$No_system = _SYSTEM_SelectGUI($A_SYSTEM)
-				Local $A_ROMList = _SCRAPING($No_Profil, $A_Profil, $PathRom, $No_system, $INI_OPTION_MAJ)
+				ConsoleWrite("+" & $A_Profil[$No_Profil])
+				If IniRead($PathConfigINI, $A_Profil[$No_Profil], "$HEADER_1", "0") <> "0" Then $V_Header = 1
+				Local $A_ROMList = _SCRAPING($No_Profil, $A_Profil, $PathRom, $No_system, $INI_OPTION_MAJ, $V_Header, $A_SYSTEM)
 				$FullTimer = Round(TimerDiff($FullTimer))
 				_SCRAPING_BILAN($FullTimer, $A_ROMList)
 			EndIf
@@ -557,7 +560,7 @@ Func _ROM_CREATEARRAY($PathRom)
 	Return $A_ROMList
 EndFunc   ;==>_ROM_CREATEARRAY
 
-Func _SCRAPING($No_Profil, $A_Profil, $PathRom, $No_system, $INI_OPTION_MAJ)
+Func _SCRAPING($No_Profil, $A_Profil, $PathRom, $No_system, $INI_OPTION_MAJ, $V_Header, $A_SYSTEM)
 	Local $A_ROMList = _ROM_CREATEARRAY($PathRom)
 	If $A_ROMList = -1 Then Return -1
 	$A_Profil = _INI_CREATEARRAY_SCRAPER()
@@ -575,6 +578,18 @@ Func _SCRAPING($No_Profil, $A_Profil, $PathRom, $No_system, $INI_OPTION_MAJ)
 
 	_XMLCreateFile($PathNew, StringMid($xpath_root_cible, 3), True, 1)
 	If @error Then ConsoleWrite("!_XML_CreateFile : " & _XMLError("") & @CRLF) ; Debug
+
+	If $V_Header = 1 Then
+		Local $A_HEADERFormat = _HEADER_CREATEFORMAT($A_Profil[$No_Profil])
+		Local $Nb_XMLHeader = UBound($A_HEADERFormat) - 1
+		For $B_XMLHeader = 0 To $Nb_XMLHeader - 1
+			If $A_HEADERFormat[$B_XMLHeader][1] = "root" Then Local $xpath_root_cible = "//" & $A_HEADERFormat[$B_XMLHeader][0]
+			If $A_HEADERFormat[$B_XMLHeader][3] = "root" Then Local $xpath_root_source = "//" & $A_HEADERFormat[$B_XMLHeader][2]
+		Next
+		ConsoleWrite("$xpath_root_source Header : " & $xpath_root_source & @CRLF) ; Debug
+		ConsoleWrite("$xpath_root_cible HEader : " & $xpath_root_cible & @CRLF) ; Debug
+		_XML_CREATEHEADER($PathTmp, $PathNew, $xpath_root_source, $xpath_root_cible, $A_HEADERFormat, $A_ROMList, $No_system, $INI_OPTION_MAJ, $A_SYSTEM)
+	EndIf
 
 	For $B_ROMList = 1 To $Nb_Roms
 		$Timer = TimerInit()
@@ -744,6 +759,18 @@ Func _XML_CREATEFORMAT($Profil)
 	Return $A_XMLFormat
 EndFunc   ;==>_XML_CREATEFORMAT
 
+Func _HEADER_CREATEFORMAT($Profil)
+	Local $A_HEADERFormat[1][4]
+	Local $B_Elements = 1
+	_CREATION_LOGMESS("Recuperation des champs du header")
+	While IniRead($PathConfigINI, $Profil, "$HEADER_" & $B_Elements, "Ending") <> "Ending"
+		_ArrayAdd($A_HEADERFormat, IniRead($PathConfigINI, $Profil, "$HEADER_" & $B_Elements, ""))
+		$B_Elements = $B_Elements + 1
+	WEnd
+;~ 	_ArrayDisplay($A_XMLFormat, '$A_XMLFormat') ; Debug
+	Return $A_HEADERFormat
+EndFunc   ;==>_HEADER_CREATEFORMAT
+
 Func _XML_CREATEROM($Path_source, $Path_cible, $xpath_root_source, $xpath_root_cible, $A_XMLFormat, $A_ROMList, $No_ROM, $No_system, $INI_OPTION_MAJ)
 	Local $XML_Type, $TMP_LastRootChild, $Return = 1
 	$TimerRom = TimerInit()
@@ -757,7 +784,7 @@ Func _XML_CREATEROM($Path_source, $Path_cible, $xpath_root_source, $xpath_root_c
 		EndIf
 		GUICtrlSetImage($B_SCRAPE, $SOURCE_DIRECTORY & "\Ressources\Fleche_IP1.bmp", -1, 0)
 		$XML_Type = StringLeft($A_XMLFormat[$B_XMLElements][3], 5)
-		$XML_Value = _XML_GETROMINFO($Path_source, $xpath_root_source, $XML_Type, $B_XMLElements, $A_XMLFormat, $A_ROMList, $No_ROM, $INI_OPTION_MAJ)
+		$XML_Value = _XML_GETROMINFO($Path_source, $xpath_root_source, $XML_Type, $B_XMLElements, $A_XMLFormat, $A_ROMList, $No_ROM, $INI_OPTION_MAJ, $No_system)
 		ConsoleWrite("!" & $A_XMLFormat[$B_XMLElements][2] & " = " & $XML_Value & @CRLF)
 		$XML_Type = StringLeft($A_XMLFormat[$B_XMLElements][1], 5)
 		ConsoleWrite("!" & $A_XMLFormat[$B_XMLElements][0] & " = " & $XML_Value & @CRLF)
@@ -771,7 +798,39 @@ Func _XML_CREATEROM($Path_source, $Path_cible, $xpath_root_source, $xpath_root_c
 	Return $Return
 EndFunc   ;==>_XML_CREATEROM
 
-Func _XML_GETROMINFO($PathTmp, $xpath_root, $XML_Type, $B_XMLElements, $A_XMLFormat, $A_ROMList, $No_ROM, $INI_OPTION_MAJ)
+Func _XML_CREATEHEADER($Path_source, $Path_cible, $xpath_root_source, $xpath_root_cible, $A_HEADERFormat, $A_ROMList, $No_system, $INI_OPTION_MAJ, $A_SYSTEM)
+	Local $XML_Type, $TMP_LastRootChild, $Return = 1
+;~ 	_ArrayDisplay($A_HEADERFormat, "$A_HEADERFormat") ; Debug
+	$TimerHeader = TimerInit()
+	_CREATION_LOGMESS("Recuperation des informations du header")
+	For $B_XMLHeader = 1 To UBound($A_HEADERFormat) - 1
+		If GUIGetMsg() = $B_SCRAPE Then
+			Return -1
+		EndIf
+		GUICtrlSetImage($B_SCRAPE, $SOURCE_DIRECTORY & "\Ressources\Fleche_IP1.bmp", -1, 0)
+		$XML_Type = StringLeft($A_HEADERFormat[$B_XMLHeader][3], 5)
+		ConsoleWrite("!$XML_Type" & $XML_Type & @CRLF)
+		$XML_Value = _XML_GETROMINFO($Path_source, $xpath_root_source, $XML_Type, $B_XMLHeader, $A_HEADERFormat, $A_ROMList, 0, $INI_OPTION_MAJ, $No_system)
+		ConsoleWrite("!" & $A_HEADERFormat[$B_XMLHeader][2] & " = " & $XML_Value & @CRLF)
+		$XML_Type = StringLeft($A_HEADERFormat[$B_XMLHeader][1], 5)
+		ConsoleWrite("!" & $A_HEADERFormat[$B_XMLHeader][0] & " = " & $XML_Value & @CRLF)
+		GUICtrlSetImage($B_SCRAPE, $SOURCE_DIRECTORY & "\Ressources\Fleche_IP2.bmp", -1, 0)
+		If $XML_Value <> -1 And $XML_Value <> -2 Then
+			If StringLeft($XML_Value, 8) = 'systeme:' Then
+				For $B_SYSTEM = 0 To UBound($A_SYSTEM) - 1
+					If $A_SYSTEM[$B_SYSTEM][2] = StringMid($XML_Value, 9) Then $XML_Value = $A_SYSTEM[$B_SYSTEM][0]
+				Next
+			EndIf
+			_XML_PUTROMINFO($Path_cible, $xpath_root_cible, $XML_Type, $B_XMLHeader, $A_HEADERFormat, 1, $XML_Value)
+		EndIf
+		If $XML_Value = -2 Then $Return = 0
+	Next
+	_CREATION_LOGMESS("Fin de l'ecriture des informations du header en " & Round((TimerDiff($TimerHeader) / 1000), 3) & "s")
+	Return $Return
+EndFunc   ;==>_XML_CREATEHEADER
+
+Func _XML_GETROMINFO($PathTmp, $xpath_root, $XML_Type, $B_XMLElements, $A_XMLFormat, $A_ROMList, $No_ROM, $INI_OPTION_MAJ, $No_system)
+;~ 	ConsoleWrite(" - " & $PathTmp & " - " & $xpath_root & @CRLF & " - " & $XML_Type & @CRLF & " - " & $B_XMLElements & @CRLF & " - " & $A_XMLFormat & @CRLF & " - " & $A_ROMList & @CRLF & " - " & $No_ROM & @CRLF & " - " & $INI_OPTION_MAJ & @CRLF & " - " & $No_system & @CRLF)
 	Switch $XML_Type
 		Case 'child'
 			$XML_Value = $A_XMLFormat[$B_XMLElements][0]
@@ -814,6 +873,12 @@ Func _XML_GETROMINFO($PathTmp, $xpath_root, $XML_Type, $B_XMLElements, $A_XMLFor
 					Return $A_ROMList[$No_ROM][3]
 				Case '%sha1%'
 					Return $A_ROMList[$No_ROM][4]
+				Case '%systeme%'
+					Return 'systeme:' & $No_system
+				Case '%date%'
+					$tCur = _Date_Time_GetLocalTime()
+					$dtCur = _Date_Time_SystemTimeToArray($tCur)
+					Return StringRight("0" & $dtCur[1], 2) & "/" & StringRight("0" & $dtCur[0], 2) & "/" & StringRight("0" & $dtCur[2], 2)
 				Case Else
 					Return $A_XMLFormat[$B_XMLElements][2]
 			EndSwitch
@@ -846,6 +911,7 @@ Func _XML_GETROMINFO($PathTmp, $xpath_root, $XML_Type, $B_XMLElements, $A_XMLFor
 EndFunc   ;==>_XML_GETROMINFO
 
 Func _XML_PUTROMINFO($PathTmp, $xpath_root_cible, $XML_Type, $B_XMLElements, $A_XMLFormat, $No_ROM, $XML_Value)
+	ConsoleWrite(" - " & $PathTmp & " - " & $xpath_root_cible & @CRLF & " - " & $XML_Type & @CRLF & " - " & $B_XMLElements & @CRLF & " - " & $A_XMLFormat & @CRLF & " - " & $No_ROM & @CRLF & " - " & $XML_Value & @CRLF)
 	Local $TMP_LastChildName = ""
 	Local $maxheight = ""
 	Local $maxwidth = ""
@@ -868,7 +934,7 @@ Func _XML_PUTROMINFO($PathTmp, $xpath_root_cible, $XML_Type, $B_XMLElements, $A_
 			Local $sNode_Values = _XMLGetValue($xpath_root_cible & '/' & $TMP_LastChild & "[" & $No_ROM & "]/" & $A_XMLFormat[$B_XMLElements][0])
 			If IsArray($sNode_Values) = 0 Then
 				_XMLCreateChildNode($xpath_root_cible & '/' & $TMP_LastChild & "[" & $No_ROM & "]", $A_XMLFormat[$B_XMLElements][0], $XML_Value)
-				ConsoleWrite(">_XMLCreateChildNode : " & $A_XMLFormat[$B_XMLElements][0] & " = " & $XML_Value & @CRLF) ; Debug
+				ConsoleWrite(">_XMLCreateChildNode : " & $xpath_root_cible & '/' & $TMP_LastChild & "[" & $No_ROM & "]/" & $A_XMLFormat[$B_XMLElements][0] & " = " & $XML_Value & @CRLF) ; Debug
 			Else
 				ConsoleWrite("-ZAPPER : " & $XML_Value & @CRLF) ; Debug
 			EndIf
