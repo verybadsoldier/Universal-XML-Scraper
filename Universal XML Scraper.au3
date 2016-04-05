@@ -5,7 +5,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper XML Universel
-#AutoIt3Wrapper_Res_Fileversion=1.0.0.6
+#AutoIt3Wrapper_Res_Fileversion=1.0.0.7
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -39,6 +39,7 @@
 #include <MsgBoxConstants.au3>
 #include <Color.au3>
 #include <Crypt.au3>
+#include <GDIPlus.au3>
 
 #include "./Include/_MultiLang.au3"
 #include "./Include/_ExtMsgBox.au3"
@@ -54,6 +55,23 @@ If Not _FileCreate($SOURCE_DIRECTORY & "\test") Then
 	DirCreate($SOURCE_DIRECTORY & "\UXMLS")
 Else
 	FileDelete($SOURCE_DIRECTORY & "\test")
+EndIf
+
+Global $PathConfigINI = $SOURCE_DIRECTORY & "\UXS-config.ini"
+
+Global $Rev
+If @Compiled Then
+	$Rev = FileGetVersion(@ScriptFullPath)
+	Local $verINI = IniRead($PathConfigINI, "GENERAL", "$verINI", '0.0.0.0')
+	If $verINI <> $Rev Then
+		FileDelete($SOURCE_DIRECTORY & "\UXS-config.ini")
+		FileDelete($SOURCE_DIRECTORY & "\LanguageFiles")
+		FileDelete($SOURCE_DIRECTORY & "\Ressources")
+		ConsoleWrite("Ini Deleted" & @CRLF)
+	EndIf
+Else
+	$Rev = 'In Progress'
+	ConsoleWrite("Ini NOT Deleted" & @CRLF)
 EndIf
 
 DirCreate($SOURCE_DIRECTORY & "\LanguageFiles")
@@ -82,7 +100,7 @@ Global $LANG_DIR = $SOURCE_DIRECTORY & "\LanguageFiles"; Where we are storing th
 Global $INI_P_SOURCE = "empty.jpg"
 Global $INI_P_CIBLE = "empty.jpg"
 Global $PathTmp = $SOURCE_DIRECTORY & "\API_temp.tmp"
-Global $PathConfigINI = $SOURCE_DIRECTORY & "\UXS-config.ini"
+;~ Global $PathConfigINI = $SOURCE_DIRECTORY & "\UXS-config.ini"
 Global $PathPlink = $SOURCE_DIRECTORY & "\Ressources\plink.exe"
 Local $path_LOG = IniRead($PathConfigINI, "GENERAL", "Path_LOG", $SOURCE_DIRECTORY & "\log.txt")
 Local $Verbose = IniRead($PathConfigINI, "GENERAL", "Verbose", 1)
@@ -103,12 +121,6 @@ Global $LargeurImage = IniRead($PathConfigINI, "LAST_USE", "$LargeurImage", "")
 Global $TMP_LastChild = ''
 Global $DevId = BinaryToString(_Crypt_DecryptData("0x1552EDED2FA9B5", "1gdf1g1gf", $CALG_RC4))
 Global $DevPassword = BinaryToString(_Crypt_DecryptData("0x1552EDED2FA9B547FBD0D9A623D954AE7BEDC681", "1gdf1g1gf", $CALG_RC4))
-Global $Rev
-If @Compiled Then
-	$Rev = "BETA " & FileGetVersion(@ScriptFullPath)
-Else
-	$Rev = 'In Progress'
-EndIf
 
 ;---------;
 ;Principal;
@@ -138,8 +150,9 @@ Local $MH_Help = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_help_about"), $MH
 Local $P_SOURCE = GUICtrlCreatePic($SOURCE_DIRECTORY & "\Ressources\" & $INI_P_SOURCE, 0, 0, 150, 100)
 Local $P_CIBLE = GUICtrlCreatePic($SOURCE_DIRECTORY & "\Ressources\" & $INI_P_CIBLE, 200, 0, 150, 100)
 Local $PB_SCRAPE = GUICtrlCreateProgress(0, 110, 350, 25)
-Local $B_SCRAPE = GUICtrlCreateButton(_MultiLang_GetText("scrap_button"), 150, 2, 50, 100, BitOR($BS_BITMAP, $BS_FLAT))
+Local $B_SCRAPE = GUICtrlCreateButton(_MultiLang_GetText("scrap_button"), 150, 2, 50, 60, BitOR($BS_BITMAP, $BS_FLAT))
 GUICtrlSetImage($B_SCRAPE, $SOURCE_DIRECTORY & "\Ressources\Fleche_DISABLE.bmp", -1, 0)
+;~ Global $P_SYSTEM = GUICtrlCreatePic("", 150, 62, 50, 40, BitOR($GUI_SS_DEFAULT_PIC, $WS_BORDER))
 Local $L_SCRAPE = _GUICtrlStatusBar_Create($F_UniversalScraper)
 GUISetState(@SW_SHOW)
 #EndRegion ### END Koda GUI section ###
@@ -694,7 +707,8 @@ Func _SYSTEM_CREATEARRAY_SCREENSCRAPER($PathTmp)
 		EndIf
 		$sNode_Values = _XMLGetValue("//Data/*[" & $B_Nodes & "]/medias/media_photos/media_photo_eu")
 		If IsArray($sNode_Values) Then
-			$A_XMLSources[$TMP_LastUbound][1] = ($sNode_Values[1])
+			$A_XMLSources[$TMP_LastUbound][1] = $sNode_Values[1] & "&maxwidth=50&maxheight=40"
+;~ 			&outputformat=jpg"
 			If $A_XMLSources[$TMP_LastUbound][1] = Null Then $A_XMLSources[$TMP_LastUbound][0] = ""
 		EndIf
 		$sNode_Values = _XMLGetValue("//Data/*[" & $B_Nodes & "]/id")
@@ -734,11 +748,39 @@ Func _SYSTEM_SelectGUI($A_SYSTEM)
 	WEnd
 	Local $_selected = GUICtrlRead($_system_gui_Combo)
 	GUIDelete($_system_gui_GUI)
+;~ 	_ArrayDisplay($A_SYSTEM, '$A_SYSTEM') ; Debug
 	For $i = 0 To UBound($A_SYSTEM) - 1
 		If StringInStr($A_SYSTEM[$i][0], $_selected) Then
 			GUISetState(@SW_ENABLE, $F_UniversalScraper)
 			WinActivate($F_UniversalScraper)
 			_CREATION_LOGMESS("Systeme selectionne : " & $A_SYSTEM[$i][0])
+			ConsoleWrite("Download : " & $A_SYSTEM[$i][1] & @CRLF)
+			InetGet($A_SYSTEM[$i][1], $SOURCE_DIRECTORY & "\Ressources\systeme.png", 0, 0)
+;~ 			$RetImage = GUICtrlSetImage($P_SYSTEM, "C:\Developpement\Github\Universal-XML-Scraper\Ressources\systeme.jpg")
+
+;~ 			$RetImage = GUICtrlSetImage($P_SYSTEM, $SOURCE_DIRECTORY & "\Ressources\systeme.jpg")
+;~ 			ConsoleWrite("$SOURCE_DIRECTORY & \Ressources\systeme.jpg = " & $SOURCE_DIRECTORY & "\Ressources\systeme.jpg" & @CRLF)
+;~ 			ConsoleWrite("$RetImage = " & $RetImage & @CRLF)
+
+			_GDIPlus_Startup()
+
+			$hGraphic = _GDIPlus_GraphicsCreateFromHWND($F_UniversalScraper)
+			$hImage = _GDIPlus_ImageLoadFromFile($SOURCE_DIRECTORY & "\Ressources\empty.jpg")
+			$hImage = _GDIPlus_ImageResize($hImage, 50, 40)
+			_WinAPI_RedrawWindow($F_UniversalScraper, 0, 0, $RDW_UPDATENOW)
+			_GDIPlus_GraphicsDrawImage($hGraphic, $hImage, 150, 62)
+			_WinAPI_RedrawWindow($F_UniversalScraper, 0, 0, $RDW_VALIDATE)
+			_GDIPlus_ImageDispose($hImage)
+
+			$hGraphic = _GDIPlus_GraphicsCreateFromHWND($F_UniversalScraper)
+			$hImage = _GDIPlus_ImageLoadFromFile($SOURCE_DIRECTORY & "\Ressources\systeme.png")
+			_WinAPI_RedrawWindow($F_UniversalScraper, 0, 0, $RDW_UPDATENOW)
+			_GDIPlus_GraphicsDrawImage($hGraphic, $hImage, 150, 62)
+			_WinAPI_RedrawWindow($F_UniversalScraper, 0, 0, $RDW_VALIDATE)
+			_GDIPlus_GraphicsDispose($hGraphic)
+			_GDIPlus_ImageDispose($hImage)
+			_GDIPlus_Shutdown()
+
 			Return $A_SYSTEM[$i][2]
 		EndIf
 	Next
@@ -933,6 +975,7 @@ Func _XML_PUTROMINFO($PathTmp, $xpath_root_cible, $XML_Type, $B_XMLElements, $A_
 		Case 'value'
 			Local $sNode_Values = _XMLGetValue($xpath_root_cible & '/' & $TMP_LastChild & "[" & $No_ROM & "]/" & $A_XMLFormat[$B_XMLElements][0])
 			If IsArray($sNode_Values) = 0 Then
+				If StringMid($A_XMLFormat[$B_XMLElements][1], 6) = 100 Then $XML_Value = Round(($XML_Value * 100 / 20) / 100, 2)
 				_XMLCreateChildNode($xpath_root_cible & '/' & $TMP_LastChild & "[" & $No_ROM & "]", $A_XMLFormat[$B_XMLElements][0], $XML_Value)
 				ConsoleWrite(">_XMLCreateChildNode : " & $xpath_root_cible & '/' & $TMP_LastChild & "[" & $No_ROM & "]/" & $A_XMLFormat[$B_XMLElements][0] & " = " & $XML_Value & @CRLF) ; Debug
 			Else
