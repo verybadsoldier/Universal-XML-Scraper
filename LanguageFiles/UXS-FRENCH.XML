@@ -4,6 +4,15 @@
 	<prSET_SYSTEM_CREATEARRAY>Récupération de la liste des systèmes</prSET_SYSTEM_CREATEARRAY>
 </progressbar>
 
+<error>
+	<err_title>Erreur</err_title>
+	<err_PathRom>Le chemin des ROMs n'est pas accessible</err_PathRom>
+	<err_PathImage>Le chemin des images n'est pas accessible</err_PathImage>
+	<err_PathNew>Le chemin du fichier XML n'est pas accessible</err_PathNew>
+	<err_PathNew_ext>L'extension du fichier XML n'est pas valide</err_PathNew_ext>
+	<err_No_Profil>Pas de profil choisi</err_No_Profil>
+</error>
+
 <gui>
 	<main_gui>Universale XML Scraper</main_gui>
 	<menu>

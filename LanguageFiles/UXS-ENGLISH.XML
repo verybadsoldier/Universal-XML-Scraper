@@ -4,6 +4,15 @@
 	<prSET_SYSTEM_CREATEARRAY>Getting system list</prSET_SYSTEM_CREATEARRAY>
 </progressbar>
 
+<error>
+	<err_title>Erreur</err_title>
+	<err_PathRom>Rom path not valide</err_PathRom>
+	<err_PathImage>Images path not valide</err_PathImage>
+	<err_PathNew>XML file path not valide</err_PathNew>
+	<err_PathNew_ext>XML file not valide</err_PathNew_ext>
+	<err_No_Profil>No profil selected</err_No_Profil>
+</error>
+
 <gui>
 	<main_gui>Universale XML Scraper</main_gui>
 	<menu>
