@@ -52,7 +52,7 @@
 			<win_config_GroupImage>Images</win_config_GroupImage>
 			<win_config_GroupImage_PathImage>Chemin des images à télécharger</win_config_GroupImage_PathImage>
 			<win_config_GroupImage_hautImage>Hauteur</win_config_GroupImage_hautImage>
-			<win_config_GroupImage_LongImage>Longueur</win_config_GroupImage_LongImage>
+			<win_config_GroupImage_LongImage>Largeur</win_config_GroupImage_LongImage>
 			<win_config_GroupImage_PathImageSub>Chemin des images dans le fichier XML</win_config_GroupImage_PathImageSub>
 			<win_config_Enreg>Enregistrer</win_config_Enreg>
 			<win_config_Cancel>Annuler</win_config_Cancel>

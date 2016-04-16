@@ -5,7 +5,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper XML Universel
-#AutoIt3Wrapper_Res_Fileversion=1.0.0.8
+#AutoIt3Wrapper_Res_Fileversion=1.0.0.9
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -280,10 +280,10 @@ Func _GUI_Config()
 	Local $L_PathImage = GUICtrlCreateLabel(_MultiLang_GetText("win_config_GroupImage_PathImage"), 16, 176, 177, 21)
 	Local $I_PathImage = GUICtrlCreateInput(IniRead($PathConfigINI, "LAST_USE", "$PathImage", $PathImage), 16, 194, 177, 21)
 	Local $B_PathImage = GUICtrlCreateButton("...", 198, 194, 27, 21)
-	Local $L_ImageHauteur = GUICtrlCreateLabel(_MultiLang_GetText("win_config_GroupImage_hautImage"), 24, 226, 40, 17)
-	Local $I_ImageHauteur = GUICtrlCreateInput("", 72, 224, 41, 21)
-	Local $L_LargeurImage = GUICtrlCreateLabel(_MultiLang_GetText("win_config_GroupImage_LongImage"), 120, 226, 49, 17)
-	Local $I_LargeurImage = GUICtrlCreateInput("", 168, 224, 41, 21)
+	Local $L_LargeurImage = GUICtrlCreateLabel(_MultiLang_GetText("win_config_GroupImage_LongImage"), 24, 226, 40, 17)
+	Local $I_LargeurImage = GUICtrlCreateInput(IniRead($PathConfigINI, "LAST_USE", "$LargeurImage", $LargeurImage), 72, 224, 41, 21)
+	Local $L_ImageHauteur = GUICtrlCreateLabel(_MultiLang_GetText("win_config_GroupImage_hautImage"), 120, 226, 49, 17)
+	Local $I_ImageHauteur = GUICtrlCreateInput(IniRead($PathConfigINI, "LAST_USE", "$HauteurImage", $HauteurImage), 168, 224, 41, 21)
 	Local $L_PathImageSub = GUICtrlCreateLabel(_MultiLang_GetText("win_config_GroupImage_PathImageSub"), 16, 256, 208, 17)
 	Local $I_PathImageSub = GUICtrlCreateInput(IniRead($PathConfigINI, "LAST_USE", "$PathImageSub", $PathImageSub), 16, 274, 177, 21)
 	Local $B_PathImageSub = GUICtrlCreateButton("...", 198, 274, 27, 21)
@@ -324,6 +324,7 @@ Func _GUI_Config()
 				$PathNew = GUICtrlRead($I_PathXML)
 				IniWrite($PathConfigINI, "LAST_USE", "$PathNew", $PathNew)
 				$PathImage = GUICtrlRead($I_PathImage)
+				If (StringRight($PathImage, 1) <> '\') Then $PathImage &= '\'
 				IniWrite($PathConfigINI, "LAST_USE", "$PathImage", $PathImage)
 				$PathImageSub = GUICtrlRead($I_PathImageSub)
 				IniWrite($PathConfigINI, "LAST_USE", "$PathImageSub", $PathImageSub)
@@ -1086,7 +1087,7 @@ Func _XML_PUTROMINFO($PathTmp, $xpath_root_cible, $XML_Type, $B_XMLElements, $A_
 		Case 'value'
 			Local $sNode_Values = _XMLGetValue($xpath_root_cible & '/' & $TMP_LastChild & "[" & $No_ROM & "]/" & $A_XMLFormat[$B_XMLElements][0])
 			If IsArray($sNode_Values) = 0 Then
-				If StringMid($A_XMLFormat[$B_XMLElements][1], 6) = 100 Then $XML_Value = Round(($XML_Value * 100 / 20) / 100, 2)
+				If StringMid($A_XMLFormat[$B_XMLElements][1], 6) = 100 Then $XML_Value = StringReplace(Round(($XML_Value * 100 / 20) / 100, 2), ",", ".")
 				_XMLCreateChildNode($xpath_root_cible & '/' & $TMP_LastChild & "[" & $No_ROM & "]", $A_XMLFormat[$B_XMLElements][0], $XML_Value)
 				ConsoleWrite(">_XMLCreateChildNode : " & $xpath_root_cible & '/' & $TMP_LastChild & "[" & $No_ROM & "]/" & $A_XMLFormat[$B_XMLElements][0] & " = " & $XML_Value & @CRLF) ; Debug
 				_CREATION_LOGMESS(2, $A_XMLFormat[$B_XMLElements][2] & " : " & $XML_Value)
