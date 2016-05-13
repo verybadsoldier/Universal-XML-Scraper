@@ -275,7 +275,7 @@ Func _FUSIONXML($V_Header, $A_ROMList)
 ;~ 			MsgBox(0, $No_Roms & " file", "")
 		EndIf
 		FileClose($H_PathNewTmp)
-		ConsoleWrite("+Fermeture : " & $PathDIRTmp & $No_Roms & ".xml" & @CRLF) ; Debug
+		ConsoleWrite("!Fermeture : " & $PathDIRTmp & $No_Roms & ".xml" & @CRLF) ; Debug
 		$No_Roms = $No_Roms + 1
 		If $No_Roms = $Nb_Roms + 1 Then ExitLoop
 	WEnd
