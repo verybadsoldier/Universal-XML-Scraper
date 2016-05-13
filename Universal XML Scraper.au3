@@ -254,30 +254,37 @@ Func _FUSIONXML($V_Header, $A_ROMList)
 
 	If $V_Header = 1 Then ConsoleWrite("NE PAS OUBLIER D'AJOUTER LE HEADER" & @CRLF) ; Debug
 ;~ 	FileDelete($PathNew)
-	$H_PathNew = FileOpen($PathNew)
+	$H_PathNew = FileOpen($PathNew, $FO_APPEND)
 
 	While $A_ROMList[$No_Roms][6] <> ""
 		$H_PathNewTmp = FileOpen($PathDIRTmp & $No_Roms & ".xml")
 		ConsoleWrite("!Ouverture : " & $PathDIRTmp & $No_Roms & ".xml" & @CRLF) ; Debug
 		$NbLine = _FileCountLines($PathDIRTmp & $No_Roms & ".xml")
 		If $No_Roms = 1 Then
-			FileWrite($H_PathNew, FileRead($H_PathNewTmp))
-			ConsoleWrite("+Ecriture : du premier fichier" & @CRLF) ; Debug
-;~ 			MsgBox(0, "1 file", "")
+			$Start = 1
 		Else
-			For $B_PathNewTmp = 2 To $NbLine - 1
-				ConsoleWrite("+Ecriture : " & $PathDIRTmp & $No_Roms & ".xml" & @CRLF) ; Debug
-				FileSetPos($H_PathNew, -1, $FILE_END)
-				$LineRead = FileReadLine($H_PathNewTmp, $B_PathNewTmp)
-				ConsoleWrite(">" & $LineRead & @CRLF) ; Debug
-				FileWriteLine($H_PathNew, $LineRead)
-			Next
-;~ 			MsgBox(0, $No_Roms & " file", "")
+			$Start = 2
 		EndIf
-		FileClose($H_PathNewTmp)
-		ConsoleWrite("!Fermeture : " & $PathDIRTmp & $No_Roms & ".xml" & @CRLF) ; Debug
+		For $B_PathNewTmp = $Start To $NbLine - 1
+			ConsoleWrite("+Ecriture : " & $PathDIRTmp & $No_Roms & ".xml" & @CRLF) ; Debug
+			FileSetPos($H_PathNew, -1, $FILE_END)
+			$LineRead = FileReadLine($H_PathNewTmp, $B_PathNewTmp)
+			ConsoleWrite(">" & $LineRead & @CRLF) ; Debug
+			FileWriteLine($H_PathNew, $LineRead)
+		Next
+
 		$No_Roms = $No_Roms + 1
-		If $No_Roms = $Nb_Roms + 1 Then ExitLoop
+		If $No_Roms = $Nb_Roms + 1 Then
+			$LineRead = FileReadLine($H_PathNewTmp, $NbLine)
+			ConsoleWrite(">" & $LineRead & @CRLF) ; Debug
+			FileWriteLine($H_PathNew, $LineRead)
+			FileClose($H_PathNewTmp)
+			ConsoleWrite("!Fermeture : " & $PathDIRTmp & $No_Roms & ".xml" & @CRLF) ; Debug
+			ExitLoop
+		Else
+			FileClose($H_PathNewTmp)
+			ConsoleWrite("!Fermeture : " & $PathDIRTmp & $No_Roms & ".xml" & @CRLF) ; Debug
+		EndIf
 	WEnd
 	FileClose($H_PathNew)
 EndFunc   ;==>_FUSIONXML
