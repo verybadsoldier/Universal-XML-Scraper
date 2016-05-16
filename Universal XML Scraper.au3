@@ -5,7 +5,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper XML Universel
-#AutoIt3Wrapper_Res_Fileversion=1.0.0.9
+#AutoIt3Wrapper_Res_Fileversion=1.1.0.0
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -122,13 +122,18 @@ Global $user_lang = IniRead($PathConfigINI, "LAST_USE", "$user_lang", "-1")
 Global $No_system = IniRead($PathConfigINI, "LAST_USE", "$No_system", "-1")
 Global $HauteurImage = IniRead($PathConfigINI, "LAST_USE", "$HauteurImage", "")
 Global $LargeurImage = IniRead($PathConfigINI, "LAST_USE", "$LargeurImage", "")
+Global $EmptyRom = IniRead($PathConfigINI, "LAST_USE", "$EmptyRom", 1)
+Global $ScrapeMode = IniRead($PathConfigINI, "LAST_USE", "$ScrapeMode", 0)
 Global $TMP_LastChild = ''
 Global $DevId = BinaryToString(_Crypt_DecryptData("0x1552EDED2FA9B5", "1gdf1g1gf", $CALG_RC4))
 Global $DevPassword = BinaryToString(_Crypt_DecryptData("0x1552EDED2FA9B547FBD0D9A623D954AE7BEDC681", "1gdf1g1gf", $CALG_RC4))
+Local $Moy_Timer = 0
+Local $Total_Timer = 0
 Local $Menu_SSH = IniRead($PathConfigINI, "CONNEXION", "Menu_SSH", 0)
 Local $Plink_root = IniRead($PathConfigINI, "CONNEXION", "Plink_root", "root")
 Local $Plink_mdp = IniRead($PathConfigINI, "CONNEXION", "Plink_mdp", "recalboxroot")
 Local $Plink_IP = IniRead($PathConfigINI, "CONNEXION", "Plink_IP", "RECALBOX")
+Local $L_SCRAPE_Parts[2] = [275, -1]
 _CREATION_LOGMESS(2, "Fin de Definition des variables")
 
 ;---------;
@@ -150,11 +155,14 @@ Local $MF_Exit = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_file_exit"), $MF)
 Local $ME = GUICtrlCreateMenu(_MultiLang_GetText("mnu_edit"))
 Local $ME_Langue = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_edit_langue"), $ME)
 Local $ME_Config = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_edit_config"), $ME)
-Local $MP = GUICtrlCreateMenu("SSH")
-Local $MP_KILLALL = GUICtrlCreateMenuItem("KillAll Emulationstation", $MP)
-Local $MP_REBOOT = GUICtrlCreateMenuItem("Reboot", $MP)
-Local $MP_POWEROFF = GUICtrlCreateMenuItem("Power off", $MP)
+Local $MP = GUICtrlCreateMenu(_MultiLang_GetText("mnu_ssh"))
+Local $MP_KILLALL = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_ssh_killall"), $MP)
+Local $MP_REBOOT = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_ssh_reboot"), $MP)
+Local $MP_POWEROFF = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_ssh_halt"), $MP)
 GUICtrlSetState($MP, $GUI_DISABLE)
+Local $MM = GUICtrlCreateMenu(_MultiLang_GetText("mnu_mode"))
+Local $MM_New = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_mode_new"), $MM, 0, 1)
+Local $MM_Append = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_mode_append"), $MM, 0, 1)
 Local $MH = GUICtrlCreateMenu(_MultiLang_GetText("mnu_help"))
 Local $MH_Help = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_help_about"), $MH)
 Local $P_SOURCE = GUICtrlCreatePic($SOURCE_DIRECTORY & "\Ressources\" & $INI_P_SOURCE, 0, 0, 150, 100)
@@ -163,6 +171,7 @@ Local $PB_SCRAPE = GUICtrlCreateProgress(0, 110, 350, 25)
 Local $B_SCRAPE = GUICtrlCreateButton(_MultiLang_GetText("scrap_button"), 150, 2, 50, 60, BitOR($BS_BITMAP, $BS_FLAT))
 GUICtrlSetImage($B_SCRAPE, $SOURCE_DIRECTORY & "\Ressources\Fleche_DISABLE.bmp", -1, 0)
 Local $L_SCRAPE = _GUICtrlStatusBar_Create($F_UniversalScraper)
+_GUICtrlStatusBar_SetParts($L_SCRAPE, $L_SCRAPE_Parts)
 GUISetState(@SW_SHOW)
 #EndRegion ### END Koda GUI section ###
 _CREATION_LOGMESS(2, "Fin de creation de l'interface")
@@ -181,6 +190,19 @@ While 1
 		Case $GUI_EVENT_CLOSE, $MF_Exit
 			_CREATION_LOGMESS(1, "Fermeture du Soft")
 			Exit
+		Case $MF_Profil
+			$No_Profil = _PROFIL_SelectGUI($A_Profil)
+			$INI_P_SOURCE = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$IMAGE_SOURCE", "empty.jpg")
+			$INI_P_CIBLE = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$IMAGE_CIBLE", "empty.jpg")
+			_CREATION_LOGMESS(1, "Profil : " & $A_Profil[$No_Profil])
+			_GUI_REFRESH($INI_P_SOURCE, $INI_P_CIBLE)
+		Case $ME_Langue
+			_LANG_LOAD($LANG_DIR, -1)
+			_CREATION_LOGMESS(1, "Langue Selectionnee : " & $user_lang)
+			_GUI_REFRESH($INI_P_SOURCE, $INI_P_CIBLE)
+		Case $ME_Config
+			_GUI_Config()
+			_GUI_REFRESH($INI_P_SOURCE, $INI_P_CIBLE)
 		Case $MP_KILLALL
 			If MsgBox($MB_OKCANCEL, "KillAll Emulationstation", "Etes vous sur de vouloir arreter EmulationStation ?") = $IDOK Then
 				Run($PathPlink & " " & $Plink_IP & " -l " & $Plink_root & " -pw " & $Plink_mdp & " killall emulationstation")
@@ -202,35 +224,12 @@ While 1
 			Else
 				_CREATION_LOGMESS(1, "SSH : Power Off ANNULE")
 			EndIf
-		Case $MF_Profil
-			$No_Profil = _PROFIL_SelectGUI($A_Profil)
-			$INI_P_SOURCE = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$IMAGE_SOURCE", "empty.jpg")
-			$INI_P_CIBLE = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$IMAGE_CIBLE", "empty.jpg")
-			_CREATION_LOGMESS(1, "Profil : " & $A_Profil[$No_Profil])
-			_GUI_REFRESH($INI_P_SOURCE, $INI_P_CIBLE)
-		Case $ME_Langue
-			_LANG_LOAD($LANG_DIR, -1)
-			_CREATION_LOGMESS(1, "Langue Selectionnee : " & $user_lang)
-			_GUI_REFRESH($INI_P_SOURCE, $INI_P_CIBLE)
-		Case $B_SCRAPE
-			If _GUI_REFRESH($INI_P_SOURCE, $INI_P_CIBLE, 1) = 1 Then
-				$V_Header = 0
-				$FullTimer = TimerInit()
-				FileDelete($PathDIRTmp)
-				DirCreate($PathDIRTmp)
-				$A_SYSTEM = _SYSTEM_CREATEARRAY_SCREENSCRAPER($PathTmp)
-				$No_system = _SYSTEM_SelectGUI($A_SYSTEM)
-				ConsoleWrite("+" & $A_Profil[$No_Profil]);Debug
-				If IniRead($PathConfigINI, $A_Profil[$No_Profil], "$HEADER_1", "0") <> "0" Then $V_Header = 1
-				Local $A_ROMList = _SCRAPING($No_Profil, $A_Profil, $PathRom, $No_system, $INI_OPTION_MAJ, $V_Header, $A_SYSTEM)
-				_FUSIONXML($V_Header, $A_ROMList)
-				$FullTimer = Round(TimerDiff($FullTimer))
-				_SCRAPING_BILAN($FullTimer, $A_ROMList)
-			EndIf
+		Case $MM_New
+			$ScrapeMode = 0
 			_GUI_REFRESH($INI_P_SOURCE, $INI_P_CIBLE, 0)
-		Case $ME_Config
-			_GUI_Config()
-			_GUI_REFRESH($INI_P_SOURCE, $INI_P_CIBLE)
+		Case $MM_Append
+			$ScrapeMode = 1
+			_GUI_REFRESH($INI_P_SOURCE, $INI_P_CIBLE, 0)
 		Case $MH_Help
 			$sMsg = "UNIVERSAL XML SCRAPER - " & $Rev & @CRLF
 			$sMsg &= _MultiLang_GetText("win_About_By") & @CRLF & @CRLF
@@ -241,6 +240,18 @@ While 1
 			$sMsg &= "http://www.emulationstation.org/" & @CRLF
 			_ExtMsgBoxSet(1, 2, 0x34495c, 0xFFFF00, 10, "Arial")
 			_ExtMsgBox($EMB_ICONINFO, "OK", _MultiLang_GetText("win_About_Title"), $sMsg, 15)
+		Case $B_SCRAPE
+			If _GUI_REFRESH($INI_P_SOURCE, $INI_P_CIBLE, 1) = 1 Then
+				$FullTimer = TimerInit()
+				$V_Header = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$HEADER_1", "0")
+				$A_SYSTEM = _SYSTEM_CREATEARRAY_SCREENSCRAPER($PathTmp)
+				$No_system = _SYSTEM_SelectGUI($A_SYSTEM)
+				$A_ROMList = _SCRAPING($No_Profil, $A_Profil, $PathRom, $No_system, $INI_OPTION_MAJ, $V_Header, $A_SYSTEM)
+				FileDelete($PathDIRTmp)
+				FileDelete($PathTmp)
+				_SCRAPING_BILAN(TimerDiff($FullTimer), $A_ROMList)
+			EndIf
+			_GUI_REFRESH($INI_P_SOURCE, $INI_P_CIBLE, 0)
 	EndSwitch
 WEnd
 
@@ -286,7 +297,9 @@ Func _FUSIONXML($V_Header, $A_ROMList)
 			ConsoleWrite("!Fermeture : " & $PathDIRTmp & $No_Roms & ".xml" & @CRLF) ; Debug
 		EndIf
 	WEnd
+	_CREATION_LOGMESS(1, "Correction des fins de ligne")
 	FileClose($H_PathNew)
+	_ReplaceStringInFile($PathNew, @CRLF, @LF)
 EndFunc   ;==>_FUSIONXML
 
 Func _CREATION_LOG()
@@ -460,6 +473,15 @@ Func _GUI_REFRESH($INI_P_SOURCE, $INI_P_CIBLE, $ScrapIP = 0)
 				GUICtrlSetState($MP, $GUI_ENABLE)
 		EndSelect
 
+		Select
+			Case $ScrapeMode = 0
+				GUICtrlSetState($MM_New, $GUI_CHECKED)
+				GUICtrlSetState($MM_Append, $GUI_UNCHECKED)
+			Case $ScrapeMode = 1
+				GUICtrlSetState($MM_New, $GUI_UNCHECKED)
+				GUICtrlSetState($MM_Append, $GUI_CHECKED)
+		EndSelect
+
 		GUICtrlSetData($MF, _MultiLang_GetText("mnu_file"))
 		GUICtrlSetState($MF, $GUI_ENABLE)
 		GUICtrlSetData($MF_Profil, _MultiLang_GetText("mnu_file_profil"))
@@ -470,6 +492,13 @@ Func _GUI_REFRESH($INI_P_SOURCE, $INI_P_CIBLE, $ScrapIP = 0)
 		GUICtrlSetData($ME_Config, _MultiLang_GetText("mnu_edit_config"))
 		GUICtrlSetData($MH, _MultiLang_GetText("mnu_help"))
 		GUICtrlSetState($MH, $GUI_ENABLE)
+		GUICtrlSetData($MP, _MultiLang_GetText("mnu_ssh"))
+		GUICtrlSetData($MP_KILLALL, _MultiLang_GetText("mnu_ssh_killall"))
+		GUICtrlSetData($MP_REBOOT, _MultiLang_GetText("mnu_ssh_reboot"))
+		GUICtrlSetData($MP_POWEROFF, _MultiLang_GetText("mnu_ssh_halt"))
+		GUICtrlSetData($MM, _MultiLang_GetText("mnu_mode"))
+		GUICtrlSetData($MM_New, _MultiLang_GetText("mnu_mode_new"))
+		GUICtrlSetData($MM_Append, _MultiLang_GetText("mnu_mode_append"))
 		GUICtrlSetData($MH_Help, _MultiLang_GetText("mnu_help_about"))
 		GUICtrlSetData($B_SCRAPE, _MultiLang_GetText("scrap_button"))
 		GUICtrlSetImage($P_SOURCE, $SOURCE_DIRECTORY & "\Ressources\" & $INI_P_SOURCE)
@@ -650,7 +679,7 @@ EndFunc   ;==>_PROFIL_SelectGUI
 Func _ROM_CREATEARRAY($PathRom)
 	_CREATION_LOGMESS(2, "Recuperation de la liste des ROM")
 	Global $A_ROMList = _FileListToArray($PathRom, "*.*z*")
-	$TimerHash = TimerInit()
+
 	If @error = 1 Then
 		_CREATION_LOGMESS(1, "/!\ Chemin de recherche des roms invalide " & $PathRom)
 		MsgBox($MB_SYSTEMMODAL, "", $PathRom & " - Path was invalid.")
@@ -667,40 +696,28 @@ Func _ROM_CREATEARRAY($PathRom)
 	Next
 
 	_CREATION_LOGMESS(1, "Nombre de roms trouvees : " & UBound($A_ROMList) - 1)
-	_CREATION_LOGMESS(1, "Calcul des Hash")
-	For $B_ROMList = 1 To UBound($A_ROMList) - 1
-		If GUIGetMsg() = $B_SCRAPE Then
-			Return -1
-		EndIf
-		$A_ROMList[$B_ROMList][1] = $PathRom & $A_ROMList[$B_ROMList][0]
-		_CREATION_LOGMESS(2, "Nom de la ROM : " & $A_ROMList[$B_ROMList][1])
-		$A_ROMList[$B_ROMList][2] = StringRight(_CRC32ForFile($A_ROMList[$B_ROMList][1]), 8)
-		_CREATION_LOGMESS(2, "CRC32 : " & $A_ROMList[$B_ROMList][2])
-		$A_ROMList[$B_ROMList][3] = _MD5ForFile($A_ROMList[$B_ROMList][1])
-		_CREATION_LOGMESS(2, "MD5 : " & $A_ROMList[$B_ROMList][3])
-		$A_ROMList[$B_ROMList][4] = _SHA1ForFile($A_ROMList[$B_ROMList][1])
-		_CREATION_LOGMESS(2, "SHA1 : " & $A_ROMList[$B_ROMList][4])
-		$A_ROMList[$B_ROMList][5] = FileGetSize($A_ROMList[$B_ROMList][1])
-		_CREATION_LOGMESS(2, "Taille de la ROM : " & $A_ROMList[$B_ROMList][5])
-		Local $PercentProgression = Round(($B_ROMList * 100) / UBound($A_ROMList) - 1)
-		GUICtrlSetData($PB_SCRAPE, $PercentProgression)
-		_GUICtrlStatusBar_SetText($L_SCRAPE, _MultiLang_GetText("prSET_ROM_CREATEARRAY"))
-	Next
-	_CREATION_LOGMESS(1, "Fin de Calcul des Hash en : " & Round((TimerDiff($TimerHash) / 1000), 2) & "s")
+
 ;~ 	_ArrayDisplay($A_ROMList, '$A_ROMList') ; Debug
 ;~ 	_ArraySort($A_ROMList)
 	Return $A_ROMList
 EndFunc   ;==>_ROM_CREATEARRAY
 
 Func _SCRAPING($No_Profil, $A_Profil, $PathRom, $No_system, $INI_OPTION_MAJ, $V_Header, $A_SYSTEM)
-	Local $A_ROMList = _ROM_CREATEARRAY($PathRom)
-	If $A_ROMList = -1 Then Return -1
+;~ 	Initialisation Variables
+	$Moy_Timer = 0
+	$Total_Timer = 0
+
+;~ 	Initialisation Profil
 	$A_Profil = _INI_CREATEARRAY_SCRAPER()
 	Local $A_XMLFormat = _XML_CREATEFORMAT($A_Profil[$No_Profil])
 	Local $Nb_XMLElements = UBound($A_XMLFormat) - 1
-	Local $Nb_Roms = UBound($A_ROMList) - 1
-	Local $Moy_Timer = 0
 
+;~ 	Initialisation ROMList
+	Local $A_ROMList = _ROM_CREATEARRAY($PathRom)
+	If $A_ROMList = -1 Then Return -1
+	Local $Nb_Roms = UBound($A_ROMList) - 1
+
+;~ 	Initialisation des Xpath
 	For $B_XMLElements = 0 To $Nb_XMLElements - 1
 		If $A_XMLFormat[$B_XMLElements][1] = "root" Then Local $xpath_root_cible = "//" & $A_XMLFormat[$B_XMLElements][0]
 		If $A_XMLFormat[$B_XMLElements][3] = "root" Then Local $xpath_root_source = "//" & $A_XMLFormat[$B_XMLElements][2]
@@ -708,11 +725,15 @@ Func _SCRAPING($No_Profil, $A_Profil, $PathRom, $No_system, $INI_OPTION_MAJ, $V_
 	ConsoleWrite("$xpath_root_source : " & $xpath_root_source & @CRLF) ; Debug
 	ConsoleWrite("$xpath_root_cible : " & $xpath_root_cible & @CRLF) ; Debug
 
+;~ 	Initialisation Repertoire Temporaire
+	DirCreate($PathDIRTmp)
+
+;~ 	Creation du header
 	If $V_Header = 1 Then
-		$PathNewTemp = $PathDIRTmp & "0.xml"
 		_CREATION_LOGMESS(1, "Creation du Header")
-		Local $A_HEADERFormat = _HEADER_CREATEFORMAT($A_Profil[$No_Profil])
-		Local $Nb_XMLHeader = UBound($A_HEADERFormat) - 1
+		$PathNewTemp = $PathDIRTmp & "0.xml"
+		$A_HEADERFormat = _HEADER_CREATEFORMAT($A_Profil[$No_Profil])
+		$Nb_XMLHeader = UBound($A_HEADERFormat) - 1
 		For $B_XMLHeader = 0 To $Nb_XMLHeader - 1
 			If $A_HEADERFormat[$B_XMLHeader][1] = "root" Then Local $xpath_root_cible = "//" & $A_HEADERFormat[$B_XMLHeader][0]
 			If $A_HEADERFormat[$B_XMLHeader][3] = "root" Then Local $xpath_root_source = "//" & $A_HEADERFormat[$B_XMLHeader][2]
@@ -723,12 +744,32 @@ Func _SCRAPING($No_Profil, $A_Profil, $PathRom, $No_system, $INI_OPTION_MAJ, $V_
 	EndIf
 
 	For $B_ROMList = 1 To $Nb_Roms
+;~ 		Demarrage du Timer
+		$Timer = TimerInit()
+		$TimerHash = TimerInit()
+;~ 		Calcul des Hash et informations sur la ROM
+		_CREATION_LOGMESS(1, "---------------------------------------------------------------------------------------")
+		$A_ROMList[$B_ROMList][1] = $PathRom & $A_ROMList[$B_ROMList][0]
+		_CREATION_LOGMESS(2, "Nom de la ROM : " & $A_ROMList[$B_ROMList][1])
+		$A_ROMList[$B_ROMList][2] = StringRight(_CRC32ForFile($A_ROMList[$B_ROMList][1]), 8)
+		_CREATION_LOGMESS(2, "CRC32 : " & $A_ROMList[$B_ROMList][2])
+		If IniRead($PathConfigINI, "GENERAL", "Quick", 0) = 0 Then
+			$A_ROMList[$B_ROMList][3] = _MD5ForFile($A_ROMList[$B_ROMList][1])
+			_CREATION_LOGMESS(2, "MD5 : " & $A_ROMList[$B_ROMList][3])
+			$A_ROMList[$B_ROMList][4] = _SHA1ForFile($A_ROMList[$B_ROMList][1])
+			_CREATION_LOGMESS(2, "SHA1 : " & $A_ROMList[$B_ROMList][4])
+			$A_ROMList[$B_ROMList][5] = FileGetSize($A_ROMList[$B_ROMList][1])
+			_CREATION_LOGMESS(2, "Taille de la ROM : " & $A_ROMList[$B_ROMList][5])
+		EndIf
+		_CREATION_LOGMESS(1, "Calcul des Hash en : " & Round((TimerDiff($TimerHash) / 1000), 2) & "s")
+		ConsoleWrite("Calcul des Hash en : " & Round((TimerDiff($TimerHash) / 1000), 2) & "s")
+
+;~ 		Creation du fichier XML Temporaire de la Rom
 		$PathNewTemp = $PathDIRTmp & $B_ROMList & ".xml"
 		_XMLCreateFile($PathNewTemp, StringMid($xpath_root_cible, 3), True, 1)
 		If @error Then ConsoleWrite("!_XML_CreateFile : " & _XMLError("") & @CRLF) ; Debug
 
-		$Timer = TimerInit()
-;~ 		_ArrayDisplay($A_ROMList, '$A_ROMList') ; Debug
+;~ 		Recuperation et ecriture des informations de la Rom
 		$CreateROM = _XML_CREATEROM($PathTmp, $PathNewTemp, $xpath_root_source, $xpath_root_cible, $A_XMLFormat, $A_ROMList, $B_ROMList, $No_system, $INI_OPTION_MAJ)
 		If $CreateROM = 0 Then
 			_CREATION_LOGMESS(1, "(*)Rom non trouve : " & $A_ROMList[$B_ROMList][0])
@@ -737,36 +778,37 @@ Func _SCRAPING($No_Profil, $A_Profil, $PathRom, $No_system, $INI_OPTION_MAJ, $V_
 			_CREATION_LOGMESS(1, "Rom trouve : " & $A_ROMList[$B_ROMList][0])
 			$A_ROMList[$B_ROMList][7] = 1
 		EndIf
-		$A_ROMList[$B_ROMList][6] = Round(TimerDiff($Timer))
+
+;~ 		Calcul du temps restant
+		$A_ROMList[$B_ROMList][6] = Round((TimerDiff($Timer) / 1000), 3)
+		_CREATION_LOGMESS(1, "Fin de l'ecriture des informations de la Rom no " & $B_ROMList & " en " & $A_ROMList[$B_ROMList][6] & "s")
+		$Total_Timer = $Total_Timer + $A_ROMList[$B_ROMList][6]
+		$Moy_Timer = Round($Total_Timer / $B_ROMList, 3)
+		$Rest_Time = $Moy_Timer * ($Nb_Roms - $B_ROMList)
+		$Mins = Floor($Rest_Time / 60)
+		$Secs = Round(Mod($Rest_Time, 60))
 		Local $PercentProgression = Round(($B_ROMList * 100) / $Nb_Roms)
-		$Text = " - Rom no" & $B_ROMList & "/" & $Nb_Roms
+		$Text = " - " & $B_ROMList & "/" & $Nb_Roms
+		$Text2 = $Mins & "m " & $Secs & "s"
 		GUICtrlSetData($PB_SCRAPE, $PercentProgression)
 		_GUICtrlStatusBar_SetText($L_SCRAPE, _MultiLang_GetText("prSET_XML_CREATEROM") & $Text)
-		If GUIGetMsg() = $B_SCRAPE Or $CreateROM = -1 Then
-;~ 			_ArrayDisplay($A_ROMList, '$A_ROMList') ; Debug
-			_CREATION_LOGMESS(1, "Correction des fins de ligne")
-			_ReplaceStringInFile($PathNewTemp, @CRLF, @LF)
-			Return $A_ROMList
-		EndIf
+		_GUICtrlStatusBar_SetText($L_SCRAPE, @TAB & @TAB & $Text2, 1)
+
+		If GUIGetMsg() = $B_SCRAPE Or $CreateROM = -1 Then Return $A_ROMList
 	Next
-	_CREATION_LOGMESS(1, "Correction des fins de ligne")
-	_ReplaceStringInFile($PathNewTemp, @CRLF, @LF)
-;~ 	_ArrayDisplay($A_ROMList, '$A_ROMList') ; Debug
-;~ _ArrayDisplay($A_XMLSources, '$A_XMLSources') ; Debug
-;~ 	GUISetState(@SW_ENABLE, $F_UniversalScraper)
+	_FUSIONXML($V_Header, $A_ROMList)
+	_GUICtrlStatusBar_SetText($L_SCRAPE, "", 1)
 	Return $A_ROMList
 EndFunc   ;==>_SCRAPING
 
 Func _SCRAPING_BILAN($FullTimer, $A_ROMList)
 	Local $Hour, $Mins, $Secs, $Cancelled = 0
 	$Nb_Roms = UBound($A_ROMList) - 1
-	$MoyTimer = 0
 	$ROMFound = 0
 	$Nb_Roms_Scanned = 0
 
 	_CREATION_LOGMESS(1, "Bilan" & @CRLF)
 	For $B_ROMList = 1 To $Nb_Roms
-		$MoyTimer = $MoyTimer + ($A_ROMList[$B_ROMList][6] / 1000)
 		$ROMFound = $ROMFound + $A_ROMList[$B_ROMList][7]
 		If $A_ROMList[$B_ROMList][6] = "" Then
 			$Cancelled = 1
@@ -784,8 +826,8 @@ Func _SCRAPING_BILAN($FullTimer, $A_ROMList)
 	EndIf
 	$sMsg &= _MultiLang_GetText("win_Datas_Roms") & " " & $ROMFound & " / " & $Nb_Roms & @CRLF
 	_CREATION_LOGMESS(1, " Roms trouvees :" & $ROMFound & " / " & $Nb_Roms)
-	$sMsg &= _MultiLang_GetText("win_Datas_MoyTime") & " " & Round($MoyTimer / $Nb_Roms_Scanned, 2) & "s" & @CRLF
-	_CREATION_LOGMESS(1, " Temps moyen par Rom :" & Round($MoyTimer / $Nb_Roms_Scanned, 2) & "s")
+	$sMsg &= _MultiLang_GetText("win_Datas_MoyTime") & " " & $Moy_Timer & "s" & @CRLF
+	_CREATION_LOGMESS(1, " Temps moyen par Rom :" & $Moy_Timer & "s")
 	$sMsg &= _MultiLang_GetText("win_Datas_FullTime") & " " & $Hour & "h " & $Mins & "m " & $Secs & "s" & @CRLF
 	_CREATION_LOGMESS(1, " Temps Total :" & $Hour & "h " & $Mins & "m " & $Secs & "s")
 	_ExtMsgBoxSet(1, 2, 0x34495c, 0xFFFF00, 10, "Arial")
@@ -905,6 +947,7 @@ Func _SYSTEM_SelectGUI($A_SYSTEM)
 			WinActivate($F_UniversalScraper)
 			_CREATION_LOGMESS(1, "Systeme selectionne : " & $A_SYSTEM[$i][0])
 			ConsoleWrite("Download : " & $A_SYSTEM[$i][1] & @CRLF);Debug
+			FileDelete($SOURCE_DIRECTORY & "\Ressources\systeme.png")
 			InetGet($A_SYSTEM[$i][1], $SOURCE_DIRECTORY & "\Ressources\systeme.png", 0, 0)
 
 			_CREATION_LOGMESS(2, "Affichage de l'image du systeme")
@@ -956,32 +999,33 @@ EndFunc   ;==>_HEADER_CREATEFORMAT
 
 Func _XML_CREATEROM($Path_source, $Path_cible, $xpath_root_source, $xpath_root_cible, $A_XMLFormat, $A_ROMList, $No_ROM, $No_system, $INI_OPTION_MAJ)
 	Local $XML_Type, $TMP_LastRootChild, $Return = 1
-	$TimerRom = TimerInit()
+
+;~ 	Download du XML source
 	_CREATION_LOGMESS(1, "Recuperation des informations de la Rom no " & $No_ROM)
 	InetGet("http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=Universal_XML_Scraper&output=xml&crc=" & $A_ROMList[$No_ROM][2] & "&md5=" & $A_ROMList[$No_ROM][3] & "sha1=" & $A_ROMList[$No_ROM][4] & "&systemeid=" & $No_system & "&romtype=rom&romnom=" & $A_ROMList[$No_ROM][0] & "&romtaille=" & $A_ROMList[$No_ROM][5], $Path_source)
+
+;~ 	Traitement du XML
 	ConsoleWrite("+Debut de la ROM no : " & $No_ROM & @CRLF) ; Debug
 	For $B_XMLElements = 1 To UBound($A_XMLFormat) - 1
-		If GUIGetMsg() = $B_SCRAPE Then
-			FileDelete($Path_source)
-			Return -1
-		EndIf
-		GUICtrlSetImage($B_SCRAPE, $SOURCE_DIRECTORY & "\Ressources\Fleche_IP1.bmp", -1, 0)
+		If GUIGetMsg() = $B_SCRAPE Then Return -1 ; Retour en cas d'annulation
 		$XML_Type = StringLeft($A_XMLFormat[$B_XMLElements][3], 5)
 		If $XML_Type <> "" Then
 			$XML_Value = _XML_GETROMINFO($Path_source, $xpath_root_source, $XML_Type, $B_XMLElements, $A_XMLFormat, $A_ROMList, $No_ROM, $INI_OPTION_MAJ, $No_system)
 		Else
 			$XML_Value = -1
 		EndIf
-		ConsoleWrite("!" & $A_XMLFormat[$B_XMLElements][2] & " = " & $XML_Value & @CRLF);Debug
+		ConsoleWrite("!" & $A_XMLFormat[$B_XMLElements][0] & "->" & $A_XMLFormat[$B_XMLElements][2] & " = " & $XML_Value & @CRLF);Debug
+
+		If $XML_Value = -2 Then
+			If $EmptyRom = 0 Then Return 0
+			$Return = 0
+		EndIf
+
 		$XML_Type = StringLeft($A_XMLFormat[$B_XMLElements][1], 5)
-		ConsoleWrite("!" & $A_XMLFormat[$B_XMLElements][0] & " = " & $XML_Value & @CRLF);Debug
-		GUICtrlSetImage($B_SCRAPE, $SOURCE_DIRECTORY & "\Ressources\Fleche_IP2.bmp", -1, 0)
 		If $XML_Value <> -1 And $XML_Value <> -2 Then _XML_PUTROMINFO($Path_cible, $xpath_root_cible, $XML_Type, $B_XMLElements, $A_XMLFormat, 1, $XML_Value, $No_ROM)
-		If $XML_Value = -2 Then $Return = 0
+
 	Next
 	ConsoleWrite("+Fin du Node : " & $No_ROM & @CRLF) ; Debug
-	_CREATION_LOGMESS(1, "Fin de l'ecriture des informations de la Rom no " & $No_ROM & " en " & Round((TimerDiff($TimerRom) / 1000), 3) & "s")
-	FileDelete($Path_source)
 	Return $Return
 EndFunc   ;==>_XML_CREATEROM
 
@@ -1017,19 +1061,19 @@ Func _XML_CREATEHEADER($Path_source, $Path_cible, $xpath_root_source, $xpath_roo
 EndFunc   ;==>_XML_CREATEHEADER
 
 Func _XML_GETROMINFO($PathTmp, $xpath_root, $XML_Type, $B_XMLElements, $A_XMLFormat, $A_ROMList, $No_ROM, $INI_OPTION_MAJ, $No_system)
+	GUICtrlSetImage($B_SCRAPE, $SOURCE_DIRECTORY & "\Ressources\Fleche_IP1.bmp", -1, 0)
 	_CREATION_LOGMESS(2, "Recuperation de " & $XML_Type)
+
 	Switch $XML_Type
 		Case 'child'
 			$XML_Value = $A_XMLFormat[$B_XMLElements][0]
 			_CREATION_LOGMESS(2, $XML_Value)
+			_XMLFileOpen($PathTmp)
+			If @error And $EmptyRom = 0 Then Return -2
 			Return $XML_Value
 		Case 'value'
-			$ERROR_XMLFileOpen = _XMLFileOpen($PathTmp)
-			If @error Then
-				ConsoleWrite("!_XMLFileOpen (" & $ERROR_XMLFileOpen & ") : " & $PathTmp & " : " & _XMLError("") & @CRLF) ; Debug
-				FileDelete($PathTmp)
-				Return -2
-			EndIf
+			_XMLFileOpen($PathTmp)
+			If @error Then Return -2
 			Local $sNode_Values = _XMLGetValue($xpath_root & "/*[1]/" & $A_XMLFormat[$B_XMLElements][2])
 			If IsArray($sNode_Values) Then
 				If $INI_OPTION_MAJ = 1 Then
@@ -1047,11 +1091,7 @@ Func _XML_GETROMINFO($PathTmp, $xpath_root, $XML_Type, $B_XMLElements, $A_XMLFor
 			EndIf
 		Case 'attr:'
 			_XMLFileOpen($PathTmp)
-			If @error Then
-				ConsoleWrite("!_XMLFileOpen (attr:) : " & $PathTmp & " : " & _XMLError("") & @CRLF) ; Debug
-				FileDelete($PathTmp)
-				Return -2
-			EndIf
+			If @error Then Return -2
 			$XML_Value = _XMLGetAttrib($xpath_root & '/' & StringMid($A_XMLFormat[$B_XMLElements][3], 6) & "[1]", $A_XMLFormat[$B_XMLElements][2])
 			_CREATION_LOGMESS(2, StringMid($A_XMLFormat[$B_XMLElements][3], 6) & " : " & $XML_Value)
 			Return $XML_Value
@@ -1092,11 +1132,7 @@ Func _XML_GETROMINFO($PathTmp, $xpath_root, $XML_Type, $B_XMLElements, $A_XMLFor
 			Switch StringMid($A_XMLFormat[$B_XMLElements][3], 6, 5)
 				Case 'image'
 					_XMLFileOpen($PathTmp)
-					If @error Then
-						ConsoleWrite("!_XMLFileOpen (path:) : " & $PathTmp & " : " & _XMLError("") & @CRLF) ; Debug
-						FileDelete($PathTmp)
-						Return -2
-					EndIf
+					If @error Then Return -2
 					$sNode_Values = _XMLGetValue($xpath_root & "/*[1]/" & $A_XMLFormat[$B_XMLElements][2])
 					If IsArray($sNode_Values) Then
 						$XML_Value = $sNode_Values[1]
@@ -1113,6 +1149,7 @@ Func _XML_PUTROMINFO($PathTmp, $xpath_root_cible, $XML_Type, $B_XMLElements, $A_
 	Local $TMP_LastChildName = ""
 	Local $maxheight = ""
 	Local $maxwidth = ""
+	GUICtrlSetImage($B_SCRAPE, $SOURCE_DIRECTORY & "\Ressources\Fleche_IP2.bmp", -1, 0)
 	_CREATION_LOGMESS(2, "Ecriture de " & $XML_Type)
 
 	_XMLFileOpen($PathTmp)
@@ -1155,14 +1192,12 @@ Func _XML_PUTROMINFO($PathTmp, $xpath_root_cible, $XML_Type, $B_XMLElements, $A_
 					_CREATION_LOGMESS(2, "Download Images : " & $PathImage_Temp)
 					InetGet($XML_Value & $maxheight & $maxwidth, $PathImage_Temp, 0, 0)
 					_CREATION_LOGMESS(2, $A_XMLFormat[$B_XMLElements][0] & " : " & $PathImageSub_Temp)
-					_XMLCreateChildNode($xpath_root_cible & '/' & $TMP_LastChild & "[" & $No_ROM & "]", $A_XMLFormat[$B_XMLElements][0], $PathImageSub_Temp)
-					ConsoleWrite(">_XMLCreateChildNode : " & $A_XMLFormat[$B_XMLElements][0] & " = " & $PathImageSub_Temp & @CRLF) ; Debug
 				EndIf
+				_XMLCreateChildNode($xpath_root_cible & '/' & $TMP_LastChild & "[" & $No_ROM & "]", $A_XMLFormat[$B_XMLElements][0], $PathImageSub_Temp)
+				ConsoleWrite(">_XMLCreateChildNode : " & $A_XMLFormat[$B_XMLElements][0] & " = " & $PathImageSub_Temp & @CRLF) ; Debug
 			Else
 				ConsoleWrite("-ZAPPER : " & $XML_Value & @CRLF) ; Debug
 				_CREATION_LOGMESS(2, $A_XMLFormat[$B_XMLElements][0] & " : IGNORE")
 			EndIf
-
 	EndSwitch
-;~ 			ConsoleWrite($TMP_Text & @CRLF) ; Debug
 EndFunc   ;==>_XML_PUTROMINFO
