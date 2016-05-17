@@ -263,22 +263,38 @@ Func _FUSIONXML($V_Header, $A_ROMList)
 	$Nb_Roms = UBound($A_ROMList) - 1
 	$No_Roms = 1
 
-	If $V_Header = 1 Then ConsoleWrite("NE PAS OUBLIER D'AJOUTER LE HEADER" & @CRLF) ; Debug
-;~ 	FileDelete($PathNew)
-	$H_PathNew = FileOpen($PathNew, $FO_APPEND)
+	If $V_Header = 1 And $ScrapeMode = 0 Then ConsoleWrite("NE PAS OUBLIER D'AJOUTER LE HEADER" & @CRLF) ; Debug
+
+	If $ScrapeMode = 1 Then
+		$H_PathNew = FileOpen($PathNew)
+		$H_PathNewTEMP = FileOpen($PathNew & ".tmp", $FO_APPEND)
+		$NbLine = _FileCountLines($PathNew)
+		For $B_PathNewTmp = 1 To $NbLine - 1
+			$LineRead = FileReadLine($H_PathNew, $B_PathNewTmp)
+			FileWriteLine($H_PathNewTEMP, $LineRead)
+		Next
+		FileClose($H_PathNew)
+		FileClose($H_PathNewTEMP)
+		FileCopy($PathNew & ".tmp", $PathNew, 1)
+		FileDelete($PathNew & ".tmp")
+		$H_PathNew = FileOpen($PathNew, $FO_APPEND)
+	Else
+		FileDelete($PathNew)
+		$H_PathNew = FileOpen($PathNew, $FO_APPEND)
+	EndIf
 
 	While $A_ROMList[$No_Roms][6] <> ""
 		$H_PathNewTmp = FileOpen($PathDIRTmp & $No_Roms & ".xml")
 		ConsoleWrite("!Ouverture : " & $PathDIRTmp & $No_Roms & ".xml" & @CRLF) ; Debug
 		$NbLine = _FileCountLines($PathDIRTmp & $No_Roms & ".xml")
-		If $No_Roms = 1 Then
+		If $No_Roms = 1 And $ScrapeMode = 0 Then
 			$Start = 1
 		Else
 			$Start = 2
 		EndIf
 		For $B_PathNewTmp = $Start To $NbLine - 1
 			ConsoleWrite("+Ecriture : " & $PathDIRTmp & $No_Roms & ".xml" & @CRLF) ; Debug
-			FileSetPos($H_PathNew, -1, $FILE_END)
+;~ 			FileSetPos($H_PathNew, -1, $FILE_END)
 			$LineRead = FileReadLine($H_PathNewTmp, $B_PathNewTmp)
 			ConsoleWrite(">" & $LineRead & @CRLF) ; Debug
 			FileWriteLine($H_PathNew, $LineRead)
@@ -288,7 +304,7 @@ Func _FUSIONXML($V_Header, $A_ROMList)
 		If $No_Roms = $Nb_Roms + 1 Then
 			$LineRead = FileReadLine($H_PathNewTmp, $NbLine)
 			ConsoleWrite(">" & $LineRead & @CRLF) ; Debug
-			FileWriteLine($H_PathNew, $LineRead)
+			If $LineRead <> "<gameList/>" Then FileWriteLine($H_PathNew, $LineRead)
 			FileClose($H_PathNewTmp)
 			ConsoleWrite("!Fermeture : " & $PathDIRTmp & $No_Roms & ".xml" & @CRLF) ; Debug
 			ExitLoop
@@ -297,9 +313,13 @@ Func _FUSIONXML($V_Header, $A_ROMList)
 			ConsoleWrite("!Fermeture : " & $PathDIRTmp & $No_Roms & ".xml" & @CRLF) ; Debug
 		EndIf
 	WEnd
+	_ReplaceStringInFile($PathNew, @CRLF, @LF)
+	ConsoleWrite(">>>>>>>>>>>>>>>>>>>>" & FileReadLine($H_PathNew, -1) & @CRLF)
+	$NbLine = _FileCountLines($PathNew)
+	ConsoleWrite(">>>>>>>>>>>>>>>>>>>>" & FileReadLine($H_PathNew, $NbLine) & @CRLF)
+	If StringInStr(FileReadLine($H_PathNew, $NbLine), "gameList") = 0 Then FileWriteLine($H_PathNew, "</gameList>" & @LF)
 	_CREATION_LOGMESS(1, "Correction des fins de ligne")
 	FileClose($H_PathNew)
-	_ReplaceStringInFile($PathNew, @CRLF, @LF)
 EndFunc   ;==>_FUSIONXML
 
 Func _CREATION_LOG()
@@ -706,6 +726,7 @@ Func _SCRAPING($No_Profil, $A_Profil, $PathRom, $No_system, $INI_OPTION_MAJ, $V_
 ;~ 	Initialisation Variables
 	$Moy_Timer = 0
 	$Total_Timer = 0
+	Local $A_ROMXMLList
 
 ;~ 	Initialisation Profil
 	$A_Profil = _INI_CREATEARRAY_SCRAPER()
@@ -728,8 +749,15 @@ Func _SCRAPING($No_Profil, $A_Profil, $PathRom, $No_system, $INI_OPTION_MAJ, $V_
 ;~ 	Initialisation Repertoire Temporaire
 	DirCreate($PathDIRTmp)
 
+;~ 	Recherche de rom deja existante
+	If $ScrapeMode = 1 Then
+		$A_ROMXMLList = _ROMXML_CREATEARRAY($PathNew, $A_XMLFormat)
+;~ 		_ArrayDisplay($A_ROMXMLList, '$A_ROMXMLList') ; Debug
+;~ 		_ArrayDisplay($A_ROMList, '$A_ROMList') ; Debug
+	EndIf
+
 ;~ 	Creation du header
-	If $V_Header = 1 Then
+	If $V_Header = 1 And $ScrapeMode = 0 Then
 		_CREATION_LOGMESS(1, "Creation du Header")
 		$PathNewTemp = $PathDIRTmp & "0.xml"
 		$A_HEADERFormat = _HEADER_CREATEFORMAT($A_Profil[$No_Profil])
@@ -747,6 +775,12 @@ Func _SCRAPING($No_Profil, $A_Profil, $PathRom, $No_system, $INI_OPTION_MAJ, $V_
 ;~ 		Demarrage du Timer
 		$Timer = TimerInit()
 		$TimerHash = TimerInit()
+		$FOUND = 0
+
+		If _ArraySearch($A_ROMXMLList, $A_ROMList[$B_ROMList][0], 0, 0, 0, 0, 1, 2) <> -1 Then $FOUND = 1
+;~ 		MsgBox(0, "ArraySearch", _ArraySearch($A_ROMXMLList, $A_ROMList[$B_ROMList][0], 0, 0, 0, 0, 0, 1, 2)) ; Debug
+;~ 		_ArrayDisplay($A_ROMXMLList, $A_ROMList[$B_ROMList][0]) ; Debug
+
 ;~ 		Calcul des Hash et informations sur la ROM
 		_CREATION_LOGMESS(1, "---------------------------------------------------------------------------------------")
 		$A_ROMList[$B_ROMList][1] = $PathRom & $A_ROMList[$B_ROMList][0]
@@ -770,14 +804,19 @@ Func _SCRAPING($No_Profil, $A_Profil, $PathRom, $No_system, $INI_OPTION_MAJ, $V_
 		If @error Then ConsoleWrite("!_XML_CreateFile : " & _XMLError("") & @CRLF) ; Debug
 
 ;~ 		Recuperation et ecriture des informations de la Rom
-		$CreateROM = _XML_CREATEROM($PathTmp, $PathNewTemp, $xpath_root_source, $xpath_root_cible, $A_XMLFormat, $A_ROMList, $B_ROMList, $No_system, $INI_OPTION_MAJ)
-		If $CreateROM = 0 Then
-			_CREATION_LOGMESS(1, "(*)Rom non trouve : " & $A_ROMList[$B_ROMList][0])
-			$A_ROMList[$B_ROMList][7] = 0
-		Else
-			_CREATION_LOGMESS(1, "Rom trouve : " & $A_ROMList[$B_ROMList][0])
-			$A_ROMList[$B_ROMList][7] = 1
-		EndIf
+		If $FOUND = 0 Then $CreateROM = _XML_CREATEROM($PathTmp, $PathNewTemp, $xpath_root_source, $xpath_root_cible, $A_XMLFormat, $A_ROMList, $B_ROMList, $No_system, $INI_OPTION_MAJ)
+		Select
+			Case $FOUND = 1
+				_CREATION_LOGMESS(1, "(*)Rom deja existante : " & $A_ROMList[$B_ROMList][0] & "(Hash : " & $A_ROMList[$B_ROMList][2] & ")")
+				$A_ROMList[$B_ROMList][7] = 0
+				$CreateROM = 0
+			Case $CreateROM = 0 And $FOUND = 0
+				_CREATION_LOGMESS(1, "(*)Rom non trouve : " & $A_ROMList[$B_ROMList][0] & "(Hash : " & $A_ROMList[$B_ROMList][2] & ")")
+				$A_ROMList[$B_ROMList][7] = 0
+			Case $CreateROM <> 0 And $FOUND = 0
+				_CREATION_LOGMESS(1, "Rom trouve : " & $A_ROMList[$B_ROMList][0] & "(Hash : " & $A_ROMList[$B_ROMList][2] & ")")
+				$A_ROMList[$B_ROMList][7] = 1
+		EndSelect
 
 ;~ 		Calcul du temps restant
 		$A_ROMList[$B_ROMList][6] = Round((TimerDiff($Timer) / 1000), 3)
@@ -1201,3 +1240,58 @@ Func _XML_PUTROMINFO($PathTmp, $xpath_root_cible, $XML_Type, $B_XMLElements, $A_
 			EndIf
 	EndSwitch
 EndFunc   ;==>_XML_PUTROMINFO
+
+Func _ROMXML_CREATEARRAY($V_XMLPath, $A_XMLFormat)
+	Local $Nb_XMLElements = UBound($A_XMLFormat) - 1
+	Local $xpath_root, $xpath_child, $xpath_Unique
+
+	For $B_XMLElements = 0 To $Nb_XMLElements - 1
+		If $A_XMLFormat[$B_XMLElements][1] = "root" Then Local $xpath_root = "//" & $A_XMLFormat[$B_XMLElements][0]
+		If $A_XMLFormat[$B_XMLElements][1] = "child" Then Local $xpath_child = "/" & $A_XMLFormat[$B_XMLElements][0]
+		If $A_XMLFormat[$B_XMLElements][2] = "%RomPath%" Then Local $xpath_Unique = "/" & $A_XMLFormat[$B_XMLElements][0]
+	Next
+
+	ConsoleWrite("$xpath_root : " & $xpath_root & @CRLF) ; Debug
+	ConsoleWrite("$xpath_child : " & $xpath_root & $xpath_child & @CRLF) ; Debug
+	ConsoleWrite("$xpath_Unique : " & $xpath_root & $xpath_child & $xpath_Unique & @CRLF) ; Debug
+
+	_XMLFileOpen($V_XMLPath)
+	If @error Then
+		ConsoleWrite("!_XMLFileOpen : " & $V_XMLPath & " : " & _XMLError("") & @CRLF) ; Debug
+		Return -1
+	EndIf
+
+	Local $A_Nodes = _XMLGetChildNodes($xpath_root)
+	If @error Then
+		ConsoleWrite("!__XMLGetChildNodes : " & $V_XMLPath & " : " & _XMLError("") & @CRLF) ; Debug
+		Return -1
+	EndIf
+
+	Dim $A_ROMXMLList[UBound($A_Nodes)][4]
+
+	For $B_Nodes = 1 To UBound($A_Nodes) - 1
+		Local $sNode_Values = _XMLGetValue($xpath_root & "/*[" & $B_Nodes & "]" & $xpath_Unique)
+		If IsArray($sNode_Values) Then
+			$A_ROMXMLList[$B_Nodes][0] = $sNode_Values[1]
+			$sNode_Values_Temp = StringSplit($sNode_Values[1], '\')
+			If $sNode_Values_Temp[0] <= 1 Then
+				$sNode_Values_Temp = StringSplit($sNode_Values[1], '/')
+				For $B_sNode_Values_Temp = 1 To $sNode_Values_Temp[0] - 1
+					$A_ROMXMLList[$B_Nodes][1] = $A_ROMXMLList[$B_Nodes][1] & $sNode_Values_Temp[$B_sNode_Values_Temp] & '/'
+				Next
+			Else
+				For $B_sNode_Values_Temp = 1 To $sNode_Values_Temp[0] - 1
+					$A_ROMXMLList[$B_Nodes][1] = $A_ROMXMLList[$B_Nodes][1] & $sNode_Values_Temp[$B_sNode_Values_Temp] & '\'
+				Next
+			EndIf
+;~ 			_ArrayDisplay($sNode_Values_Temp, '$sNode_Values_Temp') ; Debug
+			$A_ROMXMLList[$B_Nodes][1] = StringTrimRight($A_ROMXMLList[$B_Nodes][0], StringLen($sNode_Values_Temp[$sNode_Values_Temp[0]]))
+			$A_ROMXMLList[$B_Nodes][2] = $sNode_Values_Temp[$sNode_Values_Temp[0]]
+			$A_ROMXMLList[$B_Nodes][3] = $B_Nodes - 1
+		EndIf
+	Next
+;~ 	_ArrayDelete($A_ROMXMLList, "0")
+;~ 	_ArraySort($A_ROMXMLList)
+;~ 	_ArrayDisplay($A_ROMXMLList, '$A_ROMXMLList') ; Debug
+	Return $A_ROMXMLList
+EndFunc   ;==>_ROMXML_CREATEARRAY

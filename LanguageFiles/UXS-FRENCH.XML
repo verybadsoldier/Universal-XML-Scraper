@@ -14,7 +14,7 @@
 </error>
 
 <gui>
-	<main_gui>Universale XML Scraper</main_gui>
+	<main_gui>Universal XML Scraper</main_gui>
 	<menu>
 		<mnu_file>Fichier</mnu_file>
 		<mnu_file_profil>Charger un profil</mnu_file_profil>
