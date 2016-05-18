@@ -1,6 +1,7 @@
 <progressbar>
 	<prSET_ROM_CREATEARRAY>Calcul des HASH</prSET_ROM_CREATEARRAY>
-	<prSET_XML_CREATEROM>Création du fichier XML</prSET_XML_CREATEROM>
+	<prSET_XML_CREATEROM>Création des fichiers XML</prSET_XML_CREATEROM>
+	<prSET_XML_FUSIONROM>Fusion des fichiers XML</prSET_XML_FUSIONROM>
 	<prSET_SYSTEM_CREATEARRAY>Récupération de la liste des systèmes</prSET_SYSTEM_CREATEARRAY>
 </progressbar>
 
@@ -27,8 +28,9 @@
 		<mnu_ssh_reboot>Redemarrer</mnu_ssh_reboot>
 		<mnu_ssh_halt>Eteindre</mnu_ssh_halt>
 		<mnu_mode>Scrape Mode</mnu_mode>
-		<mnu_mode_new>Nouveau Fichier</mnu_mode_new>
-		<mnu_mode_append>Ajout des manquants</mnu_mode_append>
+		<mnu_mode_new>Création d'un nouveau Fichier</mnu_mode_new>
+		<mnu_mode_append>Ajout des roms manquantes</mnu_mode_append>
+		<mnu_mode_empty>Ajout des roms nons trouvées</mnu_mode_empty>
 		<mnu_help>Aide</mnu_help>
 		<mnu_help_about>A propos</mnu_help_about>
 	</menu>
@@ -76,7 +78,9 @@
 	<win_Datas>
 		<win_Datas_Title>Compte rendu</win_Datas_Title>
 		<win_Datas_Text>Scrape Terminé</win_Datas_Text>
-		<win_Datas_Roms>Nombre de Roms : </win_Datas_Roms>
+		<win_Datas_RomsFound>Nombre de Roms trouvées : </win_Datas_RomsFound>
+		<win_Datas_RomsExist>Nombre de Roms déjà existantes : </win_Datas_RomsExist>
+		<win_Datas_RomsAdd>Nombre de Roms ajoutées : </win_Datas_RomsAdd>
 		<win_Datas_MoyTime>Temp moyen par Roms : </win_Datas_MoyTime>
 		<win_Datas_FullTime>Temp Total du Scrape : </win_Datas_FullTime>
 	</win_Datas>
