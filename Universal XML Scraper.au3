@@ -421,7 +421,7 @@ Func _GUI_Config()
 			Case $B_PathRomSub
 				GUICtrlSetData($I_PathRomSub, FileSelectFolder(_MultiLang_GetText("win_config_GroupScrap_PathRomSub"), GUICtrlRead($I_PathRomSub), $FSF_CREATEBUTTON, GUICtrlRead($I_PathRomSub), $F_CONFIG))
 			Case $B_PathImage
-				$PathImage = FileSelectFolder(_MultiLang_GetText("win_config_GroupImage_PathImage"), GUICtrlRead($I_PathImage), $FSF_CREATEBUTTON, GUICtrlRead($I_PathImage), $F_CONFIG)
+				$PathImage = FileSelectFolder(_MultiLang_GetText("win_config_GroupImage_PathImage"), GUICtrlRead($I_PathRom), $FSF_CREATEBUTTON, GUICtrlRead($I_PathRom), $F_CONFIG)
 				If StringRight($PathImage, 1) <> '\' Then $PathImage = $PathImage & '\'
 				GUICtrlSetData($I_PathImage, $PathImage)
 			Case $B_PathImageSub
