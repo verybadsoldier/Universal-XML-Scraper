@@ -11,6 +11,7 @@
 	<err_PathImage>Images path not valide</err_PathImage>
 	<err_PathNew>XML file path not valide</err_PathNew>
 	<err_PathNew_ext>XML file not valide</err_PathNew_ext>
+	<err_FillRomList>No Zip file found</err_FillRomList>
 	<err_No_Profil>No profil selected</err_No_Profil>
 </error>
 

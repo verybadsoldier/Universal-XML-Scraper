@@ -5,7 +5,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper XML Universel
-#AutoIt3Wrapper_Res_Fileversion=1.1.0.1
+#AutoIt3Wrapper_Res_Fileversion=1.1.0.2
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -259,10 +259,12 @@ While 1
 				$A_SYSTEM = _SYSTEM_CREATEARRAY_SCREENSCRAPER($PathTmp)
 				$No_system = _SYSTEM_SelectGUI($A_SYSTEM)
 				$A_ROMList = _SCRAPING($No_Profil, $A_Profil, $PathRom, $No_system, $INI_OPTION_MAJ, $V_Header, $A_SYSTEM)
-				_FUSIONXML($V_Header, $A_ROMList)
+				If IsArray($A_ROMList) Then
+					_FUSIONXML($V_Header, $A_ROMList)
+					_SCRAPING_BILAN(TimerDiff($FullTimer), $A_ROMList)
+				EndIf
 				FileDelete($PathDIRTmp)
 				FileDelete($PathTmp)
-				_SCRAPING_BILAN(TimerDiff($FullTimer), $A_ROMList)
 			EndIf
 			_GUI_REFRESH($INI_P_SOURCE, $INI_P_CIBLE, 0)
 	EndSwitch
@@ -321,7 +323,6 @@ Func _FUSIONXML($V_Header, $A_ROMList)
 			ConsoleWrite("!Ajout du fichier dans l'Array" & @CRLF) ; Debug
 			For $B_Fusion = 0 To UBound($A_XMLSourceTemp) - 1
 				_ArrayAdd($A_XMLCible, $A_XMLSourceTemp[$B_Fusion])
-				If @error Then MsgBox(1, "Erreur", "Ajout de ligne impossible (Error : " & @error & ")"); Debug
 			Next
 		EndIf
 		Local $PercentProgression = Round(($No_Roms * 100) / $Nb_Roms)
@@ -473,7 +474,6 @@ Func _GUI_REFRESH($INI_P_SOURCE, $INI_P_CIBLE, $ScrapIP = 0)
 			If (StringRight($PathRom, 1) <> '\') Then $PathRom &= '\'
 			_CREATION_LOGMESS(2, "Chemin des Roms : " & $PathRom)
 		Else
-;~ 			MsgBox($MB_ICONERROR, _MultiLang_GetText("err_title"), _MultiLang_GetText("err_PathRom"))
 			$ERROR_MESSAGE = _MultiLang_GetText("err_PathRom") & @CRLF
 			_CREATION_LOGMESS(2, _MultiLang_GetText("err_PathRom") & " : " & $PathRom)
 			$SCRAP_OK = $SCRAP_OK + 1
@@ -751,12 +751,12 @@ Func _ROM_CREATEARRAY($PathRom)
 
 	If @error = 1 Then
 		_CREATION_LOGMESS(1, "/!\ Chemin de recherche des roms invalide " & $PathRom)
-		MsgBox($MB_SYSTEMMODAL, "", $PathRom & " - Path was invalid.")
+		MsgBox($MB_ICONERROR, _MultiLang_GetText("err_title"), _MultiLang_GetText("err_PathRom"))
 		Return -1
 	EndIf
 	If @error = 4 Then
 		_CREATION_LOGMESS(1, "/!\ Aucune rom trouvee dans  " & $PathRom)
-		MsgBox($MB_SYSTEMMODAL, "", "No file(s) were found.")
+		MsgBox($MB_ICONERROR, _MultiLang_GetText("err_title"), _MultiLang_GetText("err_FillRomList"))
 		Return -1
 	EndIf
 
@@ -900,7 +900,11 @@ Func _SCRAPING_BILAN($FullTimer, $A_ROMList)
 ;~ 	_ArrayDisplay($A_ROMList, "$A_ROMList");Debug
 
 	_CREATION_LOGMESS(1, "Bilan" & @CRLF)
+
+	If Not _FileCreate($PathRom & "missing.txt") Then MsgBox(4096, "Error", " Erreur creation du Fichier missing      error:" & @error)
+
 	For $B_ROMList = 1 To $Nb_Roms
+		If $A_ROMList[$B_ROMList][7] = 0 Then FileWrite($PathRom & "missing.txt", $A_ROMList[$B_ROMList][0] & "|" & $A_ROMList[$B_ROMList][2] & @CRLF)
 		If $A_ROMList[$B_ROMList][7] = 1 Then $ROMFound = $ROMFound + 1
 		If $A_ROMList[$B_ROMList][7] = 2 Then $ROMMaj = $ROMMaj + 1
 		If $A_ROMList[$B_ROMList][7] < 0 Then
