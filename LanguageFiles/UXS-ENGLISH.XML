@@ -13,7 +13,12 @@
 	<err_PathNew_ext>XML file not valide</err_PathNew_ext>
 	<err_FillRomList>No Zip file found</err_FillRomList>
 	<err_No_Profil>No profil selected</err_No_Profil>
+	<err_autoconfPathRom>Rom path auto config not valide</err_autoconfPathRom>
 </error>
+
+<message>
+	<mess_autoconf>Setting auto configuration in progress</mess_autoconf>
+</message>
 
 <gui>
 	<main_gui>Universal XML Scraper</main_gui>
@@ -22,6 +27,7 @@
 		<mnu_file_profil>load profil</mnu_file_profil>
 		<mnu_file_exit>Exit</mnu_file_exit>
 		<mnu_edit>Edit</mnu_edit>
+		<mnu_edit_autoconf>Auto configuration</mnu_edit_autoconf>
 		<mnu_edit_langue>Change language</mnu_edit_langue>
 		<mnu_edit_config>Config</mnu_edit_config>
 		<mnu_ssh>SSH Command</mnu_ssh>
@@ -67,26 +73,23 @@
 			<win_config_Enreg>Save</win_config_Enreg>
 			<win_config_Cancel>Cancel</win_config_Cancel>
 		</win_config>
+		<win_About>
+			<win_About_Title>About</win_About_Title>
+			<win_About_By>Created by : Screech</win_About_By>
+			<win_About_Thanks>Thanks to :</win_About_Thanks>
+		</win_About>
+		<win_Datas>
+			<win_Datas_Title>Results</win_Datas_Title>
+			<win_Datas_Text>Scrape is done</win_Datas_Text>
+			<win_Datas_RomsFound>Number of Roms Found : </win_Datas_RomsFound>
+			<win_Datas_RomsExist>Number of Existing Roms : </win_Datas_RomsExist>
+			<win_Datas_RomsAdd>Number of Added Roms : </win_Datas_RomsAdd>
+			<win_Datas_MoyTime>Average time by Roms : </win_Datas_MoyTime>
+			<win_Datas_FullTime>Total time : </win_Datas_FullTime>
+		</win_Datas>
+		<win_Cancel>
+			<win_Cancel_Title>Scrape Canceled</win_Cancel_Title>
+			<win_Cancel_Text>Scrape Canceled</win_Cancel_Text>
+		</win_Cancel>
 	</windows>
 </gui>
-
-<windows>
-	<win_About>
-		<win_About_Title>About</win_About_Title>
-		<win_About_By>Created by : Screech</win_About_By>
-		<win_About_Thanks>Thanks to :</win_About_Thanks>
-	</win_About>
-	<win_Datas>
-		<win_Datas_Title>Results</win_Datas_Title>
-		<win_Datas_Text>Scrape is done</win_Datas_Text>
-		<win_Datas_RomsFound>Number of Roms Found : </win_Datas_RomsFound>
-		<win_Datas_RomsExist>Number of Existing Roms : </win_Datas_RomsExist>
-		<win_Datas_RomsAdd>Number of Added Roms : </win_Datas_RomsAdd>
-		<win_Datas_MoyTime>Average time by Roms : </win_Datas_MoyTime>
-		<win_Datas_FullTime>Total time : </win_Datas_FullTime>
-	</win_Datas>
-	<win_Cancel>
-		<win_Cancel_Title>Scrape Canceled</win_Cancel_Title>
-		<win_Cancel_Text>Scrape Canceled</win_Cancel_Text>
-	</win_Cancel>
-</windows>
