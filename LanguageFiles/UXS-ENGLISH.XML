@@ -38,6 +38,7 @@
 		<mnu_mode_new>New file</mnu_mode_new>
 		<mnu_mode_append>Append missing roms</mnu_mode_append>
 		<mnu_mode_empty>Add roms not found</mnu_mode_empty>
+		<mnu_mode_2Pass>Double Scrape (Experimental)</mnu_mode_2Pass>
 		<mnu_help>Help</mnu_help>
 		<mnu_help_about>About</mnu_help_about>
 	</menu>

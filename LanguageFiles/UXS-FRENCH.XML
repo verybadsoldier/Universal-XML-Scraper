@@ -38,6 +38,7 @@
 		<mnu_mode_new>Création d'un nouveau Fichier</mnu_mode_new>
 		<mnu_mode_append>Ajout des roms manquantes</mnu_mode_append>
 		<mnu_mode_empty>Ajout des roms nons trouvées</mnu_mode_empty>
+		<mnu_mode_2Pass>Scrape en 2 passes (Experimental)</mnu_mode_2Pass>
 		<mnu_help>Aide</mnu_help>
 		<mnu_help_about>A propos</mnu_help_about>
 	</menu>
