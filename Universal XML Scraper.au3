@@ -5,7 +5,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper XML Universel
-#AutoIt3Wrapper_Res_Fileversion=1.1.1.2
+#AutoIt3Wrapper_Res_Fileversion=1.1.1.3
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -127,12 +127,10 @@ Global $HauteurImage = IniRead($PathConfigINI, "LAST_USE", "$HauteurImage", "")
 Global $LargeurImage = IniRead($PathConfigINI, "LAST_USE", "$LargeurImage", "")
 Global $EmptyRom = IniRead($PathConfigINI, "LAST_USE", "$EmptyRom", 1)
 Global $ScrapeMode = IniRead($PathConfigINI, "LAST_USE", "$ScrapeMode", 0)
-Global $2Pass = IniRead($PathConfigINI, "LAST_USE", "$2Pass", 0)
 Global $TMP_LastChild = ''
 Global $DevId = BinaryToString(_Crypt_DecryptData("0x1552EDED2FA9B5", "1gdf1g1gf", $CALG_RC4))
 Global $DevPassword = BinaryToString(_Crypt_DecryptData("0x1552EDED2FA9B547FBD0D9A623D954AE7BEDC681", "1gdf1g1gf", $CALG_RC4))
 Global $ME_AutoConfigItem[1]
-Global $2PassIP = 0
 Local $SCRAP_OK = 0
 Local $Moy_Timer = 0
 Local $Total_Timer = 0
@@ -265,14 +263,6 @@ While 1
 			EndIf
 			IniWrite($PathConfigINI, "LAST_USE", "$EmptyRom", $EmptyRom)
 			_GUI_REFRESH($INI_P_SOURCE, $INI_P_CIBLE, 0)
-		Case $MM_2Pass
-			If $2Pass = 1 Then
-				$2Pass = 0
-			Else
-				$2Pass = 1
-			EndIf
-			IniWrite($PathConfigINI, "LAST_USE", "$2Pass", $2Pass)
-			_GUI_REFRESH($INI_P_SOURCE, $INI_P_CIBLE, 0)
 		Case $MH_Help
 			$sMsg = "UNIVERSAL XML SCRAPER - " & $Rev & @CRLF
 			$sMsg &= _MultiLang_GetText("win_About_By") & @CRLF & @CRLF
@@ -290,32 +280,11 @@ While 1
 					$V_Header = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$HEADER_1", "0")
 					$A_SYSTEM = _SYSTEM_CREATEARRAY_SCREENSCRAPER($PathTmp)
 					$No_system = _SYSTEM_SelectGUI($A_SYSTEM)
-
-					If $2Pass = 1 Then
-						$ScrapeMode_Old = $ScrapeMode
-						$EmptyRom_Old = $EmptyRom
-						$EmptyRom = 0
-					EndIf
-
 					$A_ROMList = _SCRAPING($No_Profil, $A_Profil, $PathRom, $No_system, $INI_OPTION_MAJ, $V_Header, $A_SYSTEM)
 					If IsArray($A_ROMList) Then
 						_FUSIONXML($V_Header, $A_ROMList)
 						_SCRAPING_BILAN(TimerDiff($FullTimer), $A_ROMList)
 					EndIf
-
-					If $2Pass = 1 Then
-						$2PassIP = 1
-						$ScrapeMode = 1
-						$EmptyRom = $EmptyRom_Old
-						$A_ROMList = _SCRAPING($No_Profil, $A_Profil, $PathRom, "", $INI_OPTION_MAJ, $V_Header, $A_SYSTEM)
-						If IsArray($A_ROMList) Then
-							_FUSIONXML($V_Header, $A_ROMList)
-							_SCRAPING_BILAN(TimerDiff($FullTimer), $A_ROMList)
-						EndIf
-						$ScrapeMode = $ScrapeMode_Old
-						$2PassIP = 0
-					EndIf
-
 					FileDelete($PathDIRTmp)
 					FileDelete($PathTmp)
 				EndIf
@@ -690,13 +659,6 @@ Func _GUI_REFRESH($INI_P_SOURCE, $INI_P_CIBLE, $ScrapIP = 0, $SCRAP_OK = 0)
 				GUICtrlSetState($MM_Empty, $GUI_CHECKED)
 		EndSelect
 
-		Select
-			Case $2Pass = 0
-				GUICtrlSetState($MM_2Pass, $GUI_UNCHECKED)
-			Case $2Pass = 1
-				GUICtrlSetState($MM_2Pass, $GUI_CHECKED)
-		EndSelect
-
 		GUICtrlSetState($MF, $GUI_ENABLE)
 		GUICtrlSetData($MF, _MultiLang_GetText("mnu_file"))
 		GUICtrlSetData($MF_Profil, _MultiLang_GetText("mnu_file_profil"))
@@ -945,7 +907,7 @@ Func _SCRAPING($No_Profil, $A_Profil, $PathRom, $No_system, $INI_OPTION_MAJ, $V_
 	Local $Nb_XMLElements = UBound($A_XMLFormat) - 1
 
 ;~ 	Initialisation ROMList
-	If $2PassIP = 0 Then Local $A_ROMList = _ROM_CREATEARRAY($PathRom)
+	Local $A_ROMList = _ROM_CREATEARRAY($PathRom)
 	If $A_ROMList = -1 Then Return -1
 	Local $Nb_Roms = UBound($A_ROMList) - 1
 
@@ -990,23 +952,21 @@ Func _SCRAPING($No_Profil, $A_Profil, $PathRom, $No_system, $INI_OPTION_MAJ, $V_
 
 		If $FOUND = 0 Then
 ;~ 		Calcul des Hash et informations sur la ROM
-			If $2PassIP = 0 Then
-				_CREATION_LOGMESS(1, "---------------------------------------------------------------------------------------")
-				$A_ROMList[$B_ROMList][1] = $PathRom & $A_ROMList[$B_ROMList][0]
-				_CREATION_LOGMESS(2, "Nom de la ROM : " & $A_ROMList[$B_ROMList][1])
-				$A_ROMList[$B_ROMList][2] = StringRight(_CRC32ForFile($A_ROMList[$B_ROMList][1]), 8)
-				_CREATION_LOGMESS(2, "CRC32 : " & $A_ROMList[$B_ROMList][2])
-				If IniRead($PathConfigINI, "GENERAL", "Quick", 0) = 0 Then
-					$A_ROMList[$B_ROMList][3] = _MD5ForFile($A_ROMList[$B_ROMList][1])
-					_CREATION_LOGMESS(2, "MD5 : " & $A_ROMList[$B_ROMList][3])
-					$A_ROMList[$B_ROMList][4] = _SHA1ForFile($A_ROMList[$B_ROMList][1])
-					_CREATION_LOGMESS(2, "SHA1 : " & $A_ROMList[$B_ROMList][4])
-					$A_ROMList[$B_ROMList][5] = FileGetSize($A_ROMList[$B_ROMList][1])
-					_CREATION_LOGMESS(2, "Taille de la ROM : " & $A_ROMList[$B_ROMList][5])
-				EndIf
-				_CREATION_LOGMESS(1, "Calcul des Hash en : " & Round((TimerDiff($TimerHash) / 1000), 2) & "s")
-				ConsoleWrite("Calcul des Hash en : " & Round((TimerDiff($TimerHash) / 1000), 2) & "s" & @CRLF)
+			_CREATION_LOGMESS(1, "---------------------------------------------------------------------------------------")
+			$A_ROMList[$B_ROMList][1] = $PathRom & $A_ROMList[$B_ROMList][0]
+			_CREATION_LOGMESS(2, "Nom de la ROM : " & $A_ROMList[$B_ROMList][1])
+			$A_ROMList[$B_ROMList][2] = StringRight(_CRC32ForFile($A_ROMList[$B_ROMList][1]), 8)
+			_CREATION_LOGMESS(2, "CRC32 : " & $A_ROMList[$B_ROMList][2])
+			If IniRead($PathConfigINI, "GENERAL", "Quick", 0) = 0 Then
+				$A_ROMList[$B_ROMList][3] = _MD5ForFile($A_ROMList[$B_ROMList][1])
+				_CREATION_LOGMESS(2, "MD5 : " & $A_ROMList[$B_ROMList][3])
+				$A_ROMList[$B_ROMList][4] = _SHA1ForFile($A_ROMList[$B_ROMList][1])
+				_CREATION_LOGMESS(2, "SHA1 : " & $A_ROMList[$B_ROMList][4])
+				$A_ROMList[$B_ROMList][5] = FileGetSize($A_ROMList[$B_ROMList][1])
+				_CREATION_LOGMESS(2, "Taille de la ROM : " & $A_ROMList[$B_ROMList][5])
 			EndIf
+			_CREATION_LOGMESS(1, "Calcul des Hash en : " & Round((TimerDiff($TimerHash) / 1000), 2) & "s")
+			ConsoleWrite("Calcul des Hash en : " & Round((TimerDiff($TimerHash) / 1000), 2) & "s" & @CRLF)
 
 ;~ 		Recuperation et ecriture des informations de la Rom
 			$CreateROM = _XML_CREATEROM($PathTmp, $xpath_root_source, $xpath_root_cible, $A_XMLFormat, $A_ROMList, $B_ROMList, $No_system, $INI_OPTION_MAJ)
@@ -1273,7 +1233,12 @@ Func _XML_CREATEROM($Path_source, $xpath_root_source, $xpath_root_cible, $A_XMLF
 ;~ 	Download du XML source
 	_CREATION_LOGMESS(1, "Recuperation des informations de la Rom no " & $No_ROM)
 	InetGet("http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=Universal_XML_Scraper&output=xml&crc=" & $A_ROMList[$No_ROM][2] & "&md5=" & $A_ROMList[$No_ROM][3] & "sha1=" & $A_ROMList[$No_ROM][4] & "&systemeid=" & $No_system & "&romtype=rom&romnom=" & $A_ROMList[$No_ROM][0] & "&romtaille=" & $A_ROMList[$No_ROM][5], $Path_source)
-	ConsoleWrite("+" & "http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=Universal_XML_Scraper&output=xml&crc=" & $A_ROMList[$No_ROM][2] & "&md5=" & $A_ROMList[$No_ROM][3] & "sha1=" & $A_ROMList[$No_ROM][4] & "&systemeid=" & $No_system & "&romtype=rom&romnom=" & $A_ROMList[$No_ROM][0] & "&romtaille=" & $A_ROMList[$No_ROM][5] & @CRLF);Debug
+;~ 	ConsoleWrite("+" & "http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=Universal_XML_Scraper&output=xml&crc=" & $A_ROMList[$No_ROM][2] & "&md5=" & $A_ROMList[$No_ROM][3] & "sha1=" & $A_ROMList[$No_ROM][4] & "&systemeid=" & $No_system & "&romtype=rom&romnom=" & $A_ROMList[$No_ROM][0] & "&romtaille=" & $A_ROMList[$No_ROM][5] & @CRLF);Debug
+	If StringInStr(FileReadLine($Path_source), "Erreur") Then
+		FileDelete($Path_source)
+		InetGet("http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=Universal_XML_Scraper&output=xml&crc=" & $A_ROMList[$No_ROM][2] & "&md5=" & $A_ROMList[$No_ROM][3] & "sha1=" & $A_ROMList[$No_ROM][4] & "&systemeid=" & "&romtype=rom&romnom=" & $A_ROMList[$No_ROM][0] & "&romtaille=" & $A_ROMList[$No_ROM][5], $Path_source)
+		_CREATION_LOGMESS(1, "--Recuperation des informations de la Rom no " & $No_ROM & " SANS ID SYSTEM")
+	EndIf
 
 ;~	Creation du fichier XML Temporaire de la Rom
 	$Path_cible = $PathDIRTmp & $No_ROM & ".xml"
