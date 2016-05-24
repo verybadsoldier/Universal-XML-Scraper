@@ -5,7 +5,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper XML Universel
-#AutoIt3Wrapper_Res_Fileversion=1.1.1.3
+#AutoIt3Wrapper_Res_Fileversion=1.1.1.4
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -172,7 +172,6 @@ Local $MM_New = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_mode_new"), $MM)
 Local $MM_Append = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_mode_append"), $MM)
 Local $MM_Separation = GUICtrlCreateMenuItem("", $MM)
 Local $MM_Empty = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_mode_empty"), $MM)
-Local $MM_2Pass = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_mode_2Pass"), $MM)
 Local $MH = GUICtrlCreateMenu(_MultiLang_GetText("mnu_help"))
 Local $MH_Help = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_help_about"), $MH)
 Local $P_SOURCE = GUICtrlCreatePic($SOURCE_DIRECTORY & "\Ressources\" & $INI_P_SOURCE, 0, 0, 150, 100)
@@ -443,7 +442,8 @@ Func _FUSIONXML($V_Header, $A_ROMList)
 	EndIf
 
 	ConsoleWrite(">Ecriture du fichier" & @CRLF) ; Debug
-	If IsArray($A_XMLCible) Then
+	If UBound($A_XMLCible) - 1 > 0 Then
+;~ 		_ArrayDisplay($A_XMLCible, "$A_XMLCible")
 		_FileWriteFromArray($PathNew, $A_XMLCible)
 		If @error Then MsgBox(1, "Erreur", "Ecriture du fichier impossible : " & $PathNew & "Error : " & @error & ")"); Debug
 		ConsoleWrite(">Remplacement des CRLF" & @CRLF) ; Debug
