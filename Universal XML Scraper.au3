@@ -5,7 +5,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper XML Universel
-#AutoIt3Wrapper_Res_Fileversion=1.1.1.4
+#AutoIt3Wrapper_Res_Fileversion=1.1.1.5
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -123,8 +123,8 @@ Global $PathImageSub = IniRead($PathConfigINI, "LAST_USE", "$PathImageSub", "")
 Global $No_Profil = IniRead($PathConfigINI, "LAST_USE", "$No_Profil", 1)
 Global $user_lang = IniRead($PathConfigINI, "LAST_USE", "$user_lang", "-1")
 Global $No_system = IniRead($PathConfigINI, "LAST_USE", "$No_system", "-1")
-Global $HauteurImage = IniRead($PathConfigINI, "LAST_USE", "$HauteurImage", "")
-Global $LargeurImage = IniRead($PathConfigINI, "LAST_USE", "$LargeurImage", "")
+Global $HauteurImage = IniRead($PathConfigINI, "LAST_USE", "$HauteurImage", 0)
+Global $LargeurImage = IniRead($PathConfigINI, "LAST_USE", "$LargeurImage", 0)
 Global $EmptyRom = IniRead($PathConfigINI, "LAST_USE", "$EmptyRom", 1)
 Global $ScrapeMode = IniRead($PathConfigINI, "LAST_USE", "$ScrapeMode", 0)
 Global $TMP_LastChild = ''
@@ -1424,14 +1424,16 @@ Func _XML_PUTROMINFO($PathTmp, $xpath_root_cible, $XML_Type, $B_XMLElements, $A_
 			If $XML_Value = "0" Then Return
 			Local $sNode_Values = _XMLGetValue($xpath_root_cible & '/' & $TMP_LastChild & "[" & $No_ROM & "]/" & $A_XMLFormat[$B_XMLElements][0])
 			If IsArray($sNode_Values) = 0 Then
-				Local $PathImage_Temp = $PathImage & StringTrimRight($A_ROMList[$No_ROMXML][0], 4) & "-" & $A_XMLFormat[$B_XMLElements][0] & "." & StringRight($XML_Value, 3)
-				Local $PathImageSub_Temp = $PathImageSub & StringTrimRight($A_ROMList[$No_ROMXML][0], 4) & "-" & $A_XMLFormat[$B_XMLElements][0] & "." & StringRight($XML_Value, 3)
+				Local $ExtImage = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$ExtImage", StringRight($XML_Value, 3))
+				Local $PathImage_Temp = $PathImage & StringTrimRight($A_ROMList[$No_ROMXML][0], 4) & "-" & $A_XMLFormat[$B_XMLElements][0] & "." & $ExtImage
+				Local $PathImageSub_Temp = $PathImageSub & StringTrimRight($A_ROMList[$No_ROMXML][0], 4) & "-" & $A_XMLFormat[$B_XMLElements][0] & "." & $ExtImage
 				If FileExists($PathImage_Temp) = 0 Then
-					If $HauteurImage <> 0 Then $maxheight = "&maxheight=" & $HauteurImage
-					If $LargeurImage <> 0 Then $maxwidth = "&maxwidth=" & $LargeurImage
+					Local $outputformat = "&outputformat=" & $ExtImage
+					If $HauteurImage > 0 Then $maxheight = "&maxheight=" & $HauteurImage
+					If $LargeurImage > 0 Then $maxwidth = "&maxwidth=" & $LargeurImage
 					ConsoleWrite("+ Download : " & $XML_Value & $maxheight & $maxwidth & " dans " & $PathImage_Temp & @CRLF) ; Debug
 					_CREATION_LOGMESS(2, "Download Images : " & $PathImage_Temp)
-					InetGet($XML_Value & $maxheight & $maxwidth, $PathImage_Temp, 0, 0)
+					InetGet($XML_Value & $maxheight & $maxwidth & $outputformat, $PathImage_Temp, 0, 0)
 					_CREATION_LOGMESS(2, $A_XMLFormat[$B_XMLElements][0] & " : " & $PathImageSub_Temp)
 				EndIf
 				_XMLCreateChildNode($xpath_root_cible & '/' & $TMP_LastChild & "[" & $No_ROM & "]", $A_XMLFormat[$B_XMLElements][0], $PathImageSub_Temp)
