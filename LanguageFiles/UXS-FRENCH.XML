@@ -27,7 +27,9 @@
 		<mnu_file_profil>Charger un profil</mnu_file_profil>
 		<mnu_file_exit>Quitter</mnu_file_exit>
 		<mnu_edit>Edition</mnu_edit>
-		<mnu_edit_autoconf>Configuration Automatique</mnu_edit_autoconf>
+		<mnu_edit_autoconfpath>Chemin de la configuration automatique</mnu_edit_autoconfpath>
+		<mnu_edit_autoconf>Configuration automatique</mnu_edit_autoconf>
+		<mnu_edit_fullscrape>Scraper tous les systèmes</mnu_edit_fullscrape>
 		<mnu_edit_langue>Changer de langue</mnu_edit_langue>
 		<mnu_edit_config>Configuration</mnu_edit_config>
 		<mnu_ssh>Commande SSH</mnu_ssh>
@@ -38,13 +40,13 @@
 		<mnu_mode_new>Création d'un nouveau Fichier</mnu_mode_new>
 		<mnu_mode_append>Ajout des roms manquantes</mnu_mode_append>
 		<mnu_mode_empty>Ajout des roms nons trouvées</mnu_mode_empty>
-		<mnu_mode_2Pass>Scrape en 2 passes (Experimental)</mnu_mode_2Pass>
 		<mnu_help>Aide</mnu_help>
 		<mnu_help_about>A propos</mnu_help_about>
 	</menu>
 	<windows>
 		<scrap_button>Scraper</scrap_button>
 		<scrap_cancel_button>Annuler</scrap_cancel_button>
+		<autoconfpath_button>Chemin des systèmes</autoconfpath_button>
 		<win_sel_langue>
 			<win_sel_langue_Title>Sélectionner une langue</win_sel_langue_Title>
 			<win_sel_langue_text>Merci de sélectionner une langue</win_sel_langue_text>
@@ -56,8 +58,8 @@
 			<win_sel_profil_button>Sélectionner</win_sel_profil_button>
 		</win_sel_profil>
 		<win_sel_system>
-			<win_sel_system_Title>Sélectionner un systéme</win_sel_system_Title>
-			<win_sel_system_text>Merci de sélectionner un systéme</win_sel_system_text>
+			<win_sel_system_Title>Sélectionner un système</win_sel_system_Title>
+			<win_sel_system_text>Merci de sélectionner un système</win_sel_system_text>
 			<win_sel_system_button>Sélectionner</win_sel_system_button>
 		</win_sel_system>
 		<win_config>

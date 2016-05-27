@@ -27,7 +27,9 @@
 		<mnu_file_profil>load profil</mnu_file_profil>
 		<mnu_file_exit>Exit</mnu_file_exit>
 		<mnu_edit>Edit</mnu_edit>
+		<mnu_edit_autoconfpath>Auto configuration path</mnu_edit_autoconfpath>
 		<mnu_edit_autoconf>Auto configuration</mnu_edit_autoconf>
+		<mnu_edit_fullscrape>Scrape all system</mnu_edit_fullscrape>
 		<mnu_edit_langue>Change language</mnu_edit_langue>
 		<mnu_edit_config>Config</mnu_edit_config>
 		<mnu_ssh>SSH Command</mnu_ssh>
@@ -38,13 +40,13 @@
 		<mnu_mode_new>New file</mnu_mode_new>
 		<mnu_mode_append>Append missing roms</mnu_mode_append>
 		<mnu_mode_empty>Add roms not found</mnu_mode_empty>
-		<mnu_mode_2Pass>Double Scrape (Experimental)</mnu_mode_2Pass>
 		<mnu_help>Help</mnu_help>
 		<mnu_help_about>About</mnu_help_about>
 	</menu>
 	<windows>
 		<scrap_button>Scrape</scrap_button>
 		<scrap_cancel_button>Cancel</scrap_cancel_button>
+		<autoconfpath_button>Path to all system</autoconfpath_button>
 		<win_sel_langue>
 			<win_sel_langue_Title>Select a language</win_sel_langue_Title>
 			<win_sel_langue_text>Please select a language</win_sel_langue_text>
