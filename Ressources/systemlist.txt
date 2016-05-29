@@ -6,9 +6,9 @@ atari7800|Atari 7800
 atari800|Atari 800
 atarist|Atari ST
 c64|Commodore 64
-cps1|Capcom Play System
-cps2|Capcom Play System 2
-cps3|Capcom Play System 3
+cps1|Mame
+cps2|Mame
+cps3|Mame
 amstradcpc|CPC
 daphne|Daphne
 dragon32|Dragon 32/64
@@ -35,7 +35,7 @@ segacd|Mega-CD
 genesis|Megadrive
 megadrive|Megadrive
 sega32x|Megadrive 32X
-neogeo|Neo-Geo MVS
+neogeo|Mame
 ngp|Neo-Geo Pocket
 ngpc|Neo-Geo Pocket Color
 nes|NES
