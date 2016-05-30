@@ -73,6 +73,18 @@
 			<win_config_GroupImage_hautImage>Hauteur</win_config_GroupImage_hautImage>
 			<win_config_GroupImage_LongImage>Largeur</win_config_GroupImage_LongImage>
 			<win_config_GroupImage_PathImageSub>Chemin des images dans le fichier XML</win_config_GroupImage_PathImageSub>
+			<win_config_GroupImage_Extension>Extension</win_config_GroupImage_Extension>
+			<win_config_GroupAutoconf>Conf. Auto.</win_config_GroupAutoconf>
+			<win_config_GroupAutoconf_PathRom>Chemin des systèmes</win_config_GroupAutoconf_PathRom>
+			<win_config_GroupAutoconf_PathXML>Nom du fichier XML</win_config_GroupAutoconf_PathXML>
+			<win_config_GroupAutoconf_PathRomSub>Chemin des roms dans le fichier XML</win_config_GroupAutoconf_PathRomSub>
+			<win_config_GroupAutoconf_PathImage>Répertoire des images à télécharger</win_config_GroupAutoconf_PathImage>
+			<win_config_GroupAutoconf_PathImageSub>Chemin des images dans le fichier XML</win_config_GroupAutoconf_PathImageSub>
+			<win_config_GroupAutoconf_Use>Conf. Auto.</win_config_GroupAutoconf_Use>
+			<win_config_mode_new>Nouveau Fichier</win_config_mode_new>
+			<win_config_mode_append>Ajout de rom</win_config_mode_append>
+			<win_config_mode_empty>Non trouvées</win_config_mode_empty>
+			<win_config_mode_MAJ>Majuscule</win_config_mode_MAJ>
 			<win_config_Enreg>Enregistrer</win_config_Enreg>
 			<win_config_Cancel>Annuler</win_config_Cancel>
 		</win_config>
@@ -95,4 +107,26 @@
 			<win_Cancel_Text>Scrape Annulé</win_Cancel_Text>
 		</win_Cancel>
 	</windows>	
+	<tips>
+		<tips_config>
+			<tips_config_GroupScrap_PathRom>Répertoire dans lequel se trouve les roms a scrapper</tips_config_GroupScrap_PathRom>
+			<tips_config_GroupScrap_PathXML>Répertoire et nom du fichier XML généré par le scraper</tips_config_GroupScrap_PathXML>
+			<tips_config_GroupScrap_PathRomSub>Indication dans le fichier XML du chemin ou les roms seront trouvées en local</tips_config_GroupScrap_PathRomSub>
+			<tips_config_GroupImage_PathImage>Répertoire dans lequel les images seront téléchargées</tips_config_GroupImage_PathImage>
+			<tips_config_GroupImage_hautImage>Hauteur maximum des images téléchargées(Redimensionne)</tips_config_GroupImage_hautImage>
+			<tips_config_GroupImage_LongImage>Largeur maximum des images téléchargées(Redimensionne)</tips_config_GroupImage_LongImage>
+			<tips_config_GroupImage_PathImageSub>Indication dans le fichier XML du chemin ou les images seront trouvées en local</tips_config_GroupImage_PathImageSub>
+			<tips_config_GroupImage_Extension>Extension des images (defaut = identique au site de scrape)</tips_config_GroupImage_Extension>
+			<tips_config_GroupAutoconf_PathRom>Répertoire dans lequel se trouve les differents systèmes à scraper</tips_config_GroupAutoconf_PathRom>
+			<tips_config_GroupAutoconf_PathXML>Nom du fichier XML généré par le scraper</tips_config_GroupAutoconf_PathXML>
+			<tips_config_GroupAutoconf_PathRomSub>Indication dans le fichier XML du chemin ou les roms seront trouvées en local</tips_config_GroupAutoconf_PathRomSub>
+			<tips_config_GroupAutoconf_PathImage>Nom du répertoire ou seront téléchargé les images</tips_config_GroupAutoconf_PathImage>
+			<tips_config_GroupAutoconf_PathImageSub>Indication dans le fichier XML du chemin ou les images seront trouvées en local</tips_config_GroupAutoconf_PathImageSub>
+			<tips_config_GroupAutoconf_Use>Activation du menu de Configuration Automatique</tips_config_GroupAutoconf_Use>
+			<tips_config_mode_new>Le scraper créera un nouveau fichier XML (écrase l'existant)</tips_config_mode_new>
+			<tips_config_mode_append>Le scraper ajoutera les roms manquantes aux fichiers XML existants</tips_config_mode_append>
+			<tips_config_mode_empty>Ajout d'entrées vide concernant les Roms non trouvées</tips_config_mode_empty>
+			<tips_config_mode_MAJ>Conversion en majuscule des valeurs scrapées</tips_config_mode_MAJ>
+		</tips_config>
+	<tips>
 </gui>

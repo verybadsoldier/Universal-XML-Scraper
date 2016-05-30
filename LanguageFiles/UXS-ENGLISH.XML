@@ -69,10 +69,22 @@
 			<win_config_GroupScrap_PathXML>XML file path</win_config_GroupScrap_PathXML>
 			<win_config_GroupScrap_PathRomSub>Roms path in XML file</win_config_GroupScrap_PathRomSub>
 			<win_config_GroupImage>Pictures</win_config_GroupImage>
-			<win_config_GroupImage_PathImage>Download Pictures path</win_config_GroupImage_PathImage>
+			<win_config_GroupImage_PathImage>Download pictures path</win_config_GroupImage_PathImage>
 			<win_config_GroupImage_hautImage>Height</win_config_GroupImage_hautImage>
 			<win_config_GroupImage_LongImage>Width</win_config_GroupImage_LongImage>
 			<win_config_GroupImage_PathImageSub>Pictures path in XML file</win_config_GroupImage_PathImageSub>
+			<win_config_GroupImage_Extension>Extension</win_config_GroupImage_Extension>
+			<win_config_GroupAutoconf>Auto. Conf.</win_config_GroupAutoconf>
+			<win_config_GroupAutoconf_PathRom>Systems path</win_config_GroupAutoconf_PathRom>
+			<win_config_GroupAutoconf_PathXML>XML file name</win_config_GroupAutoconf_PathXML>
+			<win_config_GroupAutoconf_PathRomSub>Roms path in XML file</win_config_GroupAutoconf_PathRomSub>
+			<win_config_GroupAutoconf_PathImage>Download pictures directory</win_config_GroupAutoconf_PathImage>
+			<win_config_GroupAutoconf_PathImageSub>Pictures path in XML file</win_config_GroupAutoconf_PathImageSub>
+			<win_config_GroupAutoconf_Use>Auto. Conf.</win_config_GroupAutoconf_Use>
+			<win_config_mode_new>New XML file</win_config_mode_new>
+			<win_config_mode_append>Append XML file</win_config_mode_append>
+			<win_config_mode_empty>Add empty roms</win_config_mode_empty>
+			<win_config_mode_MAJ>Uppercase</win_config_mode_MAJ>
 			<win_config_Enreg>Save</win_config_Enreg>
 			<win_config_Cancel>Cancel</win_config_Cancel>
 		</win_config>
@@ -95,4 +107,26 @@
 			<win_Cancel_Text>Scrape Canceled</win_Cancel_Text>
 		</win_Cancel>
 	</windows>
+	<tips>
+		<tips_config>
+			<tips_config_GroupScrap_PathRom>Path where roms are</tips_config_GroupScrap_PathRom>
+			<tips_config_GroupScrap_PathXML>Full XML File Path</tips_config_GroupScrap_PathXML>
+			<tips_config_GroupScrap_PathRomSub>Local path (in XML File) where roms are</tips_config_GroupScrap_PathRomSub>
+			<tips_config_GroupImage_PathImage>Path where pictures were downloaded</tips_config_GroupImage_PathImage>
+			<tips_config_GroupImage_hautImage>Downloaded pictures maximum Height (Scaling)</tips_config_GroupImage_hautImage>
+			<tips_config_GroupImage_LongImage>Downloaded pictures maximum width (Scaling)</tips_config_GroupImage_LongImage>
+			<tips_config_GroupImage_PathImageSub>Local path (in XML File) where pictures are</tips_config_GroupImage_PathImageSub>
+			<tips_config_GroupImage_Extension>Downloaded pictures extension(defaut = Same as the website)</tips_config_GroupImage_Extension>
+			<tips_config_GroupAutoconf_PathRom>Directory where systems are</tips_config_GroupAutoconf_PathRom>
+			<tips_config_GroupAutoconf_PathXML>Generated XML file name </tips_config_GroupAutoconf_PathXML>
+			<tips_config_GroupAutoconf_PathRomSub>Local path (in XML File) where roms are</tips_config_GroupAutoconf_PathRomSub>
+			<tips_config_GroupAutoconf_PathImage>Directory where pictures were downloaded</tips_config_GroupAutoconf_PathImage>
+			<tips_config_GroupAutoconf_PathImageSub>Local path (in XML File) where roms are</tips_config_GroupAutoconf_PathImageSub>
+			<tips_config_GroupAutoconf_Use>Auto configuration activation</tips_config_GroupAutoconf_Use>
+			<tips_config_mode_new>New XML file were created (overwrite if exist)</tips_config_mode_new>
+			<tips_config_mode_append>Append existinf XML file</tips_config_mode_append>
+			<tips_config_mode_empty>Add empty entry in XML file when no info were found</tips_config_mode_empty>
+			<tips_config_mode_MAJ>Convert in upper letter value scraped</tips_config_mode_MAJ>
+		</tips_config>
+	<tips>
 </gui>

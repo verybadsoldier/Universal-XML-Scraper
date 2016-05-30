@@ -60,6 +60,7 @@ EndIf
 Global $PathConfigINI = $SOURCE_DIRECTORY & "\UXS-config.ini"
 Global $path_LOG = IniRead($PathConfigINI, "GENERAL", "Path_LOG", $SOURCE_DIRECTORY & "\log.txt")
 Global $Verbose = IniRead($PathConfigINI, "GENERAL", "$Verbose", 0)
+Global $Softname
 ConsoleWrite($Verbose & @CRLF)
 _CREATION_LOG()
 
@@ -67,17 +68,19 @@ Global $Rev
 If @Compiled Then
 	$Rev = FileGetVersion(@ScriptFullPath)
 	Local $verINI = IniRead($PathConfigINI, "GENERAL", "$verINI", '0.0.0.0')
+	$Softname = "UniversalXMLScraperV" & $Rev
 	If $verINI <> $Rev Then
 		FileDelete($SOURCE_DIRECTORY & "\UXS-config.ini")
 		FileDelete($SOURCE_DIRECTORY & "\LanguageFiles")
 		FileDelete($SOURCE_DIRECTORY & "\Ressources")
 		ConsoleWrite("Ini Deleted" & @CRLF) ;Debug
-		_CREATION_LOGMESS(1, "Mise aÂ  jour de " & $verINI & " vers " & $Rev)
+		_CREATION_LOGMESS(1, "Mise a  jour de " & $verINI & " vers " & $Rev)
 	Else
 		_CREATION_LOGMESS(1, "Version : " & $Rev)
 	EndIf
 Else
 	$Rev = 'In Progress'
+	$Softname = "UniversalXMLScraper(TestDev)"
 	_CREATION_LOGMESS(1, "Version : " & $Rev)
 EndIf
 
@@ -125,8 +128,9 @@ Global $user_lang = IniRead($PathConfigINI, "LAST_USE", "$user_lang", "-1")
 Global $No_system = IniRead($PathConfigINI, "LAST_USE", "$No_system", "-1")
 Global $HauteurImage = IniRead($PathConfigINI, "LAST_USE", "$HauteurImage", 0)
 Global $LargeurImage = IniRead($PathConfigINI, "LAST_USE", "$LargeurImage", 0)
-Global $EmptyRom = IniRead($PathConfigINI, "LAST_USE", "$EmptyRom", 1)
+Global $EmptyRom = IniRead($PathConfigINI, "LAST_USE", "$EmptyRom", 0)
 Global $ScrapeMode = IniRead($PathConfigINI, "LAST_USE", "$ScrapeMode", 0)
+Global $Autoconf_Use = IniRead($PathConfigINI, "LAST_USE", "$Autoconf_Use", 1)
 Global $TMP_LastChild = ''
 Global $DevId = BinaryToString(_Crypt_DecryptData("0x1552EDED2FA9B5", "1gdf1g1gf", $CALG_RC4))
 Global $DevPassword = BinaryToString(_Crypt_DecryptData("0x1552EDED2FA9B547FBD0D9A623D954AE7BEDC681", "1gdf1g1gf", $CALG_RC4))
@@ -195,7 +199,7 @@ Local $A_Profil = _INI_CREATEARRAY_SCRAPER()
 If IsArray($A_Profil) Then _CREATION_LOGMESS(2, "Creation de la table A_Profil OK")
 Local $INI_P_SOURCE = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$IMAGE_SOURCE", "empty.jpg")
 Local $INI_P_CIBLE = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$IMAGE_CIBLE", "empty.jpg")
-Local $INI_OPTION_MAJ = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$OPTION_MAJ", 0)
+Global $INI_OPTION_MAJ = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$OPTION_MAJ", 0)
 Local $PATHAUTOCONF_PathRom = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$PATHAUTOCONF_PathRom", "")
 Local $PATHAUTOCONF_PathRomSub = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$PATHAUTOCONF_PathRomSub", "")
 Local $PATHAUTOCONF_PathNew = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$PATHAUTOCONF_PathNew", "")
@@ -233,7 +237,7 @@ While 1
 			_CREATION_LOGMESS(1, "Langue Selectionnee : " & $user_lang)
 			_GUI_REFRESH($INI_P_SOURCE, $INI_P_CIBLE)
 		Case $ME_Config
-			_GUI_Config()
+			_GUI_Config($A_Profil, $No_Profil)
 			_GUI_REFRESH($INI_P_SOURCE, $INI_P_CIBLE)
 		Case $MP_KILLALL
 			If MsgBox($MB_OKCANCEL, "KillAll Emulationstation", "Etes vous sur de vouloir arreter EmulationStation ?") = $IDOK Then
@@ -543,37 +547,119 @@ Func _CREATION_LOGMESS($NivVerbose, $Mess)
 	EndIf
 EndFunc   ;==>_CREATION_LOGMESS
 
-Func _GUI_Config()
+Func _GUI_Config($A_Profil, $No_Profil)
 	#Region ### START Koda GUI section ### Form=
-	Local $F_CONFIG = GUICreate(_MultiLang_GetText("win_config_Title"), 242, 346, -1, -1, -1, BitOR($WS_EX_TOPMOST, $WS_EX_WINDOWEDGE))
-	Local $B_CONFENREG = GUICtrlCreateButton(_MultiLang_GetText("win_config_Enreg"), 8, 312, 107, 25)
-	Local $B_CONFANNUL = GUICtrlCreateButton(_MultiLang_GetText("win_config_Cancel"), 120, 312, 115, 25)
-	Local $G_Scrape = GUICtrlCreateGroup(_MultiLang_GetText("win_config_GroupScrap"), 8, 0, 225, 153)
-	Local $L_PathRom = GUICtrlCreateLabel(_MultiLang_GetText("win_config_GroupScrap_PathRom"), 16, 16, 208, 17)
-	Local $I_PathRom = GUICtrlCreateInput(IniRead($PathConfigINI, "LAST_USE", "$PathRom", $PathRom), 16, 34, 177, 21)
-	Local $B_PathRom = GUICtrlCreateButton("...", 198, 34, 27, 21)
-	Local $L_PathXML = GUICtrlCreateLabel(_MultiLang_GetText("win_config_GroupScrap_PathXML"), 16, 56, 110, 15)
-	Local $I_PathXML = GUICtrlCreateInput(IniRead($PathConfigINI, "LAST_USE", "$PathNew", $PathNew), 16, 74, 177, 21)
-	Local $B_PathXML = GUICtrlCreateButton("...", 198, 74, 27, 21)
-	Local $L_PathRomSub = GUICtrlCreateLabel(_MultiLang_GetText("win_config_GroupScrap_PathRomSub"), 16, 104, 208, 17)
-	Local $I_PathRomSub = GUICtrlCreateInput(IniRead($PathConfigINI, "LAST_USE", "$PathRomSub", $PathRomSub), 16, 122, 177, 21)
-	Local $B_PathRomSub = GUICtrlCreateButton("...", 198, 122, 27, 21)
+	$F_CONFIG = GUICreate(_MultiLang_GetText("win_config_Title"), 474, 347, -1, -1, -1, BitOR($WS_EX_TOPMOST, $WS_EX_WINDOWEDGE))
+	$B_CONFENREG = GUICtrlCreateButton(_MultiLang_GetText("win_config_Enreg"), 240, 320, 107, 25)
+	$B_CONFANNUL = GUICtrlCreateButton(_MultiLang_GetText("win_config_Cancel"), 360, 320, 107, 25)
+	$G_Scrape = GUICtrlCreateGroup(_MultiLang_GetText("win_config_GroupScrap"), 8, 0, 225, 153)
+	$L_PathRom = GUICtrlCreateLabel(_MultiLang_GetText("win_config_GroupScrap_PathRom"), 16, 16, 208, 17)
+	GUICtrlSetTip(-1, _MultiLang_GetText("tips_config_GroupScrap_PathRom"))
+	$I_PathRom = GUICtrlCreateInput(IniRead($PathConfigINI, "LAST_USE", "$PathRom", $PathRom), 16, 34, 177, 21)
+	$B_PathRom = GUICtrlCreateButton("...", 198, 34, 27, 21)
+	$L_PathXML = GUICtrlCreateLabel(_MultiLang_GetText("win_config_GroupScrap_PathXML"), 16, 56, 110, 15)
+	GUICtrlSetTip(-1, _MultiLang_GetText("tips_config_GroupScrap_PathXML"))
+	$I_PathXML = GUICtrlCreateInput(IniRead($PathConfigINI, "LAST_USE", "$PathNew", $PathNew), 16, 74, 177, 21)
+	$B_PathXML = GUICtrlCreateButton("...", 198, 74, 27, 21)
+	$L_PathRomSub = GUICtrlCreateLabel(_MultiLang_GetText("win_config_GroupScrap_PathRomSub"), 16, 104, 208, 17)
+	GUICtrlSetTip(-1, _MultiLang_GetText("tips_config_GroupScrap_PathRomSub"))
+	$I_PathRomSub = GUICtrlCreateInput(IniRead($PathConfigINI, "LAST_USE", "$PathRomSub", $PathRomSub), 16, 122, 177, 21)
+	$B_PathRomSub = GUICtrlCreateButton("...", 198, 122, 27, 21)
 	GUICtrlCreateGroup("", -99, -99, 1, 1)
-	Local $G_Image = GUICtrlCreateGroup(_MultiLang_GetText("win_config_GroupImage"), 8, 160, 225, 145)
-	Local $L_PathImage = GUICtrlCreateLabel(_MultiLang_GetText("win_config_GroupImage_PathImage"), 16, 176, 177, 21)
-	Local $I_PathImage = GUICtrlCreateInput(IniRead($PathConfigINI, "LAST_USE", "$PathImage", $PathImage), 16, 194, 177, 21)
-	Local $B_PathImage = GUICtrlCreateButton("...", 198, 194, 27, 21)
-	Local $L_LargeurImage = GUICtrlCreateLabel(_MultiLang_GetText("win_config_GroupImage_LongImage"), 24, 226, 40, 17)
-	Local $I_LargeurImage = GUICtrlCreateInput(IniRead($PathConfigINI, "LAST_USE", "$LargeurImage", $LargeurImage), 72, 224, 41, 21)
-	Local $L_ImageHauteur = GUICtrlCreateLabel(_MultiLang_GetText("win_config_GroupImage_hautImage"), 120, 226, 49, 17)
-	Local $I_ImageHauteur = GUICtrlCreateInput(IniRead($PathConfigINI, "LAST_USE", "$HauteurImage", $HauteurImage), 168, 224, 41, 21)
-	Local $L_PathImageSub = GUICtrlCreateLabel(_MultiLang_GetText("win_config_GroupImage_PathImageSub"), 16, 256, 208, 17)
-	Local $I_PathImageSub = GUICtrlCreateInput(IniRead($PathConfigINI, "LAST_USE", "$PathImageSub", $PathImageSub), 16, 274, 177, 21)
-	Local $B_PathImageSub = GUICtrlCreateButton("...", 198, 274, 27, 21)
+	$G_Image = GUICtrlCreateGroup(_MultiLang_GetText("win_config_GroupImage"), 8, 160, 225, 177)
+	$L_PathImage = GUICtrlCreateLabel(_MultiLang_GetText("win_config_GroupImage_PathImage"), 16, 176, 177, 21)
+	GUICtrlSetTip(-1, _MultiLang_GetText("tips_config_GroupImage_PathImage"))
+	$I_PathImage = GUICtrlCreateInput(IniRead($PathConfigINI, "LAST_USE", "$PathImage", $PathImage), 16, 194, 177, 21)
+	$B_PathImage = GUICtrlCreateButton("...", 198, 194, 27, 21)
+	$L_LargeurImage = GUICtrlCreateLabel(_MultiLang_GetText("win_config_GroupImage_LongImage"), 16, 274, 40, 17)
+	GUICtrlSetTip(-1, _MultiLang_GetText("tips_config_GroupImage_LongImage"))
+	$I_LargeurImage = GUICtrlCreateInput(IniRead($PathConfigINI, "LAST_USE", "$LargeurImage", $LargeurImage), 64, 272, 41, 21)
+	$L_ImageHauteur = GUICtrlCreateLabel(_MultiLang_GetText("win_config_GroupImage_hautImage"), 128, 274, 49, 17)
+	GUICtrlSetTip(-1, _MultiLang_GetText("tips_config_GroupImage_hautImage"))
+	$I_ImageHauteur = GUICtrlCreateInput(IniRead($PathConfigINI, "LAST_USE", "$HauteurImage", $HauteurImage), 184, 272, 41, 21)
+	$L_PathImageSub = GUICtrlCreateLabel(_MultiLang_GetText("win_config_GroupImage_PathImageSub"), 16, 224, 208, 17)
+	GUICtrlSetTip(-1, _MultiLang_GetText("tips_config_GroupImage_PathImageSub"))
+	$I_PathImageSub = GUICtrlCreateInput(IniRead($PathConfigINI, "LAST_USE", "$PathImageSub", $PathImageSub), 16, 242, 177, 21)
+	$B_PathImageSub = GUICtrlCreateButton("...", 198, 242, 27, 21)
+	$L_Ext = GUICtrlCreateLabel(_MultiLang_GetText("win_config_GroupImage_Extension"), 88, 306, 49, 17)
+	GUICtrlSetTip(-1, _MultiLang_GetText("tips_config_GroupImage_Extension"))
+	$C_Ext = GUICtrlCreateCombo("", 144, 304, 81, 25, BitOR($CBS_DROPDOWN, $CBS_AUTOHSCROLL))
+	GUICtrlSetData($C_Ext, "defaut|jpg|png")
 	GUICtrlCreateGroup("", -99, -99, 1, 1)
+	$G_Autoconf = GUICtrlCreateGroup(_MultiLang_GetText("win_config_GroupAutoconf") & " - " & $A_Profil[$No_Profil], 240, 0, 225, 273)
+	$L_Autoconf_PathRom = GUICtrlCreateLabel(_MultiLang_GetText("win_config_GroupAutoconf_PathRom"), 248, 16, 208, 17)
+	GUICtrlSetTip(-1, _MultiLang_GetText("tips_config_GroupAutoconf_PathRom"))
+	$I_Autoconf_PathRom = GUICtrlCreateInput(IniRead($PathConfigINI, $A_Profil[$No_Profil], "$PATHAUTOCONF_PathRom", $PATHAUTOCONF_PathRom), 248, 34, 177, 21)
+	$B_Autoconf_PathRom = GUICtrlCreateButton("...", 430, 34, 27, 21)
+	$L_Autoconf_PathXML = GUICtrlCreateLabel(_MultiLang_GetText("win_config_GroupAutoconf_PathXML"), 248, 56, 110, 15)
+	GUICtrlSetTip(-1, _MultiLang_GetText("tips_config_GroupAutoconf_PathXML"))
+	$I_Autoconf_PathXML = GUICtrlCreateInput(IniRead($PathConfigINI, $A_Profil[$No_Profil], "$PATHAUTOCONF_PathNew", $PATHAUTOCONF_PathNew), 248, 74, 177, 21)
+	$B_Autoconf_PathXML = GUICtrlCreateButton("...", 430, 74, 27, 21)
+	$L_Autoconf_PathRomSub = GUICtrlCreateLabel(_MultiLang_GetText("win_config_GroupAutoconf_PathRomSub"), 248, 104, 208, 17)
+	GUICtrlSetTip(-1, _MultiLang_GetText("tips_config_GroupAutoconf_PathRomSub"))
+	$I_Autoconf_PathRomSub = GUICtrlCreateInput(IniRead($PathConfigINI, $A_Profil[$No_Profil], "$PATHAUTOCONF_PathRomSub", $PATHAUTOCONF_PathRomSub), 248, 122, 177, 21)
+	$B_Autoconf_PathRomSub = GUICtrlCreateButton("...", 430, 122, 27, 21)
+	$L_Autoconf_PathImage = GUICtrlCreateLabel(_MultiLang_GetText("win_config_GroupAutoconf_PathImage"), 248, 152, 177, 21)
+	GUICtrlSetTip(-1, _MultiLang_GetText("tips_config_GroupAutoconf_PathImage"))
+	$I_Autoconf_PathImage = GUICtrlCreateInput(IniRead($PathConfigINI, $A_Profil[$No_Profil], "$PATHAUTOCONF_PathImage", $PATHAUTOCONF_PathImage), 248, 170, 177, 21)
+	$B_Autoconf_PathImage = GUICtrlCreateButton("...", 430, 170, 27, 21)
+	$L_Autoconf_PathImageSub = GUICtrlCreateLabel(_MultiLang_GetText("win_config_GroupAutoconf_PathImageSub"), 248, 200, 208, 17)
+	GUICtrlSetTip(-1, _MultiLang_GetText("tips_config_GroupAutoconf_PathImageSub"))
+	$I_Autoconf_PathImageSub = GUICtrlCreateInput(IniRead($PathConfigINI, $A_Profil[$No_Profil], "$PATHAUTOCONF_PathImageSub", $PATHAUTOCONF_PathImageSub), 248, 218, 177, 21)
+	$B_Autoconf_PathImageSub = GUICtrlCreateButton("...", 430, 218, 27, 21)
+	$CB_Autoconf_Use = GUICtrlCreateCheckbox(_MultiLang_GetText("win_config_GroupAutoconf_Use"), 296, 248, 97, 17)
+	GUICtrlSetTip(-1, _MultiLang_GetText("tips_config_GroupAutoconf_Use"))
+	GUICtrlCreateGroup("", -99, -99, 1, 1)
+	$CB_EmptyRom = GUICtrlCreateCheckbox(_MultiLang_GetText("win_config_mode_empty"), 240, 280, 97, 17)
+	GUICtrlSetTip(-1, _MultiLang_GetText("tips_config_mode_empty"))
+	$CB_MAJ = GUICtrlCreateCheckbox(_MultiLang_GetText("win_config_mode_MAJ"), 240, 296, 97, 17)
+	GUICtrlSetTip(-1, _MultiLang_GetText("tips_config_mode_MAJ"))
+	$R_ScrapeMode1 = GUICtrlCreateRadio(_MultiLang_GetText("win_config_mode_new"), 344, 280, 113, 17)
+	GUICtrlSetTip(-1, _MultiLang_GetText("tips_config_mode_new"))
+	$R_ScrapeMode2 = GUICtrlCreateRadio(_MultiLang_GetText("win_config_mode_append"), 344, 296, 113, 17)
+	GUICtrlSetTip(-1, _MultiLang_GetText("tips_config_mode_append"))
 	GUISetState(@SW_SHOW)
 	GUISetState(@SW_DISABLE, $F_UniversalScraper)
 	#EndRegion ### END Koda GUI section ###
+
+	;Initialisation
+	$ExtImage = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$ExtImage", "defaut")
+	If $ExtImage = "defaut" Or $ExtImage = "" Then
+		ConsoleWrite("$ExtImage = defaut" & @CRLF)
+		$ExtImage = ""
+		GUICtrlSetData($C_Ext, "defaut")
+	Else
+		GUICtrlSetData($C_Ext, $ExtImage)
+		ConsoleWrite("$ExtImage = " & $ExtImage & @CRLF)
+	EndIf
+
+	$Autoconf_Use = IniRead($PathConfigINI, "LAST_USE", "$Autoconf_Use", $Autoconf_Use)
+	If $Autoconf_Use = 1 Then
+		GUICtrlSetState($CB_Autoconf_Use, $GUI_CHECKED)
+	Else
+		GUICtrlSetState($CB_Autoconf_Use, $GUI_UNCHECKED)
+	EndIf
+
+	$ScrapeMode = IniRead($PathConfigINI, "LAST_USE", "$ScrapeMode", $ScrapeMode)
+	If $ScrapeMode = 0 Then
+		GUICtrlSetState($R_ScrapeMode1, $GUI_CHECKED)
+	Else
+		GUICtrlSetState($R_ScrapeMode2, $GUI_CHECKED)
+	EndIf
+
+	$EmptyRom = IniRead($PathConfigINI, "LAST_USE", "$EmptyRom", $EmptyRom)
+	If $EmptyRom = 1 Then
+		GUICtrlSetState($CB_EmptyRom, $GUI_CHECKED)
+	Else
+		GUICtrlSetState($CB_EmptyRom, $GUI_UNCHECKED)
+	EndIf
+
+	$INI_OPTION_MAJ = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$OPTION_MAJ", $INI_OPTION_MAJ)
+	If $INI_OPTION_MAJ = 1 Then
+		GUICtrlSetState($CB_MAJ, $GUI_UNCHECKED)
+	Else
+		GUICtrlSetState($CB_MAJ, $GUI_CHECKED)
+	EndIf
 
 	While 1
 		$nMsg = GUIGetMsg()
@@ -603,35 +689,74 @@ Func _GUI_Config()
 				For $B_AutoConfigItem2 = 1 To UBound($ME_AutoConfigItem) - 1
 					GUICtrlSetState($ME_AutoConfigItem[$B_AutoConfigItem2], $GUI_UNCHECKED)
 				Next
-				$PathRom = GUICtrlRead($I_PathRom)
+				$PathRom = GUICtrlRead($I_PathRom) ;$PathRom
 				If (StringRight($PathRom, 1) <> '\') Then $PathRom &= '\'
 				IniWrite($PathConfigINI, "LAST_USE", "$PathRom", $PathRom)
-				$PathRomSub = GUICtrlRead($I_PathRomSub)
+				$PathRomSub = GUICtrlRead($I_PathRomSub) ;$PathRomSub
 				IniWrite($PathConfigINI, "LAST_USE", "$PathRomSub", $PathRomSub)
-				$PathNew = GUICtrlRead($I_PathXML)
+				$PathNew = GUICtrlRead($I_PathXML) ;$PathNew
 				IniWrite($PathConfigINI, "LAST_USE", "$PathNew", $PathNew)
-				$PathImage = GUICtrlRead($I_PathImage)
+				$PathImage = GUICtrlRead($I_PathImage) ;$PathImage
 				If (StringRight($PathImage, 1) <> '\') Then $PathImage &= '\'
 				IniWrite($PathConfigINI, "LAST_USE", "$PathImage", $PathImage)
-				$PathImageSub = GUICtrlRead($I_PathImageSub)
+				$PathImageSub = GUICtrlRead($I_PathImageSub) ;$PathImageSub
 				IniWrite($PathConfigINI, "LAST_USE", "$PathImageSub", $PathImageSub)
-				$HauteurImage = GUICtrlRead($I_ImageHauteur)
+				$HauteurImage = GUICtrlRead($I_ImageHauteur) ;$HauteurImage
 				If $HauteurImage < 1 Then $HauteurImage = ""
 				IniWrite($PathConfigINI, "LAST_USE", "$HauteurImage", $HauteurImage)
-				$LargeurImage = GUICtrlRead($I_LargeurImage)
+				$LargeurImage = GUICtrlRead($I_LargeurImage) ;$LargeurImage
 				If $LargeurImage < 1 Then $LargeurImage = ""
 				IniWrite($PathConfigINI, "LAST_USE", "$LargeurImage", $LargeurImage)
+				$ExtImage = GUICtrlRead($C_Ext) ;$ExtImage
+				If $ExtImage = "defaut" Then $ExtImage = ""
+				IniWrite($PathConfigINI, $A_Profil[$No_Profil], "$ExtImage", $ExtImage)
+				$PATHAUTOCONF_PathRom = GUICtrlRead($I_Autoconf_PathRom) ;$PATHAUTOCONF_PathRom
+				IniWrite($PathConfigINI, $A_Profil[$No_Profil], "$PATHAUTOCONF_PathRom", $PATHAUTOCONF_PathRom)
+				$PATHAUTOCONF_PathNew = GUICtrlRead($I_Autoconf_PathXML) ;$PATHAUTOCONF_PathNew
+				IniWrite($PathConfigINI, $A_Profil[$No_Profil], "$PATHAUTOCONF_PathNew", $PATHAUTOCONF_PathNew)
+				$PATHAUTOCONF_PathRomSub = GUICtrlRead($I_Autoconf_PathRomSub) ;$PATHAUTOCONF_PathRomSub
+				IniWrite($PathConfigINI, $A_Profil[$No_Profil], "$PATHAUTOCONF_PathRomSub", $PATHAUTOCONF_PathRomSub)
+				$PATHAUTOCONF_PathImage = GUICtrlRead($I_Autoconf_PathImage) ;$PATHAUTOCONF_PathImage
+				IniWrite($PathConfigINI, $A_Profil[$No_Profil], "$PATHAUTOCONF_PathImage", $PATHAUTOCONF_PathImage)
+				$PATHAUTOCONF_PathImageSub = GUICtrlRead($I_Autoconf_PathImageSub) ;$PATHAUTOCONF_PathImageSub
+				IniWrite($PathConfigINI, $A_Profil[$No_Profil], "$PATHAUTOCONF_PathImageSub", $PATHAUTOCONF_PathImageSub)
+
+				If _IsChecked($CB_Autoconf_Use) Then ;$Autoconf_Use
+					$Autoconf_Use = 1
+				Else
+					$Autoconf_Use = 0
+				EndIf
+				IniWrite($PathConfigINI, "LAST_USE", "$Autoconf_Use", $Autoconf_Use)
+
+				If _IsChecked($CB_MAJ) Then ;$INI_OPTION_MAJ
+					$INI_OPTION_MAJ = 1
+				Else
+					$INI_OPTION_MAJ = 0
+				EndIf
+				IniWrite($PathConfigINI, $A_Profil[$No_Profil], "$OPTION_MAJ", $INI_OPTION_MAJ)
+
+				If _IsChecked($R_ScrapeMode1) Then $ScrapeMode = 0 ;$ScrapeMode
+				If _IsChecked($R_ScrapeMode2) Then $ScrapeMode = 1 ;$ScrapeMode
+				IniWrite($PathConfigINI, "LAST_USE", "$ScrapeMode", $ScrapeMode);$ScrapeMode
+
+				If _IsChecked($CB_EmptyRom) Then ;$EmptyRom
+					$EmptyRom = 1
+				Else
+					$EmptyRom = 0
+				EndIf
+				IniWrite($PathConfigINI, "LAST_USE", "$EmptyRom", $EmptyRom)
+
 				If Not FileExists($PathNew) And $PathNew <> "" Then
 					If Not _FileCreate($PathNew) Then MsgBox($MB_SYSTEMMODAL, "Error", "Error Creating: " & $PathNew & @CRLF & "     error:" & @error)
 				EndIf
-				_CREATION_LOGMESS(1, "Modification de la config :" & @CRLF)
-				_CREATION_LOGMESS(1, " PathRom : " & $PathRom)
-				_CREATION_LOGMESS(1, " PathRomSub : " & $PathRomSub)
-				_CREATION_LOGMESS(1, " PathNew : " & $PathNew)
-				_CREATION_LOGMESS(1, " PathImage : " & $PathImage)
-				_CREATION_LOGMESS(1, " PathImageSub : " & $PathImageSub)
-				_CREATION_LOGMESS(1, " HauteurImage : " & $HauteurImage)
-				_CREATION_LOGMESS(1, " LargeurImage : " & $LargeurImage & @CRLF)
+				_CREATION_LOGMESS(2, "Modification de la config :" & @CRLF)
+				_CREATION_LOGMESS(2, " PathRom : " & $PathRom)
+				_CREATION_LOGMESS(2, " PathRomSub : " & $PathRomSub)
+				_CREATION_LOGMESS(2, " PathNew : " & $PathNew)
+				_CREATION_LOGMESS(2, " PathImage : " & $PathImage)
+				_CREATION_LOGMESS(2, " PathImageSub : " & $PathImageSub)
+				_CREATION_LOGMESS(2, " HauteurImage : " & $HauteurImage)
+				_CREATION_LOGMESS(2, " LargeurImage : " & $LargeurImage & @CRLF)
 				GUIDelete($F_CONFIG)
 				GUISetState(@SW_ENABLE, $F_UniversalScraper)
 				WinActivate($F_UniversalScraper)
@@ -930,6 +1055,7 @@ Func _PROFIL_SelectGUI($A_Profil)
 	GUIDelete($_profil_gui_GUI)
 	For $i = 1 To UBound($A_Profil) - 1
 		If StringInStr($A_Profil[$i], $_selected) Then
+			_CREATION_LOGMESS(2, "Profil : " & $A_Profil[$i])
 			IniWrite($PathConfigINI, "LAST_USE", "$No_Profil", $i)
 			GUISetState(@SW_ENABLE, $F_UniversalScraper)
 			WinActivate($F_UniversalScraper)
@@ -1156,7 +1282,7 @@ Func _SYSTEM_CREATEARRAY_SCREENSCRAPER($PathTmp)
 	Local $sNode_Values
 	_GUICtrlStatusBar_SetText($L_SCRAPE, _MultiLang_GetText("prSET_SYSTEM_CREATEARRAY"))
 	_CREATION_LOGMESS(1, "Recuperation des informations des systemes")
-	InetGet("http://www.screenscraper.fr/api/systemesListe.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=Universal_XML_Scraper&output=XML", $PathTmp)
+	InetGet("http://www.screenscraper.fr/api/systemesListe.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=XML", $PathTmp)
 	_XMLFileOpen($PathTmp)
 	If @error Then
 		ConsoleWrite("!_XMLFileOpen : " & _XMLError("") & @CRLF) ; Debug
@@ -1323,11 +1449,11 @@ Func _XML_CREATEROM($Path_source, $xpath_root_source, $xpath_root_cible, $A_XMLF
 
 ;~ 	Download du XML source
 	_CREATION_LOGMESS(1, "Recuperation des informations de la Rom no " & $No_ROM)
-	InetGet("http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=Universal_XML_Scraper&output=xml&crc=" & $A_ROMList[$No_ROM][2] & "&md5=" & $A_ROMList[$No_ROM][3] & "sha1=" & $A_ROMList[$No_ROM][4] & "&systemeid=" & $No_system & "&romtype=rom&romnom=" & $A_ROMList[$No_ROM][0] & "&romtaille=" & $A_ROMList[$No_ROM][5], $Path_source)
-;~ 	ConsoleWrite("+" & "http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=Universal_XML_Scraper&output=xml&crc=" & $A_ROMList[$No_ROM][2] & "&md5=" & $A_ROMList[$No_ROM][3] & "sha1=" & $A_ROMList[$No_ROM][4] & "&systemeid=" & $No_system & "&romtype=rom&romnom=" & $A_ROMList[$No_ROM][0] & "&romtaille=" & $A_ROMList[$No_ROM][5] & @CRLF);Debug
+	InetGet("http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=xml&crc=" & $A_ROMList[$No_ROM][2] & "&md5=" & $A_ROMList[$No_ROM][3] & "sha1=" & $A_ROMList[$No_ROM][4] & "&systemeid=" & $No_system & "&romtype=rom&romnom=" & $A_ROMList[$No_ROM][0] & "&romtaille=" & $A_ROMList[$No_ROM][5], $Path_source)
+	ConsoleWrite("+" & "http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=xml&crc=" & $A_ROMList[$No_ROM][2] & "&md5=" & $A_ROMList[$No_ROM][3] & "sha1=" & $A_ROMList[$No_ROM][4] & "&systemeid=" & $No_system & "&romtype=rom&romnom=" & $A_ROMList[$No_ROM][0] & "&romtaille=" & $A_ROMList[$No_ROM][5] & @CRLF);Debug
 	If StringInStr(FileReadLine($Path_source), "Erreur") And $No_system <> "" Then
 		FileDelete($Path_source)
-		InetGet("http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=Universal_XML_Scraper&output=xml&crc=" & $A_ROMList[$No_ROM][2] & "&md5=" & $A_ROMList[$No_ROM][3] & "sha1=" & $A_ROMList[$No_ROM][4] & "&systemeid=" & "&romtype=rom&romnom=" & $A_ROMList[$No_ROM][0] & "&romtaille=" & $A_ROMList[$No_ROM][5], $Path_source)
+		InetGet("http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=xml&crc=" & $A_ROMList[$No_ROM][2] & "&md5=" & $A_ROMList[$No_ROM][3] & "sha1=" & $A_ROMList[$No_ROM][4] & "&systemeid=" & "&romtype=rom&romnom=" & $A_ROMList[$No_ROM][0] & "&romtaille=" & $A_ROMList[$No_ROM][5], $Path_source)
 		_CREATION_LOGMESS(1, "--Recuperation des informations de la Rom no " & $No_ROM & " SANS ID SYSTEM")
 	EndIf
 
@@ -1600,3 +1726,6 @@ Func _ROMXML_CREATEARRAY($V_XMLPath, $A_XMLFormat)
 	Return $A_ROMXMLList
 EndFunc   ;==>_ROMXML_CREATEARRAY
 
+Func _IsChecked($idControlID)
+	Return BitAND(GUICtrlRead($idControlID), $GUI_CHECKED) = $GUI_CHECKED
+EndFunc   ;==>_IsChecked
