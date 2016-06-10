@@ -5,7 +5,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper XML Universel
-#AutoIt3Wrapper_Res_Fileversion=1.1.1.7
+#AutoIt3Wrapper_Res_Fileversion=1.2.0.1
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -1740,6 +1740,7 @@ EndFunc   ;==>_XML_PUTROMINFO
 Func _MIX_IMAGE_CREATEARRAY($Path_source, $xpath_root_source, $XML_Type, $B_XMLElements, $No_ROM, $PathImageFinal_Temp, $No_ROMXML = 1, $A_MIX_IMAGE_Format = 0)
 	Local $A_PathImage[1][6]
 	Local $MIX_IMG_HauteurImage = 0, $MIX_IMG_LargeurImage = 0, $outputformat
+	_CREATION_LOGMESS(1, "Recuperation des Images pour le Mix")
 	For $B_Images = 1 To UBound($A_MIX_IMAGE_Format) - 1
 		$XML_Type = StringLeft($A_MIX_IMAGE_Format[$B_Images][3], 5)
 		If $XML_Type <> "" Then
@@ -1748,7 +1749,7 @@ Func _MIX_IMAGE_CREATEARRAY($Path_source, $xpath_root_source, $XML_Type, $B_XMLE
 		Else
 			$XML_Value = -1
 		EndIf
-		Local $ExtImage = 'png' ;StringRight($XML_Value, 3)
+		Local $ExtImage = StringRight($XML_Value, 3)
 		Local $PathImage_Temp = $PathDIRTmp & StringTrimRight($A_ROMList[$No_ROMXML][0], 4) & "-" & $A_MIX_IMAGE_Format[$B_Images][0] & "." & $ExtImage
 		ConsoleWrite("!" & $A_MIX_IMAGE_Format[$B_Images][0] & "->" & $A_MIX_IMAGE_Format[$B_Images][2] & " = " & $XML_Value & @CRLF) ;Debug
 
@@ -1771,6 +1772,7 @@ EndFunc   ;==>_MIX_IMAGE_CREATEARRAY
 
 Func _MIX_IMAGE_CREATECIBLE($A_PathImage, $PathImage_Temp)
 	If UBound($A_PathImage) - 1 < 1 Then Return
+	_CREATION_LOGMESS(1, "Mixage des images")
 	Local $MergedImageBackgroundColor = 0x00000000
 	_GDIPlus_Startup()
 	For $B_Images = 1 To UBound($A_PathImage) - 1
@@ -1827,7 +1829,7 @@ Func _MIX_IMAGE_CREATEFORMAT($Profil)
 	Local $A_MIX_IMAGE_Format[1][8]
 	Local $B_Sources
 	$Nb_MIX_Image = IniRead($PathConfigINI, $Profil, "$MIX_IMG_NBIMG", 0)
-	_CREATION_LOGMESS(1, "Recuperation des " & $Nb_MIX_Image & " Image pour le Mix")
+	_CREATION_LOGMESS(1, "Creation des parametres pour le Mix")
 	For $B_Images = 1 To $Nb_MIX_Image
 		$B_Sources = 1
 		While IniRead($PathConfigINI, $Profil, "$MIX_IMG" & $B_Images & "_SOURCE_" & $B_Sources, "Ending") <> "Ending"
