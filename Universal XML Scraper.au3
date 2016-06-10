@@ -97,6 +97,7 @@ FileInstall(".\Ressources\empty.jpg", $SOURCE_DIRECTORY & "\Ressources\empty.jpg
 FileInstall(".\Ressources\Fleche.jpg", $SOURCE_DIRECTORY & "\Ressources\Fleche.jpg")
 FileInstall(".\Ressources\thegamedb.jpg", $SOURCE_DIRECTORY & "\Ressources\thegamedb.jpg")
 FileInstall(".\Ressources\Screenscraper.jpg", $SOURCE_DIRECTORY & "\Ressources\Screenscraper.jpg")
+FileInstall(".\Ressources\Screenscraper (MIX).jpg", $SOURCE_DIRECTORY & "\Ressources\Screenscraper (MIX).jpg")
 FileInstall(".\Ressources\RecalboxV3.jpg", $SOURCE_DIRECTORY & "\Ressources\RecalboxV3.jpg")
 FileInstall(".\Ressources\RecalboxV4.jpg", $SOURCE_DIRECTORY & "\Ressources\RecalboxV4.jpg")
 FileInstall(".\Ressources\Recalbox.jpg", $SOURCE_DIRECTORY & "\Ressources\Recalbox.jpg")
@@ -1743,7 +1744,7 @@ Func _MIX_IMAGE_CREATEARRAY($Path_source, $xpath_root_source, $XML_Type, $B_XMLE
 	_CREATION_LOGMESS(1, "Recuperation des Images pour le Mix")
 	For $B_Images = 1 To UBound($A_MIX_IMAGE_Format) - 1
 		$XML_Type = StringLeft($A_MIX_IMAGE_Format[$B_Images][3], 5)
-		If $XML_Type <> "" Then
+		If $XML_Type <> "" And $A_MIX_IMAGE_Format[$B_Images][1] <> 'fixe' Then
 ;~ 			MsgBox(0, "GETROMINFO", $Path_source & " - " & $xpath_root_source & " - " & $XML_Type & " - " & $B_Images & " - " & $A_MIX_IMAGE_Format & " - " & $A_ROMList & " - " & $No_ROM & " - " & $INI_OPTION_MAJ & " - " & $No_system)
 			$XML_Value = _XML_GETROMINFO($Path_source, $xpath_root_source, $XML_Type, $B_Images, $A_MIX_IMAGE_Format, $A_ROMList, $No_ROM, $INI_OPTION_MAJ, $No_system) ;Lecture des differents elements
 		Else
@@ -1761,9 +1762,14 @@ Func _MIX_IMAGE_CREATEARRAY($Path_source, $xpath_root_source, $XML_Type, $B_XMLE
 			If $MIX_IMG_LargeurImage > 0 Then $maxwidth = "&maxwidth=" & $MIX_IMG_LargeurImage
 			ConsoleWrite("+ MIX Download : " & $XML_Value & $maxheight & $maxwidth & " dans " & $PathImage_Temp & @CRLF) ; Debug
 			_CREATION_LOGMESS(2, "Download Images : " & $PathImage_Temp)
-			InetGet($XML_Value & $maxheight & $maxwidth & $outputformat, $PathImage_Temp, 0, 0)
-			If FileExists($PathImage_Temp) Then _ArrayAdd($A_PathImage, $PathImage_Temp & "|" & $A_MIX_IMAGE_Format[$B_Images][6] & "|" & $A_MIX_IMAGE_Format[$B_Images][7] & "|" & "|")
-;~ 			_CREATION_LOGMESS(2, $A_MIX_IMAGE_Format[$B_Images][0] & " : " & $PathImageSub_Temp)
+			If $A_MIX_IMAGE_Format[$B_Images][1] = 'fixe' Then
+				$PathImage_Temp = $A_MIX_IMAGE_Format[$B_Images][2]
+			Else
+				InetGet($XML_Value & $maxheight & $maxwidth & $outputformat, $PathImage_Temp, 0, 0)
+			EndIf
+
+			If FileExists($PathImage_Temp) Then _ArrayAdd($A_PathImage, $PathImage_Temp & "|" & $A_MIX_IMAGE_Format[$B_Images][6] & "|" & $A_MIX_IMAGE_Format[$B_Images][7] & "|" & $A_MIX_IMAGE_Format[$B_Images][4] & "|" & $A_MIX_IMAGE_Format[$B_Images][5])
+			_CREATION_LOGMESS(2, $A_MIX_IMAGE_Format[$B_Images][0] & " : " & $PathImage_Temp)
 		EndIf
 	Next
 ;~ 	_ArrayDisplay($A_PathImage, '$A_PathImage') ; Debug
@@ -1815,7 +1821,7 @@ Func _MIX_IMAGE_CREATECIBLE($A_PathImage, $PathImage_Temp)
 		_GDIPlus_GraphicsDrawImageRectRect($hGraphic, $A_PathImage[$B_Images][3], 0, 0, $A_PathImage[$B_Images][4], $A_PathImage[$B_Images][5], $A_PathImage[$B_Images][1], $A_PathImage[$B_Images][2], $A_PathImage[$B_Images][4], $A_PathImage[$B_Images][5])
 		ConsoleWrite(">Integration " & $A_PathImage[$B_Images][0] & " en " & $A_PathImage[$B_Images][1] & "/" & $A_PathImage[$B_Images][2] & " pour une reso de : " & $A_PathImage[$B_Images][4] & "x" & $A_PathImage[$B_Images][5] & @CRLF) ; Debug
 		_GDIPlus_ImageDispose($A_PathImage[$B_Images][3])
-		FileDelete($A_PathImage[$B_Images][0])
+;~ 		FileDelete($A_PathImage[$B_Images][0])
 	Next
 	_GDIPlus_ImageSaveToFile($hBMPBuff, $PathImage_Temp)
 ;~ 	_GDIPlus_GraphicsDrawImage($hGraphicGUI, $hBMPBuff, 0, 0) ; Draw bitmap, $hBMPBuff, to the GUI's graphics, $hGraphicGUI.
