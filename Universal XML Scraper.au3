@@ -1739,7 +1739,7 @@ Func _XML_PUTROMINFO($PathTmp, $Path_source, $xpath_root_cible, $xpath_root_sour
 EndFunc   ;==>_XML_PUTROMINFO
 
 Func _MIX_IMAGE_CREATEARRAY($Path_source, $xpath_root_source, $XML_Type, $B_XMLElements, $No_ROM, $PathImageFinal_Temp, $No_ROMXML = 1, $A_MIX_IMAGE_Format = 0)
-	Local $A_PathImage[1][6]
+	Local $A_PathImage[1][10]
 	Local $MIX_IMG_HauteurImage = 0, $MIX_IMG_LargeurImage = 0, $outputformat, $maxheight = '', $maxwidth = ''
 	_CREATION_LOGMESS(1, "Recuperation des Images pour le Mix")
 	For $B_Images = 1 To UBound($A_MIX_IMAGE_Format) - 1
@@ -1768,7 +1768,7 @@ Func _MIX_IMAGE_CREATEARRAY($Path_source, $xpath_root_source, $XML_Type, $B_XMLE
 				InetGet($XML_Value & $maxheight & $maxwidth & $outputformat, $PathImage_Temp, 0, 0)
 			EndIf
 
-			If FileExists($PathImage_Temp) Then _ArrayAdd($A_PathImage, $PathImage_Temp & "|" & $A_MIX_IMAGE_Format[$B_Images][6] & "|" & $A_MIX_IMAGE_Format[$B_Images][7] & "|" & $A_MIX_IMAGE_Format[$B_Images][4] & "|" & $A_MIX_IMAGE_Format[$B_Images][5])
+			If FileExists($PathImage_Temp) Then _ArrayAdd($A_PathImage, $PathImage_Temp & "|" & $A_MIX_IMAGE_Format[$B_Images][6] & "|" & $A_MIX_IMAGE_Format[$B_Images][7] & "|" & $A_MIX_IMAGE_Format[$B_Images][4] & "|" & $A_MIX_IMAGE_Format[$B_Images][5] & "|" & $A_MIX_IMAGE_Format[$B_Images][8] & "|" & $A_MIX_IMAGE_Format[$B_Images][9] & "|" & $A_MIX_IMAGE_Format[$B_Images][10] & "|" & $A_MIX_IMAGE_Format[$B_Images][11])
 			_CREATION_LOGMESS(2, $A_MIX_IMAGE_Format[$B_Images][0] & " : " & $PathImage_Temp)
 		EndIf
 	Next
@@ -1824,7 +1824,31 @@ Func _MIX_IMAGE_CREATECIBLE($A_PathImage, $PathImage_Temp)
 			Case 'DOWN'
 				$A_PathImage[$B_Images][2] = $IMG_CIBLE_Y - $A_PathImage[$B_Images][5]
 		EndSwitch
-		_GDIPlus_GraphicsDrawImageRectRect($hGraphic, $A_PathImage[$B_Images][3], 0, 0, $A_PathImage[$B_Images][4], $A_PathImage[$B_Images][5], $A_PathImage[$B_Images][1], $A_PathImage[$B_Images][2], $A_PathImage[$B_Images][4], $A_PathImage[$B_Images][5])
+		$X1 = $A_PathImage[$B_Images][1]
+		$Y1 = $A_PathImage[$B_Images][2]
+		If $A_PathImage[$B_Images][6] <> "" Then
+			$X2 = $A_PathImage[$B_Images][6]
+		Else
+			$X2 = $A_PathImage[$B_Images][1] + $A_PathImage[$B_Images][4]
+		EndIf
+		If $A_PathImage[$B_Images][7] <> "" Then
+			$Y2 = $A_PathImage[$B_Images][7]
+		Else
+			$Y2 = $A_PathImage[$B_Images][2]
+		EndIf
+		If $A_PathImage[$B_Images][8] <> "" Then
+			$X3 = $A_PathImage[$B_Images][8]
+		Else
+			$X3 = $A_PathImage[$B_Images][1]
+		EndIf
+		If $A_PathImage[$B_Images][9] <> "" Then
+			$Y3 = $A_PathImage[$B_Images][9]
+		Else
+			$Y3 = $A_PathImage[$B_Images][2] + $A_PathImage[$B_Images][5]
+		EndIf
+
+;~ 		_GDIPlus_GraphicsDrawImageRectRect($hGraphic, $A_PathImage[$B_Images][3], 0, 0, $A_PathImage[$B_Images][4], $A_PathImage[$B_Images][5], $A_PathImage[$B_Images][1], $A_PathImage[$B_Images][2], $A_PathImage[$B_Images][4], $A_PathImage[$B_Images][5])
+		_GDIPlus_DrawImagePoints($hGraphic, $A_PathImage[$B_Images][3], $X1, $Y1, $X2, $Y2, $X3, $Y3)
 		ConsoleWrite(">Integration " & $A_PathImage[$B_Images][0] & " en " & $A_PathImage[$B_Images][1] & "/" & $A_PathImage[$B_Images][2] & " pour une reso de : " & $A_PathImage[$B_Images][4] & "x" & $A_PathImage[$B_Images][5] & @CRLF) ; Debug
 		_GDIPlus_ImageDispose($A_PathImage[$B_Images][3])
 ;~ 		FileDelete($A_PathImage[$B_Images][0])
@@ -1838,7 +1862,7 @@ Func _MIX_IMAGE_CREATECIBLE($A_PathImage, $PathImage_Temp)
 EndFunc   ;==>_MIX_IMAGE_CREATECIBLE
 
 Func _MIX_IMAGE_CREATEFORMAT($Profil)
-	Local $A_MIX_IMAGE_Format[1][8]
+	Local $A_MIX_IMAGE_Format[1][12]
 	Local $B_Sources
 	$Nb_MIX_Image = IniRead($PathConfigINI, $Profil, "$MIX_IMG_NBIMG", 0)
 	_CREATION_LOGMESS(1, "Creation des parametres pour le Mix")
