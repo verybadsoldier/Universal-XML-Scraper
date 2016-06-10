@@ -1740,7 +1740,7 @@ EndFunc   ;==>_XML_PUTROMINFO
 
 Func _MIX_IMAGE_CREATEARRAY($Path_source, $xpath_root_source, $XML_Type, $B_XMLElements, $No_ROM, $PathImageFinal_Temp, $No_ROMXML = 1, $A_MIX_IMAGE_Format = 0)
 	Local $A_PathImage[1][6]
-	Local $MIX_IMG_HauteurImage = 0, $MIX_IMG_LargeurImage = 0, $outputformat
+	Local $MIX_IMG_HauteurImage = 0, $MIX_IMG_LargeurImage = 0, $outputformat, $maxheight = '', $maxwidth = ''
 	_CREATION_LOGMESS(1, "Recuperation des Images pour le Mix")
 	For $B_Images = 1 To UBound($A_MIX_IMAGE_Format) - 1
 		$XML_Type = StringLeft($A_MIX_IMAGE_Format[$B_Images][3], 5)
@@ -1755,11 +1755,11 @@ Func _MIX_IMAGE_CREATEARRAY($Path_source, $xpath_root_source, $XML_Type, $B_XMLE
 		ConsoleWrite("!" & $A_MIX_IMAGE_Format[$B_Images][0] & "->" & $A_MIX_IMAGE_Format[$B_Images][2] & " = " & $XML_Value & @CRLF) ;Debug
 
 		If FileExists($PathImage_Temp) = 0 Then
-			$MIX_IMG_HauteurImage = $A_MIX_IMAGE_Format[$B_Images][4]
-			$MIX_IMG_LargeurImage = $A_MIX_IMAGE_Format[$B_Images][5]
+			$MIX_IMG_LargeurImage = $A_MIX_IMAGE_Format[$B_Images][4]
+			$MIX_IMG_HauteurImage = $A_MIX_IMAGE_Format[$B_Images][5]
 			$outputformat = "&outputformat=" & $ExtImage
-			If $MIX_IMG_HauteurImage > 0 Then $maxheight = "&maxheight=" & $MIX_IMG_HauteurImage
 			If $MIX_IMG_LargeurImage > 0 Then $maxwidth = "&maxwidth=" & $MIX_IMG_LargeurImage
+			If $MIX_IMG_HauteurImage > 0 Then $maxheight = "&maxheight=" & $MIX_IMG_HauteurImage
 			ConsoleWrite("+ MIX Download : " & $XML_Value & $maxheight & $maxwidth & " dans " & $PathImage_Temp & @CRLF) ; Debug
 			_CREATION_LOGMESS(2, "Download Images : " & $PathImage_Temp)
 			If $A_MIX_IMAGE_Format[$B_Images][1] = 'fixe' Then
@@ -1788,8 +1788,14 @@ Func _MIX_IMAGE_CREATECIBLE($A_PathImage, $PathImage_Temp)
 		$A_PathImage[$B_Images][5] = _GDIPlus_ImageGetHeight($A_PathImage[$B_Images][3])
 	Next
 
-	$IMG_CIBLE_X = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$MIX_IMG_CIBLE_X", $A_PathImage[1][4])
-	$IMG_CIBLE_Y = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$MIX_IMG_CIBLE_Y", $A_PathImage[1][5])
+;~ 	_ArrayDisplay($A_PathImage, '$A_PathImage') ; Debug
+
+	$IMG_CIBLE_X = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$MIX_IMG_CIBLE_X", 0)
+	If $IMG_CIBLE_X < 1 Then $IMG_CIBLE_X = $A_PathImage[1][4]
+	$IMG_CIBLE_Y = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$MIX_IMG_CIBLE_Y", 0)
+	If $IMG_CIBLE_Y < 1 Then $IMG_CIBLE_Y = $A_PathImage[1][5]
+
+	ConsoleWrite(">Taille de l'image cible " & $IMG_CIBLE_X & "x" & $IMG_CIBLE_Y & @CRLF) ; Debug
 
 	; Initialise the Drawing windows/composite image...
 	$hGui = GUICreate("GDIPlus Example", $IMG_CIBLE_X, $IMG_CIBLE_Y)
