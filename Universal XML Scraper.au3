@@ -1156,7 +1156,7 @@ Func _SCRAPING($No_Profil, $A_Profil, $PathRom, $No_system, $INI_OPTION_MAJ, $V_
 			$root_cible = $A_XMLFormat[$B_XMLElements][0]
 		EndIf
 		If $A_XMLFormat[$B_XMLElements][3] = "root" Then Local $xpath_root_source = "//" & $A_XMLFormat[$B_XMLElements][2]
-		If $A_XMLFormat[$B_XMLElements][2] = "%mix_image%" Then $A_MIX_IMAGE_Format = _MIX_IMAGE_CREATEFORMAT($A_Profil[$No_Profil])
+		If StringLeft($A_XMLFormat[$B_XMLElements][2], 11) = "%mix_image%" Then $A_MIX_IMAGE_Format = _MIX_IMAGE_CREATEFORMAT(StringTrimLeft($A_XMLFormat[$B_XMLElements][2], 11))
 	Next
 	ConsoleWrite("$xpath_root_source : " & $xpath_root_source & @CRLF) ; Debug
 	ConsoleWrite("$xpath_root_cible : " & $xpath_root_cible & @CRLF) ; Debug
@@ -1706,12 +1706,13 @@ Func _XML_PUTROMINFO($PathTmp, $Path_source, $xpath_root_cible, $xpath_root_sour
 			If $XML_Value = "0" Then Return
 			Local $sNode_Values = _XMLGetValue($xpath_root_cible & '/' & $TMP_LastChild & "[" & $No_ROM & "]/" & $A_XMLFormat[$B_XMLElements][0])
 			If IsArray($sNode_Values) = 0 Then
-				Local $ExtImage = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$ExtImage", StringRight($XML_Value, 3))
+				Local $ExtImage = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$ExtImage", "png")
 				Local $PathImage_Temp = $PathImage & StringTrimRight($A_ROMList[$No_ROMXML][0], 4) & "-" & $A_XMLFormat[$B_XMLElements][0] & "." & $ExtImage
 				Local $PathImageSub_Temp = $PathImageSub & StringTrimRight($A_ROMList[$No_ROMXML][0], 4) & "-" & $A_XMLFormat[$B_XMLElements][0] & "." & $ExtImage
 
-				If $XML_Value = "%mix_image%" Then
-					_MIX_IMAGE_CREATEARRAY($Path_source, $xpath_root_source, $XML_Type, $B_XMLElements, $No_ROM, $PathImage_Temp, $No_ROMXML, $A_MIX_IMAGE_Format)
+				If StringLeft($XML_Value, 11) = "%mix_image%" Then
+					$MIX_IMG_PROFIL = StringTrimLeft($XML_Value, 11)
+					_MIX_IMAGE_CREATEARRAY($Path_source, $xpath_root_source, $XML_Type, $No_ROM, $PathImage_Temp, $MIX_IMG_PROFIL, $No_ROMXML, $A_MIX_IMAGE_Format)
 					_XMLFileOpen($PathTmp)
 					If @error Then
 						ConsoleWrite("!_XMLFileOpen : " & _XMLError("") & @CRLF) ; Debug
@@ -1738,10 +1739,11 @@ Func _XML_PUTROMINFO($PathTmp, $Path_source, $xpath_root_cible, $xpath_root_sour
 	EndSwitch
 EndFunc   ;==>_XML_PUTROMINFO
 
-Func _MIX_IMAGE_CREATEARRAY($Path_source, $xpath_root_source, $XML_Type, $B_XMLElements, $No_ROM, $PathImageFinal_Temp, $No_ROMXML = 1, $A_MIX_IMAGE_Format = 0)
+Func _MIX_IMAGE_CREATEARRAY($Path_source, $xpath_root_source, $XML_Type, $No_ROM, $PathImageFinal_Temp, $MIX_IMG_PROFIL, $No_ROMXML = 1, $A_MIX_IMAGE_Format = 0)
 	Local $A_PathImage[1][10]
 	Local $MIX_IMG_HauteurImage = 0, $MIX_IMG_LargeurImage = 0, $outputformat, $maxheight = '', $maxwidth = ''
 	_CREATION_LOGMESS(1, "Recuperation des Images pour le Mix")
+;~ 	_ArrayDisplay($A_MIX_IMAGE_Format, '$A_MIX_IMAGE_Format') ; Debug
 	For $B_Images = 1 To UBound($A_MIX_IMAGE_Format) - 1
 		$XML_Type = StringLeft($A_MIX_IMAGE_Format[$B_Images][3], 5)
 		If $XML_Type <> "" And $A_MIX_IMAGE_Format[$B_Images][1] <> 'fixe' Then
@@ -1768,15 +1770,15 @@ Func _MIX_IMAGE_CREATEARRAY($Path_source, $xpath_root_source, $XML_Type, $B_XMLE
 				InetGet($XML_Value & $maxheight & $maxwidth & $outputformat, $PathImage_Temp, 0, 0)
 			EndIf
 
-			If FileExists($PathImage_Temp) Then _ArrayAdd($A_PathImage, $PathImage_Temp & "|" & $A_MIX_IMAGE_Format[$B_Images][6] & "|" & $A_MIX_IMAGE_Format[$B_Images][7] & "|" & $A_MIX_IMAGE_Format[$B_Images][4] & "|" & $A_MIX_IMAGE_Format[$B_Images][5] & "|" & $A_MIX_IMAGE_Format[$B_Images][8] & "|" & $A_MIX_IMAGE_Format[$B_Images][9] & "|" & $A_MIX_IMAGE_Format[$B_Images][10] & "|" & $A_MIX_IMAGE_Format[$B_Images][11])
+			If FileExists($PathImage_Temp) Then _ArrayAdd($A_PathImage, $PathImage_Temp & "|" & $A_MIX_IMAGE_Format[$B_Images][6] & "|" & $A_MIX_IMAGE_Format[$B_Images][7] & "||" & $A_MIX_IMAGE_Format[$B_Images][4] & "|" & $A_MIX_IMAGE_Format[$B_Images][5] & "|" & $A_MIX_IMAGE_Format[$B_Images][8] & "|" & $A_MIX_IMAGE_Format[$B_Images][9] & "|" & $A_MIX_IMAGE_Format[$B_Images][10] & "|" & $A_MIX_IMAGE_Format[$B_Images][11])
 			_CREATION_LOGMESS(2, $A_MIX_IMAGE_Format[$B_Images][0] & " : " & $PathImage_Temp)
 		EndIf
 	Next
 ;~ 	_ArrayDisplay($A_PathImage, '$A_PathImage') ; Debug
-	_MIX_IMAGE_CREATECIBLE($A_PathImage, $PathImageFinal_Temp)
+	_MIX_IMAGE_CREATECIBLE($A_PathImage, $PathImageFinal_Temp, $MIX_IMG_PROFIL)
 EndFunc   ;==>_MIX_IMAGE_CREATEARRAY
 
-Func _MIX_IMAGE_CREATECIBLE($A_PathImage, $PathImage_Temp)
+Func _MIX_IMAGE_CREATECIBLE($A_PathImage, $PathImage_Temp, $MIX_IMG_PROFIL)
 	If UBound($A_PathImage) - 1 < 1 Then Return
 	_CREATION_LOGMESS(1, "Mixage des images")
 	Local $MergedImageBackgroundColor = 0x00000000
@@ -1790,9 +1792,9 @@ Func _MIX_IMAGE_CREATECIBLE($A_PathImage, $PathImage_Temp)
 
 ;~ 	_ArrayDisplay($A_PathImage, '$A_PathImage') ; Debug
 
-	$IMG_CIBLE_X = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$MIX_IMG_CIBLE_X", 0)
+	$IMG_CIBLE_X = IniRead($PathConfigINI, $MIX_IMG_PROFIL, "$MIX_IMG_CIBLE_X", 0)
 	If $IMG_CIBLE_X < 1 Then $IMG_CIBLE_X = $A_PathImage[1][4]
-	$IMG_CIBLE_Y = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$MIX_IMG_CIBLE_Y", 0)
+	$IMG_CIBLE_Y = IniRead($PathConfigINI, $MIX_IMG_PROFIL, "$MIX_IMG_CIBLE_Y", 0)
 	If $IMG_CIBLE_Y < 1 Then $IMG_CIBLE_Y = $A_PathImage[1][5]
 
 	ConsoleWrite(">Taille de l'image cible " & $IMG_CIBLE_X & "x" & $IMG_CIBLE_Y & @CRLF) ; Debug
@@ -1824,6 +1826,7 @@ Func _MIX_IMAGE_CREATECIBLE($A_PathImage, $PathImage_Temp)
 			Case 'DOWN'
 				$A_PathImage[$B_Images][2] = $IMG_CIBLE_Y - $A_PathImage[$B_Images][5]
 		EndSwitch
+;~ 		_ArrayDisplay($A_PathImage, "$A_PathImage")
 		$X1 = $A_PathImage[$B_Images][1]
 		$Y1 = $A_PathImage[$B_Images][2]
 		If $A_PathImage[$B_Images][6] <> "" Then
