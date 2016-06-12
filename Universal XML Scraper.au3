@@ -1692,8 +1692,9 @@ Func _XML_PUTROMINFO($PathTmp, $Path_source, $xpath_root_cible, $xpath_root_sour
 			_CREATION_LOGMESS(2, StringMid($A_XMLFormat[$B_XMLElements][1], 6) & " : " & $XML_Value)
 			ConsoleWrite(">_XMLCreateAttrib : " & $XML_Value & @CRLF) ; Debug
 		Case 'value'
-			Local $sNode_Values = _XMLGetValue($xpath_root_cible & '/' & $TMP_LastChild & "[" & $No_ROM & "]/" & $A_XMLFormat[$B_XMLElements][0])
-			If IsArray($sNode_Values) = 0 Then
+			Local $sNode_Values = _XMLGetValue($xpath_root_cible & '/' & $TMP_LastChild & "/*[1]/" & $A_XMLFormat[$B_XMLElements][0]) ;$No_ROM & "]/" & $A_XMLFormat[$B_XMLElements][0])
+
+			If IsArray($sNode_Values) = 0 Or $sNode_Values = 0 Then
 				If StringMid($A_XMLFormat[$B_XMLElements][1], 6) = 100 Then $XML_Value = StringReplace(Round(($XML_Value * 100 / 20) / 100, 2), ",", ".")
 				_XMLCreateChildNode($xpath_root_cible & '/' & $TMP_LastChild & "[" & $No_ROM & "]", $A_XMLFormat[$B_XMLElements][0], $XML_Value)
 				ConsoleWrite(">_XMLCreateChildNode : " & $xpath_root_cible & '/' & $TMP_LastChild & "[" & $No_ROM & "]/" & $A_XMLFormat[$B_XMLElements][0] & " = " & $XML_Value & @CRLF) ; Debug
@@ -1704,7 +1705,7 @@ Func _XML_PUTROMINFO($PathTmp, $Path_source, $xpath_root_cible, $xpath_root_sour
 			EndIf
 		Case 'path:'
 			If $XML_Value = "0" Then Return
-			Local $sNode_Values = _XMLGetValue($xpath_root_cible & '/' & $TMP_LastChild & "[" & $No_ROM & "]/" & $A_XMLFormat[$B_XMLElements][0])
+			Local $sNode_Values = _XMLGetValue($xpath_root_cible & '/' & $TMP_LastChild & "/*[1]/" & $A_XMLFormat[$B_XMLElements][0]) ;" & $No_ROM & "]/" & $A_XMLFormat[$B_XMLElements][0])
 			If IsArray($sNode_Values) = 0 Then
 				Local $ExtImage = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$ExtImage", "png")
 				Local $PathImage_Temp = $PathImage & StringTrimRight($A_ROMList[$No_ROMXML][0], 4) & "-" & $A_XMLFormat[$B_XMLElements][0] & "." & $ExtImage
