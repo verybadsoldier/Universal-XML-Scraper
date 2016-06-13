@@ -30,6 +30,7 @@
 		<mnu_edit_autoconfpath>Auto configuration path</mnu_edit_autoconfpath>
 		<mnu_edit_autoconf>Auto configuration</mnu_edit_autoconf>
 		<mnu_edit_fullscrape>Scrape all system</mnu_edit_fullscrape>
+		<mnu_edit_miximage>Change Mix Images profil</mnu_edit_miximage>
 		<mnu_edit_langue>Change language</mnu_edit_langue>
 		<mnu_edit_config>Config</mnu_edit_config>
 		<mnu_ssh>SSH Command</mnu_ssh>

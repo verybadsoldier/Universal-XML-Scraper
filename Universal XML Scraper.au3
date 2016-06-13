@@ -29,24 +29,24 @@
 #include <String.au3>
 #include <ButtonConstants.au3>
 #include <ComboConstants.au3>
-#include <EditConstants.au3>
-#include <GUIConstantsEx.au3>
-#include <GUIListBox.au3>
-#include <GuiStatusBar.au3>
-#include <StaticConstants.au3>
-#include <WindowsConstants.au3>
-#include <FileConstants.au3>
-#include <MsgBoxConstants.au3>
-#include <Color.au3>
 #include <Crypt.au3>
 #include <GDIPlus.au3>
+#include <GUIConstantsEx.au3>
+#include <GuiStatusBar.au3>
+#include <WindowsConstants.au3>
+;~ #include <EditConstants.au3>
+;~ #include <GUIListBox.au3>
+;~ #include <StaticConstants.au3>
+;~ #include <FileConstants.au3>
+;~ #include <MsgBoxConstants.au3>
+;~ #include <Color.au3>
 
 #include "./Include/_MultiLang.au3"
 #include "./Include/_ExtMsgBox.au3"
 #include "./Include/_Trim.au3"
-#include "./Include/XML.au3"
 #include "./Include/_Hash.au3"
 #include "./Include/_XMLDomWrapper.au3"
+#include "./Include/_zip.au3"
 
 TraySetState(2)
 
@@ -110,6 +110,7 @@ FileInstall(".\Ressources\Fleche_IP1.bmp", $SOURCE_DIRECTORY & "\Ressources\Flec
 FileInstall(".\Ressources\Fleche_IP2.bmp", $SOURCE_DIRECTORY & "\Ressources\Fleche_IP2.bmp")
 FileInstall(".\Ressources\plink.exe", $SOURCE_DIRECTORY & "\Ressources\plink.exe")
 FileInstall(".\Ressources\systemlist.txt", $SOURCE_DIRECTORY & "\Ressources\systemlist.txt")
+FileInstall(".\Mix\", $SOURCE_DIRECTORY & "\Mix\")
 _CREATION_LOGMESS(2, "Fin de creation des fichiers ressources")
 
 ;Definition des Variables
@@ -121,6 +122,8 @@ Global $INI_P_CIBLE = "empty.jpg"
 Global $PathSystemList = $SOURCE_DIRECTORY & "\Ressources\systemlist.txt"
 Global $PathTmp = $SOURCE_DIRECTORY & "\API_temp.tmp"
 Global $PathDIRTmp = $SOURCE_DIRECTORY & "\TEMP\"
+Global $PathMix = $SOURCE_DIRECTORY & "\Mix\"
+Global $PathMixTmp = $SOURCE_DIRECTORY & "\Mix\TEMP"
 Global $PathPlink = $SOURCE_DIRECTORY & "\Ressources\plink.exe"
 Global $PathNew = IniRead($PathConfigINI, "LAST_USE", "$PathNew", "")
 Global $PathRom = IniRead($PathConfigINI, "LAST_USE", "$PathRom", "")
@@ -171,10 +174,10 @@ Local $MF_Profil = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_file_profil"), 
 Local $MF_Separation = GUICtrlCreateMenuItem("", $MF)
 Local $MF_Exit = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_file_exit"), $MF)
 Local $ME = GUICtrlCreateMenu(_MultiLang_GetText("mnu_edit"))
-;~ Local $ME_AutoPathConfig = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_edit_autoconfpath"), $ME)
 Local $ME_AutoConfig = GUICtrlCreateMenu(_MultiLang_GetText("mnu_edit_autoconf"), $ME, 1)
 Local $ME_FullScrape = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_edit_fullscrape"), $ME)
 Local $ME_Separation = GUICtrlCreateMenuItem("", $ME)
+Local $ME_Miximage = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_edit_miximage"), $ME)
 Local $ME_Langue = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_edit_langue"), $ME)
 Local $ME_Config = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_edit_config"), $ME)
 Local $MP = GUICtrlCreateMenu(_MultiLang_GetText("mnu_ssh"))
@@ -182,11 +185,6 @@ Local $MP_KILLALL = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_ssh_killall"),
 Local $MP_REBOOT = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_ssh_reboot"), $MP)
 Local $MP_POWEROFF = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_ssh_halt"), $MP)
 GUICtrlSetState($MP, $GUI_DISABLE)
-;~ Local $MM = GUICtrlCreateMenu(_MultiLang_GetText("mnu_mode"))
-;~ Local $MM_New = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_mode_new"), $MM)
-;~ Local $MM_Append = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_mode_append"), $MM)
-;~ Local $MM_Separation = GUICtrlCreateMenuItem("", $MM)
-;~ Local $MM_Empty = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_mode_empty"), $MM)
 Local $MH = GUICtrlCreateMenu(_MultiLang_GetText("mnu_help"))
 Local $MH_Help = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_help_about"), $MH)
 Local $P_SOURCE = GUICtrlCreatePic($SOURCE_DIRECTORY & "\Ressources\" & $INI_P_SOURCE, 0, 0, 150, 100)
@@ -213,6 +211,9 @@ Local $PATHAUTOCONF_PathImage = IniRead($PathConfigINI, $A_Profil[$No_Profil], "
 Local $PATHAUTOCONF_PathImageSub = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$PATHAUTOCONF_PathImageSub", "")
 ;~ $A_DIRList = _AUTOCONF($PATHAUTOCONF_PathRom, $PATHAUTOCONF_PathRomSub, $PATHAUTOCONF_PathNew, $PATHAUTOCONF_PathImage, $PATHAUTOCONF_PathImageSub)
 _GUI_REFRESH($INI_P_SOURCE, $INI_P_CIBLE)
+FileDelete($PathMixTmp)
+DirCreate($PathMixTmp)
+_Zip_UnzipAll($PathMix & "Arcade (moon).zip", $PathMixTmp, 0)
 
 While 1
 	Local $nMsg = GUIGetMsg()
@@ -230,14 +231,10 @@ While 1
 			Local $PATHAUTOCONF_PathNew = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$PATHAUTOCONF_PathNew", "foo.xml")
 			Local $PATHAUTOCONF_PathImage = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$PATHAUTOCONF_PathImage", "")
 			Local $PATHAUTOCONF_PathImageSub = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$PATHAUTOCONF_PathImageSub", "")
-;~ 			$A_DIRList = _AUTOCONF($PATHAUTOCONF_PathRom, $PATHAUTOCONF_PathRomSub, $PATHAUTOCONF_PathNew, $PATHAUTOCONF_PathImage, $PATHAUTOCONF_PathImageSub)
 			_CREATION_LOGMESS(1, "Profil : " & $A_Profil[$No_Profil])
 			_GUI_REFRESH($INI_P_SOURCE, $INI_P_CIBLE)
-;~ 		Case $ME_AutoPathConfig
-;~ 			$PATHAUTOCONF_PathRom = FileSelectFolder(_MultiLang_GetText("autoconfpath_button"), $PATHAUTOCONF_PathRom, $FSF_CREATEBUTTON, $PATHAUTOCONF_PathRom, $F_UniversalScraper)
-;~ 			IniWrite($PathConfigINI, $A_Profil[$No_Profil], "$PATHAUTOCONF_PathRom", $PATHAUTOCONF_PathRom)
-;~ 			$A_DIRList = _AUTOCONF($PATHAUTOCONF_PathRom, $PATHAUTOCONF_PathRomSub, $PATHAUTOCONF_PathNew, $PATHAUTOCONF_PathImage, $PATHAUTOCONF_PathImageSub)
-;~ 			_GUI_REFRESH($INI_P_SOURCE, $INI_P_CIBLE)
+		Case $ME_Miximage
+			_MIX_IMAGE_PROFIL()
 		Case $ME_Langue
 			_LANG_LOAD($LANG_DIR, -1)
 			_CREATION_LOGMESS(1, "Langue Selectionnee : " & $user_lang)
@@ -266,22 +263,6 @@ While 1
 			Else
 				_CREATION_LOGMESS(1, "SSH : Power Off ANNULE")
 			EndIf
-;~ 		Case $MM_New
-;~ 			$ScrapeMode = 0
-;~ 			IniWrite($PathConfigINI, "LAST_USE", "$ScrapeMode", $ScrapeMode)
-;~ 			_GUI_REFRESH($INI_P_SOURCE, $INI_P_CIBLE, 0)
-;~ 		Case $MM_Append
-;~ 			$ScrapeMode = 1
-;~ 			IniWrite($PathConfigINI, "LAST_USE", "$ScrapeMode", $ScrapeMode)
-;~ 			_GUI_REFRESH($INI_P_SOURCE, $INI_P_CIBLE, 0)
-;~ 		Case $MM_Empty
-;~ 			If $EmptyRom = 1 Then
-;~ 				$EmptyRom = 0
-;~ 			Else
-;~ 				$EmptyRom = 1
-;~ 			EndIf
-;~ 			IniWrite($PathConfigINI, "LAST_USE", "$EmptyRom", $EmptyRom)
-;~ 			_GUI_REFRESH($INI_P_SOURCE, $INI_P_CIBLE, 0)
 		Case $MH_Help
 			$sMsg = "UNIVERSAL XML SCRAPER - " & $Rev & @CRLF
 			$sMsg &= _MultiLang_GetText("win_About_By") & @CRLF & @CRLF
@@ -380,6 +361,109 @@ WEnd
 ;---------;
 ;Fonctions;
 ;---------;
+
+Func _MIX_IMAGE_PROFIL()
+	Local $T_MIXPROFIL = ""
+	$A_MIX_PROFIL_List = _FileListToArrayRec($PathMix, "*.zip", $FLTAR_FILES, $FLTAR_NORECUR, $FLTAR_SORT, $FLTAR_NOPATH)
+;~ 	_ArrayDisplay($A_MIX_PROFIL_List, "$A_MIX_PROFIL_List") ; Debug
+	For $B_MIXPROFIL = 1 To UBound($A_MIX_PROFIL_List) - 1
+		$T_MIXPROFIL = $T_MIXPROFIL & "|" & StringTrimRight($A_MIX_PROFIL_List[$B_MIXPROFIL], 4)
+	Next
+
+	$MIX_IMG_LASTPROFIL = IniRead($PathMixTmp & "\config.ini", "MIX_IMG", "$MIX_IMG_NAME", "")
+
+	#Region ### START Koda GUI section ### Form=
+	$F_MIXIMAGE = GUICreate("MixImage", 825, 272, 192, 124)
+	$C_MIXIMAGE = GUICtrlCreateCombo("", 8, 242, 401, 25, BitOR($CBS_DROPDOWN, $CBS_AUTOHSCROLL))
+	GUICtrlSetData($C_MIXIMAGE, $T_MIXPROFIL, $MIX_IMG_LASTPROFIL)
+	$B_OK = GUICtrlCreateButton("OK", 416, 240, 200, 25)
+	$B_CANCEL = GUICtrlCreateButton("CANCEL", 616, 240, 200, 25)
+	$L_Empy = GUICtrlCreateLabel("Exemple Vide", 168, 216, 68, 17)
+	$L_Exemple = GUICtrlCreateLabel("Exemple", 592, 216, 44, 17)
+	GUISetState(@SW_SHOW)
+	GUISetState(@SW_DISABLE, $F_UniversalScraper)
+	#EndRegion ### END Koda GUI section ###
+
+	$MIX_IMG_EMPTY = $PathMixTmp & "\" & IniRead($PathMixTmp & "\config.ini", "MIX_IMG", "$MIX_IMG_EMPTY", "\empty.png")
+	$MIX_IMG_EXEMPLE = $PathMixTmp & "\" & IniRead($PathMixTmp & "\config.ini", "MIX_IMG", "$MIX_IMG_EXEMPLE", "\exemple.png")
+	_GUI_REFRESH_MIXIMG($F_MIXIMAGE, $MIX_IMG_EMPTY, 8, 8)
+	_GUI_REFRESH_MIXIMG($F_MIXIMAGE, $MIX_IMG_EXEMPLE, 416, 8)
+
+	While 1
+		Local $nMsg = GUIGetMsg()
+		Switch $nMsg
+			Case $GUI_EVENT_CLOSE, $B_CANCEL
+				GUIDelete($F_MIXIMAGE)
+				GUISetState(@SW_ENABLE, $F_UniversalScraper)
+				WinActivate($F_UniversalScraper)
+				Return
+			Case $B_OK
+				MsgBox(1, "OK", "OK")
+				GUIDelete($F_MIXIMAGE)
+				GUISetState(@SW_ENABLE, $F_UniversalScraper)
+				WinActivate($F_UniversalScraper)
+				Return
+			Case $C_MIXIMAGE
+				If GUICtrlRead($C_MIXIMAGE) <> IniRead($PathMixTmp & "\config.ini", "MIX_IMG", "$MIX_IMG_NAME", "") Then
+					IniRead($PathMixTmp & "\config.ini", "MIX_IMG", "$MIX_IMG_NAME", "")
+					If Not FileDelete($PathMixTmp & "\") Then MsgBox(1, "erreur", "Impossible de supprimer " & $PathMixTmp)
+					DirCreate($PathMixTmp)
+					_Zip_UnzipAll($PathMix & GUICtrlRead($C_MIXIMAGE) & ".zip", $PathMixTmp, 1)
+					$MIX_IMG_EMPTY = $PathMixTmp & "\" & IniRead($PathMixTmp & "\config.ini", "MIX_IMG", "$MIX_IMG_EMPTY", "\empty.png")
+					$MIX_IMG_EXEMPLE = $PathMixTmp & "\" & IniRead($PathMixTmp & "\config.ini", "MIX_IMG", "$MIX_IMG_EXEMPLE", "\exemple.png")
+					ConsoleWrite($MIX_IMG_EMPTY & "-" & $MIX_IMG_EXEMPLE & @CRLF)
+					_GUI_REFRESH_MIXIMG($F_MIXIMAGE, $MIX_IMG_EMPTY, 8, 8)
+					_GUI_REFRESH_MIXIMG($F_MIXIMAGE, $MIX_IMG_EXEMPLE, 416, 8)
+				EndIf
+		EndSwitch
+	WEnd
+
+EndFunc   ;==>_MIX_IMAGE_PROFIL
+
+Func _GUI_REFRESH_MIXIMG($F_MIXIMAGE, $IMAGE_PATH, $POSX, $POSY)
+
+	Local $MergedImageBackgroundColor = 0x00000000
+	_GDIPlus_Startup()
+	; Create Double Buffer, so the doesn't need to be repainted on PAINT-Event
+	$hGraphicGUI = _GDIPlus_GraphicsCreateFromHWND($hGui) ;Draw to this graphics, $hGraphicGUI, to display on GUI
+	$hBMPBuff = _GDIPlus_BitmapCreateFromGraphics($IMG_CIBLE_X, $IMG_CIBLE_Y, $hGraphicGUI) ; $hBMPBuff is a bitmap in memory
+	$hGraphic = _GDIPlus_ImageGetGraphicsContext($hBMPBuff) ; Draw to this graphics, $hGraphic, being the graphics of $hBMPBuff
+	;Fill the Graphic Background (0x00000000 for transparent background in .png files)
+	_GDIPlus_GraphicsClear($hGraphic, $MergedImageBackgroundColor)
+
+
+	$hGraphicGUIMIX = _GDIPlus_GraphicsCreateFromHWND($F_MIXIMAGE)
+	$hBMPBuffMIX = _GDIPlus_BitmapCreateFromGraphics(400, 200, $hGraphicGUIMIX) ; $hBMPBuff is a bitmap in memory
+	$hGraphicMIX = _GDIPlus_ImageGetGraphicsContext($hBMPBuffMIX) ; Draw to this graphics, $hGraphic, being the graphics of $hBMPBuff
+	_GDIPlus_GraphicsClear($hGraphic, $MergedImageBackgroundColor)
+	$hImageMIX = _GDIPlus_ImageLoadFromFile($IMAGE_PATH)
+	$ImageWidthOG = _GDIPlus_ImageGetWidth($hImageMIX)
+	$ImageHeightOG = _GDIPlus_ImageGetHeight($hImageMIX)
+	If $ImageWidthOG > 400 Then
+		$Ratio = 400 / $ImageWidthOG
+		$ImageWidth = 400
+		$ImageHeight = $ImageHeightOG * $Ratio
+	Else
+		$ImageWidth = $ImageWidthOG
+		$ImageHeight = $ImageHeightOG
+	EndIf
+
+	If $ImageHeight > 200 Then
+		$Ratio = 200 / $ImageHeightOG
+		$ImageHeight = 200
+		$ImageWidth = $ImageWidth * $Ratio
+	Else
+		$ImageHeight = $ImageHeightOG
+	EndIf
+	$hImageMIX = _GDIPlus_ImageResize($hImageMIX, $ImageWidth, $ImageHeight)
+
+	_WinAPI_RedrawWindow($F_MIXIMAGE, 0, 0, $RDW_UPDATENOW)
+	_GDIPlus_GraphicsDrawImage($hGraphicMIX, $hImageMIX, $POSX, $POSY)
+	_WinAPI_RedrawWindow($RDW_UPDATENOW, 0, 0, $RDW_VALIDATE)
+	If Not _GDIPlus_ImageDispose($hImageMIX) Then MsgBox($MB_SYSTEMMODAL, "Error", "Problem $hImage.")
+	If Not _GDIPlus_GraphicsDispose($hGraphicMIX) Then MsgBox($MB_SYSTEMMODAL, "Error", "Problem $hGraphic.")
+	If Not _GDIPlus_Shutdown() Then MsgBox($MB_SYSTEMMODAL, "Error", "Problem _GDIPlus_Shutdown")
+EndFunc   ;==>_GUI_REFRESH_MIXIMG
 
 Func _AUTOCONF($PATHAUTOCONF_PathRom, $PATHAUTOCONF_PathRomSub, $PATHAUTOCONF_PathNew = "foo.xml", $PATHAUTOCONF_PathImage = "", $PATHAUTOCONF_PathImageSub = "")
 	If $PATHAUTOCONF_PathRom = "" Or $Autoconf_Use = 0 Then
@@ -616,19 +700,15 @@ Func _GUI_Config($A_Profil, $No_Profil)
 	$L_Autoconf_PathXML = GUICtrlCreateLabel(_MultiLang_GetText("win_config_GroupAutoconf_PathXML"), 248, 56, 110, 15)
 	GUICtrlSetTip(-1, _MultiLang_GetText("tips_config_GroupAutoconf_PathXML"))
 	$I_Autoconf_PathXML = GUICtrlCreateInput(IniRead($PathConfigINI, $A_Profil[$No_Profil], "$PATHAUTOCONF_PathNew", $PATHAUTOCONF_PathNew), 248, 74, 177, 21)
-;~ 	$B_Autoconf_PathXML = GUICtrlCreateButton("...", 430, 74, 27, 21)
 	$L_Autoconf_PathRomSub = GUICtrlCreateLabel(_MultiLang_GetText("win_config_GroupAutoconf_PathRomSub"), 248, 104, 208, 17)
 	GUICtrlSetTip(-1, _MultiLang_GetText("tips_config_GroupAutoconf_PathRomSub"))
 	$I_Autoconf_PathRomSub = GUICtrlCreateInput(IniRead($PathConfigINI, $A_Profil[$No_Profil], "$PATHAUTOCONF_PathRomSub", $PATHAUTOCONF_PathRomSub), 248, 122, 177, 21)
-;~ 	$B_Autoconf_PathRomSub = GUICtrlCreateButton("...", 430, 122, 27, 21)
 	$L_Autoconf_PathImage = GUICtrlCreateLabel(_MultiLang_GetText("win_config_GroupAutoconf_PathImage"), 248, 152, 177, 21)
 	GUICtrlSetTip(-1, _MultiLang_GetText("tips_config_GroupAutoconf_PathImage"))
 	$I_Autoconf_PathImage = GUICtrlCreateInput(IniRead($PathConfigINI, $A_Profil[$No_Profil], "$PATHAUTOCONF_PathImage", $PATHAUTOCONF_PathImage), 248, 170, 177, 21)
-;~ 	$B_Autoconf_PathImage = GUICtrlCreateButton("...", 430, 170, 27, 21)
 	$L_Autoconf_PathImageSub = GUICtrlCreateLabel(_MultiLang_GetText("win_config_GroupAutoconf_PathImageSub"), 248, 200, 208, 17)
 	GUICtrlSetTip(-1, _MultiLang_GetText("tips_config_GroupAutoconf_PathImageSub"))
 	$I_Autoconf_PathImageSub = GUICtrlCreateInput(IniRead($PathConfigINI, $A_Profil[$No_Profil], "$PATHAUTOCONF_PathImageSub", $PATHAUTOCONF_PathImageSub), 248, 218, 177, 21)
-;~ 	$B_Autoconf_PathImageSub = GUICtrlCreateButton("...", 430, 218, 27, 21)
 	$CB_Autoconf_Use = GUICtrlCreateCheckbox(_MultiLang_GetText("win_config_GroupAutoconf_Use"), 296, 248, 97, 17)
 	GUICtrlSetTip(-1, _MultiLang_GetText("tips_config_GroupAutoconf_Use"))
 	GUICtrlCreateGroup("", -99, -99, 1, 1)
@@ -841,7 +921,6 @@ Func _GUI_REFRESH($INI_P_SOURCE, $INI_P_CIBLE, $ScrapIP = 0, $SCRAP_OK = 0)
 		_WinAPI_RedrawWindow($F_UniversalScraper, 0, 0, $RDW_VALIDATE)
 		_GDIPlus_ImageDispose($hImage)
 		_GDIPlus_GraphicsDispose($hGraphic)
-		_GDIPlus_ImageDispose($hImage)
 		_GDIPlus_Shutdown()
 		If $No_Profil < 1 Then
 			$ERROR_MESSAGE &= _MultiLang_GetText("err_No_Profil") & @CRLF
@@ -868,22 +947,6 @@ Func _GUI_REFRESH($INI_P_SOURCE, $INI_P_CIBLE, $ScrapIP = 0, $SCRAP_OK = 0)
 				GUICtrlSetState($MP, $GUI_ENABLE)
 		EndSelect
 
-;~ 		Select
-;~ 			Case $ScrapeMode = 0
-;~ 				GUICtrlSetState($MM_New, $GUI_CHECKED)
-;~ 				GUICtrlSetState($MM_Append, $GUI_UNCHECKED)
-;~ 			Case $ScrapeMode = 1
-;~ 				GUICtrlSetState($MM_New, $GUI_UNCHECKED)
-;~ 				GUICtrlSetState($MM_Append, $GUI_CHECKED)
-;~ 		EndSelect
-
-;~ 		Select
-;~ 			Case $EmptyRom = 0
-;~ 				GUICtrlSetState($MM_Empty, $GUI_UNCHECKED)
-;~ 			Case $EmptyRom = 1
-;~ 				GUICtrlSetState($MM_Empty, $GUI_CHECKED)
-;~ 		EndSelect
-
 		GUICtrlSetState($MF, $GUI_ENABLE)
 		GUICtrlSetData($MF, _MultiLang_GetText("mnu_file"))
 		GUICtrlSetData($MF_Profil, _MultiLang_GetText("mnu_file_profil"))
@@ -891,7 +954,6 @@ Func _GUI_REFRESH($INI_P_SOURCE, $INI_P_CIBLE, $ScrapIP = 0, $SCRAP_OK = 0)
 
 		GUICtrlSetState($ME, $GUI_ENABLE)
 		GUICtrlSetData($ME, _MultiLang_GetText("mnu_edit"))
-;~ 		GUICtrlSetData($ME_AutoPathConfig, _MultiLang_GetText("mnu_edit_autoconfpath"))
 		GUICtrlSetData($ME_AutoConfig, _MultiLang_GetText("mnu_edit_autoconf"))
 		GUICtrlSetData($ME_FullScrape, _MultiLang_GetText("mnu_edit_fullscrape"))
 		GUICtrlSetData($ME_Langue, _MultiLang_GetText("mnu_edit_langue"))
@@ -901,12 +963,6 @@ Func _GUI_REFRESH($INI_P_SOURCE, $INI_P_CIBLE, $ScrapIP = 0, $SCRAP_OK = 0)
 		GUICtrlSetData($MP_KILLALL, _MultiLang_GetText("mnu_ssh_killall"))
 		GUICtrlSetData($MP_REBOOT, _MultiLang_GetText("mnu_ssh_reboot"))
 		GUICtrlSetData($MP_POWEROFF, _MultiLang_GetText("mnu_ssh_halt"))
-
-;~ 		GUICtrlSetState($MM, $GUI_ENABLE)
-;~ 		GUICtrlSetData($MM, _MultiLang_GetText("mnu_mode"))
-;~ 		GUICtrlSetData($MM_New, _MultiLang_GetText("mnu_mode_new"))
-;~ 		GUICtrlSetData($MM_Append, _MultiLang_GetText("mnu_mode_append"))
-;~ 		GUICtrlSetData($MM_Empty, _MultiLang_GetText("mnu_mode_empty"))
 
 		GUICtrlSetState($MH, $GUI_ENABLE)
 		GUICtrlSetData($MH, _MultiLang_GetText("mnu_help"))
@@ -918,12 +974,7 @@ Func _GUI_REFRESH($INI_P_SOURCE, $INI_P_CIBLE, $ScrapIP = 0, $SCRAP_OK = 0)
 		GUICtrlSetState($PB_SCRAPE, $GUI_HIDE)
 		_GUICtrlStatusBar_SetText($L_SCRAPE, "")
 
-;~ 		If $PATHAUTOCONF_PathRom = "" Or $Autoconf_Use = 0 Then
-;~ 			GUICtrlSetState($ME_AutoConfig, $GUI_DISABLE)
-;~ 			GUICtrlSetState($ME_FullScrape, $GUI_DISABLE)
-;~ 		Else
 		$A_DIRList = _AUTOCONF($PATHAUTOCONF_PathRom, $PATHAUTOCONF_PathRomSub, $PATHAUTOCONF_PathNew, $PATHAUTOCONF_PathImage, $PATHAUTOCONF_PathImageSub)
-;~ 		EndIf
 
 		_CREATION_LOGMESS(2, "Nettoyage de l'image du systeme")
 
@@ -932,15 +983,9 @@ Func _GUI_REFRESH($INI_P_SOURCE, $INI_P_CIBLE, $ScrapIP = 0, $SCRAP_OK = 0)
 		_CREATION_LOGMESS(2, "Menu SSH Disable")
 		GUICtrlSetState($MF, $GUI_DISABLE)
 		GUICtrlSetState($ME, $GUI_DISABLE)
-;~ 		GUICtrlSetState($MM, $GUI_DISABLE)
 		GUICtrlSetState($MH, $GUI_DISABLE)
-
-;~ 		If FileExists($PathRom) And FileExists($PathNew) And FileExists($PathImage) And $No_Profil >= 1 Then
 		GUICtrlSetImage($B_SCRAPE, $SOURCE_DIRECTORY & "\Ressources\Fleche_IP1.bmp", -1, 0)
 		$SCRAP_ENABLE = 1
-;~ 		Else
-;~ 			$SCRAP_ENABLE = 0
-;~ 		EndIf
 		GUICtrlSetState($PB_SCRAPE, $GUI_SHOW)
 	EndIf
 	Return $SCRAP_ENABLE
@@ -1851,15 +1896,11 @@ Func _MIX_IMAGE_CREATECIBLE($A_PathImage, $PathImage_Temp, $MIX_IMG_PROFIL)
 			$Y3 = $A_PathImage[$B_Images][2] + $A_PathImage[$B_Images][5]
 		EndIf
 
-;~ 		_GDIPlus_GraphicsDrawImageRectRect($hGraphic, $A_PathImage[$B_Images][3], 0, 0, $A_PathImage[$B_Images][4], $A_PathImage[$B_Images][5], $A_PathImage[$B_Images][1], $A_PathImage[$B_Images][2], $A_PathImage[$B_Images][4], $A_PathImage[$B_Images][5])
 		_GDIPlus_DrawImagePoints($hGraphic, $A_PathImage[$B_Images][3], $X1, $Y1, $X2, $Y2, $X3, $Y3)
 		ConsoleWrite(">Integration " & $A_PathImage[$B_Images][0] & " en " & $A_PathImage[$B_Images][1] & "/" & $A_PathImage[$B_Images][2] & " pour une reso de : " & $A_PathImage[$B_Images][4] & "x" & $A_PathImage[$B_Images][5] & @CRLF) ; Debug
 		_GDIPlus_ImageDispose($A_PathImage[$B_Images][3])
-;~ 		FileDelete($A_PathImage[$B_Images][0])
 	Next
 	_GDIPlus_ImageSaveToFile($hBMPBuff, $PathImage_Temp)
-;~ 	_GDIPlus_GraphicsDrawImage($hGraphicGUI, $hBMPBuff, 0, 0) ; Draw bitmap, $hBMPBuff, to the GUI's graphics, $hGraphicGUI.
-;~ 	Sleep(5000) ; Wait $SleepTimeShowMergeGUIWindow ms, or press Esc.
 	_WinAPI_DeleteObject($hBMPBuff)
 	_GDIPlus_Shutdown()
 ;~ 	_ArrayDisplay($A_PathImage, '$A_PathImage') ; Debug
