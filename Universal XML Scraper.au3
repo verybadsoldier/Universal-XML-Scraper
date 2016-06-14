@@ -211,9 +211,11 @@ Local $PATHAUTOCONF_PathImage = IniRead($PathConfigINI, $A_Profil[$No_Profil], "
 Local $PATHAUTOCONF_PathImageSub = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$PATHAUTOCONF_PathImageSub", "")
 ;~ $A_DIRList = _AUTOCONF($PATHAUTOCONF_PathRom, $PATHAUTOCONF_PathRomSub, $PATHAUTOCONF_PathNew, $PATHAUTOCONF_PathImage, $PATHAUTOCONF_PathImageSub)
 _GUI_REFRESH($INI_P_SOURCE, $INI_P_CIBLE)
+
+$MIX_IMG_LASTPROFIL = $PathMix & IniRead($PathConfigINI, "LAST_USE", "$MixImage", "") & ".zip"
 FileDelete($PathMixTmp)
 DirCreate($PathMixTmp)
-_Zip_UnzipAll($PathMix & "Arcade (moon).zip", $PathMixTmp, 0)
+_Zip_UnzipAll($MIX_IMG_LASTPROFIL, $PathMixTmp, 0)
 
 While 1
 	Local $nMsg = GUIGetMsg()
@@ -374,7 +376,7 @@ Func _MIX_IMAGE_PROFIL()
 
 	#Region ### START Koda GUI section ### Form=
 	$F_MIXIMAGE = GUICreate("MixImage", 825, 272, 192, 124)
-	$C_MIXIMAGE = GUICtrlCreateCombo("", 8, 242, 401, 25, BitOR($CBS_DROPDOWN, $CBS_AUTOHSCROLL))
+	$C_MIXIMAGE = GUICtrlCreateCombo("", 8, 242, 401, 25, BitOR($CBS_DROPDOWNLIST, $CBS_AUTOHSCROLL))
 	GUICtrlSetData($C_MIXIMAGE, $T_MIXPROFIL, $MIX_IMG_LASTPROFIL)
 	$B_OK = GUICtrlCreateButton("OK", 416, 240, 200, 25)
 	$B_CANCEL = GUICtrlCreateButton("CANCEL", 616, 240, 200, 25)
@@ -384,21 +386,23 @@ Func _MIX_IMAGE_PROFIL()
 	GUISetState(@SW_DISABLE, $F_UniversalScraper)
 	#EndRegion ### END Koda GUI section ###
 
-	$MIX_IMG_EMPTY = $PathMixTmp & "\" & IniRead($PathMixTmp & "\config.ini", "MIX_IMG", "$MIX_IMG_EMPTY", "\empty.png")
 	$MIX_IMG_EXEMPLE = $PathMixTmp & "\" & IniRead($PathMixTmp & "\config.ini", "MIX_IMG", "$MIX_IMG_EXEMPLE", "\exemple.png")
-	_GUI_REFRESH_MIXIMG($F_MIXIMAGE, $MIX_IMG_EMPTY, 8, 8)
-	_GUI_REFRESH_MIXIMG($F_MIXIMAGE, $MIX_IMG_EXEMPLE, 416, 8)
+	_GUI_REFRESH_MIXIMG($F_MIXIMAGE, $MIX_IMG_EXEMPLE)
 
 	While 1
 		Local $nMsg = GUIGetMsg()
 		Switch $nMsg
 			Case $GUI_EVENT_CLOSE, $B_CANCEL
+				If Not FileDelete($PathMixTmp & "\") Then MsgBox(1, "erreur", "Impossible de supprimer " & $PathMixTmp)
+				DirCreate($PathMixTmp)
+				_Zip_UnzipAll($PathMix & $MIX_IMG_LASTPROFIL & ".zip", $PathMixTmp, 1)
+				IniWrite($PathConfigINI, "LAST_USE", "$MixImage", $MIX_IMG_LASTPROFIL)
 				GUIDelete($F_MIXIMAGE)
 				GUISetState(@SW_ENABLE, $F_UniversalScraper)
 				WinActivate($F_UniversalScraper)
 				Return
 			Case $B_OK
-				MsgBox(1, "OK", "OK")
+				IniWrite($PathConfigINI, "LAST_USE", "$MixImage", GUICtrlRead($C_MIXIMAGE))
 				GUIDelete($F_MIXIMAGE)
 				GUISetState(@SW_ENABLE, $F_UniversalScraper)
 				WinActivate($F_UniversalScraper)
@@ -409,60 +413,34 @@ Func _MIX_IMAGE_PROFIL()
 					If Not FileDelete($PathMixTmp & "\") Then MsgBox(1, "erreur", "Impossible de supprimer " & $PathMixTmp)
 					DirCreate($PathMixTmp)
 					_Zip_UnzipAll($PathMix & GUICtrlRead($C_MIXIMAGE) & ".zip", $PathMixTmp, 1)
-					$MIX_IMG_EMPTY = $PathMixTmp & "\" & IniRead($PathMixTmp & "\config.ini", "MIX_IMG", "$MIX_IMG_EMPTY", "\empty.png")
 					$MIX_IMG_EXEMPLE = $PathMixTmp & "\" & IniRead($PathMixTmp & "\config.ini", "MIX_IMG", "$MIX_IMG_EXEMPLE", "\exemple.png")
-					ConsoleWrite($MIX_IMG_EMPTY & "-" & $MIX_IMG_EXEMPLE & @CRLF)
-					_GUI_REFRESH_MIXIMG($F_MIXIMAGE, $MIX_IMG_EMPTY, 8, 8)
-					_GUI_REFRESH_MIXIMG($F_MIXIMAGE, $MIX_IMG_EXEMPLE, 416, 8)
+					_GUI_REFRESH_MIXIMG($F_MIXIMAGE, $MIX_IMG_EXEMPLE)
 				EndIf
 		EndSwitch
 	WEnd
 
 EndFunc   ;==>_MIX_IMAGE_PROFIL
 
-Func _GUI_REFRESH_MIXIMG($F_MIXIMAGE, $IMAGE_PATH, $POSX, $POSY)
-
-	Local $MergedImageBackgroundColor = 0x00000000
+Func _GUI_REFRESH_MIXIMG($F_MIXIMAGE, $IMAGE_PATH)
+	Local $MergedImageBackgroundColor = 0xFF527392
 	_GDIPlus_Startup()
-	; Create Double Buffer, so the doesn't need to be repainted on PAINT-Event
-	$hGraphicGUI = _GDIPlus_GraphicsCreateFromHWND($hGui) ;Draw to this graphics, $hGraphicGUI, to display on GUI
-	$hBMPBuff = _GDIPlus_BitmapCreateFromGraphics($IMG_CIBLE_X, $IMG_CIBLE_Y, $hGraphicGUI) ; $hBMPBuff is a bitmap in memory
-	$hGraphic = _GDIPlus_ImageGetGraphicsContext($hBMPBuff) ; Draw to this graphics, $hGraphic, being the graphics of $hBMPBuff
-	;Fill the Graphic Background (0x00000000 for transparent background in .png files)
-	_GDIPlus_GraphicsClear($hGraphic, $MergedImageBackgroundColor)
-
-
-	$hGraphicGUIMIX = _GDIPlus_GraphicsCreateFromHWND($F_MIXIMAGE)
-	$hBMPBuffMIX = _GDIPlus_BitmapCreateFromGraphics(400, 200, $hGraphicGUIMIX) ; $hBMPBuff is a bitmap in memory
-	$hGraphicMIX = _GDIPlus_ImageGetGraphicsContext($hBMPBuffMIX) ; Draw to this graphics, $hGraphic, being the graphics of $hBMPBuff
-	_GDIPlus_GraphicsClear($hGraphic, $MergedImageBackgroundColor)
 	$hImageMIX = _GDIPlus_ImageLoadFromFile($IMAGE_PATH)
 	$ImageWidthOG = _GDIPlus_ImageGetWidth($hImageMIX)
 	$ImageHeightOG = _GDIPlus_ImageGetHeight($hImageMIX)
-	If $ImageWidthOG > 400 Then
-		$Ratio = 400 / $ImageWidthOG
-		$ImageWidth = 400
-		$ImageHeight = $ImageHeightOG * $Ratio
-	Else
-		$ImageWidth = $ImageWidthOG
-		$ImageHeight = $ImageHeightOG
-	EndIf
-
-	If $ImageHeight > 200 Then
-		$Ratio = 200 / $ImageHeightOG
-		$ImageHeight = 200
-		$ImageWidth = $ImageWidth * $Ratio
-	Else
-		$ImageHeight = $ImageHeightOG
-	EndIf
-	$hImageMIX = _GDIPlus_ImageResize($hImageMIX, $ImageWidth, $ImageHeight)
-
+	$hGraphicGUI = _GDIPlus_GraphicsCreateFromHWND($F_MIXIMAGE)
+	$hBMPBuffMIX = _GDIPlus_BitmapCreateFromGraphics(825, 210, $hGraphicGUI) ; $hBMPBuff is a bitmap in memory
+	$hGraphicMIX = _GDIPlus_ImageGetGraphicsContext($hBMPBuffMIX) ; Draw to this graphics, $hGraphic, being the graphics of $hBMPBuff
+	_GDIPlus_GraphicsClear($hGraphicMIX, $MergedImageBackgroundColor)
+	_GDIPlus_GraphicsDrawImageRectRect($hGraphicMIX, $hImageMIX, 0, 0, 805, 200, 10, 8, 805, 200)
+	_GDIPlus_ImageDispose($hImageMIX)
 	_WinAPI_RedrawWindow($F_MIXIMAGE, 0, 0, $RDW_UPDATENOW)
-	_GDIPlus_GraphicsDrawImage($hGraphicMIX, $hImageMIX, $POSX, $POSY)
-	_WinAPI_RedrawWindow($RDW_UPDATENOW, 0, 0, $RDW_VALIDATE)
-	If Not _GDIPlus_ImageDispose($hImageMIX) Then MsgBox($MB_SYSTEMMODAL, "Error", "Problem $hImage.")
-	If Not _GDIPlus_GraphicsDispose($hGraphicMIX) Then MsgBox($MB_SYSTEMMODAL, "Error", "Problem $hGraphic.")
-	If Not _GDIPlus_Shutdown() Then MsgBox($MB_SYSTEMMODAL, "Error", "Problem _GDIPlus_Shutdown")
+	_GDIPlus_GraphicsDrawImage($hGraphicGUI, $hBMPBuffMIX, 0, 0)
+	_WinAPI_RedrawWindow($F_MIXIMAGE, 0, 0, $RDW_VALIDATE)
+	_GDIPlus_GraphicsDispose($hGraphicMIX)
+	_GDIPlus_GraphicsDispose($hGraphicGUI)
+	_GDIPlus_BitmapDispose($hBMPBuffMIX)
+	_WinAPI_DeleteObject($hBMPBuffMIX)
+	_GDIPlus_Shutdown()
 EndFunc   ;==>_GUI_REFRESH_MIXIMG
 
 Func _AUTOCONF($PATHAUTOCONF_PathRom, $PATHAUTOCONF_PathRomSub, $PATHAUTOCONF_PathNew = "foo.xml", $PATHAUTOCONF_PathImage = "", $PATHAUTOCONF_PathImageSub = "")
@@ -478,8 +456,6 @@ Func _AUTOCONF($PATHAUTOCONF_PathRom, $PATHAUTOCONF_PathRomSub, $PATHAUTOCONF_Pa
 
 	GUISetState(@SW_DISABLE, $F_UniversalScraper)
 	SplashTextOn(_MultiLang_GetText("mnu_edit_autoconf"), _MultiLang_GetText("mess_autoconf"), 400, 50)
-;~ 	If (StringRight($PATHAUTOCONF_PathRom, 1) <> '\') Then $PATHAUTOCONF_PathRom &= '\'
-;~ 	$A_DIRList = _FileListToArray($PATHAUTOCONF_PathRom, "*", $FLTA_FOLDERS)
 	$A_DIRList = _FileListToArrayRec($PATHAUTOCONF_PathRom, "*", $FLTAR_FOLDERS, $FLTAR_NORECUR, $FLTAR_SORT, $FLTAR_RELPATH)
 	If IsArray($A_DIRList) Then
 ;~ 		_ArrayDisplay($A_DIRList, '$A_DIRList') ; Debug
@@ -489,7 +465,6 @@ Func _AUTOCONF($PATHAUTOCONF_PathRom, $PATHAUTOCONF_PathRomSub, $PATHAUTOCONF_Pa
 				GUICtrlDelete($ME_AutoConfigItem[$B_ArrayDelete])
 			Next
 		EndIf
-;~ 		_ArraySort($A_DIRList, 0, 1)
 
 		GUICtrlSetState($ME_AutoConfig, $GUI_ENABLE)
 		GUICtrlSetState($ME_FullScrape, $GUI_ENABLE)
@@ -1201,7 +1176,7 @@ Func _SCRAPING($No_Profil, $A_Profil, $PathRom, $No_system, $INI_OPTION_MAJ, $V_
 			$root_cible = $A_XMLFormat[$B_XMLElements][0]
 		EndIf
 		If $A_XMLFormat[$B_XMLElements][3] = "root" Then Local $xpath_root_source = "//" & $A_XMLFormat[$B_XMLElements][2]
-		If StringLeft($A_XMLFormat[$B_XMLElements][2], 11) = "%mix_image%" Then $A_MIX_IMAGE_Format = _MIX_IMAGE_CREATEFORMAT(StringTrimLeft($A_XMLFormat[$B_XMLElements][2], 11))
+		If StringLeft($A_XMLFormat[$B_XMLElements][2], 11) = "%mix_image%" Then $A_MIX_IMAGE_Format = _MIX_IMAGE_CREATEFORMAT()
 	Next
 	ConsoleWrite("$xpath_root_source : " & $xpath_root_source & @CRLF) ; Debug
 	ConsoleWrite("$xpath_root_cible : " & $xpath_root_cible & @CRLF) ; Debug
@@ -1757,8 +1732,7 @@ Func _XML_PUTROMINFO($PathTmp, $Path_source, $xpath_root_cible, $xpath_root_sour
 				Local $PathImageSub_Temp = $PathImageSub & StringTrimRight($A_ROMList[$No_ROMXML][0], 4) & "-" & $A_XMLFormat[$B_XMLElements][0] & "." & $ExtImage
 
 				If StringLeft($XML_Value, 11) = "%mix_image%" Then
-					$MIX_IMG_PROFIL = StringTrimLeft($XML_Value, 11)
-					_MIX_IMAGE_CREATEARRAY($Path_source, $xpath_root_source, $XML_Type, $No_ROM, $PathImage_Temp, $MIX_IMG_PROFIL, $No_ROMXML, $A_MIX_IMAGE_Format)
+					_MIX_IMAGE_CREATEARRAY($Path_source, $xpath_root_source, $XML_Type, $No_ROM, $PathImage_Temp, $No_ROMXML, $A_MIX_IMAGE_Format)
 					_XMLFileOpen($PathTmp)
 					If @error Then
 						ConsoleWrite("!_XMLFileOpen : " & _XMLError("") & @CRLF) ; Debug
@@ -1785,7 +1759,7 @@ Func _XML_PUTROMINFO($PathTmp, $Path_source, $xpath_root_cible, $xpath_root_sour
 	EndSwitch
 EndFunc   ;==>_XML_PUTROMINFO
 
-Func _MIX_IMAGE_CREATEARRAY($Path_source, $xpath_root_source, $XML_Type, $No_ROM, $PathImageFinal_Temp, $MIX_IMG_PROFIL, $No_ROMXML = 1, $A_MIX_IMAGE_Format = 0)
+Func _MIX_IMAGE_CREATEARRAY($Path_source, $xpath_root_source, $XML_Type, $No_ROM, $PathImageFinal_Temp, $No_ROMXML = 1, $A_MIX_IMAGE_Format = 0)
 	Local $A_PathImage[1][10]
 	Local $MIX_IMG_HauteurImage = 0, $MIX_IMG_LargeurImage = 0, $outputformat, $maxheight = '', $maxwidth = ''
 	_CREATION_LOGMESS(1, "Recuperation des Images pour le Mix")
@@ -1808,11 +1782,12 @@ Func _MIX_IMAGE_CREATEARRAY($Path_source, $xpath_root_source, $XML_Type, $No_ROM
 			$outputformat = "&outputformat=" & $ExtImage
 			If $MIX_IMG_LargeurImage > 0 Then $maxwidth = "&maxwidth=" & $MIX_IMG_LargeurImage
 			If $MIX_IMG_HauteurImage > 0 Then $maxheight = "&maxheight=" & $MIX_IMG_HauteurImage
-			ConsoleWrite("+ MIX Download : " & $XML_Value & $maxheight & $maxwidth & " dans " & $PathImage_Temp & @CRLF) ; Debug
-			_CREATION_LOGMESS(2, "Download Images : " & $PathImage_Temp)
 			If $A_MIX_IMAGE_Format[$B_Images][1] = 'fixe' Then
-				$PathImage_Temp = $A_MIX_IMAGE_Format[$B_Images][2]
+				$PathImage_Temp = $PathMixTmp & "\" & $A_MIX_IMAGE_Format[$B_Images][2]
+				_CREATION_LOGMESS(2, "Recup Images : " & $PathImage_Temp)
 			Else
+				_CREATION_LOGMESS(2, "Download Images : " & $PathImage_Temp)
+				ConsoleWrite("+ MIX Download : " & $XML_Value & $maxheight & $maxwidth & " dans " & $PathImage_Temp & @CRLF) ; Debug
 				InetGet($XML_Value & $maxheight & $maxwidth & $outputformat, $PathImage_Temp, 0, 0)
 			EndIf
 
@@ -1821,10 +1796,10 @@ Func _MIX_IMAGE_CREATEARRAY($Path_source, $xpath_root_source, $XML_Type, $No_ROM
 		EndIf
 	Next
 ;~ 	_ArrayDisplay($A_PathImage, '$A_PathImage') ; Debug
-	_MIX_IMAGE_CREATECIBLE($A_PathImage, $PathImageFinal_Temp, $MIX_IMG_PROFIL)
+	_MIX_IMAGE_CREATECIBLE($A_PathImage, $PathImageFinal_Temp)
 EndFunc   ;==>_MIX_IMAGE_CREATEARRAY
 
-Func _MIX_IMAGE_CREATECIBLE($A_PathImage, $PathImage_Temp, $MIX_IMG_PROFIL)
+Func _MIX_IMAGE_CREATECIBLE($A_PathImage, $PathImage_Temp)
 	If UBound($A_PathImage) - 1 < 1 Then Return
 	_CREATION_LOGMESS(1, "Mixage des images")
 	Local $MergedImageBackgroundColor = 0x00000000
@@ -1838,9 +1813,9 @@ Func _MIX_IMAGE_CREATECIBLE($A_PathImage, $PathImage_Temp, $MIX_IMG_PROFIL)
 
 ;~ 	_ArrayDisplay($A_PathImage, '$A_PathImage') ; Debug
 
-	$IMG_CIBLE_X = IniRead($PathConfigINI, $MIX_IMG_PROFIL, "$MIX_IMG_CIBLE_X", 0)
+	$IMG_CIBLE_X = IniRead($PathMixTmp & "\config.ini", "MIX_IMG", "$MIX_IMG_CIBLE_X", 0)
 	If $IMG_CIBLE_X < 1 Then $IMG_CIBLE_X = $A_PathImage[1][4]
-	$IMG_CIBLE_Y = IniRead($PathConfigINI, $MIX_IMG_PROFIL, "$MIX_IMG_CIBLE_Y", 0)
+	$IMG_CIBLE_Y = IniRead($PathMixTmp & "\config.ini", "MIX_IMG", "$MIX_IMG_CIBLE_Y", 0)
 	If $IMG_CIBLE_Y < 1 Then $IMG_CIBLE_Y = $A_PathImage[1][5]
 
 	ConsoleWrite(">Taille de l'image cible " & $IMG_CIBLE_X & "x" & $IMG_CIBLE_Y & @CRLF) ; Debug
@@ -1906,15 +1881,15 @@ Func _MIX_IMAGE_CREATECIBLE($A_PathImage, $PathImage_Temp, $MIX_IMG_PROFIL)
 ;~ 	_ArrayDisplay($A_PathImage, '$A_PathImage') ; Debug
 EndFunc   ;==>_MIX_IMAGE_CREATECIBLE
 
-Func _MIX_IMAGE_CREATEFORMAT($Profil)
+Func _MIX_IMAGE_CREATEFORMAT()
 	Local $A_MIX_IMAGE_Format[1][12]
 	Local $B_Sources
-	$Nb_MIX_Image = IniRead($PathConfigINI, $Profil, "$MIX_IMG_NBIMG", 0)
+	$Nb_MIX_Image = IniRead($PathMixTmp & "\config.ini", "MIX_IMG", "$MIX_IMG_NBIMG", 0)
 	_CREATION_LOGMESS(1, "Creation des parametres pour le Mix")
 	For $B_Images = 1 To $Nb_MIX_Image
 		$B_Sources = 1
-		While IniRead($PathConfigINI, $Profil, "$MIX_IMG" & $B_Images & "_SOURCE_" & $B_Sources, "Ending") <> "Ending"
-			_ArrayAdd($A_MIX_IMAGE_Format, IniRead($PathConfigINI, $Profil, "$MIX_IMG" & $B_Images & "_SOURCE_" & $B_Sources, ""))
+		While IniRead($PathMixTmp & "\config.ini", "MIX_IMG", "$MIX_IMG" & $B_Images & "_SOURCE_" & $B_Sources, "Ending") <> "Ending"
+			_ArrayAdd($A_MIX_IMAGE_Format, IniRead($PathMixTmp & "\config.ini", "MIX_IMG", "$MIX_IMG" & $B_Images & "_SOURCE_" & $B_Sources, ""))
 			$B_Sources = $B_Sources + 1
 		WEnd
 	Next
