@@ -5,7 +5,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper XML Universel
-#AutoIt3Wrapper_Res_Fileversion=1.2.0.1
+#AutoIt3Wrapper_Res_Fileversion=1.3.0.1
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -77,7 +77,7 @@ If @Compiled Then
 		FileDelete($SOURCE_DIRECTORY & "\LanguageFiles")
 		FileDelete($SOURCE_DIRECTORY & "\Ressources")
 		ConsoleWrite("Ini Deleted" & @CRLF) ;Debug
-		_CREATION_LOGMESS(1, "Mise a� jour de " & $verINI & " vers " & $Rev)
+		_CREATION_LOGMESS(1, "Mise a  jour de " & $verINI & " vers " & $Rev)
 	Else
 		_CREATION_LOGMESS(1, "Version : " & $Rev)
 	EndIf
@@ -90,6 +90,8 @@ EndIf
 _CREATION_LOGMESS(2, "Creation des fichiers ressources")
 DirCreate($SOURCE_DIRECTORY & "\LanguageFiles")
 DirCreate($SOURCE_DIRECTORY & "\Ressources")
+DirCreate($SOURCE_DIRECTORY & "\Mix")
+DirCreate($SOURCE_DIRECTORY & "\Mix\TEMP")
 FileInstall(".\UXS-config.ini", $SOURCE_DIRECTORY & "\UXS-config.ini")
 FileInstall(".\LanguageFiles\UXS-ENGLISH.XML", $SOURCE_DIRECTORY & "\LanguageFiles\UXS-ENGLISH.XML")
 FileInstall(".\LanguageFiles\UXS-FRENCH.XML", $SOURCE_DIRECTORY & "\LanguageFiles\UXS-FRENCH.XML")
@@ -110,7 +112,9 @@ FileInstall(".\Ressources\Fleche_IP1.bmp", $SOURCE_DIRECTORY & "\Ressources\Flec
 FileInstall(".\Ressources\Fleche_IP2.bmp", $SOURCE_DIRECTORY & "\Ressources\Fleche_IP2.bmp")
 FileInstall(".\Ressources\plink.exe", $SOURCE_DIRECTORY & "\Ressources\plink.exe")
 FileInstall(".\Ressources\systemlist.txt", $SOURCE_DIRECTORY & "\Ressources\systemlist.txt")
-FileInstall(".\Mix\", $SOURCE_DIRECTORY & "\Mix\")
+FileInstall(".\Mix\Arcade (moon).zip", $SOURCE_DIRECTORY & "\Mix\")
+FileInstall(".\Mix\Oldtv (nes).zip", $SOURCE_DIRECTORY & "\Mix\")
+FileInstall(".\Mix\Standard (3img).zip", $SOURCE_DIRECTORY & "\Mix\")
 _CREATION_LOGMESS(2, "Fin de creation des fichiers ressources")
 
 ;Definition des Variables
@@ -375,13 +379,13 @@ Func _MIX_IMAGE_PROFIL()
 	$MIX_IMG_LASTPROFIL = IniRead($PathMixTmp & "\config.ini", "MIX_IMG", "$MIX_IMG_NAME", "")
 
 	#Region ### START Koda GUI section ### Form=
-	$F_MIXIMAGE = GUICreate("MixImage", 825, 272, 192, 124)
+	$F_MIXIMAGE = GUICreate(_MultiLang_GetText("win_config_mix_Title"), 825, 272, 192, 124)
 	$C_MIXIMAGE = GUICtrlCreateCombo("", 8, 242, 401, 25, BitOR($CBS_DROPDOWNLIST, $CBS_AUTOHSCROLL))
 	GUICtrlSetData($C_MIXIMAGE, $T_MIXPROFIL, $MIX_IMG_LASTPROFIL)
-	$B_OK = GUICtrlCreateButton("OK", 416, 240, 200, 25)
-	$B_CANCEL = GUICtrlCreateButton("CANCEL", 616, 240, 200, 25)
-	$L_Empy = GUICtrlCreateLabel("Exemple Vide", 168, 216, 68, 17)
-	$L_Exemple = GUICtrlCreateLabel("Exemple", 592, 216, 44, 17)
+	$B_OK = GUICtrlCreateButton(_MultiLang_GetText("win_config_mix_Enreg"), 416, 240, 200, 25)
+	$B_CANCEL = GUICtrlCreateButton(_MultiLang_GetText("win_config_mix_Cancel"), 616, 240, 200, 25)
+	$L_Empy = GUICtrlCreateLabel(_MultiLang_GetText("win_config_mix_empty"), 168, 216, 68, 17)
+	$L_Exemple = GUICtrlCreateLabel(_MultiLang_GetText("win_config_mix_exemple"), 592, 216, 44, 17)
 	GUISetState(@SW_SHOW)
 	GUISetState(@SW_DISABLE, $F_UniversalScraper)
 	#EndRegion ### END Koda GUI section ###
@@ -1003,7 +1007,7 @@ Func _LANG_LOAD($LANG_DIR, $user_lang)
 			"3009 " & _ ;English_Zimbabwe
 			"3409" ;English_Philippines
 
-	$LANGFILES[1][0] = "Français" ; French
+	$LANGFILES[1][0] = "FranÃ§ais" ; French
 	$LANGFILES[1][1] = $LANG_DIR & "\UXS-FRENCH.XML"
 	$LANGFILES[1][2] = "040c " & _ ;French_Standard
 			"080c " & _ ;French_Belgian
@@ -1807,7 +1811,7 @@ Func _MIX_IMAGE_CREATECIBLE($A_PathImage, $PathImage_Temp)
 	For $B_Images = 1 To UBound($A_PathImage) - 1
 		$A_PathImage[$B_Images][3] = _GDIPlus_ImageLoadFromFile($A_PathImage[$B_Images][0])
 		$A_PathImage[$B_Images][4] = _GDIPlus_ImageGetWidth($A_PathImage[$B_Images][3])
-		If $A_PathImage[$B_Images][4] = 4294967295 Then $A_PathImage[$B_Images][4] = 0 ;4294967295 en cas d'erreur, soit 32 bits � 1 (11111...1111111).
+		If $A_PathImage[$B_Images][4] = 4294967295 Then $A_PathImage[$B_Images][4] = 0 ;4294967295 en cas d'erreur, soit 32 bits à 1 (11111...1111111).
 		$A_PathImage[$B_Images][5] = _GDIPlus_ImageGetHeight($A_PathImage[$B_Images][3])
 	Next
 

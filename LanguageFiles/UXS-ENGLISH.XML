@@ -89,6 +89,13 @@
 			<win_config_Enreg>Save</win_config_Enreg>
 			<win_config_Cancel>Cancel</win_config_Cancel>
 		</win_config>
+		<win_config_mix>
+			<win_config_mix_Title>Mix Image Configuration</win_config_mix_Title>
+			<win_config_mix_empty>Empty template</win_config_mix_empty>
+			<win_config_mix_exemple>Template</win_config_mix_exemple>
+			<win_config_mix_Enreg>Save</win_config_mix_Enreg>
+			<win_config_mix_Cancel>Cancel</win_config_mix_Cancel>
+		</win_config_mix>
 		<win_About>
 			<win_About_Title>About</win_About_Title>
 			<win_About_By>Created by : Screech</win_About_By>

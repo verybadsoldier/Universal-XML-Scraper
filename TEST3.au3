@@ -1,82 +1,109 @@
-#include <Date.au3>
-#include <array.au3>
-#include <File.au3>
-#include <String.au3>
-#include <ButtonConstants.au3>
-#include <ComboConstants.au3>
-#include <Crypt.au3>
-#include <GDIPlus.au3>
 #include <GUIConstantsEx.au3>
-#include <GuiStatusBar.au3>
-#include <WindowsConstants.au3>
+#include <File.au3>
 
+Global $sMyComputerCLSID = "::{20D04FE0-3AEA-1069-A2D8-08002B30309D}"
+Global $gsDirData = ""
 
-
-
-
-Local $MergedImageBackgroundColor = 0x00000000
-	_GDIPlus_Startup()
-
-	$hImageMIX = _GDIPlus_ImageLoadFromFile("C:\Developpement\Github\Universal-XML-Scraper\Mix\TEMP\empty.png")
-	$ImageWidthOG = _GDIPlus_ImageGetWidth($hImageMIX)
-	If $ImageWidthOG = 4294967295 Then $ImageWidthOG = 0 ;4294967295 en cas d'erreur, soit 32 bits à 1 (11111...1111111).
-	$ImageHeightOG = _GDIPlus_ImageGetHeight($hImageMIX)
-
-	If $ImageWidthOG > 400 Then
-		$Ratio = 400 / $ImageWidthOG
-		$ImageWidth = 400
-		$ImageHeight = $ImageHeightOG * $Ratio
-	Else
-		$ImageWidth = $ImageWidthOG
-		$ImageHeight = $ImageHeightOG
-	EndIf
-
-	If $ImageHeight > 200 Then
-		$Ratio = 200 / $ImageHeightOG
-		$ImageHeight = 200
-		$ImageWidth = $ImageWidth * $Ratio
-	Else
-		$ImageHeight = $ImageHeightOG
-	EndIf
-
-
-	#Region ### START Koda GUI section ### Form=
-	$F_MIXIMAGE = GUICreate("MixImage", 825, 272, 192, 124)
-	$B_OK = GUICtrlCreateButton("OK", 416, 240, 200, 25)
-	$B_CANCEL = GUICtrlCreateButton("CANCEL", 616, 240, 200, 25)
-	$L_Empy = GUICtrlCreateLabel("Exemple Vide", 168, 216, 68, 17)
-	$L_Exemple = GUICtrlCreateLabel("Exemple", 592, 216, 44, 17)
-	GUISetState(@SW_SHOW)
-	#EndRegion ### END Koda GUI section ###
-
-
-
-; Create Double Buffer, so the doesn't need to be repainted on PAINT-Event
-$hGraphicGUI = _GDIPlus_GraphicsCreateFromHWND($F_MIXIMAGE) ;Draw to this graphics, $hGraphicGUI, to display on GUI
-$hBMPBuffMIX = _GDIPlus_BitmapCreateFromGraphics(400, 200, $hGraphicGUI) ; $hBMPBuff is a bitmap in memory
-$hGraphicMIX = _GDIPlus_ImageGetGraphicsContext($hBMPBuffMIX) ; Draw to this graphics, $hGraphic, being the graphics of $hBMPBuff
-
-;Fill the Graphic Background (0x00000000 for transparent background in .png files)
-_GDIPlus_GraphicsClear($hGraphicMIX, $MergedImageBackgroundColor)
-
-;~ $hImageMIX = _GDIPlus_ImageResize($hImageMIX, $ImageWidth, $ImageHeight)
-
-	_GDIPlus_GraphicsDrawImageRectRect($hGraphicMIX, $hImageMIX, 0, 0, 400, 200, 8, 8, 408, 208)
-	If Not _GDIPlus_ImageDispose($hImageMIX) Then MsgBox($MB_SYSTEMMODAL, "Error", "Problem $hImage.")
-
-	_GDIPlus_GraphicsDrawImage($hGraphicGUI, $hBMPBuffMIX, 0, 0)
-
-	_GDIPlus_GraphicsDispose($hGraphicMIX)
-	_GDIPlus_GraphicsDispose($hGraphicGUI)
-	_WinAPI_DeleteObject($hBMPBuffMIX)
-	If Not _GDIPlus_Shutdown() Then MsgBox($MB_SYSTEMMODAL, "Error", "Problem _GDIPlus_Shutdown")
-
+Global $ghMain = GUICreate('FileInstall Directory', 600, 380)
+Global $giOutPut = GUICtrlCreateEdit('', 10, 10, 580, 300)
+GUICtrlCreateLabel('Extension:', 20, 318, 50, 20, 0x001)
+Global $giExtension = GUICtrlCreateInput('*', 75, 315, 50, 20)
+GUICtrlCreateLabel('Destination Path:', 130, 318, 90, 20, 0x001)
+Global $giDestPath = GUICtrlCreateInput('@TempDir & "\"', 220, 315, 200, 20)
+GUICtrlCreateLabel('Flag:', 425, 318, 30, 20, 0x001)
+Global $giFlag = GUICtrlCreateCombo('', 455, 315, 40, 300)
+GUICtrlSetData($giFlag, '0|1|', '0')
+Global $giDirDrive = GUICtrlCreateCheckbox("Long Path", 500, 315)
+Global $giDirRecurse = GUICtrlCreateCheckbox("Dir Recurse", 500, 335)
+Global $giDirHierarchy = GUICtrlCreateCheckbox("Keep Hierarchy", 500, 355)
+Global $giGetDir = GUICtrlCreateButton('Directory Get Files', 110, 345, 150, 30)
+Global $giCopyData = GUICtrlCreateButton('Copy Data', 320, 345, 150, 30)
+GUISetState()
 While 1
-		Local $nMsg = GUIGetMsg()
-		Switch $nMsg
-			Case $GUI_EVENT_CLOSE, $B_CANCEL
-				Exit
-			Case $B_OK
-				If Not FileDelete("C:\Developpement\Github\Universal-XML-Scraper\Mix\TEMP\") Then MsgBox(1, "erreur", "Impossible de supprimer ")
-		EndSwitch
-		wend
+    Switch GUIGetMsg()
+        Case - 3
+            Exit
+        Case $giGetDir
+            $gsDirData = _GetDirData(GUICtrlRead($giExtension), (GUICtrlRead($giDirDrive) <> 1), _
+                GUICtrlRead($giDestPath), GUICtrlRead($giFlag), GUICtrlRead($giDirRecurse), _
+                GUICtrlRead($giDirHierarchy) = $GUI_CHECKED)
+            If Not @error Then
+                GUICtrlSetData($giOutPut, '')
+                GUICtrlSetData($giOutPut, $gsDirData)
+            EndIf
+        Case $giCopyData
+            ClipPut(GUICtrlRead($giOutPut))
+    EndSwitch
+WEnd
+
+Func _GetDirData($sExt, $bExcludeLongName, $sDestPath, $nFlag, $nRecursive, $bHierarchy)
+
+    Local $sDir = FileSelectFolder("Select a Directory to FileInstall", $sMyComputerCLSID)
+    If @error Then
+        Return SetError(1, @extended, "")
+    EndIf
+
+    $nRecursive = ($nRecursive = $GUI_CHECKED) ? 1 : 0
+    Local $aFiles = _FileListToArrayRec($sDir, "*." & $sExt, 1, $nRecursive, 0, 2)
+    If Not IsArray($aFiles) Then
+        Return SetError(2, @extended, "")
+    EndIf
+
+    Local $sTDrive, $sTDir, $sTFName, $sTExt
+    Local $sHold = ""
+    _GetExistStr($sDestPath, $sHold)
+
+    Local $sFinstall = ""
+    Local $sTmpDest = ""
+    Local $sHoldStr = ""
+
+    If $bHierarchy Then
+        ; main folder searching
+        _PathSplit($sDir, $sTDrive, $sTDir, $sTFName, $sTExt)
+        If StringRight(StringRegExpReplace($sDestPath, "[\\/]+\z", ""), _
+            StringLen($sTFName)) <> $sTFName Then
+            $sTmpDest = StringRegExpReplace($sDestPath, _
+                "(\&\s*(?:\x27|\x22)[\\/]+(?:\x27|\x22))", "") & ' & "\' & $sTFName & '\"'
+            If Not StringInStr($sHoldStr, $sTDir & @LF) Then
+                $sHoldStr &= $sTDir & @LF
+                _GetExistStr($sTmpDest, $sHold)
+            EndIf
+        EndIf
+    EndIf
+
+    Local Static $sScrDir = StringRegExpReplace(@ScriptDir, "\\+\z", "")
+    For $i = 1 To UBound($aFiles) - 1
+        $sTmpDest = $sDestPath
+
+        _PathSplit($aFiles[$i], $sTDrive, $sTDir, $sTFName, $sTExt)
+
+        If $bExcludeLongName Then
+            If $sScrDir = StringRegExpReplace($sTDrive & $sTDir, "\\+\z", "") Then
+                $aFiles[$i] = $sTFName & $sTExt
+            EndIf
+        EndIf
+
+        If $bHierarchy Then
+            $sTmpDest = StringRegExpReplace($sTmpDest, _
+                "(\&\s*(?:\x27|\x22)[\\/]+(?:\x27|\x22))", "") & ' & "' & $sTDir & '"'
+            If Not StringInStr($sHoldStr, $sTDir & @LF) Then
+                $sHoldStr &= $sTDir & @LF
+                _GetExistStr($sTmpDest, $sHold)
+            EndIf
+        EndIf
+
+        $sFinstall &= "FileInstall(""" & $aFiles[$i] & '", ' & $sTmpDest & ", " & $nFlag & ")" & @CRLF
+    Next
+
+    $sHold &= $sFinstall
+    $sHold = StringTrimRight($sHold, 2)
+    Return $sHold
+EndFunc
+
+Func _GetExistStr($sDestPath, ByRef $sOutData)
+    $sOutData &= 'If Not FileExists(' & $sDestPath & ') Then' & @CRLF
+    $sOutData &= '    Do' & @CRLF
+    $sOutData &= '        DirCreate(' & $sDestPath & ')' & @CRLF
+    $sOutData &= '    Until FileExists(' & $sDestPath & ')' & @CRLF
+    $sOutData &= 'EndIf' & @CRLF
+EndFunc

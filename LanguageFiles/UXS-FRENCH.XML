@@ -89,6 +89,13 @@
 			<win_config_Enreg>Enregistrer</win_config_Enreg>
 			<win_config_Cancel>Annuler</win_config_Cancel>
 		</win_config>
+		<win_config_mix>
+			<win_config_mix_Title>Configuration Mix Image</win_config_mix_Title>
+			<win_config_mix_empty>Exemple vide</win_config_mix_empty>
+			<win_config_mix_exemple>Exemple</win_config_mix_exemple>
+			<win_config_mix_Enreg>Enregistrer</win_config_mix_Enreg>
+			<win_config_mix_Cancel>Annuler</win_config_mix_Cancel>
+		</win_config_mix>
 		<win_About>
 			<win_About_Title>A propos</win_About_Title>
 			<win_About_By>Auteur : Screech</win_About_By>
