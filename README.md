@@ -15,7 +15,7 @@ Ce logiciel vous permet de scraper vos ROMs afin d'obtenir un fichier XML conten
 2 - Décompressez l'archive et lancez le fichier EXE.  
 3 - Dans le menu Fichier/Profil, choisissez un profil.  
 4 - Dans le menu Edition/Configuration, réglez vos chemins.  
-5 - Cliquez sur la flèche verte
+5 - Cliquez sur la flèche verte  
 6 - Et patientez...........  
 
 C'est finit, vous avez un beau fichier gamelist.xml sur votre recalbox avec les images qui vont avec ;)
