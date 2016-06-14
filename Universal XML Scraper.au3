@@ -1493,12 +1493,14 @@ Func _SYSTEM_SelectGUI($A_SYSTEM, $FullScrape = 0)
 EndFunc   ;==>_SYSTEM_SelectGUI
 
 Func _XML_CREATEFORMAT($Profil)
+	_CREATION_LOGMESS(1, "Recuperation des champs du profil")
 	Local $A_XMLFormat[1][4]
 	Local $B_Elements = 1
-	_CREATION_LOGMESS(1, "Recuperation des champs du profil")
-	While IniRead($PathConfigINI, $Profil, "$ELEMENT_" & $B_Elements, "Ending") <> "Ending"
-		_ArrayAdd($A_XMLFormat, IniRead($PathConfigINI, $Profil, "$ELEMENT_" & $B_Elements, ""))
+	Local $V_Elements = IniRead($PathConfigINI, $Profil, "$ELEMENT_" & $B_Elements, "Ending")
+	While $V_Elements <> "Ending"
+		_ArrayAdd($A_XMLFormat, $V_Elements)
 		$B_Elements = $B_Elements + 1
+		$V_Elements = IniRead($PathConfigINI, $Profil, "$ELEMENT_" & $B_Elements, "Ending")
 	WEnd
 	_CREATION_LOGMESS(2, "Fin de recuperation des champs du profil")
 ;~ 	_ArrayDisplay($A_XMLFormat, '$A_XMLFormat') ; Debug
