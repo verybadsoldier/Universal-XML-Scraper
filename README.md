@@ -30,3 +30,6 @@ __UDF utilisés__
 [Trim](https://www.autoitscript.com/forum/topic/14173-new-string-trim-functions/) par blitzer99  
 [XMLDomWrapper](https://www.autoitscript.com/forum/topic/19848-xml-dom-wrapper-com/) par eltorro  
 [zip](https://www.autoitscript.com/forum/topic/73425-zipau3-udf-in-pure-autoit/) par torels
+
+__Images__  
+L'image moon.png de la borne d'arcade provient du theme [robospin](http://forum.attractmode.org/index.php?topic=700.0) d'attract mode par omegaman
