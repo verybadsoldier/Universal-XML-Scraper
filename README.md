@@ -2,7 +2,7 @@
 
 Ce logiciel vous permet de scraper vos ROMs afin d'obtenir un fichier XML contenant les informations de vos jeux ainsi que les images correspondantes. Il permet meme de scraper l'intégralité de vos répertoires de ROM et de crééer des compositions d'images
 
-<img src="http://zupimages.net/up/16/09/n6mr.jpg" alt="" width="366" height="219" />
+<img src="https://raw.githubusercontent.com/Universal-Rom-Tools/Universal-XML-Scraper/master/Images/Interface.jpg" alt="" width="366" height="219" />
 <ul>
 	<li>Il est multilingue (Anglais/Français)</li>
 	<li>Il est compatible (pour le moment) avec la recalbox V4, la recalbox V3 et Emulationstation (forcement le xml de la V3 est identique à celui d'emulationstation d'origine ;) ) et potentiellement plein d'autres systemes via son système de profil</li>
