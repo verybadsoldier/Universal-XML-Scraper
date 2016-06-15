@@ -18,6 +18,8 @@
 
 <message>
 	<mess_autoconf>Préparation configuration Automatique en cours</mess_autoconf>
+	<mess_autoconf_ask_Title>Configuration Automatique</mess_autoconf_ask_Title>
+	<mess_autoconf_ask_Question>Souhaitez-vous activer la configuration automatique ?</mess_autoconf_ask_Question>
 </message>
 
 <gui>

@@ -5,7 +5,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper XML Universel
-#AutoIt3Wrapper_Res_Fileversion=1.3.0.1
+#AutoIt3Wrapper_Res_Fileversion=1.3.0.2
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -134,14 +134,14 @@ Global $PathRom = IniRead($PathConfigINI, "LAST_USE", "$PathRom", "")
 Global $PathRomSub = IniRead($PathConfigINI, "LAST_USE", "$PathRomSub", "")
 Global $PathImage = IniRead($PathConfigINI, "LAST_USE", "$PathImage", "")
 Global $PathImageSub = IniRead($PathConfigINI, "LAST_USE", "$PathImageSub", "")
-Global $No_Profil = IniRead($PathConfigINI, "LAST_USE", "$No_Profil", 1)
-Global $user_lang = IniRead($PathConfigINI, "LAST_USE", "$user_lang", "-1")
-Global $No_system = IniRead($PathConfigINI, "LAST_USE", "$No_system", "-1")
+Global $No_Profil = IniRead($PathConfigINI, "LAST_USE", "$No_Profil", -1)
+Global $user_lang = IniRead($PathConfigINI, "LAST_USE", "$user_lang", -1)
+Global $No_system = IniRead($PathConfigINI, "LAST_USE", "$No_system", -1)
 Global $HauteurImage = IniRead($PathConfigINI, "LAST_USE", "$HauteurImage", 0)
 Global $LargeurImage = IniRead($PathConfigINI, "LAST_USE", "$LargeurImage", 0)
 Global $EmptyRom = IniRead($PathConfigINI, "LAST_USE", "$EmptyRom", 0)
 Global $ScrapeMode = IniRead($PathConfigINI, "LAST_USE", "$ScrapeMode", 0)
-Global $Autoconf_Use = IniRead($PathConfigINI, "LAST_USE", "$Autoconf_Use", 1)
+Global $Autoconf_Use = IniRead($PathConfigINI, "LAST_USE", "$Autoconf_Use", -1)
 Global $TMP_LastChild = ''
 Global $DevId = BinaryToString(_Crypt_DecryptData("0x1552EDED2FA9B5", "1gdf1g1gf", $CALG_RC4))
 Global $DevPassword = BinaryToString(_Crypt_DecryptData("0x1552EDED2FA9B547FBD0D9A623D954AE7BEDC681", "1gdf1g1gf", $CALG_RC4))
@@ -168,6 +168,32 @@ _CREATION_LOGMESS(2, "Fin de Definition des variables")
 _CREATION_LOGMESS(2, "Chargement de la langue")
 _LANG_LOAD($LANG_DIR, $user_lang)
 _CREATION_LOGMESS(1, "Langue Selectionnee : " & $user_lang)
+
+; Initialisation interface
+Global $A_Profil = _INI_CREATEARRAY_SCRAPER()
+If IsArray($A_Profil) Then _CREATION_LOGMESS(2, "Creation de la table A_Profil OK")
+
+If $No_Profil = -1 Then
+	$No_Profil = _PROFIL_SelectGUI($A_Profil, $No_Profil)
+	$INI_P_SOURCE = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$IMAGE_SOURCE", "empty.jpg")
+	$INI_P_CIBLE = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$IMAGE_CIBLE", "empty.jpg")
+	$INI_OPTION_MAJ = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$OPTION_MAJ", 0)
+	Local $PATHAUTOCONF_PathRom = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$PATHAUTOCONF_PathRom", "")
+	Local $PATHAUTOCONF_PathRomSub = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$PATHAUTOCONF_PathRomSub", "")
+	Local $PATHAUTOCONF_PathNew = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$PATHAUTOCONF_PathNew", "foo.xml")
+	Local $PATHAUTOCONF_PathImage = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$PATHAUTOCONF_PathImage", "")
+	Local $PATHAUTOCONF_PathImageSub = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$PATHAUTOCONF_PathImageSub", "")
+	_CREATION_LOGMESS(1, "Profil : " & $A_Profil[$No_Profil])
+EndIf
+
+Local $INI_P_SOURCE = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$IMAGE_SOURCE", "empty.jpg")
+Local $INI_P_CIBLE = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$IMAGE_CIBLE", "empty.jpg")
+Global $INI_OPTION_MAJ = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$OPTION_MAJ", 0)
+Local $PATHAUTOCONF_PathRom = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$PATHAUTOCONF_PathRom", "")
+Local $PATHAUTOCONF_PathRomSub = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$PATHAUTOCONF_PathRomSub", "")
+Local $PATHAUTOCONF_PathNew = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$PATHAUTOCONF_PathNew", "")
+Local $PATHAUTOCONF_PathImage = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$PATHAUTOCONF_PathImage", "")
+Local $PATHAUTOCONF_PathImageSub = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$PATHAUTOCONF_PathImageSub", "")
 
 _CREATION_LOGMESS(2, "Creation de l'interface")
 #Region ### START Koda GUI section ### Form=
@@ -202,17 +228,6 @@ GUISetState(@SW_SHOW)
 #EndRegion ### END Koda GUI section ###
 _CREATION_LOGMESS(2, "Fin de creation de l'interface")
 
-; Initialisation interface
-Global $A_Profil = _INI_CREATEARRAY_SCRAPER()
-If IsArray($A_Profil) Then _CREATION_LOGMESS(2, "Creation de la table A_Profil OK")
-Local $INI_P_SOURCE = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$IMAGE_SOURCE", "empty.jpg")
-Local $INI_P_CIBLE = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$IMAGE_CIBLE", "empty.jpg")
-Global $INI_OPTION_MAJ = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$OPTION_MAJ", 0)
-Local $PATHAUTOCONF_PathRom = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$PATHAUTOCONF_PathRom", "")
-Local $PATHAUTOCONF_PathRomSub = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$PATHAUTOCONF_PathRomSub", "")
-Local $PATHAUTOCONF_PathNew = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$PATHAUTOCONF_PathNew", "")
-Local $PATHAUTOCONF_PathImage = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$PATHAUTOCONF_PathImage", "")
-Local $PATHAUTOCONF_PathImageSub = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$PATHAUTOCONF_PathImageSub", "")
 ;~ $A_DIRList = _AUTOCONF($PATHAUTOCONF_PathRom, $PATHAUTOCONF_PathRomSub, $PATHAUTOCONF_PathNew, $PATHAUTOCONF_PathImage, $PATHAUTOCONF_PathImageSub)
 _GUI_REFRESH($INI_P_SOURCE, $INI_P_CIBLE)
 
@@ -448,6 +463,15 @@ Func _GUI_REFRESH_MIXIMG($F_MIXIMAGE, $IMAGE_PATH)
 EndFunc   ;==>_GUI_REFRESH_MIXIMG
 
 Func _AUTOCONF($PATHAUTOCONF_PathRom, $PATHAUTOCONF_PathRomSub, $PATHAUTOCONF_PathNew = "foo.xml", $PATHAUTOCONF_PathImage = "", $PATHAUTOCONF_PathImageSub = "")
+	If $Autoconf_Use = "-1" Then
+		If MsgBox(BitOR($MB_ICONQUESTION, $MB_YESNO), _MultiLang_GetText("mess_autoconf_ask_Title"), _MultiLang_GetText("mess_autoconf_ask_Question")) = $IDOK Then
+			$Autoconf_Use = 1
+		Else
+			$Autoconf_Use = 0
+		EndIf
+	EndIf
+	IniWrite($PathConfigINI, "LAST_USE", "$Autoconf_Use", $Autoconf_Use)
+
 	If $PATHAUTOCONF_PathRom = "" Or $Autoconf_Use = 0 Then
 		GUICtrlSetState($ME_AutoConfig, $GUI_DISABLE)
 		GUICtrlSetState($ME_FullScrape, $GUI_DISABLE)
@@ -1007,7 +1031,7 @@ Func _LANG_LOAD($LANG_DIR, $user_lang)
 			"3009 " & _ ;English_Zimbabwe
 			"3409" ;English_Philippines
 
-	$LANGFILES[1][0] = "FranÃ§ais" ; French
+	$LANGFILES[1][0] = "Fran�ais" ; French
 	$LANGFILES[1][1] = $LANG_DIR & "\UXS-FRENCH.XML"
 	$LANGFILES[1][2] = "040c " & _ ;French_Standard
 			"080c " & _ ;French_Belgian
@@ -1026,7 +1050,9 @@ Func _LANG_LOAD($LANG_DIR, $user_lang)
 	;Check if the loaded settings file exists.  If not ask user to select language.
 	If $user_lang = -1 Then
 		;Create Selection GUI
-		$user_lang = _LANGUE_SelectGUI($LANGFILES)
+		ConsoleWrite(StringLower(@OSLang) & @CRLF)
+		_MultiLang_LoadLangFile(StringLower(@OSLang))
+		$user_lang = _LANGUE_SelectGUI($LANGFILES, StringLower(@OSLang), -1)
 		If @error Then
 			MsgBox(48, "Error", "Could not create selection GUI.  Error Code " & @error)
 			Exit
@@ -1048,9 +1074,9 @@ Func _LANG_LOAD($LANG_DIR, $user_lang)
 	Return $LANGFILES
 EndFunc   ;==>_LANG_LOAD
 
-Func _LANGUE_SelectGUI($_gh_aLangFileArray, $default = @OSLang)
+Func _LANGUE_SelectGUI($_gh_aLangFileArray, $default = @OSLang, $demarrage = 0)
 	_CREATION_LOGMESS(2, "Selection de la langue")
-	GUISetState(@SW_DISABLE, $F_UniversalScraper)
+	If $demarrage = 0 Then GUISetState(@SW_DISABLE, $F_UniversalScraper)
 	If $_gh_aLangFileArray = -1 Then Return SetError(1, 0, 0)
 	If IsArray($_gh_aLangFileArray) = 0 Then Return SetError(1, 0, 0)
 	Local $_multilang_gui_GUI = GUICreate(_MultiLang_GetText("win_sel_langue_Title"), 230, 100)
@@ -1075,19 +1101,23 @@ Func _LANGUE_SelectGUI($_gh_aLangFileArray, $default = @OSLang)
 	GUIDelete($_multilang_gui_GUI)
 	For $i = 0 To UBound($_gh_aLangFileArray) - 1
 		If StringInStr($_gh_aLangFileArray[$i][0], $_selected) Then
-			GUISetState(@SW_ENABLE, $F_UniversalScraper)
-			WinActivate($F_UniversalScraper)
+			If $demarrage = 0 Then
+				GUISetState(@SW_ENABLE, $F_UniversalScraper)
+				WinActivate($F_UniversalScraper)
+			EndIf
 			Return StringLeft($_gh_aLangFileArray[$i][2], 4)
 		EndIf
 	Next
-	GUISetState(@SW_ENABLE, $F_UniversalScraper)
-	WinActivate($F_UniversalScraper)
+	If $demarrage = 0 Then
+		GUISetState(@SW_ENABLE, $F_UniversalScraper)
+		WinActivate($F_UniversalScraper)
+	EndIf
 	Return $default
 EndFunc   ;==>_LANGUE_SelectGUI
 
-Func _PROFIL_SelectGUI($A_Profil)
+Func _PROFIL_SelectGUI($A_Profil, $No_Profil = 0)
 	_CREATION_LOGMESS(2, "Selection du profil")
-	GUISetState(@SW_DISABLE, $F_UniversalScraper)
+	If $No_Profil = 0 Then GUISetState(@SW_DISABLE, $F_UniversalScraper)
 	If $A_Profil = -1 Then Return SetError(1, 0, 0)
 	If IsArray($A_Profil) = 0 Then Return SetError(1, 0, 0)
 	Local $_profil_gui_GUI = GUICreate(_MultiLang_GetText("win_sel_profil_Title"), 230, 100)
@@ -1114,13 +1144,17 @@ Func _PROFIL_SelectGUI($A_Profil)
 		If StringInStr($A_Profil[$i], $_selected) Then
 			_CREATION_LOGMESS(2, "Profil : " & $A_Profil[$i])
 			IniWrite($PathConfigINI, "LAST_USE", "$No_Profil", $i)
-			GUISetState(@SW_ENABLE, $F_UniversalScraper)
-			WinActivate($F_UniversalScraper)
+			If $No_Profil = 0 Then
+				GUISetState(@SW_ENABLE, $F_UniversalScraper)
+				WinActivate($F_UniversalScraper)
+			EndIf
 			Return $i
 		EndIf
 	Next
-	GUISetState(@SW_ENABLE, $F_UniversalScraper)
-	WinActivate($F_UniversalScraper)
+	If $No_Profil = 0 Then
+		GUISetState(@SW_ENABLE, $F_UniversalScraper)
+		WinActivate($F_UniversalScraper)
+	EndIf
 	Return 1
 EndFunc   ;==>_PROFIL_SelectGUI
 

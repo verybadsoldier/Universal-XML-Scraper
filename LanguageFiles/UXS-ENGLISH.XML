@@ -18,6 +18,8 @@
 
 <message>
 	<mess_autoconf>Setting auto configuration in progress</mess_autoconf>
+	<mess_autoconf_ask_Title>Auto Configuration</mess_autoconf_ask_Title>
+	<mess_autoconf_ask_Question>Do you want to use Auto Configuration</mess_autoconf_ask_Question>
 </message>
 
 <gui>
