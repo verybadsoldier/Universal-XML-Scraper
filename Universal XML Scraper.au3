@@ -5,7 +5,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper XML Universel
-#AutoIt3Wrapper_Res_Fileversion=1.3.0.2
+#AutoIt3Wrapper_Res_Fileversion=1.3.0.3
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -464,7 +464,7 @@ EndFunc   ;==>_GUI_REFRESH_MIXIMG
 
 Func _AUTOCONF($PATHAUTOCONF_PathRom, $PATHAUTOCONF_PathRomSub, $PATHAUTOCONF_PathNew = "foo.xml", $PATHAUTOCONF_PathImage = "", $PATHAUTOCONF_PathImageSub = "")
 	If $Autoconf_Use = "-1" Then
-		If MsgBox(BitOR($MB_ICONQUESTION, $MB_YESNO), _MultiLang_GetText("mess_autoconf_ask_Title"), _MultiLang_GetText("mess_autoconf_ask_Question")) = $IDOK Then
+		If MsgBox(BitOR($MB_ICONQUESTION, $MB_YESNO), _MultiLang_GetText("mess_autoconf_ask_Title"), _MultiLang_GetText("mess_autoconf_ask_Question")) = $IDYES Then
 			$Autoconf_Use = 1
 		Else
 			$Autoconf_Use = 0
@@ -1160,7 +1160,8 @@ EndFunc   ;==>_PROFIL_SelectGUI
 
 Func _ROM_CREATEARRAY($PathRom)
 	_CREATION_LOGMESS(2, "Recuperation de la liste des ROM")
-	Global $A_ROMList = _FileListToArray($PathRom, "*.*z*")
+;~ 	Global $A_ROMList = _FileListToArray($PathRom, "*.*")
+	Global $A_ROMList = _FileListToArrayRec($PathRom, "*.*|*.xml;*.txt", $FLTAR_FILES, $FLTAR_NORECUR, $FLTAR_SORT)
 
 	If @error = 1 Then
 		_CREATION_LOGMESS(1, "/!\ Chemin de recherche des roms invalide " & $PathRom)
@@ -1568,7 +1569,9 @@ Func _XML_CREATEROM($Path_source, $xpath_root_source, $xpath_root_cible, $A_XMLF
 ;~ 		_CREATION_LOGMESS(1, "http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=xml&crc=" & $A_ROMList[$No_ROM][2] & "&md5=" & $A_ROMList[$No_ROM][3] & "sha1=" & $A_ROMList[$No_ROM][4] & "&systemeid=" & "&romtype=rom&romnom=" & StringReplace($A_ROMList[$No_ROM][0], " ", "%20") & "&romtaille=" & $A_ROMList[$No_ROM][5] & @CRLF) ;Debug
 		If StringInStr(FileReadLine($Path_source), "Erreur") And $No_system <> "" Then
 			FileDelete($Path_source)
-			InetGet("http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=xml&crc=" & "&md5=" & "&sha1=" & "&systemeid=" & $No_system & "&romtype=rom&romnom=" & StringReplace($A_ROMList[$No_ROM][0], " ", "%20") & "&romtaille=" & $A_ROMList[$No_ROM][5], $Path_source)
+			$FileName = StringLeft(StringReplace($A_ROMList[$No_ROM][0], " ", "%20"), StringInStr(StringReplace($A_ROMList[$No_ROM][0], " ", "%20"), ".", Default, -1) - 1) & ".zip"
+			ConsoleWrite("--------Nom du fichier corrigé : " & $FileName & @CRLF)
+			InetGet("http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=xml&crc=" & "&md5=" & "&sha1=" & "&systemeid=" & $No_system & "&romtype=rom&romnom=" & $FileName & "&romtaille=" & $A_ROMList[$No_ROM][5], $Path_source)
 			_CREATION_LOGMESS(1, "----Recuperation des informations de la Rom no " & $No_ROM & " SANS CRC")
 ;~ 			_CREATION_LOGMESS(1, "http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=xml&crc=" & "&md5=" & "&sha1=" & "&systemeid=" & $No_system & "&romtype=rom&romnom=" & StringReplace($A_ROMList[$No_ROM][0], " ", "%20") & "&romtaille=" & $A_ROMList[$No_ROM][5] & @CRLF) ;Debug
 		EndIf
