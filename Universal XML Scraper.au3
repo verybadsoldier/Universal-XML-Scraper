@@ -5,7 +5,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper XML Universel
-#AutoIt3Wrapper_Res_Fileversion=1.3.0.3
+#AutoIt3Wrapper_Res_Fileversion=1.3.0.5
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -96,6 +96,7 @@ FileInstall(".\UXS-config.ini", $SOURCE_DIRECTORY & "\UXS-config.ini")
 FileInstall(".\LanguageFiles\UXS-ENGLISH.XML", $SOURCE_DIRECTORY & "\LanguageFiles\UXS-ENGLISH.XML")
 FileInstall(".\LanguageFiles\UXS-FRENCH.XML", $SOURCE_DIRECTORY & "\LanguageFiles\UXS-FRENCH.XML")
 FileInstall(".\Ressources\empty.jpg", $SOURCE_DIRECTORY & "\Ressources\empty.jpg")
+FileInstall(".\Ressources\emptySYS.jpg", $SOURCE_DIRECTORY & "\Ressources\emptySYS.jpg")
 FileInstall(".\Ressources\Fleche.jpg", $SOURCE_DIRECTORY & "\Ressources\Fleche.jpg")
 FileInstall(".\Ressources\thegamedb.jpg", $SOURCE_DIRECTORY & "\Ressources\thegamedb.jpg")
 FileInstall(".\Ressources\Screenscraper.jpg", $SOURCE_DIRECTORY & "\Ressources\Screenscraper.jpg")
@@ -1159,9 +1160,10 @@ Func _PROFIL_SelectGUI($A_Profil, $No_Profil = 0)
 EndFunc   ;==>_PROFIL_SelectGUI
 
 Func _ROM_CREATEARRAY($PathRom)
+	$RechFiles = IniRead($PathConfigINI, "GENERAL", "$RechFiles ", "*.*z*")
 	_CREATION_LOGMESS(2, "Recuperation de la liste des ROM")
 ;~ 	Global $A_ROMList = _FileListToArray($PathRom, "*.*")
-	Global $A_ROMList = _FileListToArrayRec($PathRom, "*.*|*.xml;*.txt", $FLTAR_FILES, $FLTAR_NORECUR, $FLTAR_SORT)
+	Global $A_ROMList = _FileListToArrayRec($PathRom, $RechFiles, $FLTAR_FILES, $FLTAR_NORECUR, $FLTAR_SORT)
 
 	If @error = 1 Then
 		_CREATION_LOGMESS(1, "/!\ Chemin de recherche des roms invalide " & $PathRom)
@@ -1459,8 +1461,8 @@ Func _SYSTEM_SelectGUI($A_SYSTEM, $FullScrape = 0)
 	_FileReadToArray($PathSystemList, $A_SYSTEMList, $FRTA_NOCOUNT, "|")
 	$A_PathRom = StringSplit($PathRom, "\", $STR_NOCOUNT)
 	If $A_PathRom[UBound($A_PathRom) - 1] = "" Then _ArrayDelete($A_PathRom, UBound($A_PathRom) - 1)
-;~ 	_ArrayDisplay($A_SYSTEMList, "$A_SYSTEMList")
-;~ 	_ArrayDisplay($A_PathRom, "$A_PathRom")
+;~ 	_ArrayDisplay($A_SYSTEMList, "$A_SYSTEMList");Debug
+;~ 	_ArrayDisplay($A_PathRom, "$A_PathRom");Debug
 	$PathSystemName = StringLower($A_PathRom[UBound($A_PathRom) - 1])
 ;~ 	MsgBox(0, "$PathSystemName", $PathSystemName) ;Debug
 	$I_SystemName = _ArraySearch($A_SYSTEMList, $PathSystemName)
@@ -1468,10 +1470,10 @@ Func _SYSTEM_SelectGUI($A_SYSTEM, $FullScrape = 0)
 ;~ 	MsgBox(0, "System trouve", $PathSystemName & " = " & $A_SYSTEMList[$I_SystemName][1]) ;Debug
 
 	Select
-		Case $I_SystemName > 0
+		Case $I_SystemName > 0 And (IniRead($PathConfigINI, "GENERAL", "$RechSYS", '1') = 1 Or $FullScrape = 1)
 			$_selected = $A_SYSTEMList[$I_SystemName][1]
 		Case $I_SystemName <= 0 And $FullScrape = 1
-			Return ""
+			$_selected = ""
 		Case Else
 			If $A_SYSTEM = -1 Then Return SetError(1, 0, 0)
 			If IsArray($A_SYSTEM) = 0 Then Return SetError(1, 0, 0)
@@ -1503,13 +1505,14 @@ Func _SYSTEM_SelectGUI($A_SYSTEM, $FullScrape = 0)
 			WinActivate($F_UniversalScraper)
 			_CREATION_LOGMESS(1, "Systeme selectionne : " & $A_SYSTEM[$i][0])
 			ConsoleWrite("Download : " & $A_SYSTEM[$i][1] & @CRLF) ;Debug
-			FileDelete($SOURCE_DIRECTORY & "\Ressources\systeme.png")
-			InetGet($A_SYSTEM[$i][1], $SOURCE_DIRECTORY & "\Ressources\systeme.png", 0, 0)
-
+			$ImageSystem = $SOURCE_DIRECTORY & "\Ressources\systeme.png"
+			FileDelete($ImageSystem)
+			InetGet($A_SYSTEM[$i][1], $ImageSystem, 0, 0)
+			If Not FileExists($ImageSystem) Then $ImageSystem = $SOURCE_DIRECTORY & "\Ressources\emptySYS.jpg"
 			_CREATION_LOGMESS(2, "Affichage de l'image du systeme")
 			_GDIPlus_Startup()
 			$hGraphic = _GDIPlus_GraphicsCreateFromHWND($F_UniversalScraper)
-			$hImage = _GDIPlus_ImageLoadFromFile($SOURCE_DIRECTORY & "\Ressources\systeme.png")
+			$hImage = _GDIPlus_ImageLoadFromFile($ImageSystem)
 			$ImageWidth = _GDIPlus_ImageGetWidth($hImage)
 			$ImageHeight = _GDIPlus_ImageGetHeight($hImage)
 			_WinAPI_RedrawWindow($F_UniversalScraper, 0, 0, $RDW_UPDATENOW)
@@ -1557,26 +1560,37 @@ EndFunc   ;==>_HEADER_CREATEFORMAT
 
 Func _XML_CREATEROM($Path_source, $xpath_root_source, $xpath_root_cible, $A_XMLFormat, $A_ROMList, $No_ROM, $No_system, $INI_OPTION_MAJ, $A_MIX_IMAGE_Format = 0)
 	Local $XML_Type, $TMP_LastRootChild, $Return = 1
+	Local $A_RechAPI = StringSplit(IniRead($PathConfigINI, "GENERAL", "$RechAPI ", '1|2|3'), "|")
+;~ 	_ArrayDisplay($A_RechAPI, "$A_RechAPI") ; Debug
 
 ;~ 	Download du XML source
-	_CREATION_LOGMESS(1, "Recuperation des informations de la Rom no " & $No_ROM)
-	InetGet("http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=xml&crc=" & $A_ROMList[$No_ROM][2] & "&md5=" & $A_ROMList[$No_ROM][3] & "&sha1=" & $A_ROMList[$No_ROM][4] & "&systemeid=" & $No_system & "&romtype=rom&romnom=" & StringReplace($A_ROMList[$No_ROM][0], " ", "%20") & "&romtaille=" & $A_ROMList[$No_ROM][5], $Path_source)
-;~ 	_CREATION_LOGMESS(1, "http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=xml&crc=" & $A_ROMList[$No_ROM][2] & "&md5=" & $A_ROMList[$No_ROM][3] & "sha1=" & $A_ROMList[$No_ROM][4] & "&systemeid=" & $No_system & "&romtype=rom&romnom=" & StringReplace($A_ROMList[$No_ROM][0], " ", "%20") & "&romtaille=" & $A_ROMList[$No_ROM][5] & @CRLF) ;Debug
-	If StringInStr(FileReadLine($Path_source), "Erreur") And $No_system <> "" Then
-		FileDelete($Path_source)
-		InetGet("http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=xml&crc=" & $A_ROMList[$No_ROM][2] & "&md5=" & $A_ROMList[$No_ROM][3] & "&sha1=" & $A_ROMList[$No_ROM][4] & "&systemeid=" & "&romtype=rom&romnom=" & StringReplace($A_ROMList[$No_ROM][0], " ", "%20") & "&romtaille=" & $A_ROMList[$No_ROM][5], $Path_source)
-		_CREATION_LOGMESS(1, "--Recuperation des informations de la Rom no " & $No_ROM & " SANS ID SYSTEM")
-;~ 		_CREATION_LOGMESS(1, "http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=xml&crc=" & $A_ROMList[$No_ROM][2] & "&md5=" & $A_ROMList[$No_ROM][3] & "sha1=" & $A_ROMList[$No_ROM][4] & "&systemeid=" & "&romtype=rom&romnom=" & StringReplace($A_ROMList[$No_ROM][0], " ", "%20") & "&romtaille=" & $A_ROMList[$No_ROM][5] & @CRLF) ;Debug
-		If StringInStr(FileReadLine($Path_source), "Erreur") And $No_system <> "" Then
-			FileDelete($Path_source)
-			$FileName = StringLeft(StringReplace($A_ROMList[$No_ROM][0], " ", "%20"), StringInStr(StringReplace($A_ROMList[$No_ROM][0], " ", "%20"), ".", Default, -1) - 1) & ".zip"
-			ConsoleWrite("--------Nom du fichier corrigé : " & $FileName & @CRLF)
-			InetGet("http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=xml&crc=" & "&md5=" & "&sha1=" & "&systemeid=" & $No_system & "&romtype=rom&romnom=" & $FileName & "&romtaille=" & $A_ROMList[$No_ROM][5], $Path_source)
-			_CREATION_LOGMESS(1, "----Recuperation des informations de la Rom no " & $No_ROM & " SANS CRC")
-;~ 			_CREATION_LOGMESS(1, "http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=xml&crc=" & "&md5=" & "&sha1=" & "&systemeid=" & $No_system & "&romtype=rom&romnom=" & StringReplace($A_ROMList[$No_ROM][0], " ", "%20") & "&romtaille=" & $A_ROMList[$No_ROM][5] & @CRLF) ;Debug
-		EndIf
+	For $B_RechAPI = 1 To UBound($A_RechAPI) - 1
+		Switch $A_RechAPI[$B_RechAPI]
+			Case 1
+				If (StringInStr(FileReadLine($Path_source), "Erreur") Or Not FileExists($Path_source)) And $No_system <> "" Then
+					FileDelete($Path_source)
+					_CREATION_LOGMESS(1, "Recuperation des informations de la Rom no " & $No_ROM & " (CRC + SYSTEM)")
+					InetGet("http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=xml&crc=" & $A_ROMList[$No_ROM][2] & "&md5=" & $A_ROMList[$No_ROM][3] & "&sha1=" & $A_ROMList[$No_ROM][4] & "&systemeid=" & $No_system & "&romtype=rom&romnom=" & StringReplace($A_ROMList[$No_ROM][0], " ", "%20") & "&romtaille=" & $A_ROMList[$No_ROM][5], $Path_source)
+					ConsoleWrite(">(CRC + SYSTEM) = http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=xml&crc=" & $A_ROMList[$No_ROM][2] & "&md5=" & $A_ROMList[$No_ROM][3] & "&sha1=" & $A_ROMList[$No_ROM][4] & "&systemeid=" & $No_system & "&romtype=rom&romnom=" & StringReplace($A_ROMList[$No_ROM][0], " ", "%20") & "&romtaille=" & $A_ROMList[$No_ROM][5] & @CRLF) ;Debug
+				EndIf
+			Case 2
+				If StringInStr(FileReadLine($Path_source), "Erreur") Or Not FileExists($Path_source) Then
+					FileDelete($Path_source)
+					_CREATION_LOGMESS(1, "--Recuperation des informations de la Rom no " & $No_ROM & " (CRC)")
+					InetGet("http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=xml&crc=" & $A_ROMList[$No_ROM][2] & "&md5=" & $A_ROMList[$No_ROM][3] & "&sha1=" & $A_ROMList[$No_ROM][4] & "&systemeid=" & "&romtype=rom&romnom=" & StringReplace($A_ROMList[$No_ROM][0], " ", "%20") & "&romtaille=" & $A_ROMList[$No_ROM][5], $Path_source)
+					ConsoleWrite(">(CRC) = http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=xml&crc=" & $A_ROMList[$No_ROM][2] & "&md5=" & $A_ROMList[$No_ROM][3] & "&sha1=" & $A_ROMList[$No_ROM][4] & "&systemeid=" & "&romtype=rom&romnom=" & StringReplace($A_ROMList[$No_ROM][0], " ", "%20") & "&romtaille=" & $A_ROMList[$No_ROM][5] & @CRLF) ;Debug
+				EndIf
 
-	EndIf
+			Case 3
+				If (StringInStr(FileReadLine($Path_source), "Erreur") Or Not FileExists($Path_source)) And $No_system <> "" Then
+					FileDelete($Path_source)
+					_CREATION_LOGMESS(1, "Recuperation des informations de la Rom no " & $No_ROM & " (FileName + SYSTEM)")
+					$FileName = StringLeft(StringReplace($A_ROMList[$No_ROM][0], " ", "%20"), StringInStr(StringReplace($A_ROMList[$No_ROM][0], " ", "%20"), ".", Default, -1) - 1) & ".zip"
+					InetGet("http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=xml&crc=" & "&md5=" & "&sha1=" & "&systemeid=" & $No_system & "&romtype=rom&romnom=" & $FileName & "&romtaille=" & $A_ROMList[$No_ROM][5], $Path_source)
+					ConsoleWrite(">(FileName + SYSTEM) = http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=xml&crc=" & "&md5=" & "&sha1=" & "&systemeid=" & $No_system & "&romtype=rom&romnom=" & $FileName & "&romtaille=" & $A_ROMList[$No_ROM][5] & @CRLF) ;Debug
+				EndIf
+		EndSwitch
+	Next
 
 ;~	Creation du fichier XML Temporaire de la Rom
 	$Path_cible = $PathDIRTmp & $No_ROM & ".xml"
@@ -1607,9 +1621,9 @@ Func _XML_CREATEROM($Path_source, $xpath_root_source, $xpath_root_cible, $A_XMLF
 
 		$XML_Type = StringLeft($A_XMLFormat[$B_XMLElements][1], 5)
 		If $XML_Value <> -1 And $XML_Value <> -2 Then _XML_PUTROMINFO($Path_cible, $Path_source, $xpath_root_cible, $xpath_root_source, $XML_Type, $B_XMLElements, $A_XMLFormat, 1, $XML_Value, $No_ROM, $A_MIX_IMAGE_Format) ; Ecriture des differents elements
-
 	Next
-	ConsoleWrite("+Fin du Node : " & $No_ROM & @CRLF) ; Debug
+	FileDelete($Path_source)
+	ConsoleWrite("+Fin de la Rom no : " & $No_ROM & @CRLF) ; Debug
 	Return $Return
 EndFunc   ;==>_XML_CREATEROM
 
@@ -1662,18 +1676,16 @@ Func _XML_GETROMINFO($PathTmp, $xpath_root, $XML_Type, $B_XMLElements, $A_XMLFor
 			If @error Then Return -2
 			Local $sNode_Values = _XMLGetValue($xpath_root & "/*[1]/" & $A_XMLFormat[$B_XMLElements][2])
 			If IsArray($sNode_Values) Then
-				If $INI_OPTION_MAJ = 1 Then
-					$XML_Value = StringUpper($sNode_Values[1])
-				Else
-					$XML_Value = $sNode_Values[1]
-				EndIf
-				If $XML_Value = Null Then
-					_CREATION_LOGMESS(2, $A_XMLFormat[$B_XMLElements][2] & " : <NULL>")
-					Return ""
-				Else
-					_CREATION_LOGMESS(2, $A_XMLFormat[$B_XMLElements][2] & " : " & $XML_Value)
-					Return $XML_Value
-				EndIf
+				$XML_Value = $sNode_Values[1]
+				Switch $XML_Value
+					Case Null
+						_CREATION_LOGMESS(2, $A_XMLFormat[$B_XMLElements][2] & " : <NULL>")
+						$XML_Value = ""
+					Case Else
+						If $INI_OPTION_MAJ = 1 Then $XML_Value = StringUpper($XML_Value)
+						_CREATION_LOGMESS(2, $A_XMLFormat[$B_XMLElements][2] & " : " & $XML_Value)
+				EndSwitch
+				Return $XML_Value
 			EndIf
 		Case 'attr:'
 			_XMLFileOpen($PathTmp)
@@ -1755,20 +1767,20 @@ Func _XML_PUTROMINFO($PathTmp, $Path_source, $xpath_root_cible, $xpath_root_sour
 			_CREATION_LOGMESS(2, StringMid($A_XMLFormat[$B_XMLElements][1], 6) & " : " & $XML_Value)
 			ConsoleWrite(">_XMLCreateAttrib : " & $XML_Value & @CRLF) ; Debug
 		Case 'value'
-			Local $sNode_Values = _XMLGetValue($xpath_root_cible & '/' & $TMP_LastChild & "/*[1]/" & $A_XMLFormat[$B_XMLElements][0]) ;$No_ROM & "]/" & $A_XMLFormat[$B_XMLElements][0])
-
+			If $XML_Value = "0" Then Return
+			Local $sNode_Values = _XMLGetValue($xpath_root_cible & '/' & $TMP_LastChild & "[" & $No_ROM & "]/" & $A_XMLFormat[$B_XMLElements][0])
 			If IsArray($sNode_Values) = 0 Or $sNode_Values = 0 Then
 				If StringMid($A_XMLFormat[$B_XMLElements][1], 6) = 100 Then $XML_Value = StringReplace(Round(($XML_Value * 100 / 20) / 100, 2), ",", ".")
 				_XMLCreateChildNode($xpath_root_cible & '/' & $TMP_LastChild & "[" & $No_ROM & "]", $A_XMLFormat[$B_XMLElements][0], $XML_Value)
 				ConsoleWrite(">_XMLCreateChildNode : " & $xpath_root_cible & '/' & $TMP_LastChild & "[" & $No_ROM & "]/" & $A_XMLFormat[$B_XMLElements][0] & " = " & $XML_Value & @CRLF) ; Debug
 				_CREATION_LOGMESS(2, $A_XMLFormat[$B_XMLElements][2] & " : " & $XML_Value)
 			Else
-				ConsoleWrite("-ZAPPER : " & $XML_Value & @CRLF) ; Debug
-				_CREATION_LOGMESS(2, $A_XMLFormat[$B_XMLElements][2] & " : IGNORE")
+				ConsoleWrite("+IGNORE : " & $A_XMLFormat[$B_XMLElements][2] & " : " & @CRLF) ; Debug
+				_CREATION_LOGMESS(2, "IGNORE : " & $A_XMLFormat[$B_XMLElements][2])
 			EndIf
 		Case 'path:'
 			If $XML_Value = "0" Then Return
-			Local $sNode_Values = _XMLGetValue($xpath_root_cible & '/' & $TMP_LastChild & "/*[1]/" & $A_XMLFormat[$B_XMLElements][0]) ;" & $No_ROM & "]/" & $A_XMLFormat[$B_XMLElements][0])
+			Local $sNode_Values = _XMLGetValue($xpath_root_cible & '/' & $TMP_LastChild & "[" & $No_ROM & "]/" & $A_XMLFormat[$B_XMLElements][0])
 			If IsArray($sNode_Values) = 0 Then
 				Local $ExtImage = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$ExtImage", "png")
 				Local $PathImage_Temp = $PathImage & StringTrimRight($A_ROMList[$No_ROMXML][0], 4) & "-" & $A_XMLFormat[$B_XMLElements][0] & "." & $ExtImage
@@ -1795,10 +1807,9 @@ Func _XML_PUTROMINFO($PathTmp, $Path_source, $xpath_root_cible, $xpath_root_sour
 				_XMLCreateChildNode($xpath_root_cible & '/' & $TMP_LastChild & "[" & $No_ROM & "]", $A_XMLFormat[$B_XMLElements][0], $PathImageSub_Temp)
 				ConsoleWrite(">_XMLCreateChildNode : " & $A_XMLFormat[$B_XMLElements][0] & " = " & $PathImageSub_Temp & @CRLF) ; Debug
 			Else
-				ConsoleWrite("-ZAPPER : " & $XML_Value & @CRLF) ; Debug
-				_CREATION_LOGMESS(2, $A_XMLFormat[$B_XMLElements][0] & " : IGNORE")
+				ConsoleWrite("+IGNORE : " & $XML_Value & @CRLF) ; Debug
+				_CREATION_LOGMESS(2, "IGNORE : " & $A_XMLFormat[$B_XMLElements][0])
 			EndIf
-
 	EndSwitch
 EndFunc   ;==>_XML_PUTROMINFO
 
@@ -1817,7 +1828,7 @@ Func _MIX_IMAGE_CREATEARRAY($Path_source, $xpath_root_source, $XML_Type, $No_ROM
 		EndIf
 		Local $ExtImage = StringRight($XML_Value, 3)
 		Local $PathImage_Temp = $PathDIRTmp & StringTrimRight($A_ROMList[$No_ROMXML][0], 4) & "-" & $A_MIX_IMAGE_Format[$B_Images][0] & "." & $ExtImage
-		ConsoleWrite("!" & $A_MIX_IMAGE_Format[$B_Images][0] & "->" & $A_MIX_IMAGE_Format[$B_Images][2] & " = " & $XML_Value & @CRLF) ;Debug
+		If $XML_Value <> "0" Then ConsoleWrite("!" & $A_MIX_IMAGE_Format[$B_Images][0] & "->" & $A_MIX_IMAGE_Format[$B_Images][2] & " = " & $XML_Value & @CRLF) ;Debug
 
 		If FileExists($PathImage_Temp) = 0 Then
 			$MIX_IMG_LargeurImage = $A_MIX_IMAGE_Format[$B_Images][4]
