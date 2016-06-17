@@ -5,7 +5,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper XML Universel
-#AutoIt3Wrapper_Res_Fileversion=1.3.0.5
+#AutoIt3Wrapper_Res_Fileversion=1.3.0.6
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -34,9 +34,9 @@
 #include <GUIConstantsEx.au3>
 #include <GuiStatusBar.au3>
 #include <WindowsConstants.au3>
+#include <StaticConstants.au3>
 ;~ #include <EditConstants.au3>
 ;~ #include <GUIListBox.au3>
-;~ #include <StaticConstants.au3>
 ;~ #include <FileConstants.au3>
 ;~ #include <MsgBoxConstants.au3>
 ;~ #include <Color.au3>
@@ -400,7 +400,7 @@ Func _MIX_IMAGE_PROFIL()
 	GUICtrlSetData($C_MIXIMAGE, $T_MIXPROFIL, $MIX_IMG_LASTPROFIL)
 	$B_OK = GUICtrlCreateButton(_MultiLang_GetText("win_config_mix_Enreg"), 416, 240, 200, 25)
 	$B_CANCEL = GUICtrlCreateButton(_MultiLang_GetText("win_config_mix_Cancel"), 616, 240, 200, 25)
-	$L_Empy = GUICtrlCreateLabel(_MultiLang_GetText("win_config_mix_empty"), 168, 216, 68, 17)
+	$L_Empy = GUICtrlCreateLabel(_MultiLang_GetText("win_config_mix_empty"), 144, 216, 116, 17, $SS_CENTER)
 	$L_Exemple = GUICtrlCreateLabel(_MultiLang_GetText("win_config_mix_exemple"), 592, 216, 44, 17)
 	GUISetState(@SW_SHOW)
 	GUISetState(@SW_DISABLE, $F_UniversalScraper)
@@ -914,6 +914,13 @@ Func _GUI_REFRESH($INI_P_SOURCE, $INI_P_CIBLE, $ScrapIP = 0, $SCRAP_OK = 0)
 	Local $ERROR_MESSAGE = ""
 	_CREATION_LOGMESS(2, "Refresh de l'interface")
 	If $ScrapIP = 0 Then
+		$user_lang = IniRead($PathConfigINI, "LAST_USE", "$user_lang", -1)
+		ConsoleWrite("+$user_lang = " & $user_lang & @CRLF)
+		If StringRight($user_lang, 1) = "9" Then
+			IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'us|eu|jp')
+		Else
+			IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'fr|eu|us|jp')
+		EndIf
 		_GDIPlus_Startup()
 		$hGraphic = _GDIPlus_GraphicsCreateFromHWND($F_UniversalScraper)
 		$hImage = _GDIPlus_ImageLoadFromFile($SOURCE_DIRECTORY & "\Ressources\empty.jpg")
@@ -960,6 +967,7 @@ Func _GUI_REFRESH($INI_P_SOURCE, $INI_P_CIBLE, $ScrapIP = 0, $SCRAP_OK = 0)
 		GUICtrlSetData($ME, _MultiLang_GetText("mnu_edit"))
 		GUICtrlSetData($ME_AutoConfig, _MultiLang_GetText("mnu_edit_autoconf"))
 		GUICtrlSetData($ME_FullScrape, _MultiLang_GetText("mnu_edit_fullscrape"))
+		GUICtrlSetData($ME_Miximage, _MultiLang_GetText("mnu_edit_miximage"))
 		GUICtrlSetData($ME_Langue, _MultiLang_GetText("mnu_edit_langue"))
 		GUICtrlSetData($ME_Config, _MultiLang_GetText("mnu_edit_config"))
 
@@ -1032,7 +1040,7 @@ Func _LANG_LOAD($LANG_DIR, $user_lang)
 			"3009 " & _ ;English_Zimbabwe
 			"3409" ;English_Philippines
 
-	$LANGFILES[1][0] = "Fran�ais" ; French
+	$LANGFILES[1][0] = "Français" ; French
 	$LANGFILES[1][1] = $LANG_DIR & "\UXS-FRENCH.XML"
 	$LANGFILES[1][2] = "040c " & _ ;French_Standard
 			"080c " & _ ;French_Belgian
@@ -1051,7 +1059,7 @@ Func _LANG_LOAD($LANG_DIR, $user_lang)
 	;Check if the loaded settings file exists.  If not ask user to select language.
 	If $user_lang = -1 Then
 		;Create Selection GUI
-		ConsoleWrite(StringLower(@OSLang) & @CRLF)
+;~ 		ConsoleWrite(StringLower(@OSLang) & @CRLF)
 		_MultiLang_LoadLangFile(StringLower(@OSLang))
 		$user_lang = _LANGUE_SelectGUI($LANGFILES, StringLower(@OSLang), -1)
 		If @error Then
@@ -1533,10 +1541,19 @@ EndFunc   ;==>_SYSTEM_SelectGUI
 Func _XML_CREATEFORMAT($Profil)
 	_CREATION_LOGMESS(1, "Recuperation des champs du profil")
 	Local $A_XMLFormat[1][4]
-	Local $B_Elements = 1
+	Local $B_Elements = 1, $V_Elements2
+	Local $RechMultiLang = StringSplit(IniRead($PathConfigINI, "GENERAL", "$RechMultiLang  ", 'fr|eu|us|jp'), "|")
+;~ 	_ArrayDisplay($RechMultiLang, "$RechMultiLang") ;Debug
 	Local $V_Elements = IniRead($PathConfigINI, $Profil, "$ELEMENT_" & $B_Elements, "Ending")
 	While $V_Elements <> "Ending"
-		_ArrayAdd($A_XMLFormat, $V_Elements)
+		If StringInStr($V_Elements, "%%") Then
+			For $B_RechMultiLang = 1 To UBound($RechMultiLang) - 1
+				$V_Elements2 = StringReplace($V_Elements, '%%', $RechMultiLang[$B_RechMultiLang])
+				_ArrayAdd($A_XMLFormat, $V_Elements2)
+			Next
+		Else
+			_ArrayAdd($A_XMLFormat, $V_Elements)
+		EndIf
 		$B_Elements = $B_Elements + 1
 		$V_Elements = IniRead($PathConfigINI, $Profil, "$ELEMENT_" & $B_Elements, "Ending")
 	WEnd
@@ -1861,7 +1878,7 @@ Func _MIX_IMAGE_CREATECIBLE($A_PathImage, $PathImage_Temp)
 	For $B_Images = 1 To UBound($A_PathImage) - 1
 		$A_PathImage[$B_Images][3] = _GDIPlus_ImageLoadFromFile($A_PathImage[$B_Images][0])
 		$A_PathImage[$B_Images][4] = _GDIPlus_ImageGetWidth($A_PathImage[$B_Images][3])
-		If $A_PathImage[$B_Images][4] = 4294967295 Then $A_PathImage[$B_Images][4] = 0 ;4294967295 en cas d'erreur, soit 32 bits à 1 (11111...1111111).
+		If $A_PathImage[$B_Images][4] = 4294967295 Then $A_PathImage[$B_Images][4] = 0 ;4294967295 en cas d'erreur, soit 32 bits Ã  1 (11111...1111111).
 		$A_PathImage[$B_Images][5] = _GDIPlus_ImageGetHeight($A_PathImage[$B_Images][3])
 	Next
 
@@ -1937,14 +1954,24 @@ EndFunc   ;==>_MIX_IMAGE_CREATECIBLE
 
 Func _MIX_IMAGE_CREATEFORMAT()
 	Local $A_MIX_IMAGE_Format[1][12]
-	Local $B_Sources
+	Local $B_Sources, $M_Elements, $M_Elements2
+	Local $RechMultiLang = StringSplit(IniRead($PathConfigINI, "GENERAL", "$RechMultiLang  ", 'fr|eu|us|jp'), "|")
 	$Nb_MIX_Image = IniRead($PathMixTmp & "\config.ini", "MIX_IMG", "$MIX_IMG_NBIMG", 0)
 	_CREATION_LOGMESS(1, "Creation des parametres pour le Mix")
 	For $B_Images = 1 To $Nb_MIX_Image
 		$B_Sources = 1
-		While IniRead($PathMixTmp & "\config.ini", "MIX_IMG", "$MIX_IMG" & $B_Images & "_SOURCE_" & $B_Sources, "Ending") <> "Ending"
-			_ArrayAdd($A_MIX_IMAGE_Format, IniRead($PathMixTmp & "\config.ini", "MIX_IMG", "$MIX_IMG" & $B_Images & "_SOURCE_" & $B_Sources, ""))
+		$M_Elements = IniRead($PathMixTmp & "\config.ini", "MIX_IMG", "$MIX_IMG" & $B_Images & "_SOURCE_" & $B_Sources, "Ending")
+		While $M_Elements <> "Ending"
+			If StringInStr($M_Elements, "%%") Then
+				For $B_RechMultiLang = 1 To UBound($RechMultiLang) - 1
+					$M_Elements2 = StringReplace($M_Elements, '%%', $RechMultiLang[$B_RechMultiLang])
+					_ArrayAdd($A_MIX_IMAGE_Format, $M_Elements2)
+				Next
+			Else
+				_ArrayAdd($A_MIX_IMAGE_Format, $M_Elements)
+			EndIf
 			$B_Sources = $B_Sources + 1
+			$M_Elements = IniRead($PathMixTmp & "\config.ini", "MIX_IMG", "$MIX_IMG" & $B_Images & "_SOURCE_" & $B_Sources, "Ending")
 		WEnd
 	Next
 	_CREATION_LOGMESS(2, "Fin de recuperation des champs du profil")
