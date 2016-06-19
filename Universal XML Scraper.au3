@@ -5,7 +5,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper XML Universel
-#AutoIt3Wrapper_Res_Fileversion=1.3.0.6
+#AutoIt3Wrapper_Res_Fileversion=1.3.0.7
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -878,6 +878,7 @@ EndFunc   ;==>_GUI_Config
 Func _SCRAPING_VERIF()
 	Local $ERROR_MESSAGE = "", $SCRAP_OK = 0
 	_CREATION_LOGMESS(2, "Test de la config")
+	If (StringRight($PathRom, 1) = '\') Then $PathRom = StringTrimRight($PathRom, 1)
 	If FileExists($PathRom) Then
 		If (StringRight($PathRom, 1) <> '\') Then $PathRom &= '\'
 		_CREATION_LOGMESS(2, "Chemin des Roms : " & $PathRom)
