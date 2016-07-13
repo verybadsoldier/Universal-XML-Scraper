@@ -152,6 +152,7 @@ Global $root_cible
 Global $ScrapeCancelled = 0
 Global $A_DIRList
 Global $Nb_MIX_Image = 0
+;~ Global $Missing_Image[1]
 Local $SCRAP_OK = 0
 Local $Moy_Timer = 0
 Local $Total_Timer = 0
@@ -532,9 +533,18 @@ Func _FUSIONXML($V_Header, $A_ROMList)
 	$Nb_Roms = UBound($A_ROMList) - 1
 	$No_Roms = 1
 	$CheckError = 0
+	$Starter = 1
 
 	For $B_ROMList = 1 To $Nb_Roms
-		If $A_ROMList[$No_Roms][7] = 1 Or ($A_ROMList[$No_Roms][7] = 0 And $EmptyRom = 1) Then $CheckError = $CheckError + 1
+		If $A_ROMList[$B_ROMList][7] = 1 Or ($A_ROMList[$B_ROMList][7] = 0 And $EmptyRom = 1) Then
+			$CheckError = $CheckError + 1
+		Else
+			If $CheckError = 0 And $EmptyRom = 0 Then
+				$Starter = $B_ROMList + 1
+				$No_Roms = $B_ROMList + 1
+			EndIf
+		EndIf
+		ConsoleWrite(">ROM n°" & $B_ROMList & " - $CheckError =" & $CheckError & " - $Starter = " & $Starter & " - $No_Roms = " & $No_Roms & @CRLF) ; Debug
 	Next
 	If $CheckError < 1 Then Return
 
@@ -582,9 +592,10 @@ Func _FUSIONXML($V_Header, $A_ROMList)
 		EndIf
 		ConsoleWrite(">Lecture du fichier" & $PathDIRTmp & $No_Roms & ".xml" & @CRLF) ; Debug
 		_FileReadToArray($PathDIRTmp & $No_Roms & ".xml", $A_XMLSourceTemp, $FRTA_NOCOUNT)
+;~ 		_ArrayDisplay($A_XMLSourceTemp, "$A_XMLSourceTemp Avant Clean") ; Debug
 ;~ 		If Not @error And $A_XMLSourceTemp[UBound($A_XMLSourceTemp) - 1] <> "" Then $LastLine = $A_XMLSourceTemp[UBound($A_XMLSourceTemp) - 1]
 		Select
-			Case $No_Roms = 1 And $ScrapeMode = 0
+			Case $No_Roms = $Starter And $ScrapeMode = 0
 				ConsoleWrite(">Suppression derniere ligne" & @CRLF) ; Debug
 				_ArrayDelete($A_XMLSourceTemp, UBound($A_XMLSourceTemp) - 1)
 			Case $No_Roms = $Nb_Roms And $ScrapeMode = 0
@@ -595,6 +606,7 @@ Func _FUSIONXML($V_Header, $A_ROMList)
 				_ArrayDelete($A_XMLSourceTemp, 0)
 				_ArrayDelete($A_XMLSourceTemp, UBound($A_XMLSourceTemp) - 1)
 		EndSelect
+;~ 		_ArrayDisplay($A_XMLSourceTemp, "$A_XMLSourceTemp Après Clean") ; Debug
 
 		ConsoleWrite("-TEST : $A_ROMList[$No_Roms][7]=" & $A_ROMList[$No_Roms][7] & " et $EmptyRom = " & $EmptyRom & @CRLF) ; Debug
 		If $A_ROMList[$No_Roms][7] = 1 Or ($A_ROMList[$No_Roms][7] = 0 And $EmptyRom = 1) Then
@@ -603,6 +615,7 @@ Func _FUSIONXML($V_Header, $A_ROMList)
 				_ArrayAdd($A_XMLCible, $A_XMLSourceTemp[$B_Fusion])
 			Next
 		EndIf
+;~ 		_ArrayDisplay($A_XMLCible, "$A_XMLCible Rom n°" & $No_Roms) ; Debug
 		Local $PercentProgression = Round(($No_Roms * 100) / $Nb_Roms)
 		GUICtrlSetData($PB_SCRAPE, $PercentProgression)
 		$No_Roms = $No_Roms + 1
@@ -915,6 +928,7 @@ Func _GUI_REFRESH($INI_P_SOURCE, $INI_P_CIBLE, $ScrapIP = 0, $SCRAP_OK = 0)
 	Local $ERROR_MESSAGE = ""
 	_CREATION_LOGMESS(2, "Refresh de l'interface")
 	If $ScrapIP = 0 Then
+
 		$user_lang = IniRead($PathConfigINI, "LAST_USE", "$user_lang", -1)
 		ConsoleWrite("+$user_lang = " & $user_lang & @CRLF)
 		If StringRight($user_lang, 1) = "9" Then
@@ -922,6 +936,7 @@ Func _GUI_REFRESH($INI_P_SOURCE, $INI_P_CIBLE, $ScrapIP = 0, $SCRAP_OK = 0)
 		Else
 			IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'fr|eu|us|jp')
 		EndIf
+
 		_GDIPlus_Startup()
 		$hGraphic = _GDIPlus_GraphicsCreateFromHWND($F_UniversalScraper)
 		$hImage = _GDIPlus_ImageLoadFromFile($SOURCE_DIRECTORY & "\Ressources\empty.jpg")
@@ -1041,7 +1056,7 @@ Func _LANG_LOAD($LANG_DIR, $user_lang)
 			"3009 " & _ ;English_Zimbabwe
 			"3409" ;English_Philippines
 
-	$LANGFILES[1][0] = "FranÃ§ais" ; French
+	$LANGFILES[1][0] = "Français" ; French
 	$LANGFILES[1][1] = $LANG_DIR & "\UXS-FRENCH.XML"
 	$LANGFILES[1][2] = "040c " & _ ;French_Standard
 			"080c " & _ ;French_Belgian
@@ -1060,7 +1075,7 @@ Func _LANG_LOAD($LANG_DIR, $user_lang)
 	;Check if the loaded settings file exists.  If not ask user to select language.
 	If $user_lang = -1 Then
 		;Create Selection GUI
-;~ 		ConsoleWrite(StringLower(@OSLang) & @CRLF)
+		ConsoleWrite(StringLower(@OSLang) & @CRLF)
 		_MultiLang_LoadLangFile(StringLower(@OSLang))
 		$user_lang = _LANGUE_SelectGUI($LANGFILES, StringLower(@OSLang), -1)
 		If @error Then
@@ -1185,7 +1200,7 @@ Func _ROM_CREATEARRAY($PathRom)
 		Return -1
 	EndIf
 
-	For $B_COLINSRT = 1 To 8
+	For $B_COLINSRT = 1 To 9
 		_ArrayColInsert($A_ROMList, $B_COLINSRT)
 	Next
 
@@ -1215,7 +1230,7 @@ Func _SCRAPING($No_Profil, $A_Profil, $PathRom, $No_system, $INI_OPTION_MAJ, $V_
 ;~ 	_ArrayDisplay($A_XMLFormat, '$A_XMLFormat') ; Debug
 
 ;~ 	Initialisation ROMList
-	Local $A_ROMList = _ROM_CREATEARRAY($PathRom)
+	$A_ROMList = _ROM_CREATEARRAY($PathRom)
 	If $A_ROMList = -1 Then Return -1
 	Local $Nb_Roms = UBound($A_ROMList) - 1
 
@@ -1344,6 +1359,7 @@ Func _SCRAPING_BILAN($FullTimer, $A_ROMList)
 		ConsoleWrite($B_ROMList & " - " & $Tmp_Dir & " - " & $Tmp_Dir_Old & @CRLF)
 		If $Tmp_Dir <> $Tmp_Dir_Old Then
 			If Not _FileCreate($Tmp_Dir & "missing.txt") Then MsgBox(4096, "Error", " Erreur creation du Fichier missing      error:" & @error)
+;~ 			If Not _FileCreate($Tmp_Dir & "missing_Image.txt") Then MsgBox(4096, "Error", " Erreur creation du Fichier missing      error:" & @error)
 			$Tmp_Dir_Old = $Tmp_Dir
 		EndIf
 		$tCur = _Date_Time_GetLocalTime()
@@ -1357,6 +1373,7 @@ Func _SCRAPING_BILAN($FullTimer, $A_ROMList)
 		$Time = StringMid($Time, 12, 5) & ".00 " & StringMid($Time, 7, 4) & "-" & StringLeft($Time, 2) & "-" & StringMid($Time, 4, 2)
 
 		If $A_ROMList[$B_ROMList][7] = 0 Then FileWrite($Tmp_Dir & "missing.txt", $Missing_Line1 & $Missing_Line2 & $Missing_Line3 & $Time & @CRLF)
+;~ 		If StringLen($A_ROMList[$B_ROMList][9]) > 1 Then FileWrite($Tmp_Dir & "missing_Image.txt", $A_ROMList[$B_ROMList][8] & @CRLF)
 		If $A_ROMList[$B_ROMList][7] = 1 Then $ROMFound = $ROMFound + 1
 		If $A_ROMList[$B_ROMList][7] = 2 Then $ROMMaj = $ROMMaj + 1
 		If $A_ROMList[$B_ROMList][7] < 0 Then
@@ -1544,7 +1561,6 @@ Func _XML_CREATEFORMAT($Profil)
 	Local $A_XMLFormat[1][4]
 	Local $B_Elements = 1, $V_Elements2
 	Local $RechMultiLang = StringSplit(IniRead($PathConfigINI, "GENERAL", "$RechMultiLang  ", 'fr|eu|us|jp'), "|")
-;~ 	_ArrayDisplay($RechMultiLang, "$RechMultiLang") ;Debug
 	Local $V_Elements = IniRead($PathConfigINI, $Profil, "$ELEMENT_" & $B_Elements, "Ending")
 	While $V_Elements <> "Ending"
 		If StringInStr($V_Elements, "%%") Then
@@ -1822,12 +1838,23 @@ Func _XML_PUTROMINFO($PathTmp, $Path_source, $xpath_root_cible, $xpath_root_sour
 						_CREATION_LOGMESS(2, $A_XMLFormat[$B_XMLElements][0] & " : " & $PathImageSub_Temp)
 					EndIf
 				EndIf
-				_XMLCreateChildNode($xpath_root_cible & '/' & $TMP_LastChild & "[" & $No_ROM & "]", $A_XMLFormat[$B_XMLElements][0], $PathImageSub_Temp)
-				ConsoleWrite(">_XMLCreateChildNode : " & $A_XMLFormat[$B_XMLElements][0] & " = " & $PathImageSub_Temp & @CRLF) ; Debug
+				If FileExists($PathImage_Temp) Then
+					_XMLCreateChildNode($xpath_root_cible & '/' & $TMP_LastChild & "[" & $No_ROM & "]", $A_XMLFormat[$B_XMLElements][0], $PathImageSub_Temp)
+					ConsoleWrite(">_XMLCreateChildNode : " & $A_XMLFormat[$B_XMLElements][0] & " = " & $PathImageSub_Temp & @CRLF) ; Debug
+;~ 					_ArrayDisplay($A_ROMList, "$A_ROMList");Debug
+;~ 				Else
+;~ 					$A_ROMList[$No_ROMXML][9] = $A_ROMList[$No_ROMXML][0]
+;~ 					_ArrayAdd($Missing_Image, StringTrimRight($A_ROMList[$No_ROMXML][0], 4) & "-" & $A_XMLFormat[$B_XMLElements][0] & "." & $ExtImage)
+;~ 					_ArrayDisplay($Missing_Image, "$Missing_Image");Debug
+				EndIf
 			Else
 				ConsoleWrite("+IGNORE : " & $XML_Value & @CRLF) ; Debug
 				_CREATION_LOGMESS(2, "IGNORE : " & $A_XMLFormat[$B_XMLElements][0])
 			EndIf
+;~ 			If FileExists($PathImage_Temp) = 0 Then
+;~ 				_ArrayAdd($Missing_Image, StringTrimRight($A_ROMList[$No_ROMXML][0], 4) & "-" & $A_XMLFormat[$B_XMLElements][0] & "." & $ExtImage)
+;~ 				_ArrayDisplay($Missing_Image, "$Missing_Image");Debug
+;~ 			EndIf
 	EndSwitch
 EndFunc   ;==>_XML_PUTROMINFO
 
@@ -1879,7 +1906,7 @@ Func _MIX_IMAGE_CREATECIBLE($A_PathImage, $PathImage_Temp)
 	For $B_Images = 1 To UBound($A_PathImage) - 1
 		$A_PathImage[$B_Images][3] = _GDIPlus_ImageLoadFromFile($A_PathImage[$B_Images][0])
 		$A_PathImage[$B_Images][4] = _GDIPlus_ImageGetWidth($A_PathImage[$B_Images][3])
-		If $A_PathImage[$B_Images][4] = 4294967295 Then $A_PathImage[$B_Images][4] = 0 ;4294967295 en cas d'erreur, soit 32 bits ÃƒÂ  1 (11111...1111111).
+		If $A_PathImage[$B_Images][4] = 4294967295 Then $A_PathImage[$B_Images][4] = 0 ;4294967295 en cas d'erreur, soit 32 bits Ã  1 (11111...1111111).
 		$A_PathImage[$B_Images][5] = _GDIPlus_ImageGetHeight($A_PathImage[$B_Images][3])
 	Next
 
