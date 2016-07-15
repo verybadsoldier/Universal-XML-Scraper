@@ -14,6 +14,7 @@
 	<err_FillRomList>Aucun fichier Zip trouvé</err_FillRomList>
 	<err_No_Profil>Pas de profil choisi</err_No_Profil>
 	<err_autoconfPathRom>Le chemin des ROMs pour la configuration automatique n'est pas accessible</err_autoconfPathRom>
+	<err_TimeOut>Universal XML Scraper a rencontré un problème pour récupérer les informations de la base de données. Merci de réessayer ultérieurement.</err_TimeOut>
 </error>
 
 <message>
@@ -37,12 +38,12 @@
 		<mnu_edit_config>Configuration</mnu_edit_config>
 		<mnu_ssh>Commande SSH</mnu_ssh>
 		<mnu_ssh_killall>Tuer Emulationstation</mnu_ssh_killall>
-		<mnu_ssh_reboot>Redemarrer</mnu_ssh_reboot>
+		<mnu_ssh_reboot>Redémarrer</mnu_ssh_reboot>
 		<mnu_ssh_halt>Eteindre</mnu_ssh_halt>
 		<mnu_mode>Scrape Mode</mnu_mode>
 		<mnu_mode_new>Création d'un nouveau Fichier</mnu_mode_new>
 		<mnu_mode_append>Ajout des roms manquantes</mnu_mode_append>
-		<mnu_mode_empty>Ajout des roms nons trouvées</mnu_mode_empty>
+		<mnu_mode_empty>Ajout des roms non trouvées</mnu_mode_empty>
 		<mnu_help>Aide</mnu_help>
 		<mnu_help_about>A propos</mnu_help_about>
 	</menu>
@@ -109,8 +110,8 @@
 			<win_Datas_RomsFound>Nombre de Roms trouvées : </win_Datas_RomsFound>
 			<win_Datas_RomsExist>Nombre de Roms déjà existantes : </win_Datas_RomsExist>
 			<win_Datas_RomsAdd>Nombre de Roms ajoutées : </win_Datas_RomsAdd>
-			<win_Datas_MoyTime>Temp moyen par Roms : </win_Datas_MoyTime>
-			<win_Datas_FullTime>Temp Total du Scrape : </win_Datas_FullTime>
+			<win_Datas_MoyTime>Temps moyen par Roms : </win_Datas_MoyTime>
+			<win_Datas_FullTime>Temps Total du Scrape : </win_Datas_FullTime>
 		</win_Datas>
 		<win_Cancel>
 			<win_Cancel_Title>Scrape Annulé</win_Cancel_Title>
@@ -119,7 +120,7 @@
 	</windows>	
 	<tips>
 		<tips_config>
-			<tips_config_GroupScrap_PathRom>Répertoire dans lequel se trouve les roms a scrapper</tips_config_GroupScrap_PathRom>
+			<tips_config_GroupScrap_PathRom>Répertoire dans lequel se trouve les roms à scrapper</tips_config_GroupScrap_PathRom>
 			<tips_config_GroupScrap_PathXML>Répertoire et nom du fichier XML généré par le scraper</tips_config_GroupScrap_PathXML>
 			<tips_config_GroupScrap_PathRomSub>Indication dans le fichier XML du chemin ou les roms seront trouvées en local</tips_config_GroupScrap_PathRomSub>
 			<tips_config_GroupImage_PathImage>Répertoire dans lequel les images seront téléchargées</tips_config_GroupImage_PathImage>
@@ -127,7 +128,7 @@
 			<tips_config_GroupImage_LongImage>Largeur maximum des images téléchargées(Redimensionne)</tips_config_GroupImage_LongImage>
 			<tips_config_GroupImage_PathImageSub>Indication dans le fichier XML du chemin ou les images seront trouvées en local</tips_config_GroupImage_PathImageSub>
 			<tips_config_GroupImage_Extension>Extension des images (defaut = identique au site de scrape)</tips_config_GroupImage_Extension>
-			<tips_config_GroupAutoconf_PathRom>Répertoire dans lequel se trouve les differents systèmes à scraper</tips_config_GroupAutoconf_PathRom>
+			<tips_config_GroupAutoconf_PathRom>Répertoire dans lequel se trouve les différents systèmes à scraper</tips_config_GroupAutoconf_PathRom>
 			<tips_config_GroupAutoconf_PathXML>Nom du fichier XML généré par le scraper</tips_config_GroupAutoconf_PathXML>
 			<tips_config_GroupAutoconf_PathRomSub>Indication dans le fichier XML du chemin ou les roms seront trouvées en local</tips_config_GroupAutoconf_PathRomSub>
 			<tips_config_GroupAutoconf_PathImage>Nom du répertoire ou seront téléchargé les images</tips_config_GroupAutoconf_PathImage>

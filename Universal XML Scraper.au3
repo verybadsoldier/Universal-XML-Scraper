@@ -5,7 +5,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper XML Universel
-#AutoIt3Wrapper_Res_Fileversion=1.3.0.8
+#AutoIt3Wrapper_Res_Fileversion=1.3.0.9
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -77,7 +77,7 @@ If @Compiled Then
 		FileDelete($SOURCE_DIRECTORY & "\LanguageFiles")
 		FileDelete($SOURCE_DIRECTORY & "\Ressources")
 		ConsoleWrite("Ini Deleted" & @CRLF) ;Debug
-		_CREATION_LOGMESS(1, "Mise aÂ  jour de " & $verINI & " vers " & $Rev)
+		_CREATION_LOGMESS(1, "Mise a  jour de " & $verINI & " vers " & $Rev)
 	Else
 		_CREATION_LOGMESS(1, "Version : " & $Rev)
 	EndIf
@@ -152,7 +152,6 @@ Global $root_cible
 Global $ScrapeCancelled = 0
 Global $A_DIRList
 Global $Nb_MIX_Image = 0
-;~ Global $Missing_Image[1]
 Local $SCRAP_OK = 0
 Local $Moy_Timer = 0
 Local $Total_Timer = 0
@@ -167,25 +166,15 @@ _CREATION_LOGMESS(2, "Fin de Definition des variables")
 ;Principal;
 ;---------;
 
-_CREATION_LOGMESS(2, "Chargement de la langue")
 _LANG_LOAD($LANG_DIR, $user_lang)
-_CREATION_LOGMESS(1, "Langue Selectionnee : " & $user_lang)
 
 ; Initialisation interface
 Global $A_Profil = _INI_CREATEARRAY_SCRAPER()
 If IsArray($A_Profil) Then _CREATION_LOGMESS(2, "Creation de la table A_Profil OK")
 
 If $No_Profil = -1 Then
+	_CREATION_LOGMESS(2, "Pas de profil selectionne")
 	$No_Profil = _PROFIL_SelectGUI($A_Profil, $No_Profil)
-	$INI_P_SOURCE = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$IMAGE_SOURCE", "empty.jpg")
-	$INI_P_CIBLE = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$IMAGE_CIBLE", "empty.jpg")
-	$INI_OPTION_MAJ = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$OPTION_MAJ", 0)
-	Local $PATHAUTOCONF_PathRom = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$PATHAUTOCONF_PathRom", "")
-	Local $PATHAUTOCONF_PathRomSub = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$PATHAUTOCONF_PathRomSub", "")
-	Local $PATHAUTOCONF_PathNew = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$PATHAUTOCONF_PathNew", "foo.xml")
-	Local $PATHAUTOCONF_PathImage = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$PATHAUTOCONF_PathImage", "")
-	Local $PATHAUTOCONF_PathImageSub = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$PATHAUTOCONF_PathImageSub", "")
-	_CREATION_LOGMESS(1, "Profil : " & $A_Profil[$No_Profil])
 EndIf
 
 Local $INI_P_SOURCE = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$IMAGE_SOURCE", "empty.jpg")
@@ -233,10 +222,12 @@ _CREATION_LOGMESS(2, "Fin de creation de l'interface")
 ;~ $A_DIRList = _AUTOCONF($PATHAUTOCONF_PathRom, $PATHAUTOCONF_PathRomSub, $PATHAUTOCONF_PathNew, $PATHAUTOCONF_PathImage, $PATHAUTOCONF_PathImageSub)
 _GUI_REFRESH($INI_P_SOURCE, $INI_P_CIBLE)
 
+_CREATION_LOGMESS(2, "Preparation du profil MIX Image par defaut")
 $MIX_IMG_LASTPROFIL = $PathMix & IniRead($PathConfigINI, "LAST_USE", "$MixImage", "") & ".zip"
 FileDelete($PathMixTmp)
 DirCreate($PathMixTmp)
 _Zip_UnzipAll($MIX_IMG_LASTPROFIL, $PathMixTmp, 0)
+_CREATION_LOGMESS(2, "Fin de preparation du profil MIX Image par defaut")
 
 While 1
 	Local $nMsg = GUIGetMsg()
@@ -254,13 +245,11 @@ While 1
 			Local $PATHAUTOCONF_PathNew = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$PATHAUTOCONF_PathNew", "foo.xml")
 			Local $PATHAUTOCONF_PathImage = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$PATHAUTOCONF_PathImage", "")
 			Local $PATHAUTOCONF_PathImageSub = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$PATHAUTOCONF_PathImageSub", "")
-			_CREATION_LOGMESS(1, "Profil : " & $A_Profil[$No_Profil])
 			_GUI_REFRESH($INI_P_SOURCE, $INI_P_CIBLE)
 		Case $ME_Miximage
 			_MIX_IMAGE_PROFIL()
 		Case $ME_Langue
 			_LANG_LOAD($LANG_DIR, -1)
-			_CREATION_LOGMESS(1, "Langue Selectionnee : " & $user_lang)
 			_GUI_REFRESH($INI_P_SOURCE, $INI_P_CIBLE)
 		Case $ME_Config
 			_GUI_Config($A_Profil, $No_Profil)
@@ -1085,6 +1074,8 @@ Func _LANG_LOAD($LANG_DIR, $user_lang)
 		IniWrite($PathConfigINI, "LAST_USE", "$user_lang", $user_lang)
 	EndIf
 
+	_CREATION_LOGMESS(1, "Langue Selectionnee : " & $user_lang)
+
 	Local $ret = _MultiLang_LoadLangFile($user_lang)
 	If @error Then
 		MsgBox(48, "Error", "Could not load lang file.  Error Code " & @error)
@@ -1137,6 +1128,7 @@ Func _LANGUE_SelectGUI($_gh_aLangFileArray, $default = @OSLang, $demarrage = 0)
 		GUISetState(@SW_ENABLE, $F_UniversalScraper)
 		WinActivate($F_UniversalScraper)
 	EndIf
+
 	Return $default
 EndFunc   ;==>_LANGUE_SelectGUI
 
@@ -1167,7 +1159,7 @@ Func _PROFIL_SelectGUI($A_Profil, $No_Profil = 0)
 	GUIDelete($_profil_gui_GUI)
 	For $i = 1 To UBound($A_Profil) - 1
 		If StringInStr($A_Profil[$i], $_selected) Then
-			_CREATION_LOGMESS(2, "Profil : " & $A_Profil[$i])
+			_CREATION_LOGMESS(1, "Profil : " & $A_Profil[$i])
 			IniWrite($PathConfigINI, "LAST_USE", "$No_Profil", $i)
 			If $No_Profil = 0 Then
 				GUISetState(@SW_ENABLE, $F_UniversalScraper)
@@ -1419,7 +1411,13 @@ Func _SYSTEM_CREATEARRAY_SCREENSCRAPER($PathTmp)
 	Local $sNode_Values
 	_GUICtrlStatusBar_SetText($L_SCRAPE, _MultiLang_GetText("prSET_SYSTEM_CREATEARRAY"))
 	_CREATION_LOGMESS(1, "Recuperation des informations des systemes")
-	InetGet("http://www.screenscraper.fr/api/systemesListe.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=XML", $PathTmp)
+	$hDownload = InetGet("http://www.screenscraper.fr/api/systemesListe.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=XML", $PathTmp, 0, 1)
+
+	If _TimeOut($hDownload) Or Not FileExists($PathTmp) Then
+		_CREATION_LOGMESS(1, "Fichier d'informations non telecharge")
+		Return -1
+	EndIf
+
 	_XMLFileOpen($PathTmp)
 	If @error Then
 		ConsoleWrite("!_XMLFileOpen : " & _XMLError("") & @CRLF) ; Debug
@@ -1533,7 +1531,10 @@ Func _SYSTEM_SelectGUI($A_SYSTEM, $FullScrape = 0)
 			ConsoleWrite("Download : " & $A_SYSTEM[$i][1] & @CRLF) ;Debug
 			$ImageSystem = $SOURCE_DIRECTORY & "\Ressources\systeme.png"
 			FileDelete($ImageSystem)
-			InetGet($A_SYSTEM[$i][1], $ImageSystem, 0, 0)
+			$hDownload = InetGet($A_SYSTEM[$i][1], $ImageSystem, 0, 1)
+
+			_TimeOut($hDownload)
+
 			If Not FileExists($ImageSystem) Then $ImageSystem = $SOURCE_DIRECTORY & "\Ressources\emptySYS.jpg"
 			_CREATION_LOGMESS(2, "Affichage de l'image du systeme")
 			_GDIPlus_Startup()
@@ -1604,15 +1605,17 @@ Func _XML_CREATEROM($Path_source, $xpath_root_source, $xpath_root_cible, $A_XMLF
 				If (StringInStr(FileReadLine($Path_source), "Erreur") Or Not FileExists($Path_source)) And $No_system <> "" Then
 					FileDelete($Path_source)
 					_CREATION_LOGMESS(1, "Recuperation des informations de la Rom no " & $No_ROM & " (CRC + SYSTEM)")
-					InetGet("http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=xml&crc=" & $A_ROMList[$No_ROM][2] & "&md5=" & $A_ROMList[$No_ROM][3] & "&sha1=" & $A_ROMList[$No_ROM][4] & "&systemeid=" & $No_system & "&romtype=rom&romnom=" & StringReplace($A_ROMList[$No_ROM][0], " ", "%20") & "&romtaille=" & $A_ROMList[$No_ROM][5], $Path_source)
+					$hDownload = InetGet("http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=xml&crc=" & $A_ROMList[$No_ROM][2] & "&md5=" & $A_ROMList[$No_ROM][3] & "&sha1=" & $A_ROMList[$No_ROM][4] & "&systemeid=" & $No_system & "&romtype=rom&romnom=" & StringReplace($A_ROMList[$No_ROM][0], " ", "%20") & "&romtaille=" & $A_ROMList[$No_ROM][5], $Path_source, 1, 1)
 					ConsoleWrite(">(CRC + SYSTEM) = http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=xml&crc=" & $A_ROMList[$No_ROM][2] & "&md5=" & $A_ROMList[$No_ROM][3] & "&sha1=" & $A_ROMList[$No_ROM][4] & "&systemeid=" & $No_system & "&romtype=rom&romnom=" & StringReplace($A_ROMList[$No_ROM][0], " ", "%20") & "&romtaille=" & $A_ROMList[$No_ROM][5] & @CRLF) ;Debug
+					_TimeOut($hDownload)
 				EndIf
 			Case 2
 				If StringInStr(FileReadLine($Path_source), "Erreur") Or Not FileExists($Path_source) Then
 					FileDelete($Path_source)
 					_CREATION_LOGMESS(1, "--Recuperation des informations de la Rom no " & $No_ROM & " (CRC)")
-					InetGet("http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=xml&crc=" & $A_ROMList[$No_ROM][2] & "&md5=" & $A_ROMList[$No_ROM][3] & "&sha1=" & $A_ROMList[$No_ROM][4] & "&systemeid=" & "&romtype=rom&romnom=" & StringReplace($A_ROMList[$No_ROM][0], " ", "%20") & "&romtaille=" & $A_ROMList[$No_ROM][5], $Path_source)
+					$hDownload = InetGet("http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=xml&crc=" & $A_ROMList[$No_ROM][2] & "&md5=" & $A_ROMList[$No_ROM][3] & "&sha1=" & $A_ROMList[$No_ROM][4] & "&systemeid=" & "&romtype=rom&romnom=" & StringReplace($A_ROMList[$No_ROM][0], " ", "%20") & "&romtaille=" & $A_ROMList[$No_ROM][5], $Path_source, 1, 1)
 					ConsoleWrite(">(CRC) = http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=xml&crc=" & $A_ROMList[$No_ROM][2] & "&md5=" & $A_ROMList[$No_ROM][3] & "&sha1=" & $A_ROMList[$No_ROM][4] & "&systemeid=" & "&romtype=rom&romnom=" & StringReplace($A_ROMList[$No_ROM][0], " ", "%20") & "&romtaille=" & $A_ROMList[$No_ROM][5] & @CRLF) ;Debug
+					_TimeOut($hDownload)
 				EndIf
 
 			Case 3
@@ -1620,11 +1623,19 @@ Func _XML_CREATEROM($Path_source, $xpath_root_source, $xpath_root_cible, $A_XMLF
 					FileDelete($Path_source)
 					_CREATION_LOGMESS(1, "Recuperation des informations de la Rom no " & $No_ROM & " (FileName + SYSTEM)")
 					$FileName = StringLeft(StringReplace($A_ROMList[$No_ROM][0], " ", "%20"), StringInStr(StringReplace($A_ROMList[$No_ROM][0], " ", "%20"), ".", Default, -1) - 1) & ".zip"
-					InetGet("http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=xml&crc=" & "&md5=" & "&sha1=" & "&systemeid=" & $No_system & "&romtype=rom&romnom=" & $FileName & "&romtaille=" & $A_ROMList[$No_ROM][5], $Path_source)
+					$hDownload = InetGet("http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=xml&crc=" & "&md5=" & "&sha1=" & "&systemeid=" & $No_system & "&romtype=rom&romnom=" & $FileName & "&romtaille=" & $A_ROMList[$No_ROM][5], $Path_source, 1, 1)
 					ConsoleWrite(">(FileName + SYSTEM) = http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=xml&crc=" & "&md5=" & "&sha1=" & "&systemeid=" & $No_system & "&romtype=rom&romnom=" & $FileName & "&romtaille=" & $A_ROMList[$No_ROM][5] & @CRLF) ;Debug
+					_TimeOut($hDownload)
 				EndIf
 		EndSwitch
 	Next
+
+	If Not FileExists($Path_source) Then
+		MsgBox($MB_ICONERROR, _MultiLang_GetText("err_title"), _MultiLang_GetText("err_TimeOut"))
+		_GUICtrlStatusBar_SetText($L_SCRAPE, "", 1)
+		$ScrapeCancelled = 1
+		Return -1
+	EndIf
 
 ;~	Creation du fichier XML Temporaire de la Rom
 	$Path_cible = $PathDIRTmp & $No_ROM & ".xml"
@@ -1834,7 +1845,9 @@ Func _XML_PUTROMINFO($PathTmp, $Path_source, $xpath_root_cible, $xpath_root_sour
 						If $LargeurImage > 0 Then $maxwidth = "&maxwidth=" & $LargeurImage
 						ConsoleWrite("+ Download : " & $XML_Value & $maxheight & $maxwidth & " dans " & $PathImage_Temp & @CRLF) ; Debug
 						_CREATION_LOGMESS(2, "Download Images : " & $PathImage_Temp)
-						InetGet($XML_Value & $maxheight & $maxwidth & $outputformat, $PathImage_Temp, 0, 0)
+						$hDownload = InetGet($XML_Value & $maxheight & $maxwidth & $outputformat, $PathImage_Temp, 0, 1)
+						_TimeOut($hDownload)
+
 						_CREATION_LOGMESS(2, $A_XMLFormat[$B_XMLElements][0] & " : " & $PathImageSub_Temp)
 					EndIf
 				EndIf
@@ -1887,7 +1900,9 @@ Func _MIX_IMAGE_CREATEARRAY($Path_source, $xpath_root_source, $XML_Type, $No_ROM
 			Else
 				_CREATION_LOGMESS(2, "Download Images : " & $PathImage_Temp)
 				ConsoleWrite("+ MIX Download : " & $XML_Value & $maxheight & $maxwidth & " dans " & $PathImage_Temp & @CRLF) ; Debug
-				InetGet($XML_Value & $maxheight & $maxwidth & $outputformat, $PathImage_Temp, 0, 0)
+				$hDownload = InetGet($XML_Value & $maxheight & $maxwidth & $outputformat, $PathImage_Temp, 0, 1)
+				_TimeOut($hDownload)
+
 			EndIf
 
 			If FileExists($PathImage_Temp) Then _ArrayAdd($A_PathImage, $PathImage_Temp & "|" & $A_MIX_IMAGE_Format[$B_Images][6] & "|" & $A_MIX_IMAGE_Format[$B_Images][7] & "||" & $A_MIX_IMAGE_Format[$B_Images][4] & "|" & $A_MIX_IMAGE_Format[$B_Images][5] & "|" & $A_MIX_IMAGE_Format[$B_Images][8] & "|" & $A_MIX_IMAGE_Format[$B_Images][9] & "|" & $A_MIX_IMAGE_Format[$B_Images][10] & "|" & $A_MIX_IMAGE_Format[$B_Images][11])
@@ -2068,3 +2083,23 @@ Func _IsChecked($idControlID)
 	Return BitAND(GUICtrlRead($idControlID), $GUI_CHECKED) = $GUI_CHECKED
 EndFunc   ;==>_IsChecked
 
+Func _TimeOut($hDownload)
+	Local $timedout = 0
+	Local $inetgettime = 0
+	Do
+		Sleep(250)
+		$inetgettime = $inetgettime + 0.25
+		If $inetgettime > 10 Then
+			InetClose($hDownload)
+			_CREATION_LOGMESS(1, "Time Out : " & $inetgettime)
+			ConsoleWrite("timed out waiting for download " & $inetgettime & @CRLF)
+			$timedout = 1
+			ExitLoop
+		EndIf
+	Until InetGetInfo($hDownload, 2) ; Check if the download is complete.
+
+	$err = InetGetInfo($hDownload)
+	_CREATION_LOGMESS(2, "internet error = " & $err[4])
+	ConsoleWrite("internet error = " & $err[4] & @CRLF)
+	Return $timedout
+EndFunc   ;==>_TimeOut

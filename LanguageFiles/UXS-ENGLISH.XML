@@ -14,6 +14,7 @@
 	<err_FillRomList>No Zip file found</err_FillRomList>
 	<err_No_Profil>No profil selected</err_No_Profil>
 	<err_autoconfPathRom>Rom path auto config not valide</err_autoconfPathRom>
+	<err_TimeOut>Universal XML Scraper cannot connect to the database. Try later, thanks.</err_TimeOut>
 </error>
 
 <message>
