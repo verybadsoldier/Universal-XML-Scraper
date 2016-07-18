@@ -5,7 +5,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper XML Universel
-#AutoIt3Wrapper_Res_Fileversion=1.3.0.9
+#AutoIt3Wrapper_Res_Fileversion=1.3.0.10
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -1622,7 +1622,7 @@ Func _XML_CREATEROM($Path_source, $xpath_root_source, $xpath_root_cible, $A_XMLF
 				If (StringInStr(FileReadLine($Path_source), "Erreur") Or Not FileExists($Path_source)) And $No_system <> "" Then
 					FileDelete($Path_source)
 					_CREATION_LOGMESS(1, "Recuperation des informations de la Rom no " & $No_ROM & " (FileName + SYSTEM)")
-					$FileName = StringLeft(StringReplace($A_ROMList[$No_ROM][0], " ", "%20"), StringInStr(StringReplace($A_ROMList[$No_ROM][0], " ", "%20"), ".", Default, -1) - 1) & ".zip"
+					$FileName = StringLeft(StringReplace($A_ROMList[$No_ROM][0], " ", "%20"), StringInStr(StringReplace($A_ROMList[$No_ROM][0], " ", "%20"), ".", Default, -1) - 1)
 					$hDownload = InetGet("http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=xml&crc=" & "&md5=" & "&sha1=" & "&systemeid=" & $No_system & "&romtype=rom&romnom=" & $FileName & "&romtaille=" & $A_ROMList[$No_ROM][5], $Path_source, 1, 1)
 					ConsoleWrite(">(FileName + SYSTEM) = http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=xml&crc=" & "&md5=" & "&sha1=" & "&systemeid=" & $No_system & "&romtype=rom&romnom=" & $FileName & "&romtaille=" & $A_ROMList[$No_ROM][5] & @CRLF) ;Debug
 					_TimeOut($hDownload)
