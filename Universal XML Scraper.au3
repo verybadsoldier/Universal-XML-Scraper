@@ -2104,9 +2104,5 @@ Func _TimeOut($hDownload)
 			ExitLoop
 		EndIf
 	Until InetGetInfo($hDownload, 2) ; Check if the download is complete.
-
-	$err = InetGetInfo($hDownload)
-	_CREATION_LOGMESS(2, "internet error = " & $err[4])
-	ConsoleWrite("internet error = " & $err[4] & @CRLF)
 	Return $timedout
 EndFunc   ;==>_TimeOut
