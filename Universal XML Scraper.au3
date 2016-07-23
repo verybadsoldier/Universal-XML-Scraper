@@ -5,7 +5,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper XML Universel
-#AutoIt3Wrapper_Res_Fileversion=1.3.0.13
+#AutoIt3Wrapper_Res_Fileversion=1.3.0.14
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -96,6 +96,7 @@ FileInstall(".\UXS-config.ini", $SOURCE_DIRECTORY & "\UXS-config.ini")
 FileInstall(".\LanguageFiles\UXS-ENGLISH.XML", $SOURCE_DIRECTORY & "\LanguageFiles\UXS-ENGLISH.XML")
 FileInstall(".\LanguageFiles\UXS-FRENCH.XML", $SOURCE_DIRECTORY & "\LanguageFiles\UXS-FRENCH.XML")
 FileInstall(".\LanguageFiles\UXS-PORTUGUESE.XML", $SOURCE_DIRECTORY & "\LanguageFiles\UXS-PORTUGUESE.XML")
+FileInstall(".\LanguageFiles\UXS-GERMAN.XML", $SOURCE_DIRECTORY & "\LanguageFiles\UXS-GERMAN.XML")
 FileInstall(".\Ressources\empty.jpg", $SOURCE_DIRECTORY & "\Ressources\empty.jpg")
 FileInstall(".\Ressources\emptySYS.jpg", $SOURCE_DIRECTORY & "\Ressources\emptySYS.jpg")
 FileInstall(".\Ressources\Fleche.jpg", $SOURCE_DIRECTORY & "\Ressources\Fleche.jpg")
@@ -1028,7 +1029,7 @@ Func _LANG_LOAD($LANG_DIR, $user_lang)
 	; [n][0] = Display Name in Local Language (Used for Select Function)
 	; [n][1] = Language File (Full path.  In this case we used a $LANG_DIR
 	; [n][2] = [Space delimited] Character codes as used by @OS_LANG (used to select correct lang file)
-	Local $LANGFILES[3][3]
+	Local $LANGFILES[4][3]
 
 	$LANGFILES[0][0] = "English (US)" ;
 	$LANGFILES[0][1] = $LANG_DIR & "\UXS-ENGLISH.XML"
@@ -1059,6 +1060,14 @@ Func _LANG_LOAD($LANG_DIR, $user_lang)
 	$LANGFILES[2][1] = $LANG_DIR & "\UXS-PORTUGUESE.XML"
 	$LANGFILES[2][2] = "0816 " & _ ;Portuguese - Portugal
 			"0416 " ;Portuguese - Brazil
+
+	$LANGFILES[3][0] = "German" ; German
+	$LANGFILES[3][1] = $LANG_DIR & "\UXS-GERMAN.XML"
+	$LANGFILES[3][2] = "0407 " & _ ;German - Germany
+			"0807 " & _ ;German - Switzerland
+			"0C07 " & _ ;German - Austria
+			"1007 " & _ ;German - Luxembourg
+			"1407 " ;German - Liechtenstein
 
 	;Set the available language files, names, and codes.
 	_MultiLang_SetFileInfo($LANGFILES)
