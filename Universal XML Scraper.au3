@@ -921,10 +921,10 @@ Func _GUI_REFRESH($INI_P_SOURCE, $INI_P_CIBLE, $ScrapIP = 0, $SCRAP_OK = 0)
 
 		$user_lang = IniRead($PathConfigINI, "LAST_USE", "$user_lang", -1)
 		ConsoleWrite("+$user_lang = " & $user_lang & @CRLF)
-		If StringRight($user_lang, 1) = "9" Then
-			IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'us|eu|jp')
-		Else
+		If StringRight($user_lang, 2) = "0c" Then
 			IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'fr|eu|us|jp')
+		Else
+			IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'us|eu|jp')
 		EndIf
 
 		_GDIPlus_Startup()
