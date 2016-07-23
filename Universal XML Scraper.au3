@@ -5,7 +5,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper XML Universel
-#AutoIt3Wrapper_Res_Fileversion=1.3.0.12
+#AutoIt3Wrapper_Res_Fileversion=1.3.0.13
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -77,7 +77,7 @@ If @Compiled Then
 		FileDelete($SOURCE_DIRECTORY & "\LanguageFiles")
 		FileDelete($SOURCE_DIRECTORY & "\Ressources")
 		ConsoleWrite("Ini Deleted" & @CRLF) ;Debug
-		_CREATION_LOGMESS(1, "Mise a  jour de " & $verINI & " vers " & $Rev)
+		_CREATION_LOGMESS(1, "Mise aÂ  jour de " & $verINI & " vers " & $Rev)
 	Else
 		_CREATION_LOGMESS(1, "Version : " & $Rev)
 	EndIf
@@ -95,6 +95,7 @@ DirCreate($SOURCE_DIRECTORY & "\Mix\TEMP")
 FileInstall(".\UXS-config.ini", $SOURCE_DIRECTORY & "\UXS-config.ini")
 FileInstall(".\LanguageFiles\UXS-ENGLISH.XML", $SOURCE_DIRECTORY & "\LanguageFiles\UXS-ENGLISH.XML")
 FileInstall(".\LanguageFiles\UXS-FRENCH.XML", $SOURCE_DIRECTORY & "\LanguageFiles\UXS-FRENCH.XML")
+FileInstall(".\LanguageFiles\UXS-PORTUGUESE.XML", $SOURCE_DIRECTORY & "\LanguageFiles\UXS-PORTUGUESE.XML")
 FileInstall(".\Ressources\empty.jpg", $SOURCE_DIRECTORY & "\Ressources\empty.jpg")
 FileInstall(".\Ressources\emptySYS.jpg", $SOURCE_DIRECTORY & "\Ressources\emptySYS.jpg")
 FileInstall(".\Ressources\Fleche.jpg", $SOURCE_DIRECTORY & "\Ressources\Fleche.jpg")
@@ -533,7 +534,7 @@ Func _FUSIONXML($V_Header, $A_ROMList)
 				$No_Roms = $B_ROMList + 1
 			EndIf
 		EndIf
-		ConsoleWrite(">ROM n°" & $B_ROMList & " - $CheckError =" & $CheckError & " - $Starter = " & $Starter & " - $No_Roms = " & $No_Roms & @CRLF) ; Debug
+		ConsoleWrite(">ROM nÂ°" & $B_ROMList & " - $CheckError =" & $CheckError & " - $Starter = " & $Starter & " - $No_Roms = " & $No_Roms & @CRLF) ; Debug
 	Next
 	If $CheckError < 1 Then Return
 
@@ -595,7 +596,7 @@ Func _FUSIONXML($V_Header, $A_ROMList)
 				_ArrayDelete($A_XMLSourceTemp, 0)
 				_ArrayDelete($A_XMLSourceTemp, UBound($A_XMLSourceTemp) - 1)
 		EndSelect
-;~ 		_ArrayDisplay($A_XMLSourceTemp, "$A_XMLSourceTemp Après Clean") ; Debug
+;~ 		_ArrayDisplay($A_XMLSourceTemp, "$A_XMLSourceTemp AprÃ¨s Clean") ; Debug
 
 		ConsoleWrite("-TEST : $A_ROMList[$No_Roms][7]=" & $A_ROMList[$No_Roms][7] & " et $EmptyRom = " & $EmptyRom & @CRLF) ; Debug
 		If $A_ROMList[$No_Roms][7] = 1 Or ($A_ROMList[$No_Roms][7] = 0 And $EmptyRom = 1) Then
@@ -604,7 +605,7 @@ Func _FUSIONXML($V_Header, $A_ROMList)
 				_ArrayAdd($A_XMLCible, $A_XMLSourceTemp[$B_Fusion])
 			Next
 		EndIf
-;~ 		_ArrayDisplay($A_XMLCible, "$A_XMLCible Rom n°" & $No_Roms) ; Debug
+;~ 		_ArrayDisplay($A_XMLCible, "$A_XMLCible Rom nÂ°" & $No_Roms) ; Debug
 		Local $PercentProgression = Round(($No_Roms * 100) / $Nb_Roms)
 		GUICtrlSetData($PB_SCRAPE, $PercentProgression)
 		$No_Roms = $No_Roms + 1
@@ -1027,7 +1028,7 @@ Func _LANG_LOAD($LANG_DIR, $user_lang)
 	; [n][0] = Display Name in Local Language (Used for Select Function)
 	; [n][1] = Language File (Full path.  In this case we used a $LANG_DIR
 	; [n][2] = [Space delimited] Character codes as used by @OS_LANG (used to select correct lang file)
-	Local $LANGFILES[2][3]
+	Local $LANGFILES[3][3]
 
 	$LANGFILES[0][0] = "English (US)" ;
 	$LANGFILES[0][1] = $LANG_DIR & "\UXS-ENGLISH.XML"
@@ -1045,7 +1046,7 @@ Func _LANG_LOAD($LANG_DIR, $user_lang)
 			"3009 " & _ ;English_Zimbabwe
 			"3409" ;English_Philippines
 
-	$LANGFILES[1][0] = "Français" ; French
+	$LANGFILES[1][0] = "FranÃ§ais" ; French
 	$LANGFILES[1][1] = $LANG_DIR & "\UXS-FRENCH.XML"
 	$LANGFILES[1][2] = "040c " & _ ;French_Standard
 			"080c " & _ ;French_Belgian
@@ -1053,6 +1054,11 @@ Func _LANG_LOAD($LANG_DIR, $user_lang)
 			"100c " & _ ;French_Swiss
 			"140c " & _ ;French_Luxembourg
 			"180c" ;French_Monaco
+
+	$LANGFILES[2][0] = "Portuguese" ; Portuguese
+	$LANGFILES[2][1] = $LANG_DIR & "\UXS-PORTUGUESE.XML"
+	$LANGFILES[2][2] = "0816 " & _ ;Portuguese - Portugal
+			"0416 " ;Portuguese - Brazil
 
 	;Set the available language files, names, and codes.
 	_MultiLang_SetFileInfo($LANGFILES)
@@ -1928,7 +1934,7 @@ Func _MIX_IMAGE_CREATECIBLE($A_PathImage, $PathImage_Temp)
 	For $B_Images = 1 To UBound($A_PathImage) - 1
 		$A_PathImage[$B_Images][3] = _GDIPlus_ImageLoadFromFile($A_PathImage[$B_Images][0])
 		$A_PathImage[$B_Images][4] = _GDIPlus_ImageGetWidth($A_PathImage[$B_Images][3])
-		If $A_PathImage[$B_Images][4] = 4294967295 Then $A_PathImage[$B_Images][4] = 0 ;4294967295 en cas d'erreur, soit 32 bits Ã  1 (11111...1111111).
+		If $A_PathImage[$B_Images][4] = 4294967295 Then $A_PathImage[$B_Images][4] = 0 ;4294967295 en cas d'erreur, soit 32 bits ÃƒÂ  1 (11111...1111111).
 		$A_PathImage[$B_Images][5] = _GDIPlus_ImageGetHeight($A_PathImage[$B_Images][3])
 	Next
 
