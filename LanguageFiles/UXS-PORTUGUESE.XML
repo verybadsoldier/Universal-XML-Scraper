@@ -21,6 +21,9 @@
 	<mess_autoconf>Montagem da configuração automática em progresso</mess_autoconf>
 	<mess_autoconf_ask_Title>Auto Configuração</mess_autoconf_ask_Title>
 	<mess_autoconf_ask_Question>Você quer usar a Configuração Automática</mess_autoconf_ask_Question>
+	<mess_autoconf_ssh_killall>Tem certeza de que deseja parar o EmulationStation?</mess_autoconf_ssh_killall>
+	<mess_autoconf_ssh_reboot>Tem certeza de que deseja reiniciar o sistema remotamente?</mess_autoconf_ssh_reboot>
+	<mess_autoconf_ssh_poweroff>Tem certeza de que deseja parar o sistema remotamente?</mess_autoconf_ssh_poweroff>
 </message>
 
 <gui>

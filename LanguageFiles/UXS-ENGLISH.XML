@@ -21,6 +21,9 @@
 	<mess_autoconf>Setting auto configuration in progress</mess_autoconf>
 	<mess_autoconf_ask_Title>Auto Configuration</mess_autoconf_ask_Title>
 	<mess_autoconf_ask_Question>Do you want to use Auto Configuration</mess_autoconf_ask_Question>
+	<mess_autoconf_ssh_killall>Do you want to Kill emulationstation ?</mess_autoconf_ssh_killall>
+	<mess_autoconf_ssh_reboot>Do you want to Reboot the computer ?</mess_autoconf_ssh_reboot>
+	<mess_autoconf_ssh_poweroff>Do you want to Stop the computer</mess_autoconf_ssh_poweroff>
 </message>
 
 <gui>

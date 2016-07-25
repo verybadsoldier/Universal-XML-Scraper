@@ -5,7 +5,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper XML Universel
-#AutoIt3Wrapper_Res_Fileversion=1.3.0.14
+#AutoIt3Wrapper_Res_Fileversion=1.3.0.15
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -257,21 +257,21 @@ While 1
 			_GUI_Config($A_Profil, $No_Profil)
 			_GUI_REFRESH($INI_P_SOURCE, $INI_P_CIBLE)
 		Case $MP_KILLALL
-			If MsgBox($MB_OKCANCEL, "KillAll Emulationstation", "Etes vous sur de vouloir arreter EmulationStation ?") = $IDOK Then
+			If MsgBox($MB_OKCANCEL, "KillAll Emulationstation", _MultiLang_GetText("mess_autoconf_ssh_killall")) = $IDOK Then
 				Run($PathPlink & " " & $Plink_IP & " -l " & $Plink_root & " -pw " & $Plink_mdp & " killall emulationstation")
 				_CREATION_LOGMESS(1, "SSH : KillAll Emulationstation OK")
 			Else
 				_CREATION_LOGMESS(1, "SSH : KillAll Emulationstation ANNULE")
 			EndIf
 		Case $MP_REBOOT
-			If MsgBox($MB_OKCANCEL, "Reboot", "Etes vous sur de vouloir Rebooter la machine distante ?") = $IDOK Then
+			If MsgBox($MB_OKCANCEL, "Reboot", _MultiLang_GetText("mess_autoconf_ssh_reboot")) = $IDOK Then
 				Run($PathPlink & " " & $Plink_IP & " -l " & $Plink_root & " -pw " & $Plink_mdp & " /sbin/reboot")
 				_CREATION_LOGMESS(1, "SSH : Reboot OK")
 			Else
 				_CREATION_LOGMESS(1, "SSH : Reboot ANNULE")
 			EndIf
 		Case $MP_POWEROFF
-			If MsgBox($MB_OKCANCEL, "Power Off", "Etes vous sur de vouloir Arreter la machine distante ?") = $IDOK Then
+			If MsgBox($MB_OKCANCEL, "Power Off", _MultiLang_GetText("mess_autoconf_ssh_poweroff")) = $IDOK Then
 				Run($PathPlink & " " & $Plink_IP & " -l " & $Plink_root & " -pw " & $Plink_mdp & " /sbin/poweroff")
 				_CREATION_LOGMESS(1, "SSH : Power Off OK")
 			Else

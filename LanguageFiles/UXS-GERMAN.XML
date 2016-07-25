@@ -21,6 +21,9 @@
 	<mess_autoconf>Automatische Konfiguration wird erstellt</mess_autoconf>
 	<mess_autoconf_ask_Title>Automatische Konfiguration</mess_autoconf_ask_Title>
 	<mess_autoconf_ask_Question>Möchtest Du die automatische Konfiguration benutzen?</mess_autoconf_ask_Question>
+	<mess_autoconf_ssh_killall>Möchtest Du wirklich EmulationStation beenden?</mess_autoconf_ssh_killall>
+	<mess_autoconf_ssh_reboot>Möchtest Du das Gerät wirklich Neustarten?</mess_autoconf_ssh_reboot>
+	<mess_autoconf_ssh_poweroff>Möchtest Du das Gerät wirklich ausschalten?</mess_autoconf_ssh_poweroff>
 </message>
 
 <gui>
