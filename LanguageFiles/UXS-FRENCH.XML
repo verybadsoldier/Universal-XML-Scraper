@@ -94,6 +94,7 @@
 			<win_config_mode_MAJ>Majuscule</win_config_mode_MAJ>
 			<win_config_Enreg>Enregistrer</win_config_Enreg>
 			<win_config_Cancel>Annuler</win_config_Cancel>
+			<win_config_Advanced>Avancée</win_config_Advanced>
 		</win_config>
 		<win_config_mix>
 			<win_config_mix_Title>Configuration Mix Image</win_config_mix_Title>

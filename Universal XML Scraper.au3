@@ -5,7 +5,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper XML Universel
-#AutoIt3Wrapper_Res_Fileversion=1.3.0.15
+#AutoIt3Wrapper_Res_Fileversion=1.3.0.16
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -662,8 +662,6 @@ EndFunc   ;==>_CREATION_LOGMESS
 Func _GUI_Config($A_Profil, $No_Profil)
 	#Region ### START Koda GUI section ### Form=
 	$F_CONFIG = GUICreate(_MultiLang_GetText("win_config_Title"), 474, 347, -1, -1, -1, BitOR($WS_EX_TOPMOST, $WS_EX_WINDOWEDGE))
-	$B_CONFENREG = GUICtrlCreateButton(_MultiLang_GetText("win_config_Enreg"), 240, 320, 107, 25)
-	$B_CONFANNUL = GUICtrlCreateButton(_MultiLang_GetText("win_config_Cancel"), 360, 320, 107, 25)
 	$G_Scrape = GUICtrlCreateGroup(_MultiLang_GetText("win_config_GroupScrap"), 8, 0, 225, 153)
 	$L_PathRom = GUICtrlCreateLabel(_MultiLang_GetText("win_config_GroupScrap_PathRom"), 16, 16, 208, 17)
 	GUICtrlSetTip(-1, _MultiLang_GetText("tips_config_GroupScrap_PathRom"))
@@ -728,6 +726,9 @@ Func _GUI_Config($A_Profil, $No_Profil)
 	GUICtrlSetTip(-1, _MultiLang_GetText("tips_config_mode_new"))
 	$R_ScrapeMode2 = GUICtrlCreateRadio(_MultiLang_GetText("win_config_mode_append"), 344, 296, 113, 17)
 	GUICtrlSetTip(-1, _MultiLang_GetText("tips_config_mode_append"))
+	$B_CONFENREG = GUICtrlCreateButton(_MultiLang_GetText("win_config_Enreg"), 240, 320, 67, 25)
+	$B_CONFANNUL = GUICtrlCreateButton(_MultiLang_GetText("win_config_Cancel"), 310, 320, 75, 25)
+	$B_CONFADVANCED = GUICtrlCreateButton(_MultiLang_GetText("win_config_Advanced"), 390, 320, 75, 25)
 	GUISetState(@SW_SHOW)
 	GUISetState(@SW_DISABLE, $F_UniversalScraper)
 	#EndRegion ### END Koda GUI section ###
@@ -779,6 +780,8 @@ Func _GUI_Config($A_Profil, $No_Profil)
 				GUISetState(@SW_ENABLE, $F_UniversalScraper)
 				WinActivate($F_UniversalScraper)
 				Return
+			Case $B_CONFADVANCED
+				_GUI_ConfigA($F_CONFIG)
 			Case $B_PathRom
 				$PathRom = FileSelectFolder(_MultiLang_GetText("win_config_GroupScrap_PathRom"), GUICtrlRead($I_PathRom), $FSF_CREATEBUTTON, GUICtrlRead($I_PathRom), $F_CONFIG)
 				If StringRight($PathRom, 1) <> '\' Then $PathRom = $PathRom & '\'
@@ -878,6 +881,52 @@ Func _GUI_Config($A_Profil, $No_Profil)
 		EndSwitch
 	WEnd
 EndFunc   ;==>_GUI_Config
+
+Func _GUI_ConfigA($F_CONFIG)
+	#Region ### START Koda GUI section ### Form=
+	$F_CONFIGA = GUICreate(_MultiLang_GetText("win_config_Advanced"), 139, 295)
+	$L_RechFiles = GUICtrlCreateLabel("RechFiles", 8, 8, 51, 17)
+	$I_RechFiles = GUICtrlCreateInput(IniRead($PathConfigINI, "GENERAL", "$RechFiles", ""), 8, 32, 121, 21)
+	$L_RechAPI = GUICtrlCreateLabel("RechAPI", 8, 120, 47, 17)
+	$I_RechAPI = GUICtrlCreateInput(IniRead($PathConfigINI, "GENERAL", "$RechAPI", ""), 8, 144, 121, 21)
+	$L_Verbose = GUICtrlCreateLabel("Verbose", 8, 176, 43, 17)
+	$C_Verbose = GUICtrlCreateCombo("", 8, 200, 121, 25, BitOR($CBS_DROPDOWN, $CBS_AUTOHSCROLL))
+	GUICtrlSetData($C_Verbose, "0|1|2", IniRead($PathConfigINI, "GENERAL", "$Verbose ", 1))
+	$L_RechSYS = GUICtrlCreateLabel("RechSYS", 8, 64, 51, 17)
+	$C_RechSYS = GUICtrlCreateCombo("", 8, 88, 121, 25, BitOR($CBS_DROPDOWN, $CBS_AUTOHSCROLL))
+	GUICtrlSetData($C_RechSYS, "0|1", IniRead($PathConfigINI, "GENERAL", "$RechSYS", 1))
+	$B_CONFAENREG = GUICtrlCreateButton(_MultiLang_GetText("win_config_Enreg"), 8, 232, 123, 25)
+	$B_CONFAANNUL = GUICtrlCreateButton(_MultiLang_GetText("win_config_Cancel"), 8, 264, 123, 25)
+	GUISetState(@SW_SHOW)
+	#EndRegion ### END Koda GUI section ###
+	GUISetState(@SW_DISABLE, $F_CONFIG)
+	$aWinGetPos = WinGetPos($F_CONFIG)
+	WinMove($F_CONFIGA, "", $aWinGetPos[0] + 475, $aWinGetPos[1])
+	While 1
+		$nMsg = GUIGetMsg()
+		Switch $nMsg
+			Case $GUI_EVENT_CLOSE, $B_CONFAANNUL
+				GUIDelete($F_CONFIGA)
+				GUISetState(@SW_ENABLE, $F_CONFIG)
+				WinActivate($F_CONFIG)
+				Return
+			Case $B_CONFAENREG
+				$RechFiles = GUICtrlRead($I_RechFiles)
+				IniWrite($PathConfigINI, "GENERAL", "$RechFiles", $RechFiles)
+				$RechAPI = GUICtrlRead($I_RechAPI)
+				IniWrite($PathConfigINI, "GENERAL", "$RechAPI", $RechAPI)
+				$Verbose = GUICtrlRead($C_Verbose)
+				IniWrite($PathConfigINI, "GENERAL", "$Verbose", $Verbose)
+				$RechSYS = GUICtrlRead($C_RechSYS)
+				IniWrite($PathConfigINI, "GENERAL", "$RechSYS", $RechSYS)
+				GUIDelete($F_CONFIGA)
+				GUISetState(@SW_ENABLE, $F_CONFIG)
+				WinActivate($F_CONFIG)
+				Return
+		EndSwitch
+	WEnd
+
+EndFunc   ;==>_GUI_ConfigA
 
 Func _SCRAPING_VERIF()
 	Local $ERROR_MESSAGE = "", $SCRAP_OK = 0

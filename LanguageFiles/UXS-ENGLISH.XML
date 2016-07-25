@@ -94,6 +94,7 @@
 			<win_config_mode_MAJ>Uppercase</win_config_mode_MAJ>
 			<win_config_Enreg>Save</win_config_Enreg>
 			<win_config_Cancel>Cancel</win_config_Cancel>
+			<win_config_Advanced>Advanced</win_config_Advanced>
 		</win_config>
 		<win_config_mix>
 			<win_config_mix_Title>Mix Image Configuration</win_config_mix_Title>

@@ -4,7 +4,7 @@
 	<prSET_XML_FUSIONROM>Unindo Arquivo XML</prSET_XML_FUSIONROM>
 	<prSET_SYSTEM_CREATEARRAY>Obtendo lista de sistemas</prSET_SYSTEM_CREATEARRAY>
 </progressbar>
-
+ 
 <error>
 	<err_title>Erro</err_title>
 	<err_PathRom>Caminho das Roms inválido</err_PathRom>
@@ -16,16 +16,16 @@
 	<err_autoconfPathRom>Caminho das Roms do Auto Config inválido</err_autoconfPathRom>
 	<err_TimeOut>Universal XML Scraper não pode conectar a base de dados. Tente mais tarde, obrigado.</err_TimeOut>
 </error>
-
+ 
 <message>
 	<mess_autoconf>Montagem da configuração automática em progresso</mess_autoconf>
 	<mess_autoconf_ask_Title>Auto Configuração</mess_autoconf_ask_Title>
-	<mess_autoconf_ask_Question>Você quer usar a Configuração Automática</mess_autoconf_ask_Question>
+	<mess_autoconf_ask_Question>Você deseja usar a Configuração Automática?</mess_autoconf_ask_Question>
 	<mess_autoconf_ssh_killall>Tem certeza de que deseja parar o EmulationStation?</mess_autoconf_ssh_killall>
 	<mess_autoconf_ssh_reboot>Tem certeza de que deseja reiniciar o sistema remotamente?</mess_autoconf_ssh_reboot>
 	<mess_autoconf_ssh_poweroff>Tem certeza de que deseja parar o sistema remotamente?</mess_autoconf_ssh_poweroff>
 </message>
-
+ 
 <gui>
 	<main_gui>Universal XML Scraper</main_gui>
 	<menu>
@@ -39,8 +39,8 @@
 		<mnu_edit_miximage>Mudar perfil do Mix Images</mnu_edit_miximage>
 		<mnu_edit_langue>Mudar Linguagem</mnu_edit_langue>
 		<mnu_edit_config>Configurar</mnu_edit_config>
-		<mnu_ssh>SSH via Rede</mnu_ssh>
-		<mnu_ssh_killall>Kill Emulationstation</mnu_ssh_killall>
+		<mnu_ssh>Comandos SSH</mnu_ssh>
+		<mnu_ssh_killall>Fechar Emulationstation</mnu_ssh_killall>
 		<mnu_ssh_reboot>Reiniciar Emulationstation</mnu_ssh_reboot>
 		<mnu_ssh_halt>Desligar Emulationstation</mnu_ssh_halt>
 		<mnu_mode>Modo de Scrape</mnu_mode>
@@ -55,12 +55,12 @@
 		<scrap_cancel_button>Cancelar</scrap_cancel_button>
 		<autoconfpath_button>Caminho para todos os sistemas</autoconfpath_button>
 		<win_sel_langue>
-			<win_sel_langue_Title>Selecionar linguagem</win_sel_langue_Title>
+			<win_sel_langue_Title>Seleção de linguagem</win_sel_langue_Title>
 			<win_sel_langue_text>Selecione a linguagem</win_sel_langue_text>
 			<win_sel_langue_button>Selecionar</win_sel_langue_button>
 		</win_sel_langue>
 		<win_sel_profil>
-			<win_sel_profil_Title>Selecção de perfil</win_sel_profil_Title>
+			<win_sel_profil_Title>Seleção de perfil</win_sel_profil_Title>
 			<win_sel_profil_text>Selecione um perfil</win_sel_profil_text>
 			<win_sel_profil_button>Selecionar</win_sel_profil_button>
 		</win_sel_profil>
@@ -94,6 +94,7 @@
 			<win_config_mode_MAJ>Maiúsculo XML</win_config_mode_MAJ>
 			<win_config_Enreg>Salvar</win_config_Enreg>
 			<win_config_Cancel>Cancelar</win_config_Cancel>
+			<win_config_Advanced>Avançadas</win_config_Advanced>
 		</win_config>
 		<win_config_mix>
 			<win_config_mix_Title>Configuração do Mix Image</win_config_mix_Title>
@@ -104,7 +105,7 @@
 		</win_config_mix>
 		<win_About>
 			<win_About_Title>Sobre</win_About_Title>
-			<win_About_By>Criado por Screech</win_About_By>
+			<win_About_By>Criado por Screech | Traduzido por PumpKHeaD</win_About_By>
 			<win_About_Thanks>Agradecimentos a :</win_About_Thanks>
 		</win_About>
 		<win_Datas>
@@ -112,7 +113,7 @@
 			<win_Datas_Text>Scrape Completado</win_Datas_Text>
 			<win_Datas_RomsFound>Número de Roms encontradas : </win_Datas_RomsFound>
 			<win_Datas_RomsExist>Número Roms existentes : </win_Datas_RomsExist>
-			<win_Datas_RomsAdd>Número de Roms adicionadas : </win_Datas_RomsAdd>
+			<win_Datas_RomsAdd>Número de Roms adicionadas no XML : </win_Datas_RomsAdd>
 			<win_Datas_MoyTime>Média de tempo por Rom : </win_Datas_MoyTime>
 			<win_Datas_FullTime>Tempo Total : </win_Datas_FullTime>
 		</win_Datas>
@@ -130,12 +131,12 @@
 			<tips_config_GroupImage_hautImage>Altura máxima da imagem a ser baixada (Scaling)</tips_config_GroupImage_hautImage>
 			<tips_config_GroupImage_LongImage>Largura máxima da imagem a ser baixada (Scaling)</tips_config_GroupImage_LongImage>
 			<tips_config_GroupImage_PathImageSub>Caminho onde ficarão as imagens no arquivo XML</tips_config_GroupImage_PathImageSub>
-			<tips_config_GroupImage_Extension>Extensão da imagem baixada(defaut = a mesma do site)</tips_config_GroupImage_Extension>
+			<tips_config_GroupImage_Extension>Extensão da imagem baixada(defaut = a mesma do site, se usar o MIX Image será sempre PNG)</tips_config_GroupImage_Extension>
 			<tips_config_GroupAutoconf_PathRom>Diretório onde estão os sistemas</tips_config_GroupAutoconf_PathRom>
-			<tips_config_GroupAutoconf_PathXML>Nome do arquivo XML a ser gerado </tips_config_GroupAutoconf_PathXML>
+			<tips_config_GroupAutoconf_PathXML>Nome do arquivo XML a ser gerado</tips_config_GroupAutoconf_PathXML>
 			<tips_config_GroupAutoconf_PathRomSub>Caminho onde ficarão as roms no arquivo XML</tips_config_GroupAutoconf_PathRomSub>
 			<tips_config_GroupAutoconf_PathImage>Diretório onde as imagens serão baixadas</tips_config_GroupAutoconf_PathImage>
-			<tips_config_GroupAutoconf_PathImageSub>Caminho onde ficarão as roms no arquivo XML</tips_config_GroupAutoconf_PathImageSub>
+			<tips_config_GroupAutoconf_PathImageSub>Caminho onde ficarão as imagens no arquivo XML</tips_config_GroupAutoconf_PathImageSub>
 			<tips_config_GroupAutoconf_Use>Ativar Auto Configuração</tips_config_GroupAutoconf_Use>
 			<tips_config_mode_new>Um novo arquivo XML será criado (Cuidado! Irá sobrescrever se já existir um na pasta)</tips_config_mode_new>
 			<tips_config_mode_append>Juntar o novo arquivo XML com o existente na pasta</tips_config_mode_append>
