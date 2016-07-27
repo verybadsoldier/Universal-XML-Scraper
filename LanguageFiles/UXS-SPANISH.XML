@@ -12,7 +12,7 @@
 	<err_PathNew>Ruta de archivo XML inválido</err_PathNew>
 	<err_PathNew_ext>Archivo XML inválido</err_PathNew_ext>
 	<err_FillRomList>Ningún archivo ZIP encontrado</err_FillRomList>
-	<err_No_Profil>Ningún perfil selecionado</err_No_Profil>
+	<err_No_Profil>Ningún perfil seleccionado</err_No_Profil>
 	<err_autoconfPathRom>Ruta de ROMs de Auto Config inválida</err_autoconfPathRom>
 	<err_TimeOut>Universal XML Scraper no puede conectarse a la base de dados. Por favor, inténtelo más tarde.</err_TimeOut>
 </error>
@@ -65,9 +65,9 @@
 			<win_sel_profil_button>Seleccionar</win_sel_profil_button>
 		</win_sel_profil>
 		<win_sel_system>
-			<win_sel_system_Title>Seleçción de sistema</win_sel_system_Title>
+			<win_sel_system_Title>Selección de sistema</win_sel_system_Title>
 			<win_sel_system_text>Seleccione un sistema</win_sel_system_text>
-			<win_sel_system_button>Selecionar</win_sel_system_button>
+			<win_sel_system_button>Seleccionar</win_sel_system_button>
 		</win_sel_system>
 		<win_config>
 			<win_config_Title>Configuración</win_config_Title>

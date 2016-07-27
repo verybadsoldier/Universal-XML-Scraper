@@ -131,7 +131,7 @@
 			<tips_config_GroupImage_hautImage>Altura máxima da imagem a ser baixada (Scaling)</tips_config_GroupImage_hautImage>
 			<tips_config_GroupImage_LongImage>Largura máxima da imagem a ser baixada (Scaling)</tips_config_GroupImage_LongImage>
 			<tips_config_GroupImage_PathImageSub>Caminho onde ficarão as imagens no arquivo XML</tips_config_GroupImage_PathImageSub>
-			<tips_config_GroupImage_Extension>Extensão da imagem baixada(defaut = a mesma do site, se usar o MIX Image será sempre PNG)</tips_config_GroupImage_Extension>
+			<tips_config_GroupImage_Extension>Extensão da imagem baixada(defaut = a mesma do site)</tips_config_GroupImage_Extension>
 			<tips_config_GroupAutoconf_PathRom>Diretório onde estão os sistemas</tips_config_GroupAutoconf_PathRom>
 			<tips_config_GroupAutoconf_PathXML>Nome do arquivo XML a ser gerado</tips_config_GroupAutoconf_PathXML>
 			<tips_config_GroupAutoconf_PathRomSub>Caminho onde ficarão as roms no arquivo XML</tips_config_GroupAutoconf_PathRomSub>
