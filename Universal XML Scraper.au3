@@ -5,7 +5,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper XML Universel
-#AutoIt3Wrapper_Res_Fileversion=1.3.0.17
+#AutoIt3Wrapper_Res_Fileversion=1.3.0.18
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -77,7 +77,7 @@ If @Compiled Then
 		FileDelete($SOURCE_DIRECTORY & "\LanguageFiles")
 		FileDelete($SOURCE_DIRECTORY & "\Ressources")
 		ConsoleWrite("Ini Deleted" & @CRLF) ;Debug
-		_CREATION_LOGMESS(1, "Mise aÂ  jour de " & $verINI & " vers " & $Rev)
+		_CREATION_LOGMESS(1, "Mise a  jour de " & $verINI & " vers " & $Rev)
 	Else
 		_CREATION_LOGMESS(1, "Version : " & $Rev)
 	EndIf
@@ -973,9 +973,9 @@ Func _GUI_REFRESH($INI_P_SOURCE, $INI_P_CIBLE, $ScrapIP = 0, $SCRAP_OK = 0)
 		$user_lang = IniRead($PathConfigINI, "LAST_USE", "$user_lang", -1)
 		ConsoleWrite("+$user_lang = " & $user_lang & @CRLF)
 		If StringRight($user_lang, 2) = "0c" Then
-			IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'fr|eu|us|jp')
+			IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'fr|eu|us|jp|xx')
 		Else
-			IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'us|eu|jp')
+			IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'us|eu|jp|xx')
 		EndIf
 
 		_GDIPlus_Startup()
@@ -1650,7 +1650,7 @@ Func _XML_CREATEFORMAT($Profil)
 	_CREATION_LOGMESS(1, "Recuperation des champs du profil")
 	Local $A_XMLFormat[1][4]
 	Local $B_Elements = 1, $V_Elements2
-	Local $RechMultiLang = StringSplit(IniRead($PathConfigINI, "GENERAL", "$RechMultiLang  ", 'fr|eu|us|jp'), "|")
+	Local $RechMultiLang = StringSplit(IniRead($PathConfigINI, "GENERAL", "$RechMultiLang  ", 'fr|eu|us|jp|xx'), "|")
 	Local $V_Elements = IniRead($PathConfigINI, $Profil, "$ELEMENT_" & $B_Elements, "Ending")
 	While $V_Elements <> "Ending"
 		If StringInStr($V_Elements, "%%") Then
@@ -2094,7 +2094,7 @@ EndFunc   ;==>_MIX_IMAGE_CREATECIBLE
 Func _MIX_IMAGE_CREATEFORMAT()
 	Local $A_MIX_IMAGE_Format[1][12]
 	Local $B_Sources, $M_Elements, $M_Elements2
-	Local $RechMultiLang = StringSplit(IniRead($PathConfigINI, "GENERAL", "$RechMultiLang  ", 'fr|eu|us|jp'), "|")
+	Local $RechMultiLang = StringSplit(IniRead($PathConfigINI, "GENERAL", "$RechMultiLang  ", 'fr|eu|us|jp|xx'), "|")
 	$Nb_MIX_Image = IniRead($PathMixTmp & "\config.ini", "MIX_IMG", "$MIX_IMG_NBIMG", 0)
 	_CREATION_LOGMESS(1, "Creation des parametres pour le Mix")
 	For $B_Images = 1 To $Nb_MIX_Image
