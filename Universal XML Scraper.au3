@@ -5,7 +5,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper XML Universel
-#AutoIt3Wrapper_Res_Fileversion=1.3.0.16
+#AutoIt3Wrapper_Res_Fileversion=1.3.0.17
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -97,6 +97,7 @@ FileInstall(".\LanguageFiles\UXS-ENGLISH.XML", $SOURCE_DIRECTORY & "\LanguageFil
 FileInstall(".\LanguageFiles\UXS-FRENCH.XML", $SOURCE_DIRECTORY & "\LanguageFiles\UXS-FRENCH.XML")
 FileInstall(".\LanguageFiles\UXS-PORTUGUESE.XML", $SOURCE_DIRECTORY & "\LanguageFiles\UXS-PORTUGUESE.XML")
 FileInstall(".\LanguageFiles\UXS-GERMAN.XML", $SOURCE_DIRECTORY & "\LanguageFiles\UXS-GERMAN.XML")
+FileInstall(".\LanguageFiles\UXS-SPANISH.XML", $SOURCE_DIRECTORY & "\LanguageFiles\UXS-SPANISH.XML")
 FileInstall(".\Ressources\empty.jpg", $SOURCE_DIRECTORY & "\Ressources\empty.jpg")
 FileInstall(".\Ressources\emptySYS.jpg", $SOURCE_DIRECTORY & "\Ressources\emptySYS.jpg")
 FileInstall(".\Ressources\Fleche.jpg", $SOURCE_DIRECTORY & "\Ressources\Fleche.jpg")
@@ -1078,7 +1079,7 @@ Func _LANG_LOAD($LANG_DIR, $user_lang)
 	; [n][0] = Display Name in Local Language (Used for Select Function)
 	; [n][1] = Language File (Full path.  In this case we used a $LANG_DIR
 	; [n][2] = [Space delimited] Character codes as used by @OS_LANG (used to select correct lang file)
-	Local $LANGFILES[4][3]
+	Local $LANGFILES[5][3]
 
 	$LANGFILES[0][0] = "English (US)" ;
 	$LANGFILES[0][1] = $LANG_DIR & "\UXS-ENGLISH.XML"
@@ -1096,7 +1097,7 @@ Func _LANG_LOAD($LANG_DIR, $user_lang)
 			"3009 " & _ ;English_Zimbabwe
 			"3409" ;English_Philippines
 
-	$LANGFILES[1][0] = "FranÃ§ais" ; French
+	$LANGFILES[1][0] = "Français" ; French
 	$LANGFILES[1][1] = $LANG_DIR & "\UXS-FRENCH.XML"
 	$LANGFILES[1][2] = "040c " & _ ;French_Standard
 			"080c " & _ ;French_Belgian
@@ -1105,18 +1106,42 @@ Func _LANG_LOAD($LANG_DIR, $user_lang)
 			"140c " & _ ;French_Luxembourg
 			"180c" ;French_Monaco
 
-	$LANGFILES[2][0] = "Portuguese" ; Portuguese
+	$LANGFILES[2][0] = "Português" ; Portuguese
 	$LANGFILES[2][1] = $LANG_DIR & "\UXS-PORTUGUESE.XML"
 	$LANGFILES[2][2] = "0816 " & _ ;Portuguese - Portugal
 			"0416 " ;Portuguese - Brazil
 
-	$LANGFILES[3][0] = "German" ; German
+	$LANGFILES[3][0] = "Deutsch" ; German
 	$LANGFILES[3][1] = $LANG_DIR & "\UXS-GERMAN.XML"
 	$LANGFILES[3][2] = "0407 " & _ ;German - Germany
 			"0807 " & _ ;German - Switzerland
 			"0C07 " & _ ;German - Austria
 			"1007 " & _ ;German - Luxembourg
 			"1407 " ;German - Liechtenstein
+
+	$LANGFILES[4][0] = "Español" ; Spanish
+	$LANGFILES[4][1] = $LANG_DIR & "\UXS-SPANISH.XML"
+	$LANGFILES[4][2] = "040A " & _ ;Spanish - Spain
+			"080A " & _ ;Spanish - Mexico
+			"0C0A " & _ ;Spanish - Spain
+			"100A " & _ ;Spanish - Guatemala
+			"140A " & _ ;Spanish - Costa Rica
+			"180A " & _ ;Spanish - Panama
+			"1C0A " & _ ;Spanish - Dominican Republic
+			"200A " & _ ;Spanish - Venezuela
+			"240A " & _ ;Spanish - Colombia
+			"280A " & _ ;Spanish - Peru
+			"2C0A " & _ ;Spanish - Argentina
+			"300A " & _ ;Spanish - Ecuador
+			"340A " & _ ;Spanish - Chile
+			"380A " & _ ;Spanish - Uruguay
+			"3C0A " & _ ;Spanish - Paraguay
+			"400A " & _ ;Spanish - Bolivia
+			"440A " & _ ;Spanish - El Salvador
+			"480A " & _ ;Spanish - Honduras
+			"4C0A " & _ ;Spanish - Nicaragua
+			"500A " & _ ;Spanish - Puerto Rico
+			"540A " ;Spanish - United State
 
 	;Set the available language files, names, and codes.
 	_MultiLang_SetFileInfo($LANGFILES)
