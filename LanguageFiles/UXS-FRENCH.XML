@@ -21,6 +21,9 @@
 	<mess_autoconf>Préparation configuration Automatique en cours</mess_autoconf>
 	<mess_autoconf_ask_Title>Configuration Automatique</mess_autoconf_ask_Title>
 	<mess_autoconf_ask_Question>Souhaitez-vous activer la configuration automatique ?</mess_autoconf_ask_Question>
+	<mess_autoconf_ssh_killall>Etes vous sur de vouloir arreter EmulationStation ?</mess_autoconf_ssh_killall>
+	<mess_autoconf_ssh_reboot>Etes vous sur de vouloir Rebooter la machine distante ?</mess_autoconf_ssh_reboot>
+	<mess_autoconf_ssh_poweroff>Etes vous sur de vouloir Arreter la machine distante ?</mess_autoconf_ssh_poweroff>
 </message>
 
 <gui>
@@ -91,6 +94,7 @@
 			<win_config_mode_MAJ>Majuscule</win_config_mode_MAJ>
 			<win_config_Enreg>Enregistrer</win_config_Enreg>
 			<win_config_Cancel>Annuler</win_config_Cancel>
+			<win_config_Advanced>Avancée</win_config_Advanced>
 		</win_config>
 		<win_config_mix>
 			<win_config_mix_Title>Configuration Mix Image</win_config_mix_Title>

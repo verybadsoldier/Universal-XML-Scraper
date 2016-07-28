@@ -21,6 +21,9 @@
 	<mess_autoconf>Setting auto configuration in progress</mess_autoconf>
 	<mess_autoconf_ask_Title>Auto Configuration</mess_autoconf_ask_Title>
 	<mess_autoconf_ask_Question>Do you want to use Auto Configuration</mess_autoconf_ask_Question>
+	<mess_autoconf_ssh_killall>Do you want to Kill emulationstation ?</mess_autoconf_ssh_killall>
+	<mess_autoconf_ssh_reboot>Do you want to Reboot the computer ?</mess_autoconf_ssh_reboot>
+	<mess_autoconf_ssh_poweroff>Do you want to Stop the computer ?</mess_autoconf_ssh_poweroff>
 </message>
 
 <gui>
@@ -91,6 +94,7 @@
 			<win_config_mode_MAJ>Uppercase</win_config_mode_MAJ>
 			<win_config_Enreg>Save</win_config_Enreg>
 			<win_config_Cancel>Cancel</win_config_Cancel>
+			<win_config_Advanced>Advanced</win_config_Advanced>
 		</win_config>
 		<win_config_mix>
 			<win_config_mix_Title>Mix Image Configuration</win_config_mix_Title>
@@ -135,7 +139,7 @@
 			<tips_config_GroupAutoconf_PathImageSub>Local path (in XML File) where roms are</tips_config_GroupAutoconf_PathImageSub>
 			<tips_config_GroupAutoconf_Use>Auto configuration activation</tips_config_GroupAutoconf_Use>
 			<tips_config_mode_new>New XML file were created (overwrite if exist)</tips_config_mode_new>
-			<tips_config_mode_append>Append existinf XML file</tips_config_mode_append>
+			<tips_config_mode_append>Append existing XML file</tips_config_mode_append>
 			<tips_config_mode_empty>Add empty entry in XML file when no info were found</tips_config_mode_empty>
 			<tips_config_mode_MAJ>Convert in upper letter value scraped</tips_config_mode_MAJ>
 		</tips_config>

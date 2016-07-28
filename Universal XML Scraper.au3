@@ -5,7 +5,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper XML Universel
-#AutoIt3Wrapper_Res_Fileversion=1.3.0.14
+#AutoIt3Wrapper_Res_Fileversion=1.3.0.18
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -77,7 +77,7 @@ If @Compiled Then
 		FileDelete($SOURCE_DIRECTORY & "\LanguageFiles")
 		FileDelete($SOURCE_DIRECTORY & "\Ressources")
 		ConsoleWrite("Ini Deleted" & @CRLF) ;Debug
-		_CREATION_LOGMESS(1, "Mise aÂ  jour de " & $verINI & " vers " & $Rev)
+		_CREATION_LOGMESS(1, "Mise a  jour de " & $verINI & " vers " & $Rev)
 	Else
 		_CREATION_LOGMESS(1, "Version : " & $Rev)
 	EndIf
@@ -97,6 +97,7 @@ FileInstall(".\LanguageFiles\UXS-ENGLISH.XML", $SOURCE_DIRECTORY & "\LanguageFil
 FileInstall(".\LanguageFiles\UXS-FRENCH.XML", $SOURCE_DIRECTORY & "\LanguageFiles\UXS-FRENCH.XML")
 FileInstall(".\LanguageFiles\UXS-PORTUGUESE.XML", $SOURCE_DIRECTORY & "\LanguageFiles\UXS-PORTUGUESE.XML")
 FileInstall(".\LanguageFiles\UXS-GERMAN.XML", $SOURCE_DIRECTORY & "\LanguageFiles\UXS-GERMAN.XML")
+FileInstall(".\LanguageFiles\UXS-SPANISH.XML", $SOURCE_DIRECTORY & "\LanguageFiles\UXS-SPANISH.XML")
 FileInstall(".\Ressources\empty.jpg", $SOURCE_DIRECTORY & "\Ressources\empty.jpg")
 FileInstall(".\Ressources\emptySYS.jpg", $SOURCE_DIRECTORY & "\Ressources\emptySYS.jpg")
 FileInstall(".\Ressources\Fleche.jpg", $SOURCE_DIRECTORY & "\Ressources\Fleche.jpg")
@@ -257,21 +258,21 @@ While 1
 			_GUI_Config($A_Profil, $No_Profil)
 			_GUI_REFRESH($INI_P_SOURCE, $INI_P_CIBLE)
 		Case $MP_KILLALL
-			If MsgBox($MB_OKCANCEL, "KillAll Emulationstation", "Etes vous sur de vouloir arreter EmulationStation ?") = $IDOK Then
+			If MsgBox($MB_OKCANCEL, "KillAll Emulationstation", _MultiLang_GetText("mess_autoconf_ssh_killall")) = $IDOK Then
 				Run($PathPlink & " " & $Plink_IP & " -l " & $Plink_root & " -pw " & $Plink_mdp & " killall emulationstation")
 				_CREATION_LOGMESS(1, "SSH : KillAll Emulationstation OK")
 			Else
 				_CREATION_LOGMESS(1, "SSH : KillAll Emulationstation ANNULE")
 			EndIf
 		Case $MP_REBOOT
-			If MsgBox($MB_OKCANCEL, "Reboot", "Etes vous sur de vouloir Rebooter la machine distante ?") = $IDOK Then
+			If MsgBox($MB_OKCANCEL, "Reboot", _MultiLang_GetText("mess_autoconf_ssh_reboot")) = $IDOK Then
 				Run($PathPlink & " " & $Plink_IP & " -l " & $Plink_root & " -pw " & $Plink_mdp & " /sbin/reboot")
 				_CREATION_LOGMESS(1, "SSH : Reboot OK")
 			Else
 				_CREATION_LOGMESS(1, "SSH : Reboot ANNULE")
 			EndIf
 		Case $MP_POWEROFF
-			If MsgBox($MB_OKCANCEL, "Power Off", "Etes vous sur de vouloir Arreter la machine distante ?") = $IDOK Then
+			If MsgBox($MB_OKCANCEL, "Power Off", _MultiLang_GetText("mess_autoconf_ssh_poweroff")) = $IDOK Then
 				Run($PathPlink & " " & $Plink_IP & " -l " & $Plink_root & " -pw " & $Plink_mdp & " /sbin/poweroff")
 				_CREATION_LOGMESS(1, "SSH : Power Off OK")
 			Else
@@ -662,8 +663,6 @@ EndFunc   ;==>_CREATION_LOGMESS
 Func _GUI_Config($A_Profil, $No_Profil)
 	#Region ### START Koda GUI section ### Form=
 	$F_CONFIG = GUICreate(_MultiLang_GetText("win_config_Title"), 474, 347, -1, -1, -1, BitOR($WS_EX_TOPMOST, $WS_EX_WINDOWEDGE))
-	$B_CONFENREG = GUICtrlCreateButton(_MultiLang_GetText("win_config_Enreg"), 240, 320, 107, 25)
-	$B_CONFANNUL = GUICtrlCreateButton(_MultiLang_GetText("win_config_Cancel"), 360, 320, 107, 25)
 	$G_Scrape = GUICtrlCreateGroup(_MultiLang_GetText("win_config_GroupScrap"), 8, 0, 225, 153)
 	$L_PathRom = GUICtrlCreateLabel(_MultiLang_GetText("win_config_GroupScrap_PathRom"), 16, 16, 208, 17)
 	GUICtrlSetTip(-1, _MultiLang_GetText("tips_config_GroupScrap_PathRom"))
@@ -728,6 +727,9 @@ Func _GUI_Config($A_Profil, $No_Profil)
 	GUICtrlSetTip(-1, _MultiLang_GetText("tips_config_mode_new"))
 	$R_ScrapeMode2 = GUICtrlCreateRadio(_MultiLang_GetText("win_config_mode_append"), 344, 296, 113, 17)
 	GUICtrlSetTip(-1, _MultiLang_GetText("tips_config_mode_append"))
+	$B_CONFENREG = GUICtrlCreateButton(_MultiLang_GetText("win_config_Enreg"), 240, 320, 67, 25)
+	$B_CONFANNUL = GUICtrlCreateButton(_MultiLang_GetText("win_config_Cancel"), 310, 320, 75, 25)
+	$B_CONFADVANCED = GUICtrlCreateButton(_MultiLang_GetText("win_config_Advanced"), 390, 320, 75, 25)
 	GUISetState(@SW_SHOW)
 	GUISetState(@SW_DISABLE, $F_UniversalScraper)
 	#EndRegion ### END Koda GUI section ###
@@ -779,6 +781,8 @@ Func _GUI_Config($A_Profil, $No_Profil)
 				GUISetState(@SW_ENABLE, $F_UniversalScraper)
 				WinActivate($F_UniversalScraper)
 				Return
+			Case $B_CONFADVANCED
+				_GUI_ConfigA($F_CONFIG)
 			Case $B_PathRom
 				$PathRom = FileSelectFolder(_MultiLang_GetText("win_config_GroupScrap_PathRom"), GUICtrlRead($I_PathRom), $FSF_CREATEBUTTON, GUICtrlRead($I_PathRom), $F_CONFIG)
 				If StringRight($PathRom, 1) <> '\' Then $PathRom = $PathRom & '\'
@@ -879,6 +883,52 @@ Func _GUI_Config($A_Profil, $No_Profil)
 	WEnd
 EndFunc   ;==>_GUI_Config
 
+Func _GUI_ConfigA($F_CONFIG)
+	#Region ### START Koda GUI section ### Form=
+	$F_CONFIGA = GUICreate(_MultiLang_GetText("win_config_Advanced"), 139, 295)
+	$L_RechFiles = GUICtrlCreateLabel("RechFiles", 8, 8, 51, 17)
+	$I_RechFiles = GUICtrlCreateInput(IniRead($PathConfigINI, "GENERAL", "$RechFiles", ""), 8, 32, 121, 21)
+	$L_RechAPI = GUICtrlCreateLabel("RechAPI", 8, 120, 47, 17)
+	$I_RechAPI = GUICtrlCreateInput(IniRead($PathConfigINI, "GENERAL", "$RechAPI", ""), 8, 144, 121, 21)
+	$L_Verbose = GUICtrlCreateLabel("Verbose", 8, 176, 43, 17)
+	$C_Verbose = GUICtrlCreateCombo("", 8, 200, 121, 25, BitOR($CBS_DROPDOWN, $CBS_AUTOHSCROLL))
+	GUICtrlSetData($C_Verbose, "0|1|2", IniRead($PathConfigINI, "GENERAL", "$Verbose ", 1))
+	$L_RechSYS = GUICtrlCreateLabel("RechSYS", 8, 64, 51, 17)
+	$C_RechSYS = GUICtrlCreateCombo("", 8, 88, 121, 25, BitOR($CBS_DROPDOWN, $CBS_AUTOHSCROLL))
+	GUICtrlSetData($C_RechSYS, "0|1", IniRead($PathConfigINI, "GENERAL", "$RechSYS", 1))
+	$B_CONFAENREG = GUICtrlCreateButton(_MultiLang_GetText("win_config_Enreg"), 8, 232, 123, 25)
+	$B_CONFAANNUL = GUICtrlCreateButton(_MultiLang_GetText("win_config_Cancel"), 8, 264, 123, 25)
+	GUISetState(@SW_SHOW)
+	#EndRegion ### END Koda GUI section ###
+	GUISetState(@SW_DISABLE, $F_CONFIG)
+	$aWinGetPos = WinGetPos($F_CONFIG)
+	WinMove($F_CONFIGA, "", $aWinGetPos[0] + 475, $aWinGetPos[1])
+	While 1
+		$nMsg = GUIGetMsg()
+		Switch $nMsg
+			Case $GUI_EVENT_CLOSE, $B_CONFAANNUL
+				GUIDelete($F_CONFIGA)
+				GUISetState(@SW_ENABLE, $F_CONFIG)
+				WinActivate($F_CONFIG)
+				Return
+			Case $B_CONFAENREG
+				$RechFiles = GUICtrlRead($I_RechFiles)
+				IniWrite($PathConfigINI, "GENERAL", "$RechFiles", $RechFiles)
+				$RechAPI = GUICtrlRead($I_RechAPI)
+				IniWrite($PathConfigINI, "GENERAL", "$RechAPI", $RechAPI)
+				$Verbose = GUICtrlRead($C_Verbose)
+				IniWrite($PathConfigINI, "GENERAL", "$Verbose", $Verbose)
+				$RechSYS = GUICtrlRead($C_RechSYS)
+				IniWrite($PathConfigINI, "GENERAL", "$RechSYS", $RechSYS)
+				GUIDelete($F_CONFIGA)
+				GUISetState(@SW_ENABLE, $F_CONFIG)
+				WinActivate($F_CONFIG)
+				Return
+		EndSwitch
+	WEnd
+
+EndFunc   ;==>_GUI_ConfigA
+
 Func _SCRAPING_VERIF()
 	Local $ERROR_MESSAGE = "", $SCRAP_OK = 0
 	_CREATION_LOGMESS(2, "Test de la config")
@@ -923,9 +973,9 @@ Func _GUI_REFRESH($INI_P_SOURCE, $INI_P_CIBLE, $ScrapIP = 0, $SCRAP_OK = 0)
 		$user_lang = IniRead($PathConfigINI, "LAST_USE", "$user_lang", -1)
 		ConsoleWrite("+$user_lang = " & $user_lang & @CRLF)
 		If StringRight($user_lang, 2) = "0c" Then
-			IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'fr|eu|us|jp')
+			IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'fr|eu|us|jp|xx')
 		Else
-			IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'us|eu|jp')
+			IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'us|eu|jp|xx')
 		EndIf
 
 		_GDIPlus_Startup()
@@ -1029,7 +1079,7 @@ Func _LANG_LOAD($LANG_DIR, $user_lang)
 	; [n][0] = Display Name in Local Language (Used for Select Function)
 	; [n][1] = Language File (Full path.  In this case we used a $LANG_DIR
 	; [n][2] = [Space delimited] Character codes as used by @OS_LANG (used to select correct lang file)
-	Local $LANGFILES[4][3]
+	Local $LANGFILES[5][3]
 
 	$LANGFILES[0][0] = "English (US)" ;
 	$LANGFILES[0][1] = $LANG_DIR & "\UXS-ENGLISH.XML"
@@ -1047,7 +1097,7 @@ Func _LANG_LOAD($LANG_DIR, $user_lang)
 			"3009 " & _ ;English_Zimbabwe
 			"3409" ;English_Philippines
 
-	$LANGFILES[1][0] = "FranÃ§ais" ; French
+	$LANGFILES[1][0] = "Français" ; French
 	$LANGFILES[1][1] = $LANG_DIR & "\UXS-FRENCH.XML"
 	$LANGFILES[1][2] = "040c " & _ ;French_Standard
 			"080c " & _ ;French_Belgian
@@ -1056,18 +1106,42 @@ Func _LANG_LOAD($LANG_DIR, $user_lang)
 			"140c " & _ ;French_Luxembourg
 			"180c" ;French_Monaco
 
-	$LANGFILES[2][0] = "Portuguese" ; Portuguese
+	$LANGFILES[2][0] = "Português" ; Portuguese
 	$LANGFILES[2][1] = $LANG_DIR & "\UXS-PORTUGUESE.XML"
 	$LANGFILES[2][2] = "0816 " & _ ;Portuguese - Portugal
 			"0416 " ;Portuguese - Brazil
 
-	$LANGFILES[3][0] = "German" ; German
+	$LANGFILES[3][0] = "Deutsch" ; German
 	$LANGFILES[3][1] = $LANG_DIR & "\UXS-GERMAN.XML"
 	$LANGFILES[3][2] = "0407 " & _ ;German - Germany
 			"0807 " & _ ;German - Switzerland
 			"0C07 " & _ ;German - Austria
 			"1007 " & _ ;German - Luxembourg
 			"1407 " ;German - Liechtenstein
+
+	$LANGFILES[4][0] = "Español" ; Spanish
+	$LANGFILES[4][1] = $LANG_DIR & "\UXS-SPANISH.XML"
+	$LANGFILES[4][2] = "040A " & _ ;Spanish - Spain
+			"080A " & _ ;Spanish - Mexico
+			"0C0A " & _ ;Spanish - Spain
+			"100A " & _ ;Spanish - Guatemala
+			"140A " & _ ;Spanish - Costa Rica
+			"180A " & _ ;Spanish - Panama
+			"1C0A " & _ ;Spanish - Dominican Republic
+			"200A " & _ ;Spanish - Venezuela
+			"240A " & _ ;Spanish - Colombia
+			"280A " & _ ;Spanish - Peru
+			"2C0A " & _ ;Spanish - Argentina
+			"300A " & _ ;Spanish - Ecuador
+			"340A " & _ ;Spanish - Chile
+			"380A " & _ ;Spanish - Uruguay
+			"3C0A " & _ ;Spanish - Paraguay
+			"400A " & _ ;Spanish - Bolivia
+			"440A " & _ ;Spanish - El Salvador
+			"480A " & _ ;Spanish - Honduras
+			"4C0A " & _ ;Spanish - Nicaragua
+			"500A " & _ ;Spanish - Puerto Rico
+			"540A " ;Spanish - United State
 
 	;Set the available language files, names, and codes.
 	_MultiLang_SetFileInfo($LANGFILES)
@@ -1576,7 +1650,7 @@ Func _XML_CREATEFORMAT($Profil)
 	_CREATION_LOGMESS(1, "Recuperation des champs du profil")
 	Local $A_XMLFormat[1][4]
 	Local $B_Elements = 1, $V_Elements2
-	Local $RechMultiLang = StringSplit(IniRead($PathConfigINI, "GENERAL", "$RechMultiLang  ", 'fr|eu|us|jp'), "|")
+	Local $RechMultiLang = StringSplit(IniRead($PathConfigINI, "GENERAL", "$RechMultiLang  ", 'fr|eu|us|jp|xx'), "|")
 	Local $V_Elements = IniRead($PathConfigINI, $Profil, "$ELEMENT_" & $B_Elements, "Ending")
 	While $V_Elements <> "Ending"
 		If StringInStr($V_Elements, "%%") Then
@@ -2020,7 +2094,7 @@ EndFunc   ;==>_MIX_IMAGE_CREATECIBLE
 Func _MIX_IMAGE_CREATEFORMAT()
 	Local $A_MIX_IMAGE_Format[1][12]
 	Local $B_Sources, $M_Elements, $M_Elements2
-	Local $RechMultiLang = StringSplit(IniRead($PathConfigINI, "GENERAL", "$RechMultiLang  ", 'fr|eu|us|jp'), "|")
+	Local $RechMultiLang = StringSplit(IniRead($PathConfigINI, "GENERAL", "$RechMultiLang  ", 'fr|eu|us|jp|xx'), "|")
 	$Nb_MIX_Image = IniRead($PathMixTmp & "\config.ini", "MIX_IMG", "$MIX_IMG_NBIMG", 0)
 	_CREATION_LOGMESS(1, "Creation des parametres pour le Mix")
 	For $B_Images = 1 To $Nb_MIX_Image
@@ -2121,3 +2195,92 @@ Func _TimeOut($hDownload)
 	Until InetGetInfo($hDownload, 2) ; Check if the download is complete.
 	Return $timedout
 EndFunc   ;==>_TimeOut
+
+Func _GDIPlus_BitmapCreateReflectionBitmap($hBitmap, $iReflectionHeight, $iAlpha)
+
+    Local $hGraphics, $hBrush, $hReflection[2], $hAlpha, $hResult, $Size
+
+    $Size = DllCall($__g_hGDIPDll, 'uint', 'GdipGetImageDimension', 'handle', $hBitmap, 'float*', 0, 'float*', 0)
+    If (@Error) Or ($Size[0]) Then
+        Return 0
+    EndIf
+    If $iReflectionHeight > $Size[3] Then
+        $iReflectionHeight = $Size[3]
+    EndIf
+    If $iReflectionHeight < 0 Then
+        $iReflectionHeight = 0
+    EndIf
+    $hReflection[0] = _GDIPlus_BitmapCloneArea($hBitmap, 0, $Size[3] - $iReflectionHeight, $Size[2], $iReflectionHeight, $GDIP_PXF32ARGB)
+    _GDIPlus_ImageRotateFlip($hReflection[0], 6)
+    $hAlpha = _GDIPlus_BitmapCreateFromScan0($Size[2], $iReflectionHeight, $GDIP_PXF32ARGB)
+    $hGraphics = _GDIPlus_ImageGetGraphicsContext($hAlpha)
+    _GDIPlus_GraphicsClear($hGraphics, 0)
+    $hBrush = _GDIPlus_LineBrushCreate(0, 0, 0, $iReflectionHeight, BitShift($iAlpha, -24), 0)
+    _GDIPlus_GraphicsFillRect($hGraphics, 0, 0, $Size[2], $iReflectionHeight, $hBrush)
+    _GDIPlus_GraphicsDispose($hGraphics)
+    $hReflection[1] = _GDIPlus_BitmapCreateBitmapWithAlpha($hReflection[0], $hAlpha)
+    $hResult = _GDIPlus_BitmapCreateFromScan0($Size[2], $Size[3] + $iReflectionHeight)
+    $hGraphics = _GDIPlus_ImageGetGraphicsContext($hResult)
+    _GDIPlus_GraphicsClear($hGraphics, 0)
+    _GDIPlus_GraphicsDrawImageRect($hGraphics, $hBitmap, 0, 0, $Size[2], $Size[3])
+    _GDIPlus_GraphicsDrawImageRect($hGraphics, $hReflection[1], 0, $Size[3], $Size[2], $iReflectionHeight)
+    _GDIPlus_GraphicsDispose($hGraphics)
+    _GDIPlus_BitmapDispose($hAlpha)
+    For $i = 0 To 1
+        _GDIPlus_BitmapDispose($hReflection[$i])
+    Next
+    _GDIPlus_BrushDispose($hBrush)
+    Return $hResult
+EndFunc   ;==>_GDIPlus_BitmapCreateReflectionBitmap
+
+Func _GDIPlus_BitmapCreateBitmapWithAlpha($hBitmap, $hAlpha, $iChannel = 0)
+
+    Local $hGraphics, $hBmp[2], $bProc, $tProc, $pProc, $Size1, $Size2, $Lenght, $Result
+    Local $tData[2] = [$GDIP_ILMWRITE, $GDIP_ILMREAD]
+
+    $Size1 = DllCall($__g_hGDIPDll, 'uint', 'GdipGetImageDimension', 'handle', $hBitmap, 'float*', 0, 'float*', 0)
+    If (@Error) Or ($Size1[0]) Then
+        Return 0
+    EndIf
+    $Size2 = DllCall($__g_hGDIPDll, 'uint', 'GdipGetImageDimension', 'handle', $hAlpha, 'float*', 0, 'float*', 0)
+    If (@Error) Or ($Size2[0]) Then
+        Return 0
+    EndIf
+    $hBmp[0] = _GDIPlus_BitmapCloneArea($hBitmap, 0, 0, $Size1[2], $Size1[3], $GDIP_PXF32ARGB)
+    If ($Size1[2] = $Size2[2]) And ($Size1[3] = $Size2[3]) Then
+        $hBmp[1] = $hAlpha
+    Else
+        $hBmp[1] = _GDIPlus_BitmapCreateFromScan0($Size1[2], $Size1[3], $GDIP_PXF32ARGB)
+        $hGraphics = _GDIPlus_ImageGetGraphicsContext($hBmp[1])
+        _GDIPlus_GraphicsClear($hGraphics, 0)
+        _GDIPlus_GraphicsDrawImageRect($hGraphics, $hAlpha, 0, 0, $Size1[2], $Size1[3])
+        _GDIPlus_GraphicsDispose($hGraphics)
+    EndIf
+    If ($iChannel < 0) Or ($iChannel > 3) Then
+        $iChannel = 0
+    EndIf
+    For $i = 0 To 1
+        $tData[$i] = _GDIPlus_BitmapLockBits($hBmp[$i], 0, 0, $Size1[2], $Size1[3], $tData[$i], $GDIP_PXF32ARGB)
+    Next
+    If @AutoItX64 Then
+        $bProc = Binary('0x48894C240848895424104C894424184C894C24205541574831C0505050504883EC2848837C24600074054831C0EB0748C7C0010000004821C00F858100000048837C24680074054831C0EB0748C7C0010000004821C07555837C24700074054831C0EB0748C7C0010000004821C0752A4C637C24784D21FF7C0D4C637C24784983FF037F02EB0948C7C001000000EB034831C04821C07502EB0948C7C001000000EB034831C04821C07502EB0948C7C001000000EB034831C04821C07502EB0948C7C001000000EB034831C04821C0740B4831C04863C0E9950000004C8B7C24604983C7034C897C24284C8B7C246848634424784929C74983C7034C897C243048C7442438000000004C637C247049FFCF4C3B7C24387C4A488B6C24284C0FB67D00488B6C2430480FB645004C0FAFF84C89F848C7C1FF000000489948F7F94989C74C89F850488B6C24305888450048834424280448834424300448FF44243871A748C7C0010000004863C0EB034831C04883C448415F5DC3')
+    Else
+        $bProc = Binary('0x555331C0505050837C241800740431C0EB05B80100000021C07568837C241C00740431C0EB05B80100000021C07545837C242000740431C0EB05B80100000021C075228B5C242421DB7C0B8B5C242483FB037F02EB07B801000000EB0231C021C07502EB07B801000000EB0231C021C07502EB07B801000000EB0231C021C07502EB07B801000000EB0231C021C0740431C0EB6B8B5C241883C303891C248B5C241C2B5C242483C303895C2404C7442408000000008B5C24204B3B5C24087C368B2C240FB65D008B6C24040FB645000FAFD889D8B9FF00000099F7F989C3538B6C240458884500830424048344240404FF44240871BFB801000000EB0231C083C40C5B5DC21000')
+    EndIf
+    $Length = BinaryLen($bProc)
+    $pProc = DllCall('kernel32.dll', 'ptr', 'VirtualAlloc', 'ptr', 0, 'ulong_ptr', $Length, 'dword', 0x1000, 'dword', 0x0040)
+    $tProc = DllStructCreate('byte[' & $Length & ']', $pProc[0])
+    DllStructSetData($tProc, 1, $bProc)
+    $Result = DllCallAddress('uint', $pProc[0], 'ptr', $tData[0].Scan0, 'ptr', $tData[1].Scan0, 'uint', $Size1[2] * $Size1[3], 'uint', $iChannel)
+    If Not $Result[0] Then
+        ; Nothing
+    EndIf
+    DllCall('kernel32.dll', 'int', 'VirtualFree', 'ptr', $pProc[0], 'ulong_ptr', 0, 'dword', 0x4000)
+    For $i = 0 To 1
+        _GDIPlus_BitmapUnlockBits($hBmp[$i], $tData[$i])
+    Next
+    If $hBmp[1] <> $hAlpha Then
+        _GDIPlus_BitmapDispose($hBmp[1])
+    EndIf
+    Return $hBmp[0]
+EndFunc   ;==>_GDIPlus_BitmapCreateBitmapWithAlpha

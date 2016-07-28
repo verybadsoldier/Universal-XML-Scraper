@@ -21,6 +21,9 @@
 	<mess_autoconf>Automatische Konfiguration wird erstellt</mess_autoconf>
 	<mess_autoconf_ask_Title>Automatische Konfiguration</mess_autoconf_ask_Title>
 	<mess_autoconf_ask_Question>Möchtest Du die automatische Konfiguration benutzen?</mess_autoconf_ask_Question>
+	<mess_autoconf_ssh_killall>Möchtest Du wirklich EmulationStation beenden?</mess_autoconf_ssh_killall>
+	<mess_autoconf_ssh_reboot>Möchtest Du das Gerät wirklich Neustarten?</mess_autoconf_ssh_reboot>
+	<mess_autoconf_ssh_poweroff>Möchtest Du das Gerät wirklich ausschalten?</mess_autoconf_ssh_poweroff>
 </message>
 
 <gui>
@@ -91,6 +94,7 @@
 			<win_config_mode_MAJ>Großbuchstaben</win_config_mode_MAJ>
 			<win_config_Enreg>Speichern</win_config_Enreg>
 			<win_config_Cancel>Abbrechen</win_config_Cancel>
+			<win_config_Advanced>Erweiterte</win_config_Advanced>
 		</win_config>
 		<win_config_mix>
 			<win_config_mix_Title>Mix Image Konfiguration</win_config_mix_Title>
@@ -101,7 +105,7 @@
 		</win_config_mix>
 		<win_About>
 			<win_About_Title>Über</win_About_Title>
-			<win_About_By>Erstellt von: Screech</win_About_By>
+			<win_About_By>Erstellt von: Screech | übersetzt von Nachtgarm</win_About_By>
 			<win_About_Thanks>Danke an:</win_About_Thanks>
 		</win_About>
 		<win_Datas>
