@@ -5,7 +5,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper XML Universel
-#AutoIt3Wrapper_Res_Fileversion=1.4.0.4
+#AutoIt3Wrapper_Res_Fileversion=1.4.0.5
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -1428,6 +1428,9 @@ Func _SCRAPING($No_Profil, $A_Profil, $PathRom, $No_system, $INI_OPTION_MAJ, $V_
 			Case $CreateROM > 0 And $FOUND = 0
 				_CREATION_LOGMESS(1, "Rom trouve : " & $A_ROMList[$B_ROMList][0] & " (Hash : " & $A_ROMList[$B_ROMList][2] & ")")
 				$A_ROMList[$B_ROMList][7] = 1
+			Case $CreateROM < 0 And $FOUND = 0
+				_CREATION_LOGMESS(1, "(*)Time Out : " & $A_ROMList[$B_ROMList][0] & " (Hash : " & $A_ROMList[$B_ROMList][2] & ")")
+				$A_ROMList[$B_ROMList][7] = 0
 		EndSelect
 
 ;~ 		Calcul du temps restant
@@ -1464,9 +1467,9 @@ Func _SCRAPING_BILAN($FullTimer, $A_ROMList)
 
 	For $B_ROMList = 1 To $Nb_Roms
 		$A_PathRomSplit = _PathSplit($A_ROMList[$B_ROMList][1], $Tmp_Drive, $Tmp_Dir, $Tmp_FileName, $Tmp_Extension)
-		ConsoleWrite($B_ROMList & " - " & $Tmp_Dir & " - " & $Tmp_Dir_Old & @CRLF)
+		ConsoleWrite($B_ROMList & " - " & $Tmp_Drive & $Tmp_Dir & " - " & $Tmp_Drive & $Tmp_Dir_Old & @CRLF)
 		If $Tmp_Dir <> $Tmp_Dir_Old Then
-			If Not _FileCreate($Tmp_Dir & "missing.txt") Then MsgBox(4096, "Error", " Erreur creation du Fichier missing      error:" & @error)
+			If Not _FileCreate($Tmp_Drive & $Tmp_Dir & "missing.txt") Then MsgBox(4096, "Error", " Erreur creation du Fichier missing      error:" & @error)
 ;~ 			If Not _FileCreate($Tmp_Dir & "missing_Image.txt") Then MsgBox(4096, "Error", " Erreur creation du Fichier missing      error:" & @error)
 			$Tmp_Dir_Old = $Tmp_Dir
 		EndIf
@@ -1479,8 +1482,9 @@ Func _SCRAPING_BILAN($FullTimer, $A_ROMList)
 		_WinAPI_CloseHandle($H_File)
 		$Time = _Date_Time_FileTimeToStr($aTime[2])
 		$Time = StringMid($Time, 12, 5) & ".00 " & StringMid($Time, 7, 4) & "-" & StringLeft($Time, 2) & "-" & StringMid($Time, 4, 2)
+		$Missing_Line4 = "    " & $A_ROMList[$B_ROMList][3]
 
-		If $A_ROMList[$B_ROMList][7] = 0 Then FileWrite($Tmp_Dir & "missing.txt", $Missing_Line1 & $Missing_Line2 & $Missing_Line3 & $Time & @CRLF)
+		If $A_ROMList[$B_ROMList][7] = 0 Then FileWrite($Tmp_Drive & $Tmp_Dir & "missing.txt", $Missing_Line1 & $Missing_Line2 & $Missing_Line3 & $Time & $Missing_Line4 & @CRLF)
 ;~ 		If StringLen($A_ROMList[$B_ROMList][9]) > 1 Then FileWrite($Tmp_Dir & "missing_Image.txt", $A_ROMList[$B_ROMList][8] & @CRLF)
 		If $A_ROMList[$B_ROMList][7] = 1 Then $ROMFound = $ROMFound + 1
 		If $A_ROMList[$B_ROMList][7] = 2 Then $ROMMaj = $ROMMaj + 1
@@ -1712,6 +1716,7 @@ EndFunc   ;==>_HEADER_CREATEFORMAT
 Func _XML_CREATEROM($Path_source, $xpath_root_source, $xpath_root_cible, $A_XMLFormat, $A_ROMList, $No_ROM, $No_system, $INI_OPTION_MAJ, $A_MIX_IMAGE_Format = 0)
 	Local $XML_Type, $TMP_LastRootChild, $Return = 1
 	Local $A_RechAPI = StringSplit(IniRead($PathConfigINI, "GENERAL", "$RechAPI ", '1|2|3'), "|")
+	Local $timedout = 0
 ;~ 	_ArrayDisplay($A_RechAPI, "$A_RechAPI") ; Debug
 
 ;~ 	Download du XML source
@@ -1723,7 +1728,9 @@ Func _XML_CREATEROM($Path_source, $xpath_root_source, $xpath_root_cible, $A_XMLF
 					_CREATION_LOGMESS(1, "Recuperation des informations de la Rom no " & $No_ROM & " (CRC + SYSTEM)")
 					$hDownload = InetGet("http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=xml&crc=" & $A_ROMList[$No_ROM][2] & "&md5=" & $A_ROMList[$No_ROM][3] & "&sha1=" & $A_ROMList[$No_ROM][4] & "&systemeid=" & $No_system & "&romtype=rom&romnom=" & StringReplace($A_ROMList[$No_ROM][0], " ", "%20") & "&romtaille=" & $A_ROMList[$No_ROM][5], $Path_source, 1, 1)
 					ConsoleWrite(">(CRC + SYSTEM) = http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=xml&crc=" & $A_ROMList[$No_ROM][2] & "&md5=" & $A_ROMList[$No_ROM][3] & "&sha1=" & $A_ROMList[$No_ROM][4] & "&systemeid=" & $No_system & "&romtype=rom&romnom=" & StringReplace($A_ROMList[$No_ROM][0], " ", "%20") & "&romtaille=" & $A_ROMList[$No_ROM][5] & @CRLF) ;Debug
-					_TimeOut($hDownload)
+					$timedout = _TimeOut($hDownload)
+;~ 					FileDelete($Path_source) ; Debug
+;~ 					$timedout = 1 ; Debug
 				EndIf
 			Case 2
 				If StringInStr(FileReadLine($Path_source), "Erreur") Or Not FileExists($Path_source) Then
@@ -1731,7 +1738,9 @@ Func _XML_CREATEROM($Path_source, $xpath_root_source, $xpath_root_cible, $A_XMLF
 					_CREATION_LOGMESS(1, "--Recuperation des informations de la Rom no " & $No_ROM & " (CRC)")
 					$hDownload = InetGet("http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=xml&crc=" & $A_ROMList[$No_ROM][2] & "&md5=" & $A_ROMList[$No_ROM][3] & "&sha1=" & $A_ROMList[$No_ROM][4] & "&systemeid=" & "&romtype=rom&romnom=" & StringReplace($A_ROMList[$No_ROM][0], " ", "%20") & "&romtaille=" & $A_ROMList[$No_ROM][5], $Path_source, 1, 1)
 					ConsoleWrite(">(CRC) = http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=xml&crc=" & $A_ROMList[$No_ROM][2] & "&md5=" & $A_ROMList[$No_ROM][3] & "&sha1=" & $A_ROMList[$No_ROM][4] & "&systemeid=" & "&romtype=rom&romnom=" & StringReplace($A_ROMList[$No_ROM][0], " ", "%20") & "&romtaille=" & $A_ROMList[$No_ROM][5] & @CRLF) ;Debug
-					_TimeOut($hDownload)
+					$timedout = _TimeOut($hDownload)
+;~ 					FileDelete($Path_source) ; Debug
+;~ 					$timedout = 1 ; Debug
 				EndIf
 
 			Case 3
@@ -1741,16 +1750,24 @@ Func _XML_CREATEROM($Path_source, $xpath_root_source, $xpath_root_cible, $A_XMLF
 					$FileName = StringLeft(StringReplace($A_ROMList[$No_ROM][0], " ", "%20"), StringInStr(StringReplace($A_ROMList[$No_ROM][0], " ", "%20"), ".", Default, -1) - 1)
 					$hDownload = InetGet("http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=xml&crc=" & "&md5=" & "&sha1=" & "&systemeid=" & $No_system & "&romtype=rom&romnom=" & $FileName & "&romtaille=" & $A_ROMList[$No_ROM][5], $Path_source, 1, 1)
 					ConsoleWrite(">(FileName + SYSTEM) = http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=xml&crc=" & "&md5=" & "&sha1=" & "&systemeid=" & $No_system & "&romtype=rom&romnom=" & $FileName & "&romtaille=" & $A_ROMList[$No_ROM][5] & @CRLF) ;Debug
-					_TimeOut($hDownload)
+					$timedout = _TimeOut($hDownload)
+;~ 					FileDelete($Path_source) ; Debug
+;~ 					$timedout = 1 ; Debug
 				EndIf
 		EndSwitch
 	Next
 
 	If Not FileExists($Path_source) Then
-		MsgBox($MB_ICONERROR, _MultiLang_GetText("err_title"), _MultiLang_GetText("err_TimeOut"))
-		_GUICtrlStatusBar_SetText($L_SCRAPE, "", 1)
-		$ScrapeCancelled = 1
-		Return -1
+		If $timedout = 0 Then
+			MsgBox($MB_ICONERROR, _MultiLang_GetText("err_title"), _MultiLang_GetText("err_TimeOut"))
+			_GUICtrlStatusBar_SetText($L_SCRAPE, "", 1)
+			$ScrapeCancelled = 1
+			Return -1
+		Else
+			_GUICtrlStatusBar_SetText($L_SCRAPE, "TIME OUT", 1)
+			_CREATION_LOGMESS(1, "TIME OUT")
+			Return 0
+		EndIf
 	EndIf
 
 ;~	Creation du fichier XML Temporaire de la Rom
@@ -1999,6 +2016,11 @@ Func _MIX_IMAGE_CREATEARRAY($Path_source, $xpath_root_source, $XML_Type, $No_ROM
 	Local $A_PathImage[1][10]
 	Local $MIX_IMG_HauteurImage = 0, $MIX_IMG_LargeurImage = 0, $outputformat, $maxheight = '', $maxwidth = ''
 	_CREATION_LOGMESS(1, "Recuperation des Images pour le Mix")
+	$MIX_IMG_LargeurImage_CIBLE = IniRead($PathConfigINI, "LAST_USE", "$LargeurImage", 0)
+	If $MIX_IMG_LargeurImage_CIBLE < 1 Then $MIX_IMG_LargeurImage_CIBLE = IniRead($PathMixTmp & "\config.ini", "MIX_IMG", "$MIX_IMG_CIBLE_X", 0)
+	$MIX_IMG_HauteurImage_CIBLE = IniRead($PathConfigINI, "LAST_USE", "$HauteurImage", 0)
+	If $MIX_IMG_HauteurImage_CIBLE < 1 Then $MIX_IMG_HauteurImage_CIBLE = IniRead($PathMixTmp & "\config.ini", "MIX_IMG", "$MIX_IMG_CIBLE_Y", 0)
+
 ;~ 	_ArrayDisplay($A_MIX_IMAGE_Format, '$A_MIX_IMAGE_Format') ; Debug
 	For $B_Images = 1 To UBound($A_MIX_IMAGE_Format) - 1
 		$XML_Type = StringLeft($A_MIX_IMAGE_Format[$B_Images][3], 5)
@@ -2013,8 +2035,8 @@ Func _MIX_IMAGE_CREATEARRAY($Path_source, $xpath_root_source, $XML_Type, $No_ROM
 		If $XML_Value <> "0" Then ConsoleWrite("!" & $A_MIX_IMAGE_Format[$B_Images][0] & "->" & $A_MIX_IMAGE_Format[$B_Images][2] & " = " & $XML_Value & @CRLF) ;Debug
 
 		If FileExists($PathImage_Temp) = 0 Then
-			$MIX_IMG_LargeurImage = $A_MIX_IMAGE_Format[$B_Images][4]
-			$MIX_IMG_HauteurImage = $A_MIX_IMAGE_Format[$B_Images][5]
+			$MIX_IMG_LargeurImage = _RELATIVPOS($A_MIX_IMAGE_Format[$B_Images][4], $MIX_IMG_LargeurImage_CIBLE)
+			$MIX_IMG_HauteurImage = _RELATIVPOS($A_MIX_IMAGE_Format[$B_Images][5], $MIX_IMG_HauteurImage_CIBLE)
 			$outputformat = "&outputformat=" & $ExtImage
 			If $MIX_IMG_LargeurImage > 0 Then $maxwidth = "&maxwidth=" & $MIX_IMG_LargeurImage
 			If $MIX_IMG_HauteurImage > 0 Then $maxheight = "&maxheight=" & $MIX_IMG_HauteurImage
@@ -2039,6 +2061,7 @@ EndFunc   ;==>_MIX_IMAGE_CREATEARRAY
 
 Func _MIX_IMAGE_CREATECIBLE($A_PathImage, $PathImage_Temp)
 	If UBound($A_PathImage) - 1 < 1 Then Return
+;~ 	_ArrayDisplay($A_PathImage, '$A_PathImage') ; Debug
 	_CREATION_LOGMESS(1, "Mixage des images")
 	Local $MergedImageBackgroundColor = 0x00000000
 	_GDIPlus_Startup()
@@ -2051,9 +2074,11 @@ Func _MIX_IMAGE_CREATECIBLE($A_PathImage, $PathImage_Temp)
 
 ;~ 	_ArrayDisplay($A_PathImage, '$A_PathImage') ; Debug
 
-	$IMG_CIBLE_X = IniRead($PathMixTmp & "\config.ini", "MIX_IMG", "$MIX_IMG_CIBLE_X", 0)
+	$IMG_CIBLE_X = IniRead($PathConfigINI, "LAST_USE", "$LargeurImage", 0)
+	If $IMG_CIBLE_X < 1 Then $IMG_CIBLE_X = IniRead($PathMixTmp & "\config.ini", "MIX_IMG", "$MIX_IMG_CIBLE_X", 0)
 	If $IMG_CIBLE_X < 1 Then $IMG_CIBLE_X = $A_PathImage[1][4]
-	$IMG_CIBLE_Y = IniRead($PathMixTmp & "\config.ini", "MIX_IMG", "$MIX_IMG_CIBLE_Y", 0)
+	$IMG_CIBLE_Y = IniRead($PathConfigINI, "LAST_USE", "$HauteurImage", 0)
+	If $IMG_CIBLE_Y < 1 Then $IMG_CIBLE_Y = IniRead($PathMixTmp & "\config.ini", "MIX_IMG", "$MIX_IMG_CIBLE_Y", 0)
 	If $IMG_CIBLE_Y < 1 Then $IMG_CIBLE_Y = $A_PathImage[1][5]
 
 	ConsoleWrite(">Taille de l'image cible " & $IMG_CIBLE_X & "x" & $IMG_CIBLE_Y & @CRLF) ; Debug
@@ -2071,46 +2096,46 @@ Func _MIX_IMAGE_CREATECIBLE($A_PathImage, $PathImage_Temp)
 	For $B_Images = 1 To UBound($A_PathImage) - 1
 		Switch $A_PathImage[$B_Images][1]
 			Case 'CENTER'
-				$A_PathImage[$B_Images][1] = ($IMG_CIBLE_X / 2) - ($A_PathImage[$B_Images][4] / 2)
+				$A_PathImage[$B_Images][1] = ($IMG_CIBLE_X / 2) - (_RELATIVPOS($A_PathImage[$B_Images][4], $IMG_CIBLE_X) / 2)
 			Case 'LEFT'
 				$A_PathImage[$B_Images][1] = 0
 			Case 'RIGHT'
-				$A_PathImage[$B_Images][1] = $IMG_CIBLE_X - $A_PathImage[$B_Images][4]
+				$A_PathImage[$B_Images][1] = $IMG_CIBLE_X - _RELATIVPOS($A_PathImage[$B_Images][4], $IMG_CIBLE_X)
 		EndSwitch
 		Switch $A_PathImage[$B_Images][2]
 			Case 'CENTER'
-				$A_PathImage[$B_Images][2] = ($IMG_CIBLE_Y / 2) - ($A_PathImage[$B_Images][5] / 2)
+				$A_PathImage[$B_Images][2] = ($IMG_CIBLE_Y / 2) - (_RELATIVPOS($A_PathImage[$B_Images][5], $IMG_CIBLE_Y) / 2)
 			Case 'UP'
 				$A_PathImage[$B_Images][2] = 0
 			Case 'DOWN'
-				$A_PathImage[$B_Images][2] = $IMG_CIBLE_Y - $A_PathImage[$B_Images][5]
+				$A_PathImage[$B_Images][2] = $IMG_CIBLE_Y - _RELATIVPOS($A_PathImage[$B_Images][5], $IMG_CIBLE_Y)
 		EndSwitch
 ;~ 		_ArrayDisplay($A_PathImage, "$A_PathImage")
-		$X1 = $A_PathImage[$B_Images][1]
-		$Y1 = $A_PathImage[$B_Images][2]
+		$X1 = _RELATIVPOS($A_PathImage[$B_Images][1], $IMG_CIBLE_X)
+		$Y1 = _RELATIVPOS($A_PathImage[$B_Images][2], $IMG_CIBLE_Y)
 		If $A_PathImage[$B_Images][6] <> "" Then
-			$X2 = $A_PathImage[$B_Images][6]
+			$X2 = _RELATIVPOS($A_PathImage[$B_Images][6], $IMG_CIBLE_X)
 		Else
-			$X2 = $A_PathImage[$B_Images][1] + $A_PathImage[$B_Images][4]
+			$X2 = _RELATIVPOS($A_PathImage[$B_Images][1], $IMG_CIBLE_X) + _RELATIVPOS($A_PathImage[$B_Images][4], $IMG_CIBLE_X)
 		EndIf
 		If $A_PathImage[$B_Images][7] <> "" Then
-			$Y2 = $A_PathImage[$B_Images][7]
+			$Y2 = _RELATIVPOS($A_PathImage[$B_Images][7], $IMG_CIBLE_Y)
 		Else
-			$Y2 = $A_PathImage[$B_Images][2]
+			$Y2 = _RELATIVPOS($A_PathImage[$B_Images][2], $IMG_CIBLE_Y)
 		EndIf
 		If $A_PathImage[$B_Images][8] <> "" Then
-			$X3 = $A_PathImage[$B_Images][8]
+			$X3 = _RELATIVPOS($A_PathImage[$B_Images][8], $IMG_CIBLE_X)
 		Else
-			$X3 = $A_PathImage[$B_Images][1]
+			$X3 = _RELATIVPOS($A_PathImage[$B_Images][1], $IMG_CIBLE_X)
 		EndIf
 		If $A_PathImage[$B_Images][9] <> "" Then
-			$Y3 = $A_PathImage[$B_Images][9]
+			$Y3 = _RELATIVPOS($A_PathImage[$B_Images][9], $IMG_CIBLE_Y)
 		Else
-			$Y3 = $A_PathImage[$B_Images][2] + $A_PathImage[$B_Images][5]
+			$Y3 = _RELATIVPOS($A_PathImage[$B_Images][2], $IMG_CIBLE_Y) + _RELATIVPOS($A_PathImage[$B_Images][5], $IMG_CIBLE_Y)
 		EndIf
 
 		_GDIPlus_DrawImagePoints($hGraphic, $A_PathImage[$B_Images][3], $X1, $Y1, $X2, $Y2, $X3, $Y3)
-		ConsoleWrite(">Integration " & $A_PathImage[$B_Images][0] & " en " & $A_PathImage[$B_Images][1] & "/" & $A_PathImage[$B_Images][2] & " pour une reso de : " & $A_PathImage[$B_Images][4] & "x" & $A_PathImage[$B_Images][5] & @CRLF) ; Debug
+		ConsoleWrite(">Integration " & $A_PathImage[$B_Images][0] & " en " & $X1 & "/" & $Y1 & " pour une reso de : " & $A_PathImage[$B_Images][4] & "x" & $A_PathImage[$B_Images][5] & @CRLF) ; Debug
 		_GDIPlus_ImageDispose($A_PathImage[$B_Images][3])
 	Next
 	_GDIPlus_ImageSaveToFile($hBMPBuff, $PathImage_Temp)
@@ -2118,6 +2143,16 @@ Func _MIX_IMAGE_CREATECIBLE($A_PathImage, $PathImage_Temp)
 	_GDIPlus_Shutdown()
 ;~ 	_ArrayDisplay($A_PathImage, '$A_PathImage') ; Debug
 EndFunc   ;==>_MIX_IMAGE_CREATECIBLE
+
+Func _RELATIVPOS($Pos, $source_size)
+	If StringLeft($Pos, 1) = '%' Then
+		ConsoleWrite("! Valeur = " & StringTrimLeft($Pos, 1) & " X " & $source_size & " = " & $source_size * StringTrimLeft($Pos, 1) & @CRLF)
+		Return $source_size * StringTrimLeft($Pos, 1)
+	Else
+		ConsoleWrite("! Valeur = " & $Pos & @CRLF)
+		Return $Pos
+	EndIf
+EndFunc   ;==>_RELATIVPOS
 
 Func _MIX_IMAGE_CREATEFORMAT()
 	Local $A_MIX_IMAGE_Format[1][12]
