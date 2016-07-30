@@ -5,7 +5,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper XML Universel
-#AutoIt3Wrapper_Res_Fileversion=1.4.0.3
+#AutoIt3Wrapper_Res_Fileversion=1.4.0.4
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -77,7 +77,7 @@ If @Compiled Then
 		FileDelete($SOURCE_DIRECTORY & "\LanguageFiles")
 		FileDelete($SOURCE_DIRECTORY & "\Ressources")
 		ConsoleWrite("Ini Deleted" & @CRLF) ;Debug
-		_CREATION_LOGMESS(1, "Mise a� jour de " & $verINI & " vers " & $Rev)
+		_CREATION_LOGMESS(1, "Mise a  jour de " & $verINI & " vers " & $Rev)
 	Else
 		_CREATION_LOGMESS(1, "Version : " & $Rev)
 	EndIf
@@ -206,6 +206,7 @@ Local $ME_Langue = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_edit_langue"), 
 Local $ME_Config = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_edit_config"), $ME)
 Local $MP = GUICtrlCreateMenu(_MultiLang_GetText("mnu_ssh"))
 Local $MP_KILLALL = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_ssh_killall"), $MP)
+Local $MP_START = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_ssh_start"), $MP)
 Local $MP_REBOOT = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_ssh_reboot"), $MP)
 Local $MP_POWEROFF = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_ssh_halt"), $MP)
 GUICtrlSetState($MP, $GUI_DISABLE)
@@ -258,11 +259,18 @@ While 1
 			_GUI_Config($A_Profil, $No_Profil)
 			_GUI_REFRESH($INI_P_SOURCE, $INI_P_CIBLE)
 		Case $MP_KILLALL
-			If MsgBox($MB_OKCANCEL, "KillAll Emulationstation", _MultiLang_GetText("mess_autoconf_ssh_killall")) = $IDOK Then
-				Run($PathPlink & " " & $Plink_IP & " -l " & $Plink_root & " -pw " & $Plink_mdp & " killall emulationstation")
-				_CREATION_LOGMESS(1, "SSH : KillAll Emulationstation OK")
+			If MsgBox($MB_OKCANCEL, "Stop Emulationstation", _MultiLang_GetText("mess_autoconf_ssh_killall")) = $IDOK Then
+				Run($PathPlink & " " & $Plink_IP & " -l " & $Plink_root & " -pw " & $Plink_mdp & " /etc/init.d/S31emulationstation stop")
+				_CREATION_LOGMESS(1, "SSH : Stop Emulationstation OK")
 			Else
-				_CREATION_LOGMESS(1, "SSH : KillAll Emulationstation ANNULE")
+				_CREATION_LOGMESS(1, "SSH : Stop Emulationstation ANNULE")
+			EndIf
+		Case $MP_START
+			If MsgBox($MB_OKCANCEL, "Start Emulationstation", _MultiLang_GetText("mess_autoconf_ssh_start")) = $IDOK Then
+				Run($PathPlink & " " & $Plink_IP & " -l " & $Plink_root & " -pw " & $Plink_mdp & " /etc/init.d/S31emulationstation start")
+				_CREATION_LOGMESS(1, "SSH : Start Emulationstation OK")
+			Else
+				_CREATION_LOGMESS(1, "SSH : Start Emulationstation ANNULE")
 			EndIf
 		Case $MP_REBOOT
 			If MsgBox($MB_OKCANCEL, "Reboot", _MultiLang_GetText("mess_autoconf_ssh_reboot")) = $IDOK Then
@@ -536,7 +544,7 @@ Func _FUSIONXML($V_Header, $A_ROMList)
 				$No_Roms = $B_ROMList + 1
 			EndIf
 		EndIf
-		ConsoleWrite(">ROM n°" & $B_ROMList & " - $CheckError =" & $CheckError & " - $Starter = " & $Starter & " - $No_Roms = " & $No_Roms & @CRLF) ; Debug
+		ConsoleWrite(">ROM nÂ°" & $B_ROMList & " - $CheckError =" & $CheckError & " - $Starter = " & $Starter & " - $No_Roms = " & $No_Roms & @CRLF) ; Debug
 	Next
 	If $CheckError < 1 Then Return
 
@@ -598,7 +606,7 @@ Func _FUSIONXML($V_Header, $A_ROMList)
 				_ArrayDelete($A_XMLSourceTemp, 0)
 				_ArrayDelete($A_XMLSourceTemp, UBound($A_XMLSourceTemp) - 1)
 		EndSelect
-;~ 		_ArrayDisplay($A_XMLSourceTemp, "$A_XMLSourceTemp Après Clean") ; Debug
+;~ 		_ArrayDisplay($A_XMLSourceTemp, "$A_XMLSourceTemp AprÃ¨s Clean") ; Debug
 
 		ConsoleWrite("-TEST : $A_ROMList[$No_Roms][7]=" & $A_ROMList[$No_Roms][7] & " et $EmptyRom = " & $EmptyRom & @CRLF) ; Debug
 		If $A_ROMList[$No_Roms][7] = 1 Or ($A_ROMList[$No_Roms][7] = 0 And $EmptyRom = 1) Then
@@ -607,7 +615,7 @@ Func _FUSIONXML($V_Header, $A_ROMList)
 				_ArrayAdd($A_XMLCible, $A_XMLSourceTemp[$B_Fusion])
 			Next
 		EndIf
-;~ 		_ArrayDisplay($A_XMLCible, "$A_XMLCible Rom n°" & $No_Roms) ; Debug
+;~ 		_ArrayDisplay($A_XMLCible, "$A_XMLCible Rom nÂ°" & $No_Roms) ; Debug
 		Local $PercentProgression = Round(($No_Roms * 100) / $Nb_Roms)
 		GUICtrlSetData($PB_SCRAPE, $PercentProgression)
 		$No_Roms = $No_Roms + 1
@@ -1092,7 +1100,7 @@ Func _LANG_LOAD($LANG_DIR, $user_lang)
 			"3009 " & _ ;English_Zimbabwe
 			"3409" ;English_Philippines
 
-	$LANGFILES[1][0] = "Fran�ais" ; French
+	$LANGFILES[1][0] = "Français" ; French
 	$LANGFILES[1][1] = $LANG_DIR & "\UXS-FRENCH.XML"
 	$LANGFILES[1][2] = "040c " & _ ;French_Standard
 			"080c " & _ ;French_Belgian
@@ -1101,7 +1109,7 @@ Func _LANG_LOAD($LANG_DIR, $user_lang)
 			"140c " & _ ;French_Luxembourg
 			"180c" ;French_Monaco
 
-	$LANGFILES[2][0] = "Portugu�s" ; Portuguese
+	$LANGFILES[2][0] = "Português" ; Portuguese
 	$LANGFILES[2][1] = $LANG_DIR & "\UXS-PORTUGUESE.XML"
 	$LANGFILES[2][2] = "0816 " & _ ;Portuguese - Portugal
 			"0416 " ;Portuguese - Brazil
@@ -1114,7 +1122,7 @@ Func _LANG_LOAD($LANG_DIR, $user_lang)
 			"1007 " & _ ;German - Luxembourg
 			"1407 " ;German - Liechtenstein
 
-	$LANGFILES[4][0] = "Espa�ol" ; Spanish
+	$LANGFILES[4][0] = "Español" ; Spanish
 	$LANGFILES[4][1] = $LANG_DIR & "\UXS-SPANISH.XML"
 	$LANGFILES[4][2] = "040A " & _ ;Spanish - Spain
 			"080A " & _ ;Spanish - Mexico
@@ -1173,15 +1181,15 @@ Func _LANG_LOAD($LANG_DIR, $user_lang)
 
 	Switch StringRight($user_lang, 2)
 		Case '09'
-			IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'us|eu|es|fr|de|pt|jp|xx')
+			IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'us|origine|eu|es|fr|de|pt|jp|xx')
 		Case '0c'
-			IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'fr|eu|us|de|es|pt|jp|xx')
+			IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'fr|origine|eu|us|de|es|pt|jp|xx')
 		Case '16'
-			IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'pt|eu|us|fr|de|es|jp|xx')
+			IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'pt|origine|eu|us|fr|de|es|jp|xx')
 		Case '07'
-			IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'de|eu|us|fr|es|pt|jp|xx')
+			IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'de|origine|eu|us|fr|es|pt|jp|xx')
 		Case '0A'
-			IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'es|eu|us|fr|de|pt|jp|xx')
+			IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'es|origine|eu|us|fr|de|pt|jp|xx')
 	EndSwitch
 	Return $LANGFILES
 EndFunc   ;==>_LANG_LOAD
@@ -1219,15 +1227,15 @@ Func _LANGUE_SelectGUI($_gh_aLangFileArray, $default = @OSLang, $demarrage = 0)
 			EndIf
 			Switch StringRight($user_lang, 2)
 				Case '09'
-					IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'us|eu|xx|jp|fr|de|es|pt')
+					IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'us|origine|eu|es|fr|de|pt|jp|xx')
 				Case '0c'
-					IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'fr|eu|us|xx|jp|de|es|pt')
+					IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'fr|origine|eu|us|de|es|pt|jp|xx')
 				Case '16'
-					IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'pt|eu|us|xx|jp|fr|de|es')
+					IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'pt|origine|eu|us|fr|de|es|jp|xx')
 				Case '07'
-					IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'de|eu|us|xx|jp|fr|es|pt')
+					IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'de|origine|eu|us|fr|es|pt|jp|xx')
 				Case '0A'
-					IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'es|eu|us|xx|jp|fr|de|pt')
+					IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'es|origine|eu|us|fr|de|pt|jp|xx')
 			EndSwitch
 			Return StringLeft($_gh_aLangFileArray[$i][2], 4)
 		EndIf
@@ -1669,7 +1677,7 @@ Func _XML_CREATEFORMAT($Profil)
 	_CREATION_LOGMESS(1, "Recuperation des champs du profil")
 	Local $A_XMLFormat[1][4]
 	Local $B_Elements = 1, $V_Elements2
-	Local $RechMultiLang = StringSplit(IniRead($PathConfigINI, "GENERAL", "$RechMultiLang  ", 'us|eu|xx|jp|fr|de|es|pt'), "|")
+	Local $RechMultiLang = StringSplit(IniRead($PathConfigINI, "GENERAL", "$RechMultiLang  ", 'us|origine|eu|es|fr|de|pt|jp|xx'), "|")
 	Local $V_Elements = IniRead($PathConfigINI, $Profil, "$ELEMENT_" & $B_Elements, "Ending")
 	While $V_Elements <> "Ending"
 		If StringInStr($V_Elements, "%%") Then
@@ -2037,7 +2045,7 @@ Func _MIX_IMAGE_CREATECIBLE($A_PathImage, $PathImage_Temp)
 	For $B_Images = 1 To UBound($A_PathImage) - 1
 		$A_PathImage[$B_Images][3] = _GDIPlus_ImageLoadFromFile($A_PathImage[$B_Images][0])
 		$A_PathImage[$B_Images][4] = _GDIPlus_ImageGetWidth($A_PathImage[$B_Images][3])
-		If $A_PathImage[$B_Images][4] = 4294967295 Then $A_PathImage[$B_Images][4] = 0 ;4294967295 en cas d'erreur, soit 32 bits Ã  1 (11111...1111111).
+		If $A_PathImage[$B_Images][4] = 4294967295 Then $A_PathImage[$B_Images][4] = 0 ;4294967295 en cas d'erreur, soit 32 bits ÃƒÂ  1 (11111...1111111).
 		$A_PathImage[$B_Images][5] = _GDIPlus_ImageGetHeight($A_PathImage[$B_Images][3])
 	Next
 
@@ -2114,7 +2122,7 @@ EndFunc   ;==>_MIX_IMAGE_CREATECIBLE
 Func _MIX_IMAGE_CREATEFORMAT()
 	Local $A_MIX_IMAGE_Format[1][12]
 	Local $B_Sources, $M_Elements, $M_Elements2
-	Local $RechMultiLang = StringSplit(IniRead($PathConfigINI, "GENERAL", "$RechMultiLang  ", 'us|eu|xx|jp|fr|de|es|pt'), "|")
+	Local $RechMultiLang = StringSplit(IniRead($PathConfigINI, "GENERAL", "$RechMultiLang  ", 'us|origine|eu|es|fr|de|pt|jp|xx'), "|")
 	$Nb_MIX_Image = IniRead($PathMixTmp & "\config.ini", "MIX_IMG", "$MIX_IMG_NBIMG", 0)
 	_CREATION_LOGMESS(1, "Creation des parametres pour le Mix")
 	For $B_Images = 1 To $Nb_MIX_Image

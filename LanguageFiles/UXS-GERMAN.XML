@@ -22,6 +22,7 @@
 	<mess_autoconf_ask_Title>Automatische Konfiguration</mess_autoconf_ask_Title>
 	<mess_autoconf_ask_Question>Möchtest Du die automatische Konfiguration benutzen?</mess_autoconf_ask_Question>
 	<mess_autoconf_ssh_killall>Möchtest Du wirklich EmulationStation beenden?</mess_autoconf_ssh_killall>
+	<mess_autoconf_ssh_start>Möchtest Du wirklich EmulationStation starten?</mess_autoconf_ssh_start>
 	<mess_autoconf_ssh_reboot>Möchtest Du das Gerät wirklich Neustarten?</mess_autoconf_ssh_reboot>
 	<mess_autoconf_ssh_poweroff>Möchtest Du das Gerät wirklich ausschalten?</mess_autoconf_ssh_poweroff>
 </message>
@@ -40,7 +41,8 @@
 		<mnu_edit_langue>Sprache ändern</mnu_edit_langue>
 		<mnu_edit_config>Konfiguration</mnu_edit_config>
 		<mnu_ssh>SSH Befehle</mnu_ssh>
-		<mnu_ssh_killall>Kill Emulationstation</mnu_ssh_killall>
+		<mnu_ssh_killall>Beenden Emulationstation</mnu_ssh_killall>
+		<mnu_ssh_start>Starten Emulationstation</mnu_ssh_start>
 		<mnu_ssh_reboot>Reboot</mnu_ssh_reboot>
 		<mnu_ssh_halt>Ausschalten</mnu_ssh_halt>
 		<mnu_mode>Scrape Modus</mnu_mode>

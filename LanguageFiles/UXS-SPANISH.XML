@@ -22,6 +22,7 @@
 	<mess_autoconf_ask_Title>Configuración automática</mess_autoconf_ask_Title>
 	<mess_autoconf_ask_Question>Desea usar la configuración automática?</mess_autoconf_ask_Question>
 	<mess_autoconf_ssh_killall>Desea detener EmulationStation?</mess_autoconf_ssh_killall>
+	<mess_autoconf_ssh_start>Desea comienzo EmulationStation?</mess_autoconf_ssh_start>
 	<mess_autoconf_ssh_reboot>Desea reiniciar el sistema remotamente?</mess_autoconf_ssh_reboot>
 	<mess_autoconf_ssh_poweroff>Desea apagar el sistema remotamente?</mess_autoconf_ssh_poweroff>
 </message>
@@ -41,6 +42,7 @@
 		<mnu_edit_config>Configurar</mnu_edit_config>
 		<mnu_ssh>Comandos SSH</mnu_ssh>
 		<mnu_ssh_killall>Detener EmulationStation</mnu_ssh_killall>
+		<mnu_ssh_start>Comienzo Emulationstation</mnu_ssh_start>
 		<mnu_ssh_reboot>Reiniciar</mnu_ssh_reboot>
 		<mnu_ssh_halt>Apagar</mnu_ssh_halt>
 		<mnu_mode>Modo de obtención de datos</mnu_mode>
