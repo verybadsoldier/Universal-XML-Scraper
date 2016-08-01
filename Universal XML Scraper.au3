@@ -5,7 +5,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper XML Universel
-#AutoIt3Wrapper_Res_Fileversion=1.4.0.5
+#AutoIt3Wrapper_Res_Fileversion=1.4.0.6
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -47,6 +47,7 @@
 #include "./Include/_Hash.au3"
 #include "./Include/_XMLDomWrapper.au3"
 #include "./Include/_zip.au3"
+#include "./Include/_ExtGDIPlus.au3"
 
 TraySetState(2)
 
@@ -155,6 +156,7 @@ Global $root_cible
 Global $ScrapeCancelled = 0
 Global $A_DIRList
 Global $Nb_MIX_Image = 0
+Global $Last_PathImage_TempLast
 Local $SCRAP_OK = 0
 Local $Moy_Timer = 0
 Local $Total_Timer = 0
@@ -1183,13 +1185,13 @@ Func _LANG_LOAD($LANG_DIR, $user_lang)
 		Case '09'
 			IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'us|origine|eu|es|fr|de|pt|jp|xx')
 		Case '0c'
-			IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'fr|origine|eu|us|de|es|pt|jp|xx')
+			IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'fr|eu|us|origine|de|es|pt|jp|xx')
 		Case '16'
-			IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'pt|origine|eu|us|fr|de|es|jp|xx')
+			IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'pt|eu|us|origine|fr|de|es|jp|xx')
 		Case '07'
-			IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'de|origine|eu|us|fr|es|pt|jp|xx')
+			IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'de|eu|us|origine|fr|es|pt|jp|xx')
 		Case '0A'
-			IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'es|origine|eu|us|fr|de|pt|jp|xx')
+			IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'es|eu|us|origine|fr|de|pt|jp|xx')
 	EndSwitch
 	Return $LANGFILES
 EndFunc   ;==>_LANG_LOAD
@@ -1229,13 +1231,13 @@ Func _LANGUE_SelectGUI($_gh_aLangFileArray, $default = @OSLang, $demarrage = 0)
 				Case '09'
 					IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'us|origine|eu|es|fr|de|pt|jp|xx')
 				Case '0c'
-					IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'fr|origine|eu|us|de|es|pt|jp|xx')
+					IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'fr|eu|us|origine|de|es|pt|jp|xx')
 				Case '16'
-					IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'pt|origine|eu|us|fr|de|es|jp|xx')
+					IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'pt|eu|us|origine|fr|de|es|jp|xx')
 				Case '07'
-					IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'de|origine|eu|us|fr|es|pt|jp|xx')
+					IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'de|eu|us|origine|fr|es|pt|jp|xx')
 				Case '0A'
-					IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'es|origine|eu|us|fr|de|pt|jp|xx')
+					IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'es|eu|us|origine|fr|de|pt|jp|xx')
 			EndSwitch
 			Return StringLeft($_gh_aLangFileArray[$i][2], 4)
 		EndIf
@@ -1644,7 +1646,8 @@ Func _SYSTEM_SelectGUI($A_SYSTEM, $FullScrape = 0)
 
 ;~ 	_ArrayDisplay($A_SYSTEM, '$A_SYSTEM') ; Debug
 	For $i = 0 To UBound($A_SYSTEM) - 1
-		If StringInStr($A_SYSTEM[$i][0], $_selected) Then
+;~ 		If StringInStr($A_SYSTEM[$i][0], $_selected) Then
+		If $A_SYSTEM[$i][0] = $_selected Then
 			GUISetState(@SW_ENABLE, $F_UniversalScraper)
 			WinActivate($F_UniversalScraper)
 			_CREATION_LOGMESS(1, "Systeme selectionne : " & $A_SYSTEM[$i][0])
@@ -2024,7 +2027,7 @@ Func _MIX_IMAGE_CREATEARRAY($Path_source, $xpath_root_source, $XML_Type, $No_ROM
 ;~ 	_ArrayDisplay($A_MIX_IMAGE_Format, '$A_MIX_IMAGE_Format') ; Debug
 	For $B_Images = 1 To UBound($A_MIX_IMAGE_Format) - 1
 		$XML_Type = StringLeft($A_MIX_IMAGE_Format[$B_Images][3], 5)
-		If $XML_Type <> "" And $A_MIX_IMAGE_Format[$B_Images][1] <> 'fixe' Then
+		If $XML_Type <> "" And $A_MIX_IMAGE_Format[$B_Images][1] <> 'fixe' And $A_MIX_IMAGE_Format[$B_Images][1] <> 'cut' Then
 ;~ 			MsgBox(0, "GETROMINFO", $Path_source & " - " & $xpath_root_source & " - " & $XML_Type & " - " & $B_Images & " - " & $A_MIX_IMAGE_Format & " - " & $A_ROMList & " - " & $No_ROM & " - " & $INI_OPTION_MAJ & " - " & $No_system)
 			$XML_Value = _XML_GETROMINFO($Path_source, $xpath_root_source, $XML_Type, $B_Images, $A_MIX_IMAGE_Format, $A_ROMList, $No_ROM, $INI_OPTION_MAJ, $No_system) ;Lecture des differents elements
 		Else
@@ -2038,26 +2041,150 @@ Func _MIX_IMAGE_CREATEARRAY($Path_source, $xpath_root_source, $XML_Type, $No_ROM
 			$MIX_IMG_LargeurImage = _RELATIVPOS($A_MIX_IMAGE_Format[$B_Images][4], $MIX_IMG_LargeurImage_CIBLE)
 			$MIX_IMG_HauteurImage = _RELATIVPOS($A_MIX_IMAGE_Format[$B_Images][5], $MIX_IMG_HauteurImage_CIBLE)
 			$outputformat = "&outputformat=" & $ExtImage
-			If $MIX_IMG_LargeurImage > 0 Then $maxwidth = "&maxwidth=" & $MIX_IMG_LargeurImage
-			If $MIX_IMG_HauteurImage > 0 Then $maxheight = "&maxheight=" & $MIX_IMG_HauteurImage
-			If $A_MIX_IMAGE_Format[$B_Images][1] = 'fixe' Then
-				$PathImage_Temp = $PathMixTmp & "\" & $A_MIX_IMAGE_Format[$B_Images][2]
-				_CREATION_LOGMESS(2, "Recup Images : " & $PathImage_Temp)
-			Else
-				_CREATION_LOGMESS(2, "Download Images : " & $PathImage_Temp)
-				ConsoleWrite("+ MIX Download : " & $XML_Value & $maxheight & $maxwidth & " dans " & $PathImage_Temp & @CRLF) ; Debug
-				$hDownload = InetGet($XML_Value & $maxheight & $maxwidth & $outputformat, $PathImage_Temp, 0, 1)
-				_TimeOut($hDownload)
-
-			EndIf
-
-			If FileExists($PathImage_Temp) Then _ArrayAdd($A_PathImage, $PathImage_Temp & "|" & $A_MIX_IMAGE_Format[$B_Images][6] & "|" & $A_MIX_IMAGE_Format[$B_Images][7] & "||" & $A_MIX_IMAGE_Format[$B_Images][4] & "|" & $A_MIX_IMAGE_Format[$B_Images][5] & "|" & $A_MIX_IMAGE_Format[$B_Images][8] & "|" & $A_MIX_IMAGE_Format[$B_Images][9] & "|" & $A_MIX_IMAGE_Format[$B_Images][10] & "|" & $A_MIX_IMAGE_Format[$B_Images][11])
-			_CREATION_LOGMESS(2, $A_MIX_IMAGE_Format[$B_Images][0] & " : " & $PathImage_Temp)
+			If $MIX_IMG_LargeurImage > 0 Then $maxwidth = "&maxwidth=" & Round($MIX_IMG_LargeurImage, 0)
+			If $MIX_IMG_HauteurImage > 0 Then $maxheight = "&maxheight=" & Round($MIX_IMG_HauteurImage, 0)
+			Switch StringLeft($A_MIX_IMAGE_Format[$B_Images][1], 5)
+				Case 'fixe'
+					$PathImage_Temp = $PathMixTmp & "\" & $A_MIX_IMAGE_Format[$B_Images][2]
+					_CREATION_LOGMESS(2, "Recup Images : " & $PathImage_Temp)
+					If FileExists($PathImage_Temp) Then _ArrayAdd($A_PathImage, $PathImage_Temp & "|" & $A_MIX_IMAGE_Format[$B_Images][6] & "|" & $A_MIX_IMAGE_Format[$B_Images][7] & "||" & $A_MIX_IMAGE_Format[$B_Images][4] & "|" & $A_MIX_IMAGE_Format[$B_Images][5] & "|" & $A_MIX_IMAGE_Format[$B_Images][8] & "|" & $A_MIX_IMAGE_Format[$B_Images][9] & "|" & $A_MIX_IMAGE_Format[$B_Images][10] & "|" & $A_MIX_IMAGE_Format[$B_Images][11])
+					_CREATION_LOGMESS(2, $A_MIX_IMAGE_Format[$B_Images][0] & " : " & $PathImage_Temp)
+					$Last_PathImage_TempLast = $PathImage_Temp
+				Case 'Trans'
+					_CREATION_LOGMESS(2, "Download Images : " & $PathImage_Temp)
+					ConsoleWrite("+ MIX Download : " & $XML_Value & $maxheight & $maxwidth & " dans " & $PathImage_Temp & @CRLF) ; Debug
+					$hDownload = InetGet($XML_Value & $maxheight & $maxwidth & $outputformat, $PathImage_Temp, 0, 1)
+					_TimeOut($hDownload)
+					$TransLvl = StringMid($A_MIX_IMAGE_Format[$B_Images][1], 7)
+					_CREATION_LOGMESS(2, "Ajout de transparence : " & $TransLvl)
+					$PathImage_Temp = _MIX_IMAGE_ADDTRANS($PathImage_Temp, $TransLvl)
+					ConsoleWrite("> _MIX_IMAGE_ADDTRANS = " & $PathImage_Temp & @CRLF)
+					If FileExists($PathImage_Temp) Then _ArrayAdd($A_PathImage, $PathImage_Temp & "|" & $A_MIX_IMAGE_Format[$B_Images][6] & "|" & $A_MIX_IMAGE_Format[$B_Images][7] & "||" & $A_MIX_IMAGE_Format[$B_Images][4] & "|" & $A_MIX_IMAGE_Format[$B_Images][5] & "|" & $A_MIX_IMAGE_Format[$B_Images][8] & "|" & $A_MIX_IMAGE_Format[$B_Images][9] & "|" & $A_MIX_IMAGE_Format[$B_Images][10] & "|" & $A_MIX_IMAGE_Format[$B_Images][11])
+					_CREATION_LOGMESS(2, $A_MIX_IMAGE_Format[$B_Images][0] & " : " & $PathImage_Temp)
+					ConsoleWrite(">$Last_PathImage_TempLast =" & $Last_PathImage_TempLast & @CRLF)
+				Case 'Cut'
+					ConsoleWrite(">$Last_PathImage_TempLast =" & $Last_PathImage_TempLast & @CRLF)
+					If FileExists($Last_PathImage_TempLast) Then _MIX_IMAGE_CUT($Last_PathImage_TempLast, $A_MIX_IMAGE_Format[$B_Images][6], $A_MIX_IMAGE_Format[$B_Images][7], $A_MIX_IMAGE_Format[$B_Images][4], $A_MIX_IMAGE_Format[$B_Images][5], $MIX_IMG_LargeurImage_CIBLE, $MIX_IMG_HauteurImage_CIBLE)
+				Case Else
+					_CREATION_LOGMESS(2, "Download Images : " & $PathImage_Temp)
+					ConsoleWrite("+ MIX Download : " & $XML_Value & $maxheight & $maxwidth & " dans " & $PathImage_Temp & @CRLF) ; Debug
+					$hDownload = InetGet($XML_Value & $maxheight & $maxwidth & $outputformat, $PathImage_Temp, 0, 1)
+					_TimeOut($hDownload)
+					If FileExists($PathImage_Temp) Then _ArrayAdd($A_PathImage, $PathImage_Temp & "|" & $A_MIX_IMAGE_Format[$B_Images][6] & "|" & $A_MIX_IMAGE_Format[$B_Images][7] & "||" & $A_MIX_IMAGE_Format[$B_Images][4] & "|" & $A_MIX_IMAGE_Format[$B_Images][5] & "|" & $A_MIX_IMAGE_Format[$B_Images][8] & "|" & $A_MIX_IMAGE_Format[$B_Images][9] & "|" & $A_MIX_IMAGE_Format[$B_Images][10] & "|" & $A_MIX_IMAGE_Format[$B_Images][11])
+					_CREATION_LOGMESS(2, $A_MIX_IMAGE_Format[$B_Images][0] & " : " & $PathImage_Temp)
+					$Last_PathImage_TempLast = $PathImage_Temp
+			EndSwitch
 		EndIf
 	Next
 ;~ 	_ArrayDisplay($A_PathImage, '$A_PathImage') ; Debug
 	_MIX_IMAGE_CREATECIBLE($A_PathImage, $PathImageFinal_Temp)
 EndFunc   ;==>_MIX_IMAGE_CREATEARRAY
+
+Func _MIX_IMAGE_CUT($PathImage_Temp, $PosX, $PosY, $Width, $Height, $Width_CIBLE, $Height_CIBLE)
+	Local $MergedImageBackgroundColor = 0x00000000
+	Local $PathImageCUT_Temp = StringTrimRight($PathImage_Temp, 4) & "-CutTemp.PNG"
+	FileDelete($PathImageCUT_Temp)
+	FileCopy($PathImage_Temp, $PathImageCUT_Temp, 9)
+	FileDelete($PathImage_Temp)
+	$PathImage_Temp = StringTrimRight($PathImage_Temp, 4) & ".PNG"
+
+	$Width = _RELATIVPOS($Width, $Width_CIBLE)
+	$Height = _RELATIVPOS($Height, $Height_CIBLE)
+	Switch $PosX
+		Case 'CENTER'
+			$PosX = ($Width_CIBLE / 2) - ($Width / 2)
+		Case 'LEFT'
+			$PosX = 0
+		Case 'RIGHT'
+			$PosX = $Width_CIBLE - $Width
+		Case Else
+			$PosX = _RELATIVPOS($PosX, $Width_CIBLE)
+	EndSwitch
+	Switch $PosY
+		Case 'CENTER'
+			$PosY = ($Height_CIBLE / 2) - ($Height / 2)
+		Case 'UP'
+			$PosY = 0
+		Case 'DOWN'
+			$PosY = $Height_CIBLE - $Height
+		Case Else
+			$PosY = _RELATIVPOS($PosY, $Height_CIBLE)
+	EndSwitch
+
+;~ 	MsgBox(0, "Dimension de découpe", "Pos = " & $PosX & "x" & $PosY & @CRLF & "Dim = " & $Width & "x" & $Height)
+	ConsoleWrite("+ Découpe en : Pos = " & $PosX & "x" & $PosY & @CRLF & "Dim = " & $Width & "x" & $Height & @CRLF) ; Debug
+
+	_GDIPlus_Startup()
+	$gdi_hImage = _GDIPlus_ImageLoadFromFile($PathImageCUT_Temp)
+
+	; Extract image width and height from PNG
+	$gdi_imageWidth = _GDIPlus_ImageGetWidth($gdi_hImage)
+	$gdi_imageHeight = _GDIPlus_ImageGetHeight($gdi_hImage)
+
+	$gdi_hLeftImage = _GDIPlus_BitmapCloneArea($gdi_hImage, 0, 0, $PosX, $gdi_imageHeight, $GDIP_PXF32ARGB)
+	$gdi_hRightImage = _GDIPlus_BitmapCloneArea($gdi_hImage, $PosX + $Width, 0, $gdi_imageWidth - ($PosX + $Width), $gdi_imageHeight, $GDIP_PXF32ARGB)
+	$gdi_hUpImage = _GDIPlus_BitmapCloneArea($gdi_hImage, $PosX, 0, $Width, $PosY, $GDIP_PXF32ARGB)
+	$gdi_hDownImage = _GDIPlus_BitmapCloneArea($gdi_hImage, $PosX, $PosY + $Height, $Width, $gdi_imageHeight - ($PosY + $Height), $GDIP_PXF32ARGB)
+
+	$hGui = GUICreate("GDIPlus Example", $gdi_imageWidth, $gdi_imageHeight)
+	$hGraphicGUI = _GDIPlus_GraphicsCreateFromHWND($hGui) ;Draw to this graphics, $hGraphicGUI, to display on GUI
+	$hBMPBuff = _GDIPlus_BitmapCreateFromGraphics($gdi_imageWidth, $gdi_imageHeight, $hGraphicGUI) ; $hBMPBuff is a bitmap in memory
+	$hGraphic = _GDIPlus_ImageGetGraphicsContext($hBMPBuff) ; Draw to this graphics, $hGraphic, being the graphics of $hBMPBuff
+	_GDIPlus_GraphicsClear($hGraphic, $MergedImageBackgroundColor)
+
+	_GDIPlus_DrawImagePoints($hGraphic, $gdi_hLeftImage, 0, 0, $PosX, 0, 0, $gdi_imageHeight)
+	_GDIPlus_DrawImagePoints($hGraphic, $gdi_hRightImage, $PosX + $Width, 0, $gdi_imageWidth, 0, $PosX + $Width, $gdi_imageHeight)
+	_GDIPlus_DrawImagePoints($hGraphic, $gdi_hUpImage, $PosX, 0, $PosX + $Width, 0, $PosX, $PosY)
+	_GDIPlus_DrawImagePoints($hGraphic, $gdi_hDownImage, $PosX, $PosY + $Height, $PosX + $Width, $PosY + $Height, $PosX, $gdi_imageHeight)
+
+	_GDIPlus_ImageSaveToFile($hBMPBuff, $PathImage_Temp)
+	_GDIPlus_GraphicsDispose($hGraphic)
+	_WinAPI_DeleteObject($hBMPBuff)
+
+	; Release resources
+	_GDIPlus_ImageDispose($gdi_hLeftImage)
+	_GDIPlus_ImageDispose($gdi_hRightImage)
+	_GDIPlus_ImageDispose($gdi_hUpImage)
+	_GDIPlus_ImageDispose($gdi_hDownImage)
+	_GDIPlus_ImageDispose($gdi_hImage)
+	_GDIPlus_Shutdown()
+;~ 	MsgBox(0, "C'est découpé", "C'est découpé")
+EndFunc   ;==>_MIX_IMAGE_CUT
+
+Func _MIX_IMAGE_ADDTRANS($PathImage_Temp, $TransLvl)
+	Local $hImage1, $hGraphicGUI, $Image1Width, $Image1Height, $hGui
+	Local $MergedImageBackgroundColor = 0x00000000
+	Local $PathImage_TransTemp = StringTrimRight($PathImage_Temp, 4) & "-TransTemp.PNG"
+
+	FileDelete($PathImage_TransTemp)
+	FileCopy($PathImage_Temp, $PathImage_TransTemp, 9)
+	FileDelete($PathImage_Temp)
+	$PathImage_Temp = StringTrimRight($PathImage_Temp, 4) & ".PNG"
+
+	ConsoleWrite("+ Ajout de transparence sur : " & $PathImage_Temp & "(" & $TransLvl & ")" & @CRLF) ; Debug
+
+	_GDIPlus_Startup()
+	$hImage1 = _GDIPlus_ImageLoadFromFile($PathImage_TransTemp)
+	$Image1Width = _GDIPlus_ImageGetWidth($hImage1)
+	If $Image1Width = 4294967295 Then $Image1Width = 0 ;4294967295 en cas d'erreur.
+	$Image1Height = _GDIPlus_ImageGetHeight($hImage1)
+
+	$hGui = GUICreate("GDIPlus Example", $Image1Width, $Image1Height)
+	$hGraphicGUI = _GDIPlus_GraphicsCreateFromHWND($hGui) ;Draw to this graphics, $hGraphicGUI, to display on GUI
+	$hBMPBuff = _GDIPlus_BitmapCreateFromGraphics($Image1Width, $Image1Height, $hGraphicGUI) ; $hBMPBuff is a bitmap in memory
+	$hGraphic = _GDIPlus_ImageGetGraphicsContext($hBMPBuff) ; Draw to this graphics, $hGraphic, being the graphics of $hBMPBuff
+	_GDIPlus_GraphicsClear($hGraphic, $MergedImageBackgroundColor)
+	_GDIPlus_GraphicsDrawImageRectRectTrans($hGraphic, $hImage1, 0, 0, "", "", "", "", "", "", 2, $TransLvl)
+	GUIDelete($hGui)
+
+	_GDIPlus_ImageDispose($hImage1)
+	_GDIPlus_ImageSaveToFile($hBMPBuff, $PathImage_Temp)
+	_GDIPlus_GraphicsDispose($hGraphic)
+	_WinAPI_DeleteObject($hBMPBuff)
+	_GDIPlus_Shutdown()
+	$Last_PathImage_TempLast = $PathImage_Temp
+	Return $PathImage_Temp
+EndFunc   ;==>_MIX_IMAGE_ADDTRANS
 
 Func _MIX_IMAGE_CREATECIBLE($A_PathImage, $PathImage_Temp)
 	If UBound($A_PathImage) - 1 < 1 Then Return
@@ -2139,20 +2266,11 @@ Func _MIX_IMAGE_CREATECIBLE($A_PathImage, $PathImage_Temp)
 		_GDIPlus_ImageDispose($A_PathImage[$B_Images][3])
 	Next
 	_GDIPlus_ImageSaveToFile($hBMPBuff, $PathImage_Temp)
+	_GDIPlus_GraphicsDispose($hGraphic)
 	_WinAPI_DeleteObject($hBMPBuff)
 	_GDIPlus_Shutdown()
 ;~ 	_ArrayDisplay($A_PathImage, '$A_PathImage') ; Debug
 EndFunc   ;==>_MIX_IMAGE_CREATECIBLE
-
-Func _RELATIVPOS($Pos, $source_size)
-	If StringLeft($Pos, 1) = '%' Then
-		ConsoleWrite("! Valeur = " & StringTrimLeft($Pos, 1) & " X " & $source_size & " = " & $source_size * StringTrimLeft($Pos, 1) & @CRLF)
-		Return $source_size * StringTrimLeft($Pos, 1)
-	Else
-		ConsoleWrite("! Valeur = " & $Pos & @CRLF)
-		Return $Pos
-	EndIf
-EndFunc   ;==>_RELATIVPOS
 
 Func _MIX_IMAGE_CREATEFORMAT()
 	Local $A_MIX_IMAGE_Format[1][12]
@@ -2347,3 +2465,4 @@ Func _GDIPlus_BitmapCreateBitmapWithAlpha($hBitmap, $hAlpha, $iChannel = 0)
 	EndIf
 	Return $hBmp[0]
 EndFunc   ;==>_GDIPlus_BitmapCreateBitmapWithAlpha
+
