@@ -2027,25 +2027,6 @@ Func _MIX_IMAGE_CREATEARRAY($Path_source, $xpath_root_source, $XML_Type, $No_ROM
 		$PathImage_Temp = $PathDIRTmp & StringTrimRight($A_ROMList[$No_ROMXML][0], 4) & "-" & $A_MIX_IMAGE_Format[$B_Images][0] & ".PNG"
 
 		Switch StringLeft($A_MIX_IMAGE_Format[$B_Images][1], 4)
-			Case 'fixe'
-				_CREATION_LOGMESS(2, "Images Fixe : " & $PathImage_Temp)
-				ConsoleWrite("> Images Fixe : " & $PathImage_Temp & @CRLF)
-				FileCopy($PathMixTmp & "\" & $A_MIX_IMAGE_Format[$B_Images][2], $PathImage_Temp, 9)
-				If FileExists($PathImage_Temp) Then
-					If $A_MIX_IMAGE_Format[$B_Images][8] = 'ROTATION' Then
-						If $A_MIX_IMAGE_Format[$B_Images][9] = '' Or $A_MIX_IMAGE_Format[$B_Images][9] > 7 Then
-							$RotationType = 0
-						Else
-							$RotationType = $A_MIX_IMAGE_Format[$B_Images][9]
-						EndIf
-						$PathImage_Temp = _ROTATION($PathImage_Temp, $RotationType)
-						$A_MIX_IMAGE_Format[$B_Images][8] = ''
-						$A_MIX_IMAGE_Format[$B_Images][9] = ''
-					EndIf
-					$PathImage_Temp = _IMAGING($PathImage_Temp, $A_PathImage, $A_MIX_IMAGE_Format, $B_Images, $A_MIX_IMAGE_Format[$B_Images][1])
-					_ArrayAdd($A_PathImage, $PathImage_Temp & "|FIXE")
-				EndIf
-;~ 				_ArrayDisplay($A_PathImage, '$A_PathImage (fixe)') ; Debug
 			Case 'Tran'
 				$TransLvl = StringMid($A_MIX_IMAGE_Format[$B_Images][1], 7)
 				_CREATION_LOGMESS(2, "Ajout de transparence : " & $TransLvl)
@@ -2070,6 +2051,16 @@ Func _MIX_IMAGE_CREATEARRAY($Path_source, $xpath_root_source, $XML_Type, $No_ROM
 				ConsoleWrite("> Decoupage de l'image" & @CRLF)
 				If UBound($A_PathImage) - 1 > 0 Then $PathImage_Temp = _MIX_IMAGE_CUT($A_PathImage, $A_MIX_IMAGE_Format, $B_Images)
 ;~ 				_ArrayDisplay($A_PathImage, '$A_PathImage (Cut)') ; Debug
+			Case 'fixe'
+				_CREATION_LOGMESS(2, "Images Fixe : " & $PathImage_Temp)
+				ConsoleWrite("> Images Fixe : " & $PathImage_Temp & @CRLF)
+				FileCopy($PathMixTmp & "\" & $A_MIX_IMAGE_Format[$B_Images][2], $PathImage_Temp, 9)
+				If FileExists($PathImage_Temp) Then
+					If $A_MIX_IMAGE_Format[$B_Images][8] = 'ROTATION' Then $A_MIX_IMAGE_Format = _ROTATION($PathImage_Temp, $A_MIX_IMAGE_Format, $B_Images)
+					$PathImage_Temp = _IMAGING($PathImage_Temp, $A_PathImage, $A_MIX_IMAGE_Format, $B_Images, $A_MIX_IMAGE_Format[$B_Images][1])
+					_ArrayAdd($A_PathImage, $PathImage_Temp & "|FIXE")
+				EndIf
+;~ 				_ArrayDisplay($A_PathImage, '$A_PathImage (fixe)') ; Debug
 			Case 'Game'
 				_CREATION_LOGMESS(2, "Download Game de : " & $PathImage_Temp)
 				ConsoleWrite("> Download Game de : " & $PathImage_Temp & @CRLF) ; Debug
@@ -2088,6 +2079,7 @@ Func _MIX_IMAGE_CREATEARRAY($Path_source, $xpath_root_source, $XML_Type, $No_ROM
 					$hDownload = InetGet($XML_Value & $maxheight & $maxwidth & $outputformat, $PathImage_Temp, 0, 1)
 					_TimeOut($hDownload)
 					If FileExists($PathImage_Temp) Then
+						If $A_MIX_IMAGE_Format[$B_Images][8] = 'ROTATION' Then $A_MIX_IMAGE_Format = _ROTATION($PathImage_Temp, $A_MIX_IMAGE_Format, $B_Images)
 						$PathImage_Temp = _IMAGING($PathImage_Temp, $A_PathImage, $A_MIX_IMAGE_Format, $B_Images, $A_MIX_IMAGE_Format[$B_Images][1])
 						_ArrayAdd($A_PathImage, $PathImage_Temp & "|Game")
 					EndIf
@@ -2118,6 +2110,7 @@ Func _MIX_IMAGE_CREATEARRAY($Path_source, $xpath_root_source, $XML_Type, $No_ROM
 					$hDownload = InetGet($XML_Value & $maxheight & $maxwidth & $outputformat, $PathImage_Temp, 0, 1)
 					_TimeOut($hDownload)
 					If FileExists($PathImage_Temp) Then
+						If $A_MIX_IMAGE_Format[$B_Images][8] = 'ROTATION' Then $A_MIX_IMAGE_Format = _ROTATION($PathImage_Temp, $A_MIX_IMAGE_Format, $B_Images)
 						$PathImage_Temp = _IMAGING($PathImage_Temp, $A_PathImage, $A_MIX_IMAGE_Format, $B_Images, $A_MIX_IMAGE_Format[$B_Images][1])
 						_ArrayAdd($A_PathImage, $PathImage_Temp & "|Sys")
 					EndIf
@@ -2481,26 +2474,46 @@ Func _RESIZEMAX($PathImage_Temp, $MAX_Width, $MAX_Height)
 	Return $PathImage_Temp
 EndFunc   ;==>_RESIZEMAX
 
-Func _ROTATION($PathImage_Temp, $RotationType)
+Func _ROTATION($PathImage_Temp, $A_MIX_IMAGE_Format, $B_Images)
 	Local $Extension = StringRight($PathImage_Temp, 3)
 	Local $PathImage_ROTATION_Temp = StringTrimRight($PathImage_Temp, 4) & "-RESIZE_Temp." & $Extension
-	Local $hImage, $Image_Width, $Image_Height, $Image_Width_New, $Image_Height_New
+	Local $hImage, $Image_Width, $Image_Height, $Image_Width_New, $Image_Height_New, $RotationType
 
 	;Travail sur image temporaire
 	FileDelete($PathImage_ROTATION_Temp)
 	FileCopy($PathImage_Temp, $PathImage_ROTATION_Temp, 9)
 	FileDelete($PathImage_Temp)
 
+	If $A_MIX_IMAGE_Format[$B_Images][9] = '' Or $A_MIX_IMAGE_Format[$B_Images][9] > 7 Then
+		$RotationType = 0
+	Else
+		$RotationType = $A_MIX_IMAGE_Format[$B_Images][9]
+	EndIf
+
 	_GDIPlus_Startup()
 	$hImage = _GDIPlus_ImageLoadFromFile($PathImage_ROTATION_Temp)
-	$hImageRotated = _GDIPlus_ImageRotateFlip($hImage, $RotationType)
+	$Image_Width = _GDIPlus_ImageGetWidth($hImage)
+	If $Image_Width = 4294967295 Then $Image_Width = 0 ;4294967295 en cas d'erreur.
+	$Image_Height = _GDIPlus_ImageGetHeight($hImage)
 
-	_GDIPlus_ImageSaveToFile($hImageRotated, $PathImage_Temp)
-	_GDIPlus_ImageDispose($hImageRotated)
+	_GDIPlus_ImageRotateFlip($hImage, $RotationType)
+	$Image_Width_New = _GDIPlus_ImageGetWidth($hImage)
+	If $Image_Width = 4294967295 Then $Image_Width = 0 ;4294967295 en cas d'erreur.
+	$Image_Height_New = _GDIPlus_ImageGetHeight($hImage)
+
+	ConsoleWrite("+ Redimensionnement (ROTATION:" & $RotationType & ") de " & $PathImage_Temp & @CRLF) ; Debug
+	ConsoleWrite("+ ----- Origine = " & $Image_Width & "x" & $Image_Height & @CRLF) ; Debug
+	ConsoleWrite("+ ----- Finale = " & $Image_Width_New & "x" & $Image_Height_New & @CRLF) ; Debug
+
+	_GDIPlus_ImageSaveToFile($hImage, $PathImage_Temp)
 	_GDIPlus_ImageDispose($hImage)
 	_GDIPlus_Shutdown()
 	FileDelete($PathImage_ROTATION_Temp)
-	Return $PathImage_Temp
+	$A_MIX_IMAGE_Format[$B_Images][8] = ''
+	$A_MIX_IMAGE_Format[$B_Images][9] = ''
+	$A_MIX_IMAGE_Format[$B_Images][4] = $Image_Width_New
+	$A_MIX_IMAGE_Format[$B_Images][5] = $Image_Height_New
+	Return $A_MIX_IMAGE_Format
 EndFunc   ;==>_ROTATION
 
 Func _IMAGING($PathImage_Temp, $A_PathImage, $A_MIX_IMAGE_Format, $B_Images, $TYPE = '')
