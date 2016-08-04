@@ -5,12 +5,13 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper XML Universel
-#AutoIt3Wrapper_Res_Fileversion=1.4.0.6
+#AutoIt3Wrapper_Res_Fileversion=1.5.0.1
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
 #AutoIt3Wrapper_AU3Check_Stop_OnWarning=y
 #AutoIt3Wrapper_Run_Tidy=y
+#AutoIt3Wrapper_UseUpx=n
 #Tidy_Parameters=/reel
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
 
@@ -117,9 +118,13 @@ FileInstall(".\Ressources\Fleche_IP1.bmp", $SOURCE_DIRECTORY & "\Ressources\Flec
 FileInstall(".\Ressources\Fleche_IP2.bmp", $SOURCE_DIRECTORY & "\Ressources\Fleche_IP2.bmp")
 FileInstall(".\Ressources\plink.exe", $SOURCE_DIRECTORY & "\Ressources\plink.exe")
 FileInstall(".\Ressources\systemlist.txt", $SOURCE_DIRECTORY & "\Ressources\systemlist.txt")
+FileInstall(".\Mix\Arcade (moon) By Supernature2k.zip", $SOURCE_DIRECTORY & "\Mix\")
 FileInstall(".\Mix\Arcade (moon).zip", $SOURCE_DIRECTORY & "\Mix\")
-FileInstall(".\Mix\Oldtv (nes).zip", $SOURCE_DIRECTORY & "\Mix\")
+FileInstall(".\Mix\Background (Modified DarKade-Theme by Nachtgarm).zip", $SOURCE_DIRECTORY & "\Mix\")
+FileInstall(".\Mix\Oldtv (Multi Sys).zip", $SOURCE_DIRECTORY & "\Mix\")
 FileInstall(".\Mix\Standard (3img).zip", $SOURCE_DIRECTORY & "\Mix\")
+FileInstall(".\Mix\Standard (4img)  By Supernature2k.zip", $SOURCE_DIRECTORY & "\Mix\")
+
 _CREATION_LOGMESS(2, "Fin de creation des fichiers ressources")
 
 ;Definition des Variables
@@ -228,7 +233,6 @@ GUISetState(@SW_SHOW)
 #EndRegion ### END Koda GUI section ###
 _CREATION_LOGMESS(2, "Fin de creation de l'interface")
 
-;~ $A_DIRList = _AUTOCONF($PATHAUTOCONF_PathRom, $PATHAUTOCONF_PathRomSub, $PATHAUTOCONF_PathNew, $PATHAUTOCONF_PathImage, $PATHAUTOCONF_PathImageSub)
 _GUI_REFRESH($INI_P_SOURCE, $INI_P_CIBLE)
 
 _CREATION_LOGMESS(2, "Preparation du profil MIX Image par defaut")
@@ -265,13 +269,17 @@ While 1
 			_GUI_REFRESH($INI_P_SOURCE, $INI_P_CIBLE)
 		Case $MP_KILLALL
 			If MsgBox($MB_OKCANCEL, "Stop Emulationstation", _MultiLang_GetText("mess_autoconf_ssh_killall")) = $IDOK Then
+				ConsoleWrite($PathPlink & " " & $Plink_IP & " -l " & $Plink_root & " -pw " & $Plink_mdp & " /etc/init.d/S31emulationstation stop" & @CRLF)
 				Run($PathPlink & " " & $Plink_IP & " -l " & $Plink_root & " -pw " & $Plink_mdp & " /etc/init.d/S31emulationstation stop")
+				ConsoleWrite($PathPlink & " " & $Plink_IP & " -l " & $Plink_root & " -pw " & $Plink_mdp & " killall emulationstation" & @CRLF)
+				Run($PathPlink & " " & $Plink_IP & " -l " & $Plink_root & " -pw " & $Plink_mdp & " killall emulationstation")
 				_CREATION_LOGMESS(1, "SSH : Stop Emulationstation OK")
 			Else
 				_CREATION_LOGMESS(1, "SSH : Stop Emulationstation ANNULE")
 			EndIf
 		Case $MP_START
 			If MsgBox($MB_OKCANCEL, "Start Emulationstation", _MultiLang_GetText("mess_autoconf_ssh_start")) = $IDOK Then
+				ConsoleWrite($PathPlink & " " & $Plink_IP & " -l " & $Plink_root & " -pw " & $Plink_mdp & " /etc/init.d/S31emulationstation start" & @CRLF)
 				Run($PathPlink & " " & $Plink_IP & " -l " & $Plink_root & " -pw " & $Plink_mdp & " /etc/init.d/S31emulationstation start")
 				_CREATION_LOGMESS(1, "SSH : Start Emulationstation OK")
 			Else
@@ -421,7 +429,7 @@ Func _MIX_IMAGE_PROFIL()
 		Local $nMsg = GUIGetMsg()
 		Switch $nMsg
 			Case $GUI_EVENT_CLOSE, $B_CANCEL
-				If Not FileDelete($PathMixTmp & "\") Then MsgBox(1, "erreur", "Impossible de supprimer " & $PathMixTmp)
+				If Not FileDelete($PathMixTmp & "\") Then _CREATION_LOGMESS(2, "Impossible de supprimer " & $PathMixTmp)
 				DirCreate($PathMixTmp)
 				_Zip_UnzipAll($PathMix & $MIX_IMG_LASTPROFIL & ".zip", $PathMixTmp, 1)
 				IniWrite($PathConfigINI, "LAST_USE", "$MixImage", $MIX_IMG_LASTPROFIL)
@@ -438,7 +446,7 @@ Func _MIX_IMAGE_PROFIL()
 			Case $C_MIXIMAGE
 				If GUICtrlRead($C_MIXIMAGE) <> IniRead($PathMixTmp & "\config.ini", "MIX_IMG", "$MIX_IMG_NAME", "") Then
 					IniRead($PathMixTmp & "\config.ini", "MIX_IMG", "$MIX_IMG_NAME", "")
-					If Not FileDelete($PathMixTmp & "\") Then MsgBox(1, "erreur", "Impossible de supprimer " & $PathMixTmp)
+					If Not FileDelete($PathMixTmp & "\") Then _CREATION_LOGMESS(2, "Impossible de supprimer " & $PathMixTmp)
 					DirCreate($PathMixTmp)
 					_Zip_UnzipAll($PathMix & GUICtrlRead($C_MIXIMAGE) & ".zip", $PathMixTmp, 1)
 					$MIX_IMG_EXEMPLE = $PathMixTmp & "\" & IniRead($PathMixTmp & "\config.ini", "MIX_IMG", "$MIX_IMG_EXEMPLE", "\exemple.png")
@@ -1542,7 +1550,7 @@ Func _SYSTEM_CREATEARRAY_SCREENSCRAPER()
 	$hDownload = InetGet("http://www.screenscraper.fr/api/systemesListe.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=XML", $PathTmp_SYS, 0, 1)
 
 	If _TimeOut($hDownload) Or Not FileExists($PathTmp_SYS) Then
-		_CREATION_LOGMESS(1, "Fichier d'informations non telecharge")
+		MsgBox($MB_ICONERROR, _MultiLang_GetText("err_title"), _MultiLang_GetText("err_TimeOut") & ' (System List)')
 		Return -1
 	EndIf
 
@@ -1659,8 +1667,9 @@ Func _SYSTEM_SelectGUI($A_System, $FullScrape = 0)
 			ConsoleWrite("Download : " & $A_System[$i][1] & @CRLF) ;Debug
 			$ImageSystem = $SOURCE_DIRECTORY & "\Ressources\systeme.png"
 			FileDelete($ImageSystem)
-			$hDownload = InetGet($A_System[$i][1], $ImageSystem, 0, 1)
 
+			_CREATION_LOGMESS(2, "Telechargement de l'image du systeme")
+			$hDownload = InetGet($A_System[$i][1], $ImageSystem, 0, 1)
 			_TimeOut($hDownload)
 
 			If Not FileExists($ImageSystem) Then $ImageSystem = $SOURCE_DIRECTORY & "\Ressources\emptySYS.jpg"
@@ -1676,6 +1685,7 @@ Func _SYSTEM_SelectGUI($A_System, $FullScrape = 0)
 			_GDIPlus_GraphicsDispose($hGraphic)
 			_GDIPlus_ImageDispose($hImage)
 			_GDIPlus_Shutdown()
+			FileDelete($ImageSystem)
 
 			Return $A_System[$i][2]
 		EndIf
@@ -1734,47 +1744,39 @@ Func _XML_CREATEROM($Path_source, $xpath_root_source, $xpath_root_cible, $A_XMLF
 				If (StringInStr(FileReadLine($Path_source), "Erreur") Or Not FileExists($Path_source)) And $No_system <> "" Then
 					FileDelete($Path_source)
 					_CREATION_LOGMESS(1, "Recuperation des informations de la Rom no " & $No_ROM & " (CRC + SYSTEM)")
-					$hDownload = InetGet("http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=xml&crc=" & $A_ROMList[$No_ROM][2] & "&md5=" & $A_ROMList[$No_ROM][3] & "&sha1=" & $A_ROMList[$No_ROM][4] & "&systemeid=" & $No_system & "&romtype=rom&romnom=" & StringReplace($A_ROMList[$No_ROM][0], " ", "%20") & "&romtaille=" & $A_ROMList[$No_ROM][5], $Path_source, 1, 1)
 					ConsoleWrite(">(CRC + SYSTEM) = http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=xml&crc=" & $A_ROMList[$No_ROM][2] & "&md5=" & $A_ROMList[$No_ROM][3] & "&sha1=" & $A_ROMList[$No_ROM][4] & "&systemeid=" & $No_system & "&romtype=rom&romnom=" & StringReplace($A_ROMList[$No_ROM][0], " ", "%20") & "&romtaille=" & $A_ROMList[$No_ROM][5] & @CRLF) ;Debug
+					$hDownload = InetGet("http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=xml&crc=" & $A_ROMList[$No_ROM][2] & "&md5=" & $A_ROMList[$No_ROM][3] & "&sha1=" & $A_ROMList[$No_ROM][4] & "&systemeid=" & $No_system & "&romtype=rom&romnom=" & StringReplace($A_ROMList[$No_ROM][0], " ", "%20") & "&romtaille=" & $A_ROMList[$No_ROM][5], $Path_source, 1, 1)
 					$timedout = _TimeOut($hDownload)
-;~ 					FileDelete($Path_source) ; Debug
-;~ 					$timedout = 1 ; Debug
 				EndIf
 			Case 2
 				If StringInStr(FileReadLine($Path_source), "Erreur") Or Not FileExists($Path_source) Then
 					FileDelete($Path_source)
 					_CREATION_LOGMESS(1, "--Recuperation des informations de la Rom no " & $No_ROM & " (CRC)")
-					$hDownload = InetGet("http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=xml&crc=" & $A_ROMList[$No_ROM][2] & "&md5=" & $A_ROMList[$No_ROM][3] & "&sha1=" & $A_ROMList[$No_ROM][4] & "&systemeid=" & "&romtype=rom&romnom=" & StringReplace($A_ROMList[$No_ROM][0], " ", "%20") & "&romtaille=" & $A_ROMList[$No_ROM][5], $Path_source, 1, 1)
 					ConsoleWrite(">(CRC) = http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=xml&crc=" & $A_ROMList[$No_ROM][2] & "&md5=" & $A_ROMList[$No_ROM][3] & "&sha1=" & $A_ROMList[$No_ROM][4] & "&systemeid=" & "&romtype=rom&romnom=" & StringReplace($A_ROMList[$No_ROM][0], " ", "%20") & "&romtaille=" & $A_ROMList[$No_ROM][5] & @CRLF) ;Debug
+					$hDownload = InetGet("http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=xml&crc=" & $A_ROMList[$No_ROM][2] & "&md5=" & $A_ROMList[$No_ROM][3] & "&sha1=" & $A_ROMList[$No_ROM][4] & "&systemeid=" & "&romtype=rom&romnom=" & StringReplace($A_ROMList[$No_ROM][0], " ", "%20") & "&romtaille=" & $A_ROMList[$No_ROM][5], $Path_source, 1, 1)
 					$timedout = _TimeOut($hDownload)
-;~ 					FileDelete($Path_source) ; Debug
-;~ 					$timedout = 1 ; Debug
 				EndIf
-
 			Case 3
 				If (StringInStr(FileReadLine($Path_source), "Erreur") Or Not FileExists($Path_source)) And $No_system <> "" Then
 					FileDelete($Path_source)
 					_CREATION_LOGMESS(1, "Recuperation des informations de la Rom no " & $No_ROM & " (FileName + SYSTEM)")
 					$FileName = StringLeft(StringReplace($A_ROMList[$No_ROM][0], " ", "%20"), StringInStr(StringReplace($A_ROMList[$No_ROM][0], " ", "%20"), ".", Default, -1) - 1)
-					$hDownload = InetGet("http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=xml&crc=" & "&md5=" & "&sha1=" & "&systemeid=" & $No_system & "&romtype=rom&romnom=" & $FileName & "&romtaille=" & $A_ROMList[$No_ROM][5], $Path_source, 1, 1)
 					ConsoleWrite(">(FileName + SYSTEM) = http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=xml&crc=" & "&md5=" & "&sha1=" & "&systemeid=" & $No_system & "&romtype=rom&romnom=" & $FileName & "&romtaille=" & $A_ROMList[$No_ROM][5] & @CRLF) ;Debug
+					$hDownload = InetGet("http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=xml&crc=" & "&md5=" & "&sha1=" & "&systemeid=" & $No_system & "&romtype=rom&romnom=" & $FileName & "&romtaille=" & $A_ROMList[$No_ROM][5], $Path_source, 1, 1)
 					$timedout = _TimeOut($hDownload)
-;~ 					FileDelete($Path_source) ; Debug
-;~ 					$timedout = 1 ; Debug
 				EndIf
 		EndSwitch
 	Next
 
 	If Not FileExists($Path_source) Then
 		If $timedout = 0 Then
-			MsgBox($MB_ICONERROR, _MultiLang_GetText("err_title"), _MultiLang_GetText("err_TimeOut"))
 			_GUICtrlStatusBar_SetText($L_SCRAPE, "", 1)
-			$ScrapeCancelled = 1
-			Return -1
+			Return 0
 		Else
 			_GUICtrlStatusBar_SetText($L_SCRAPE, "TIME OUT", 1)
 			_CREATION_LOGMESS(1, "TIME OUT")
-			Return 0
+			MsgBox($MB_ICONERROR, _MultiLang_GetText("err_title"), _MultiLang_GetText("err_TimeOut"), 10)
+			Return -1
 		EndIf
 	EndIf
 
