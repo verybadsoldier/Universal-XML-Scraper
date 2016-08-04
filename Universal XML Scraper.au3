@@ -5,7 +5,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper XML Universel
-#AutoIt3Wrapper_Res_Fileversion=1.5.0.1
+#AutoIt3Wrapper_Res_Fileversion=1.5.0.2
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -331,15 +331,15 @@ While 1
 						$PathImageSub = $A_DIRList[$B_SYSTEM][5]
 						$No_system = _SYSTEM_SelectGUI($A_System, 1)
 						$A_TMP_ROMList = _SCRAPING($No_Profil, $A_Profil, $PathRom, $No_system, $INI_OPTION_MAJ, $V_Header)
-						If IsArray($A_TMP_ROMList) And $A_TMP_ROMList <> -1 Then
+						If IsArray($A_TMP_ROMList) And UBound($A_TMP_ROMList) > 1 Then
 							_FUSIONXML($V_Header, $A_TMP_ROMList)
 							_ArrayDelete($A_TMP_ROMList, 0)
 							_ArrayAdd($A_FULL_ROMList, $A_TMP_ROMList)
 						EndIf
 						FileDelete($PathDIRTmp)
 						FileDelete($PathTmp_GAME)
-						FileDelete($PathTmp_SYS)
 					Next
+					FileDelete($PathTmp_SYS)
 					If IsArray($A_FULL_ROMList) Then _SCRAPING_BILAN(TimerDiff($FullTimer), $A_FULL_ROMList)
 				EndIf
 			EndIf
@@ -2032,6 +2032,16 @@ Func _MIX_IMAGE_CREATEARRAY($Path_source, $xpath_root_source, $XML_Type, $No_ROM
 				ConsoleWrite("> Images Fixe : " & $PathImage_Temp & @CRLF)
 				FileCopy($PathMixTmp & "\" & $A_MIX_IMAGE_Format[$B_Images][2], $PathImage_Temp, 9)
 				If FileExists($PathImage_Temp) Then
+					If $A_MIX_IMAGE_Format[$B_Images][8] = 'ROTATION' Then
+						If $A_MIX_IMAGE_Format[$B_Images][9] = '' Or $A_MIX_IMAGE_Format[$B_Images][9] > 7 Then
+							$RotationType = 0
+						Else
+							$RotationType = $A_MIX_IMAGE_Format[$B_Images][9]
+						EndIf
+						$PathImage_Temp = _ROTATION($PathImage_Temp, $RotationType)
+						$A_MIX_IMAGE_Format[$B_Images][8] = ''
+						$A_MIX_IMAGE_Format[$B_Images][9] = ''
+					EndIf
 					$PathImage_Temp = _IMAGING($PathImage_Temp, $A_PathImage, $A_MIX_IMAGE_Format, $B_Images, $A_MIX_IMAGE_Format[$B_Images][1])
 					_ArrayAdd($A_PathImage, $PathImage_Temp & "|FIXE")
 				EndIf
@@ -2441,6 +2451,17 @@ Func _RESIZEMAX($PathImage_Temp, $MAX_Width, $MAX_Height)
 		EndIf
 	EndIf
 
+	If $Image_Height > $MAX_Height Then
+		$Ratio = $Image_Height / $MAX_Height
+		$Image_Height_New = $MAX_Height
+		$Image_Width_New = $Image_Width / $Ratio
+		If $Image_Width_New > $MAX_Width Then
+			$Ratio = $Image_Width_New / $MAX_Width
+			$Image_Height_New = $Image_Height_New / $Ratio
+			$Image_Width_New = $MAX_Width
+		EndIf
+	EndIf
+
 	If $Image_Width <> $Image_Width_New Or $Image_Height <> $Image_Height_New Then
 		ConsoleWrite("+ Redimensionnement (RESIZEMAX) de " & $PathImage_Temp & @CRLF) ; Debug
 		ConsoleWrite("+ ----- Origine = " & $Image_Width & "x" & $Image_Height & @CRLF) ; Debug
@@ -2456,7 +2477,31 @@ Func _RESIZEMAX($PathImage_Temp, $MAX_Width, $MAX_Height)
 	_GDIPlus_ImageDispose($hImage)
 	_GDIPlus_Shutdown()
 	FileDelete($PathImage_RESIZEMAX_Temp)
+
+	Return $PathImage_Temp
 EndFunc   ;==>_RESIZEMAX
+
+Func _ROTATION($PathImage_Temp, $RotationType)
+	Local $Extension = StringRight($PathImage_Temp, 3)
+	Local $PathImage_ROTATION_Temp = StringTrimRight($PathImage_Temp, 4) & "-RESIZE_Temp." & $Extension
+	Local $hImage, $Image_Width, $Image_Height, $Image_Width_New, $Image_Height_New
+
+	;Travail sur image temporaire
+	FileDelete($PathImage_ROTATION_Temp)
+	FileCopy($PathImage_Temp, $PathImage_ROTATION_Temp, 9)
+	FileDelete($PathImage_Temp)
+
+	_GDIPlus_Startup()
+	$hImage = _GDIPlus_ImageLoadFromFile($PathImage_ROTATION_Temp)
+	$hImageRotated = _GDIPlus_ImageRotateFlip($hImage, $RotationType)
+
+	_GDIPlus_ImageSaveToFile($hImageRotated, $PathImage_Temp)
+	_GDIPlus_ImageDispose($hImageRotated)
+	_GDIPlus_ImageDispose($hImage)
+	_GDIPlus_Shutdown()
+	FileDelete($PathImage_ROTATION_Temp)
+	Return $PathImage_Temp
+EndFunc   ;==>_ROTATION
 
 Func _IMAGING($PathImage_Temp, $A_PathImage, $A_MIX_IMAGE_Format, $B_Images, $TYPE = '')
 	Local $Extension = StringRight($PathImage_Temp, 3)
@@ -2468,7 +2513,7 @@ Func _IMAGING($PathImage_Temp, $A_PathImage, $A_MIX_IMAGE_Format, $B_Images, $TY
 	Local $Image_Height = _RELATIVPOS($A_MIX_IMAGE_Format[$B_Images][5], $A_PathImage[0][1])
 
 	If StringRight($TYPE, 3) = 'MAX' Then
-		_RESIZEMAX($PathImage_Temp, $Image_Width, $Image_Height)
+		$PathImage_Temp = _RESIZEMAX($PathImage_Temp, $Image_Width, $Image_Height)
 ;~ 	Else
 ;~ 		_RESIZEMAX($PathImage_Temp, $A_PathImage[0][0], $A_PathImage[0][1])
 	EndIf
@@ -2511,11 +2556,51 @@ Func _IMAGING($PathImage_Temp, $A_PathImage, $A_MIX_IMAGE_Format, $B_Images, $TY
 		Case 'DOWN'
 			$Image_C1Y = $A_PathImage[0][1] - $Image_Height
 	EndSwitch
+	Switch $Image_C2X
+		Case 'CENTER'
+			$Image_C2X = ($A_PathImage[0][0] / 2) + ($Image_Width / 2)
+		Case 'LEFT'
+			$Image_C2X = $Image_Width
+		Case 'RIGHT'
+			$Image_C2X = $A_PathImage[0][0]
+		Case ''
+			$Image_C2X = $Image_C1X + $Image_Width
+	EndSwitch
+	Switch $Image_C2Y
+		Case 'CENTER'
+			$Image_C2Y = ($A_PathImage[0][1] / 2) - ($Image_Height / 2)
+		Case 'UP'
+			$Image_C2Y = 0
+		Case 'DOWN'
+			$Image_C2Y = $A_PathImage[0][1] - $Image_Height
+		Case ''
+			$Image_C2Y = $Image_C1Y
+	EndSwitch
+	Switch $Image_C3X
+		Case 'CENTER'
+			$Image_C3X = ($A_PathImage[0][0] / 2) - ($Image_Width / 2)
+		Case 'LEFT'
+			$Image_C3X = 0
+		Case 'RIGHT'
+			$Image_C3X = $A_PathImage[0][0] - $Image_Width
+		Case ''
+			$Image_C3X = $Image_C1X
+	EndSwitch
+	Switch $Image_C3Y
+		Case 'CENTER'
+			$Image_C3Y = ($A_PathImage[0][1] / 2) + ($Image_Height / 2)
+		Case 'UP'
+			$Image_C3Y = 0 + $Image_Height
+		Case 'DOWN'
+			$Image_C3Y = $A_PathImage[0][1]
+		Case ''
+			$Image_C3Y = $Image_C1Y + $Image_Height
+	EndSwitch
 
-	If $Image_C2X = "" Then $Image_C2X = $Image_C1X + $Image_Width
-	If $Image_C2Y = "" Then $Image_C2Y = $Image_C1Y
-	If $Image_C3X = "" Then $Image_C3X = $Image_C1X
-	If $Image_C3Y = "" Then $Image_C3Y = $Image_C1Y + $Image_Height
+;~ 	If $Image_C2X = "" Then $Image_C2X = $Image_C1X + $Image_Width
+;~ 	If $Image_C2Y = "" Then $Image_C2Y = $Image_C1Y
+;~ 	If $Image_C3X = "" Then $Image_C3X = $Image_C1X
+;~ 	If $Image_C3Y = "" Then $Image_C3Y = $Image_C1Y + $Image_Height
 
 	ConsoleWrite("+ Preparation de l'image (_IMAGING) de " & $PathImage_Temp & @CRLF) ; Debug
 	ConsoleWrite("+ ----- C1 = " & $Image_C1X & "x" & $Image_C1Y & @CRLF) ; Debug
