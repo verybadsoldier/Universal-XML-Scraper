@@ -29,7 +29,7 @@ mame|Mame
 mame-advmame|Mame
 mame-libretro|Mame
 mame-mame4all|Mame
-msx|Mame
+msx|MSX
 mastersystem|Master System
 segacd|Mega-CD
 genesis|Megadrive

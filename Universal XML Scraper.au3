@@ -5,12 +5,13 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper XML Universel
-#AutoIt3Wrapper_Res_Fileversion=1.3.0.18
+#AutoIt3Wrapper_Res_Fileversion=1.5.0.2
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
 #AutoIt3Wrapper_AU3Check_Stop_OnWarning=y
 #AutoIt3Wrapper_Run_Tidy=y
+#AutoIt3Wrapper_UseUpx=n
 #Tidy_Parameters=/reel
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
 
@@ -47,6 +48,7 @@
 #include "./Include/_Hash.au3"
 #include "./Include/_XMLDomWrapper.au3"
 #include "./Include/_zip.au3"
+#include "./Include/_ExtGDIPlus.au3"
 
 TraySetState(2)
 
@@ -77,7 +79,7 @@ If @Compiled Then
 		FileDelete($SOURCE_DIRECTORY & "\LanguageFiles")
 		FileDelete($SOURCE_DIRECTORY & "\Ressources")
 		ConsoleWrite("Ini Deleted" & @CRLF) ;Debug
-		_CREATION_LOGMESS(1, "Mise a� jour de " & $verINI & " vers " & $Rev)
+		_CREATION_LOGMESS(1, "Mise a  jour de " & $verINI & " vers " & $Rev)
 	Else
 		_CREATION_LOGMESS(1, "Version : " & $Rev)
 	EndIf
@@ -116,9 +118,13 @@ FileInstall(".\Ressources\Fleche_IP1.bmp", $SOURCE_DIRECTORY & "\Ressources\Flec
 FileInstall(".\Ressources\Fleche_IP2.bmp", $SOURCE_DIRECTORY & "\Ressources\Fleche_IP2.bmp")
 FileInstall(".\Ressources\plink.exe", $SOURCE_DIRECTORY & "\Ressources\plink.exe")
 FileInstall(".\Ressources\systemlist.txt", $SOURCE_DIRECTORY & "\Ressources\systemlist.txt")
+FileInstall(".\Mix\Arcade (moon) By Supernature2k.zip", $SOURCE_DIRECTORY & "\Mix\")
 FileInstall(".\Mix\Arcade (moon).zip", $SOURCE_DIRECTORY & "\Mix\")
-FileInstall(".\Mix\Oldtv (nes).zip", $SOURCE_DIRECTORY & "\Mix\")
+FileInstall(".\Mix\Background (Modified DarKade-Theme by Nachtgarm).zip", $SOURCE_DIRECTORY & "\Mix\")
+FileInstall(".\Mix\Oldtv (Multi Sys).zip", $SOURCE_DIRECTORY & "\Mix\")
 FileInstall(".\Mix\Standard (3img).zip", $SOURCE_DIRECTORY & "\Mix\")
+FileInstall(".\Mix\Standard (4img)  By Supernature2k.zip", $SOURCE_DIRECTORY & "\Mix\")
+
 _CREATION_LOGMESS(2, "Fin de creation des fichiers ressources")
 
 ;Definition des Variables
@@ -128,7 +134,8 @@ Global $LANG_DIR = $SOURCE_DIRECTORY & "\LanguageFiles" ; Where we are storing t
 Global $INI_P_SOURCE = "empty.jpg"
 Global $INI_P_CIBLE = "empty.jpg"
 Global $PathSystemList = $SOURCE_DIRECTORY & "\Ressources\systemlist.txt"
-Global $PathTmp = $SOURCE_DIRECTORY & "\API_temp.tmp"
+Global $PathTmp_GAME = $SOURCE_DIRECTORY & "\GAME_temp.tmp"
+Global $PathTmp_SYS = $SOURCE_DIRECTORY & "\SYS_temp.tmp"
 Global $PathDIRTmp = $SOURCE_DIRECTORY & "\TEMP\"
 Global $PathMix = $SOURCE_DIRECTORY & "\Mix\"
 Global $PathMixTmp = $SOURCE_DIRECTORY & "\Mix\TEMP"
@@ -154,7 +161,10 @@ Global $FullScrapeIP = 0
 Global $root_cible
 Global $ScrapeCancelled = 0
 Global $A_DIRList
+Global $A_System
+Global $A_XMLSourcesFIXE[1][4]
 Global $Nb_MIX_Image = 0
+Global $Last_PathImage_TempLast, $Last_PathImage_TempLast_Fus
 Local $SCRAP_OK = 0
 Local $Moy_Timer = 0
 Local $Total_Timer = 0
@@ -206,6 +216,7 @@ Local $ME_Langue = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_edit_langue"), 
 Local $ME_Config = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_edit_config"), $ME)
 Local $MP = GUICtrlCreateMenu(_MultiLang_GetText("mnu_ssh"))
 Local $MP_KILLALL = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_ssh_killall"), $MP)
+Local $MP_START = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_ssh_start"), $MP)
 Local $MP_REBOOT = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_ssh_reboot"), $MP)
 Local $MP_POWEROFF = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_ssh_halt"), $MP)
 GUICtrlSetState($MP, $GUI_DISABLE)
@@ -222,7 +233,6 @@ GUISetState(@SW_SHOW)
 #EndRegion ### END Koda GUI section ###
 _CREATION_LOGMESS(2, "Fin de creation de l'interface")
 
-;~ $A_DIRList = _AUTOCONF($PATHAUTOCONF_PathRom, $PATHAUTOCONF_PathRomSub, $PATHAUTOCONF_PathNew, $PATHAUTOCONF_PathImage, $PATHAUTOCONF_PathImageSub)
 _GUI_REFRESH($INI_P_SOURCE, $INI_P_CIBLE)
 
 _CREATION_LOGMESS(2, "Preparation du profil MIX Image par defaut")
@@ -258,11 +268,22 @@ While 1
 			_GUI_Config($A_Profil, $No_Profil)
 			_GUI_REFRESH($INI_P_SOURCE, $INI_P_CIBLE)
 		Case $MP_KILLALL
-			If MsgBox($MB_OKCANCEL, "KillAll Emulationstation", _MultiLang_GetText("mess_autoconf_ssh_killall")) = $IDOK Then
+			If MsgBox($MB_OKCANCEL, "Stop Emulationstation", _MultiLang_GetText("mess_autoconf_ssh_killall")) = $IDOK Then
+				ConsoleWrite($PathPlink & " " & $Plink_IP & " -l " & $Plink_root & " -pw " & $Plink_mdp & " /etc/init.d/S31emulationstation stop" & @CRLF)
+				Run($PathPlink & " " & $Plink_IP & " -l " & $Plink_root & " -pw " & $Plink_mdp & " /etc/init.d/S31emulationstation stop")
+				ConsoleWrite($PathPlink & " " & $Plink_IP & " -l " & $Plink_root & " -pw " & $Plink_mdp & " killall emulationstation" & @CRLF)
 				Run($PathPlink & " " & $Plink_IP & " -l " & $Plink_root & " -pw " & $Plink_mdp & " killall emulationstation")
-				_CREATION_LOGMESS(1, "SSH : KillAll Emulationstation OK")
+				_CREATION_LOGMESS(1, "SSH : Stop Emulationstation OK")
 			Else
-				_CREATION_LOGMESS(1, "SSH : KillAll Emulationstation ANNULE")
+				_CREATION_LOGMESS(1, "SSH : Stop Emulationstation ANNULE")
+			EndIf
+		Case $MP_START
+			If MsgBox($MB_OKCANCEL, "Start Emulationstation", _MultiLang_GetText("mess_autoconf_ssh_start")) = $IDOK Then
+				ConsoleWrite($PathPlink & " " & $Plink_IP & " -l " & $Plink_root & " -pw " & $Plink_mdp & " /etc/init.d/S31emulationstation start" & @CRLF)
+				Run($PathPlink & " " & $Plink_IP & " -l " & $Plink_root & " -pw " & $Plink_mdp & " /etc/init.d/S31emulationstation start")
+				_CREATION_LOGMESS(1, "SSH : Start Emulationstation OK")
+			Else
+				_CREATION_LOGMESS(1, "SSH : Start Emulationstation ANNULE")
 			EndIf
 		Case $MP_REBOOT
 			If MsgBox($MB_OKCANCEL, "Reboot", _MultiLang_GetText("mess_autoconf_ssh_reboot")) = $IDOK Then
@@ -295,7 +316,7 @@ While 1
 					$FullScrapeIP = 1
 					$FullTimer = TimerInit()
 					$V_Header = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$HEADER_1", "0")
-					$A_SYSTEM = _SYSTEM_CREATEARRAY_SCREENSCRAPER($PathTmp)
+					$A_System = _SYSTEM_CREATEARRAY_SCREENSCRAPER()
 					For $B_SYSTEM = 1 To UBound($A_DIRList) - 1
 						If GUIGetMsg() = $B_SCRAPE Or $ScrapeCancelled = 1 Then
 							_GUICtrlStatusBar_SetText($L_SCRAPE, "", 1)
@@ -308,16 +329,17 @@ While 1
 						$PathNew = $A_DIRList[$B_SYSTEM][3]
 						$PathImage = $A_DIRList[$B_SYSTEM][4]
 						$PathImageSub = $A_DIRList[$B_SYSTEM][5]
-						$No_system = _SYSTEM_SelectGUI($A_SYSTEM, 1)
-						$A_TMP_ROMList = _SCRAPING($No_Profil, $A_Profil, $PathRom, $No_system, $INI_OPTION_MAJ, $V_Header, $A_SYSTEM)
-						If IsArray($A_TMP_ROMList) And $A_TMP_ROMList <> -1 Then
+						$No_system = _SYSTEM_SelectGUI($A_System, 1)
+						$A_TMP_ROMList = _SCRAPING($No_Profil, $A_Profil, $PathRom, $No_system, $INI_OPTION_MAJ, $V_Header)
+						If IsArray($A_TMP_ROMList) And UBound($A_TMP_ROMList) > 1 Then
 							_FUSIONXML($V_Header, $A_TMP_ROMList)
 							_ArrayDelete($A_TMP_ROMList, 0)
 							_ArrayAdd($A_FULL_ROMList, $A_TMP_ROMList)
 						EndIf
 						FileDelete($PathDIRTmp)
-						FileDelete($PathTmp)
+						FileDelete($PathTmp_GAME)
 					Next
+					FileDelete($PathTmp_SYS)
 					If IsArray($A_FULL_ROMList) Then _SCRAPING_BILAN(TimerDiff($FullTimer), $A_FULL_ROMList)
 				EndIf
 			EndIf
@@ -330,15 +352,16 @@ While 1
 				If _GUI_REFRESH($INI_P_SOURCE, $INI_P_CIBLE, 1) = 1 Then
 					$FullTimer = TimerInit()
 					$V_Header = IniRead($PathConfigINI, $A_Profil[$No_Profil], "$HEADER_1", "0")
-					$A_SYSTEM = _SYSTEM_CREATEARRAY_SCREENSCRAPER($PathTmp)
-					$No_system = _SYSTEM_SelectGUI($A_SYSTEM)
-					$A_ROMList = _SCRAPING($No_Profil, $A_Profil, $PathRom, $No_system, $INI_OPTION_MAJ, $V_Header, $A_SYSTEM)
+					$A_System = _SYSTEM_CREATEARRAY_SCREENSCRAPER()
+					$No_system = _SYSTEM_SelectGUI($A_System)
+					$A_ROMList = _SCRAPING($No_Profil, $A_Profil, $PathRom, $No_system, $INI_OPTION_MAJ, $V_Header)
 					If IsArray($A_ROMList) Then
 						_FUSIONXML($V_Header, $A_ROMList)
 						_SCRAPING_BILAN(TimerDiff($FullTimer), $A_ROMList)
 					EndIf
 					FileDelete($PathDIRTmp)
-					FileDelete($PathTmp)
+					FileDelete($PathTmp_GAME)
+					FileDelete($PathTmp_SYS)
 				EndIf
 			EndIf
 			_GUI_REFRESH($INI_P_SOURCE, $INI_P_CIBLE, 0)
@@ -406,7 +429,7 @@ Func _MIX_IMAGE_PROFIL()
 		Local $nMsg = GUIGetMsg()
 		Switch $nMsg
 			Case $GUI_EVENT_CLOSE, $B_CANCEL
-				If Not FileDelete($PathMixTmp & "\") Then MsgBox(1, "erreur", "Impossible de supprimer " & $PathMixTmp)
+				If Not FileDelete($PathMixTmp & "\") Then _CREATION_LOGMESS(2, "Impossible de supprimer " & $PathMixTmp)
 				DirCreate($PathMixTmp)
 				_Zip_UnzipAll($PathMix & $MIX_IMG_LASTPROFIL & ".zip", $PathMixTmp, 1)
 				IniWrite($PathConfigINI, "LAST_USE", "$MixImage", $MIX_IMG_LASTPROFIL)
@@ -423,7 +446,7 @@ Func _MIX_IMAGE_PROFIL()
 			Case $C_MIXIMAGE
 				If GUICtrlRead($C_MIXIMAGE) <> IniRead($PathMixTmp & "\config.ini", "MIX_IMG", "$MIX_IMG_NAME", "") Then
 					IniRead($PathMixTmp & "\config.ini", "MIX_IMG", "$MIX_IMG_NAME", "")
-					If Not FileDelete($PathMixTmp & "\") Then MsgBox(1, "erreur", "Impossible de supprimer " & $PathMixTmp)
+					If Not FileDelete($PathMixTmp & "\") Then _CREATION_LOGMESS(2, "Impossible de supprimer " & $PathMixTmp)
 					DirCreate($PathMixTmp)
 					_Zip_UnzipAll($PathMix & GUICtrlRead($C_MIXIMAGE) & ".zip", $PathMixTmp, 1)
 					$MIX_IMG_EXEMPLE = $PathMixTmp & "\" & IniRead($PathMixTmp & "\config.ini", "MIX_IMG", "$MIX_IMG_EXEMPLE", "\exemple.png")
@@ -536,7 +559,7 @@ Func _FUSIONXML($V_Header, $A_ROMList)
 				$No_Roms = $B_ROMList + 1
 			EndIf
 		EndIf
-		ConsoleWrite(">ROM n°" & $B_ROMList & " - $CheckError =" & $CheckError & " - $Starter = " & $Starter & " - $No_Roms = " & $No_Roms & @CRLF) ; Debug
+		ConsoleWrite(">ROM nÂ°" & $B_ROMList & " - $CheckError =" & $CheckError & " - $Starter = " & $Starter & " - $No_Roms = " & $No_Roms & @CRLF) ; Debug
 	Next
 	If $CheckError < 1 Then Return
 
@@ -598,7 +621,7 @@ Func _FUSIONXML($V_Header, $A_ROMList)
 				_ArrayDelete($A_XMLSourceTemp, 0)
 				_ArrayDelete($A_XMLSourceTemp, UBound($A_XMLSourceTemp) - 1)
 		EndSelect
-;~ 		_ArrayDisplay($A_XMLSourceTemp, "$A_XMLSourceTemp Après Clean") ; Debug
+;~ 		_ArrayDisplay($A_XMLSourceTemp, "$A_XMLSourceTemp AprÃ¨s Clean") ; Debug
 
 		ConsoleWrite("-TEST : $A_ROMList[$No_Roms][7]=" & $A_ROMList[$No_Roms][7] & " et $EmptyRom = " & $EmptyRom & @CRLF) ; Debug
 		If $A_ROMList[$No_Roms][7] = 1 Or ($A_ROMList[$No_Roms][7] = 0 And $EmptyRom = 1) Then
@@ -607,7 +630,7 @@ Func _FUSIONXML($V_Header, $A_ROMList)
 				_ArrayAdd($A_XMLCible, $A_XMLSourceTemp[$B_Fusion])
 			Next
 		EndIf
-;~ 		_ArrayDisplay($A_XMLCible, "$A_XMLCible Rom n°" & $No_Roms) ; Debug
+;~ 		_ArrayDisplay($A_XMLCible, "$A_XMLCible Rom nÂ°" & $No_Roms) ; Debug
 		Local $PercentProgression = Round(($No_Roms * 100) / $Nb_Roms)
 		GUICtrlSetData($PB_SCRAPE, $PercentProgression)
 		$No_Roms = $No_Roms + 1
@@ -972,11 +995,6 @@ Func _GUI_REFRESH($INI_P_SOURCE, $INI_P_CIBLE, $ScrapIP = 0, $SCRAP_OK = 0)
 
 		$user_lang = IniRead($PathConfigINI, "LAST_USE", "$user_lang", -1)
 		ConsoleWrite("+$user_lang = " & $user_lang & @CRLF)
-		If StringRight($user_lang, 2) = "0c" Then
-			IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'fr|eu|us|jp|xx')
-		Else
-			IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'us|eu|jp|xx')
-		EndIf
 
 		_GDIPlus_Startup()
 		$hGraphic = _GDIPlus_GraphicsCreateFromHWND($F_UniversalScraper)
@@ -1097,7 +1115,7 @@ Func _LANG_LOAD($LANG_DIR, $user_lang)
 			"3009 " & _ ;English_Zimbabwe
 			"3409" ;English_Philippines
 
-	$LANGFILES[1][0] = "Fran�ais" ; French
+	$LANGFILES[1][0] = "Français" ; French
 	$LANGFILES[1][1] = $LANG_DIR & "\UXS-FRENCH.XML"
 	$LANGFILES[1][2] = "040c " & _ ;French_Standard
 			"080c " & _ ;French_Belgian
@@ -1106,7 +1124,7 @@ Func _LANG_LOAD($LANG_DIR, $user_lang)
 			"140c " & _ ;French_Luxembourg
 			"180c" ;French_Monaco
 
-	$LANGFILES[2][0] = "Portugu�s" ; Portuguese
+	$LANGFILES[2][0] = "Português" ; Portuguese
 	$LANGFILES[2][1] = $LANG_DIR & "\UXS-PORTUGUESE.XML"
 	$LANGFILES[2][2] = "0816 " & _ ;Portuguese - Portugal
 			"0416 " ;Portuguese - Brazil
@@ -1119,7 +1137,7 @@ Func _LANG_LOAD($LANG_DIR, $user_lang)
 			"1007 " & _ ;German - Luxembourg
 			"1407 " ;German - Liechtenstein
 
-	$LANGFILES[4][0] = "Espa�ol" ; Spanish
+	$LANGFILES[4][0] = "Español" ; Spanish
 	$LANGFILES[4][1] = $LANG_DIR & "\UXS-SPANISH.XML"
 	$LANGFILES[4][2] = "040A " & _ ;Spanish - Spain
 			"080A " & _ ;Spanish - Mexico
@@ -1176,6 +1194,18 @@ Func _LANG_LOAD($LANG_DIR, $user_lang)
 		MsgBox(64, "Information", "Just letting you know that we loaded the default language file")
 	EndIf
 
+	Switch StringRight($user_lang, 2)
+		Case '09'
+			IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'us|origine|eu|es|fr|de|pt|jp|xx')
+		Case '0c'
+			IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'fr|eu|us|origine|de|es|pt|jp|xx')
+		Case '16'
+			IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'pt|eu|us|origine|fr|de|es|jp|xx')
+		Case '07'
+			IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'de|eu|us|origine|fr|es|pt|jp|xx')
+		Case '0A'
+			IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'es|eu|us|origine|fr|de|pt|jp|xx')
+	EndSwitch
 	Return $LANGFILES
 EndFunc   ;==>_LANG_LOAD
 
@@ -1210,6 +1240,18 @@ Func _LANGUE_SelectGUI($_gh_aLangFileArray, $default = @OSLang, $demarrage = 0)
 				GUISetState(@SW_ENABLE, $F_UniversalScraper)
 				WinActivate($F_UniversalScraper)
 			EndIf
+			Switch StringRight($user_lang, 2)
+				Case '09'
+					IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'us|origine|eu|es|fr|de|pt|jp|xx')
+				Case '0c'
+					IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'fr|eu|us|origine|de|es|pt|jp|xx')
+				Case '16'
+					IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'pt|eu|us|origine|fr|de|es|jp|xx')
+				Case '07'
+					IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'de|eu|us|origine|fr|es|pt|jp|xx')
+				Case '0A'
+					IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'es|eu|us|origine|fr|de|pt|jp|xx')
+			EndSwitch
 			Return StringLeft($_gh_aLangFileArray[$i][2], 4)
 		EndIf
 	Next
@@ -1296,7 +1338,7 @@ Func _ROM_CREATEARRAY($PathRom)
 	Return $A_ROMList
 EndFunc   ;==>_ROM_CREATEARRAY
 
-Func _SCRAPING($No_Profil, $A_Profil, $PathRom, $No_system, $INI_OPTION_MAJ, $V_Header, $A_SYSTEM)
+Func _SCRAPING($No_Profil, $A_Profil, $PathRom, $No_system, $INI_OPTION_MAJ, $V_Header)
 ;~ 	Initialisation Variables
 	Local $A_ROMXMLList
 	Local $A_MIX_IMAGE_Format
@@ -1349,7 +1391,7 @@ Func _SCRAPING($No_Profil, $A_Profil, $PathRom, $No_system, $INI_OPTION_MAJ, $V_
 		Next
 		ConsoleWrite("$xpath_root_source Header : " & $xpath_root_source & @CRLF) ; Debug
 		ConsoleWrite("$xpath_root_cible HEader : " & $xpath_root_cible & @CRLF) ; Debug
-		_XML_CREATEHEADER($PathTmp, $PathNewTemp, $xpath_root_source, $xpath_root_cible, $A_HEADERFormat, $A_ROMList, $No_system, $INI_OPTION_MAJ, $A_SYSTEM)
+		_XML_CREATEHEADER($PathTmp_GAME, $PathNewTemp, $xpath_root_source, $xpath_root_cible, $A_HEADERFormat, $A_ROMList, $No_system, $INI_OPTION_MAJ)
 	EndIf
 
 	For $B_ROMList = 1 To $Nb_Roms
@@ -1381,7 +1423,7 @@ Func _SCRAPING($No_Profil, $A_Profil, $PathRom, $No_system, $INI_OPTION_MAJ, $V_
 			ConsoleWrite("Calcul des Hash en : " & Round((TimerDiff($TimerHash) / 1000), 2) & "s" & @CRLF)
 
 ;~ 		Recuperation et ecriture des informations de la Rom
-			$CreateROM = _XML_CREATEROM($PathTmp, $xpath_root_source, $xpath_root_cible, $A_XMLFormat, $A_ROMList, $B_ROMList, $No_system, $INI_OPTION_MAJ, $A_MIX_IMAGE_Format)
+			$CreateROM = _XML_CREATEROM($PathTmp_GAME, $xpath_root_source, $xpath_root_cible, $A_XMLFormat, $A_ROMList, $B_ROMList, $No_system, $INI_OPTION_MAJ, $A_MIX_IMAGE_Format)
 		EndIf
 
 		If GUIGetMsg() = $B_SCRAPE Or $ScrapeCancelled = 1 Then
@@ -1401,6 +1443,9 @@ Func _SCRAPING($No_Profil, $A_Profil, $PathRom, $No_system, $INI_OPTION_MAJ, $V_
 			Case $CreateROM > 0 And $FOUND = 0
 				_CREATION_LOGMESS(1, "Rom trouve : " & $A_ROMList[$B_ROMList][0] & " (Hash : " & $A_ROMList[$B_ROMList][2] & ")")
 				$A_ROMList[$B_ROMList][7] = 1
+			Case $CreateROM < 0 And $FOUND = 0
+				_CREATION_LOGMESS(1, "(*)Time Out : " & $A_ROMList[$B_ROMList][0] & " (Hash : " & $A_ROMList[$B_ROMList][2] & ")")
+				$A_ROMList[$B_ROMList][7] = 0
 		EndSelect
 
 ;~ 		Calcul du temps restant
@@ -1437,9 +1482,9 @@ Func _SCRAPING_BILAN($FullTimer, $A_ROMList)
 
 	For $B_ROMList = 1 To $Nb_Roms
 		$A_PathRomSplit = _PathSplit($A_ROMList[$B_ROMList][1], $Tmp_Drive, $Tmp_Dir, $Tmp_FileName, $Tmp_Extension)
-		ConsoleWrite($B_ROMList & " - " & $Tmp_Dir & " - " & $Tmp_Dir_Old & @CRLF)
+		ConsoleWrite($B_ROMList & " - " & $Tmp_Drive & $Tmp_Dir & " - " & $Tmp_Drive & $Tmp_Dir_Old & @CRLF)
 		If $Tmp_Dir <> $Tmp_Dir_Old Then
-			If Not _FileCreate($Tmp_Dir & "missing.txt") Then MsgBox(4096, "Error", " Erreur creation du Fichier missing      error:" & @error)
+			If Not _FileCreate($Tmp_Drive & $Tmp_Dir & "missing.txt") Then MsgBox(4096, "Error", " Erreur creation du Fichier missing      error:" & @error)
 ;~ 			If Not _FileCreate($Tmp_Dir & "missing_Image.txt") Then MsgBox(4096, "Error", " Erreur creation du Fichier missing      error:" & @error)
 			$Tmp_Dir_Old = $Tmp_Dir
 		EndIf
@@ -1452,8 +1497,9 @@ Func _SCRAPING_BILAN($FullTimer, $A_ROMList)
 		_WinAPI_CloseHandle($H_File)
 		$Time = _Date_Time_FileTimeToStr($aTime[2])
 		$Time = StringMid($Time, 12, 5) & ".00 " & StringMid($Time, 7, 4) & "-" & StringLeft($Time, 2) & "-" & StringMid($Time, 4, 2)
+		$Missing_Line4 = "    " & $A_ROMList[$B_ROMList][3]
 
-		If $A_ROMList[$B_ROMList][7] = 0 Then FileWrite($Tmp_Dir & "missing.txt", $Missing_Line1 & $Missing_Line2 & $Missing_Line3 & $Time & @CRLF)
+		If $A_ROMList[$B_ROMList][7] = 0 Then FileWrite($Tmp_Drive & $Tmp_Dir & "missing.txt", $Missing_Line1 & $Missing_Line2 & $Missing_Line3 & $Time & $Missing_Line4 & @CRLF)
 ;~ 		If StringLen($A_ROMList[$B_ROMList][9]) > 1 Then FileWrite($Tmp_Dir & "missing_Image.txt", $A_ROMList[$B_ROMList][8] & @CRLF)
 		If $A_ROMList[$B_ROMList][7] = 1 Then $ROMFound = $ROMFound + 1
 		If $A_ROMList[$B_ROMList][7] = 2 Then $ROMMaj = $ROMMaj + 1
@@ -1494,31 +1540,30 @@ Func _SCRAPING_BILAN($FullTimer, $A_ROMList)
 	EndIf
 EndFunc   ;==>_SCRAPING_BILAN
 
-Func _SYSTEM_CREATEARRAY_SCREENSCRAPER($PathTmp)
-	Local $A_XMLSources[1][3]
+Func _SYSTEM_CREATEARRAY_SCREENSCRAPER()
+	Local $A_XMLSources[1][4]
 	Local $TMP_LastUbound = UBound($A_XMLSources)
 	Local $sNode_Values
+
 	_GUICtrlStatusBar_SetText($L_SCRAPE, _MultiLang_GetText("prSET_SYSTEM_CREATEARRAY"))
 	_CREATION_LOGMESS(1, "Recuperation des informations des systemes")
-	$hDownload = InetGet("http://www.screenscraper.fr/api/systemesListe.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=XML", $PathTmp, 0, 1)
+	$hDownload = InetGet("http://www.screenscraper.fr/api/systemesListe.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=XML", $PathTmp_SYS, 0, 1)
 
-	If _TimeOut($hDownload) Or Not FileExists($PathTmp) Then
-		_CREATION_LOGMESS(1, "Fichier d'informations non telecharge")
+	If _TimeOut($hDownload) Or Not FileExists($PathTmp_SYS) Then
+		MsgBox($MB_ICONERROR, _MultiLang_GetText("err_title"), _MultiLang_GetText("err_TimeOut") & ' (System List)')
 		Return -1
 	EndIf
 
-	_XMLFileOpen($PathTmp)
+	_XMLFileOpen($PathTmp_SYS)
 	If @error Then
 		ConsoleWrite("!_XMLFileOpen : " & _XMLError("") & @CRLF) ; Debug
 		_CREATION_LOGMESS(1, "Fichier d'informations non valide")
-		FileDelete($PathTmp)
 		Return -1
 	EndIf
 
 	Local $A_Nodes = _XMLGetChildNodes("//Data")
 	If @error Then
 		ConsoleWrite("!__XMLGetChildNodes : " & _XMLError("") & @CRLF) ; Debug
-		FileDelete($PathTmp)
 		Return -1
 	EndIf
 ;~ 	_ArrayDisplay($A_Nodes, '$A_Nodes') ; Debug
@@ -1527,7 +1572,7 @@ Func _SYSTEM_CREATEARRAY_SCREENSCRAPER($PathTmp)
 		Local $PercentProgression = Round(($B_Nodes * 100) / (UBound($A_Nodes) - 1))
 		GUICtrlSetData($PB_SCRAPE, $PercentProgression)
 		$TMP_LastUbound = UBound($A_XMLSources)
-		ReDim $A_XMLSources[$TMP_LastUbound + 1][3]
+		ReDim $A_XMLSources[$TMP_LastUbound + 1][4]
 		$sNode_Values = _XMLGetValue("//Data/*[" & $B_Nodes & "]/noms/nom_eu")
 		If IsArray($sNode_Values) Then
 			$A_XMLSources[$TMP_LastUbound][0] = ($sNode_Values[1])
@@ -1552,19 +1597,20 @@ Func _SYSTEM_CREATEARRAY_SCREENSCRAPER($PathTmp)
 		$sNode_Values = _XMLGetValue("//Data/*[" & $B_Nodes & "]/id")
 		If IsArray($sNode_Values) Then
 			$A_XMLSources[$TMP_LastUbound][2] = ($sNode_Values[1])
+			$A_XMLSources[$TMP_LastUbound][3] = $TMP_LastUbound
 			If $A_XMLSources[$TMP_LastUbound][2] = Null Then $A_XMLSources[$TMP_LastUbound][2] = ""
 			_CREATION_LOGMESS(2, "ID du systeme trouve : " & $A_XMLSources[$TMP_LastUbound][2])
 		EndIf
 	Next
-;~ 	_ArrayDisplay($A_XMLSources, '$A_XMLSources') ; Debug
+;~ 	_ArrayDisplay($A_XMLSources, '$A_XMLSources pas trié') ; Debug
 	_CREATION_LOGMESS(2, "Tri des systemes trouves")
 	_ArraySort($A_XMLSources)
-;~ 	_ArrayDisplay($A_XMLSources, '$A_XMLSources') ; Debug
-	FileDelete($PathTmp)
+;~ 	_ArrayDisplay($A_XMLSources, '$A_XMLSources trié') ; Debug
+	$A_XMLSourcesFIXE = $A_XMLSources
 	Return $A_XMLSources
 EndFunc   ;==>_SYSTEM_CREATEARRAY_SCREENSCRAPER
 
-Func _SYSTEM_SelectGUI($A_SYSTEM, $FullScrape = 0)
+Func _SYSTEM_SelectGUI($A_System, $FullScrape = 0)
 
 	Local $A_SYSTEMList, $_selected, $I_SystemName = -1
 
@@ -1588,15 +1634,15 @@ Func _SYSTEM_SelectGUI($A_SYSTEM, $FullScrape = 0)
 		Case $I_SystemName <= 0 And $FullScrape = 1
 			$_selected = ""
 		Case Else
-			If $A_SYSTEM = -1 Then Return SetError(1, 0, 0)
-			If IsArray($A_SYSTEM) = 0 Then Return SetError(1, 0, 0)
+			If $A_System = -1 Then Return SetError(1, 0, 0)
+			If IsArray($A_System) = 0 Then Return SetError(1, 0, 0)
 			Local $_system_gui_GUI = GUICreate(_MultiLang_GetText("win_sel_SYSTEM_Title"), 230, 100)
 			Local $_system_gui_Combo = GUICtrlCreateCombo("(" & _MultiLang_GetText("win_sel_SYSTEM_Title") & ")", 8, 48, 209, 25, BitOR($GUI_SS_DEFAULT_COMBO, $CBS_SIMPLE))
 			Local $_system_gui_Button = GUICtrlCreateButton(_MultiLang_GetText("win_sel_SYSTEM_button"), 144, 72, 75, 25)
 			Local $_system_gui_Label = GUICtrlCreateLabel(_MultiLang_GetText("win_sel_SYSTEM_text"), 8, 8, 212, 33)
 
-			For $i = 0 To UBound($A_SYSTEM) - 1
-				GUICtrlSetData($_system_gui_Combo, $A_SYSTEM[$i][0], "(" & _MultiLang_GetText("win_sel_SYSTEM_Title") & ")")
+			For $i = 0 To UBound($A_System) - 1
+				GUICtrlSetData($_system_gui_Combo, $A_System[$i][0], "(" & _MultiLang_GetText("win_sel_SYSTEM_Title") & ")")
 			Next
 
 			GUISetState(@SW_SHOW)
@@ -1612,16 +1658,18 @@ Func _SYSTEM_SelectGUI($A_SYSTEM, $FullScrape = 0)
 	EndSelect
 
 ;~ 	_ArrayDisplay($A_SYSTEM, '$A_SYSTEM') ; Debug
-	For $i = 0 To UBound($A_SYSTEM) - 1
-		If StringInStr($A_SYSTEM[$i][0], $_selected) Then
+	For $i = 0 To UBound($A_System) - 1
+;~ 		If StringInStr($A_SYSTEM[$i][0], $_selected) Then
+		If $A_System[$i][0] = $_selected Then
 			GUISetState(@SW_ENABLE, $F_UniversalScraper)
 			WinActivate($F_UniversalScraper)
-			_CREATION_LOGMESS(1, "Systeme selectionne : " & $A_SYSTEM[$i][0])
-			ConsoleWrite("Download : " & $A_SYSTEM[$i][1] & @CRLF) ;Debug
+			_CREATION_LOGMESS(1, "Systeme selectionne : " & $A_System[$i][0])
+			ConsoleWrite("Download : " & $A_System[$i][1] & @CRLF) ;Debug
 			$ImageSystem = $SOURCE_DIRECTORY & "\Ressources\systeme.png"
 			FileDelete($ImageSystem)
-			$hDownload = InetGet($A_SYSTEM[$i][1], $ImageSystem, 0, 1)
 
+			_CREATION_LOGMESS(2, "Telechargement de l'image du systeme")
+			$hDownload = InetGet($A_System[$i][1], $ImageSystem, 0, 1)
 			_TimeOut($hDownload)
 
 			If Not FileExists($ImageSystem) Then $ImageSystem = $SOURCE_DIRECTORY & "\Ressources\emptySYS.jpg"
@@ -1637,8 +1685,9 @@ Func _SYSTEM_SelectGUI($A_SYSTEM, $FullScrape = 0)
 			_GDIPlus_GraphicsDispose($hGraphic)
 			_GDIPlus_ImageDispose($hImage)
 			_GDIPlus_Shutdown()
+			FileDelete($ImageSystem)
 
-			Return $A_SYSTEM[$i][2]
+			Return $A_System[$i][2]
 		EndIf
 	Next
 	GUISetState(@SW_ENABLE, $F_UniversalScraper)
@@ -1650,7 +1699,7 @@ Func _XML_CREATEFORMAT($Profil)
 	_CREATION_LOGMESS(1, "Recuperation des champs du profil")
 	Local $A_XMLFormat[1][4]
 	Local $B_Elements = 1, $V_Elements2
-	Local $RechMultiLang = StringSplit(IniRead($PathConfigINI, "GENERAL", "$RechMultiLang  ", 'fr|eu|us|jp|xx'), "|")
+	Local $RechMultiLang = StringSplit(IniRead($PathConfigINI, "GENERAL", "$RechMultiLang  ", 'us|origine|eu|es|fr|de|pt|jp|xx'), "|")
 	Local $V_Elements = IniRead($PathConfigINI, $Profil, "$ELEMENT_" & $B_Elements, "Ending")
 	While $V_Elements <> "Ending"
 		If StringInStr($V_Elements, "%%") Then
@@ -1685,6 +1734,7 @@ EndFunc   ;==>_HEADER_CREATEFORMAT
 Func _XML_CREATEROM($Path_source, $xpath_root_source, $xpath_root_cible, $A_XMLFormat, $A_ROMList, $No_ROM, $No_system, $INI_OPTION_MAJ, $A_MIX_IMAGE_Format = 0)
 	Local $XML_Type, $TMP_LastRootChild, $Return = 1
 	Local $A_RechAPI = StringSplit(IniRead($PathConfigINI, "GENERAL", "$RechAPI ", '1|2|3'), "|")
+	Local $timedout = 0
 ;~ 	_ArrayDisplay($A_RechAPI, "$A_RechAPI") ; Debug
 
 ;~ 	Download du XML source
@@ -1694,36 +1744,40 @@ Func _XML_CREATEROM($Path_source, $xpath_root_source, $xpath_root_cible, $A_XMLF
 				If (StringInStr(FileReadLine($Path_source), "Erreur") Or Not FileExists($Path_source)) And $No_system <> "" Then
 					FileDelete($Path_source)
 					_CREATION_LOGMESS(1, "Recuperation des informations de la Rom no " & $No_ROM & " (CRC + SYSTEM)")
-					$hDownload = InetGet("http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=xml&crc=" & $A_ROMList[$No_ROM][2] & "&md5=" & $A_ROMList[$No_ROM][3] & "&sha1=" & $A_ROMList[$No_ROM][4] & "&systemeid=" & $No_system & "&romtype=rom&romnom=" & StringReplace($A_ROMList[$No_ROM][0], " ", "%20") & "&romtaille=" & $A_ROMList[$No_ROM][5], $Path_source, 1, 1)
 					ConsoleWrite(">(CRC + SYSTEM) = http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=xml&crc=" & $A_ROMList[$No_ROM][2] & "&md5=" & $A_ROMList[$No_ROM][3] & "&sha1=" & $A_ROMList[$No_ROM][4] & "&systemeid=" & $No_system & "&romtype=rom&romnom=" & StringReplace($A_ROMList[$No_ROM][0], " ", "%20") & "&romtaille=" & $A_ROMList[$No_ROM][5] & @CRLF) ;Debug
-					_TimeOut($hDownload)
+					$hDownload = InetGet("http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=xml&crc=" & $A_ROMList[$No_ROM][2] & "&md5=" & $A_ROMList[$No_ROM][3] & "&sha1=" & $A_ROMList[$No_ROM][4] & "&systemeid=" & $No_system & "&romtype=rom&romnom=" & StringReplace($A_ROMList[$No_ROM][0], " ", "%20") & "&romtaille=" & $A_ROMList[$No_ROM][5], $Path_source, 1, 1)
+					$timedout = _TimeOut($hDownload)
 				EndIf
 			Case 2
 				If StringInStr(FileReadLine($Path_source), "Erreur") Or Not FileExists($Path_source) Then
 					FileDelete($Path_source)
 					_CREATION_LOGMESS(1, "--Recuperation des informations de la Rom no " & $No_ROM & " (CRC)")
-					$hDownload = InetGet("http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=xml&crc=" & $A_ROMList[$No_ROM][2] & "&md5=" & $A_ROMList[$No_ROM][3] & "&sha1=" & $A_ROMList[$No_ROM][4] & "&systemeid=" & "&romtype=rom&romnom=" & StringReplace($A_ROMList[$No_ROM][0], " ", "%20") & "&romtaille=" & $A_ROMList[$No_ROM][5], $Path_source, 1, 1)
 					ConsoleWrite(">(CRC) = http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=xml&crc=" & $A_ROMList[$No_ROM][2] & "&md5=" & $A_ROMList[$No_ROM][3] & "&sha1=" & $A_ROMList[$No_ROM][4] & "&systemeid=" & "&romtype=rom&romnom=" & StringReplace($A_ROMList[$No_ROM][0], " ", "%20") & "&romtaille=" & $A_ROMList[$No_ROM][5] & @CRLF) ;Debug
-					_TimeOut($hDownload)
+					$hDownload = InetGet("http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=xml&crc=" & $A_ROMList[$No_ROM][2] & "&md5=" & $A_ROMList[$No_ROM][3] & "&sha1=" & $A_ROMList[$No_ROM][4] & "&systemeid=" & "&romtype=rom&romnom=" & StringReplace($A_ROMList[$No_ROM][0], " ", "%20") & "&romtaille=" & $A_ROMList[$No_ROM][5], $Path_source, 1, 1)
+					$timedout = _TimeOut($hDownload)
 				EndIf
-
 			Case 3
 				If (StringInStr(FileReadLine($Path_source), "Erreur") Or Not FileExists($Path_source)) And $No_system <> "" Then
 					FileDelete($Path_source)
 					_CREATION_LOGMESS(1, "Recuperation des informations de la Rom no " & $No_ROM & " (FileName + SYSTEM)")
 					$FileName = StringLeft(StringReplace($A_ROMList[$No_ROM][0], " ", "%20"), StringInStr(StringReplace($A_ROMList[$No_ROM][0], " ", "%20"), ".", Default, -1) - 1)
-					$hDownload = InetGet("http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=xml&crc=" & "&md5=" & "&sha1=" & "&systemeid=" & $No_system & "&romtype=rom&romnom=" & $FileName & "&romtaille=" & $A_ROMList[$No_ROM][5], $Path_source, 1, 1)
 					ConsoleWrite(">(FileName + SYSTEM) = http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=xml&crc=" & "&md5=" & "&sha1=" & "&systemeid=" & $No_system & "&romtype=rom&romnom=" & $FileName & "&romtaille=" & $A_ROMList[$No_ROM][5] & @CRLF) ;Debug
-					_TimeOut($hDownload)
+					$hDownload = InetGet("http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=xml&crc=" & "&md5=" & "&sha1=" & "&systemeid=" & $No_system & "&romtype=rom&romnom=" & $FileName & "&romtaille=" & $A_ROMList[$No_ROM][5], $Path_source, 1, 1)
+					$timedout = _TimeOut($hDownload)
 				EndIf
 		EndSwitch
 	Next
 
 	If Not FileExists($Path_source) Then
-		MsgBox($MB_ICONERROR, _MultiLang_GetText("err_title"), _MultiLang_GetText("err_TimeOut"))
-		_GUICtrlStatusBar_SetText($L_SCRAPE, "", 1)
-		$ScrapeCancelled = 1
-		Return -1
+		If $timedout = 0 Then
+			_GUICtrlStatusBar_SetText($L_SCRAPE, "", 1)
+			Return 0
+		Else
+			_GUICtrlStatusBar_SetText($L_SCRAPE, "TIME OUT", 1)
+			_CREATION_LOGMESS(1, "TIME OUT")
+			MsgBox($MB_ICONERROR, _MultiLang_GetText("err_title"), _MultiLang_GetText("err_TimeOut"), 10)
+			Return -1
+		EndIf
 	EndIf
 
 ;~	Creation du fichier XML Temporaire de la Rom
@@ -1756,12 +1810,13 @@ Func _XML_CREATEROM($Path_source, $xpath_root_source, $xpath_root_cible, $A_XMLF
 		$XML_Type = StringLeft($A_XMLFormat[$B_XMLElements][1], 5)
 		If $XML_Value <> -1 And $XML_Value <> -2 Then _XML_PUTROMINFO($Path_cible, $Path_source, $xpath_root_cible, $xpath_root_source, $XML_Type, $B_XMLElements, $A_XMLFormat, 1, $XML_Value, $No_ROM, $A_MIX_IMAGE_Format) ; Ecriture des differents elements
 	Next
+;~ 	MsgBox(0, 'PAUSE', 'PAUSE') ; Debug
 	FileDelete($Path_source)
 	ConsoleWrite("+Fin de la Rom no : " & $No_ROM & @CRLF) ; Debug
 	Return $Return
 EndFunc   ;==>_XML_CREATEROM
 
-Func _XML_CREATEHEADER($Path_source, $Path_cible, $xpath_root_source, $xpath_root_cible, $A_HEADERFormat, $A_ROMList, $No_system, $INI_OPTION_MAJ, $A_SYSTEM)
+Func _XML_CREATEHEADER($Path_source, $Path_cible, $xpath_root_source, $xpath_root_cible, $A_HEADERFormat, $A_ROMList, $No_system, $INI_OPTION_MAJ)
 	Local $XML_Type, $TMP_LastRootChild, $Return = 1
 ;~ 	_ArrayDisplay($A_HEADERFormat, "$A_HEADERFormat") ; Debug
 	$TimerHeader = TimerInit()
@@ -1782,8 +1837,8 @@ Func _XML_CREATEHEADER($Path_source, $Path_cible, $xpath_root_source, $xpath_roo
 		GUICtrlSetImage($B_SCRAPE, $SOURCE_DIRECTORY & "\Ressources\Fleche_IP2.bmp", -1, 0)
 		If $XML_Value <> -1 And $XML_Value <> -2 Then
 			If StringLeft($XML_Value, 8) = 'systeme:' Then
-				For $B_SYSTEM = 0 To UBound($A_SYSTEM) - 1
-					If $A_SYSTEM[$B_SYSTEM][2] = StringMid($XML_Value, 9) Then $XML_Value = $A_SYSTEM[$B_SYSTEM][0]
+				For $B_SYSTEM = 0 To UBound($A_System) - 1
+					If $A_System[$B_SYSTEM][2] = StringMid($XML_Value, 9) Then $XML_Value = $A_System[$B_SYSTEM][0]
 				Next
 			EndIf
 			_XML_PUTROMINFO($Path_cible, 0, $xpath_root_cible, 0, $XML_Type, $B_XMLHeader, $A_HEADERFormat, 1, $XML_Value)
@@ -1794,7 +1849,7 @@ Func _XML_CREATEHEADER($Path_source, $Path_cible, $xpath_root_source, $xpath_roo
 	Return $Return
 EndFunc   ;==>_XML_CREATEHEADER
 
-Func _XML_GETROMINFO($PathTmp, $xpath_root, $XML_Type, $B_XMLElements, $A_XMLFormat, $A_ROMList, $No_ROM, $INI_OPTION_MAJ, $No_system)
+Func _XML_GETROMINFO($PathTmp_GAME, $xpath_root, $XML_Type, $B_XMLElements, $A_XMLFormat, $A_ROMList, $No_ROM, $INI_OPTION_MAJ, $No_system, $No_Elements = 1)
 	GUICtrlSetImage($B_SCRAPE, $SOURCE_DIRECTORY & "\Ressources\Fleche_IP1.bmp", -1, 0)
 	_CREATION_LOGMESS(2, "Recuperation de " & $XML_Type)
 
@@ -1802,11 +1857,11 @@ Func _XML_GETROMINFO($PathTmp, $xpath_root, $XML_Type, $B_XMLElements, $A_XMLFor
 		Case 'child'
 			$XML_Value = $A_XMLFormat[$B_XMLElements][0]
 			_CREATION_LOGMESS(2, $XML_Value)
-			_XMLFileOpen($PathTmp)
+			_XMLFileOpen($PathTmp_GAME)
 			If @error And $EmptyRom = 0 Then Return -2
 			Return $XML_Value
 		Case 'value'
-			_XMLFileOpen($PathTmp)
+			_XMLFileOpen($PathTmp_GAME)
 			If @error Then Return -2
 			Local $sNode_Values = _XMLGetValue($xpath_root & "/*[1]/" & $A_XMLFormat[$B_XMLElements][2])
 			If IsArray($sNode_Values) Then
@@ -1822,7 +1877,7 @@ Func _XML_GETROMINFO($PathTmp, $xpath_root, $XML_Type, $B_XMLElements, $A_XMLFor
 				Return $XML_Value
 			EndIf
 		Case 'attr:'
-			_XMLFileOpen($PathTmp)
+			_XMLFileOpen($PathTmp_GAME)
 			If @error Then Return -2
 			$XML_Value = _XMLGetAttrib($xpath_root & '/' & StringMid($A_XMLFormat[$B_XMLElements][3], 6) & "[1]", $A_XMLFormat[$B_XMLElements][2])
 			_CREATION_LOGMESS(2, StringMid($A_XMLFormat[$B_XMLElements][3], 6) & " : " & $XML_Value)
@@ -1863,9 +1918,9 @@ Func _XML_GETROMINFO($PathTmp, $xpath_root, $XML_Type, $B_XMLElements, $A_XMLFor
 		Case 'path:'
 			Switch StringMid($A_XMLFormat[$B_XMLElements][3], 6, 5)
 				Case 'image'
-					_XMLFileOpen($PathTmp)
+					_XMLFileOpen($PathTmp_GAME)
 					If @error Then Return -2
-					$sNode_Values = _XMLGetValue($xpath_root & "/*[1]/" & $A_XMLFormat[$B_XMLElements][2])
+					$sNode_Values = _XMLGetValue($xpath_root & "/*[" & $No_Elements & "]/" & $A_XMLFormat[$B_XMLElements][2])
 					If IsArray($sNode_Values) Then
 						$XML_Value = $sNode_Values[1]
 						_CREATION_LOGMESS(2, "Chemin de l'image")
@@ -1877,14 +1932,14 @@ Func _XML_GETROMINFO($PathTmp, $xpath_root, $XML_Type, $B_XMLElements, $A_XMLFor
 	EndSwitch
 EndFunc   ;==>_XML_GETROMINFO
 
-Func _XML_PUTROMINFO($PathTmp, $Path_source, $xpath_root_cible, $xpath_root_source, $XML_Type, $B_XMLElements, $A_XMLFormat, $No_ROM, $XML_Value, $No_ROMXML = 1, $A_MIX_IMAGE_Format = 0)
+Func _XML_PUTROMINFO($PathTmp_GAME, $Path_source, $xpath_root_cible, $xpath_root_source, $XML_Type, $B_XMLElements, $A_XMLFormat, $No_ROM, $XML_Value, $No_ROMXML = 1, $A_MIX_IMAGE_Format = 0)
 	Local $TMP_LastChildName = ""
 	Local $maxheight = ""
 	Local $maxwidth = ""
 	GUICtrlSetImage($B_SCRAPE, $SOURCE_DIRECTORY & "\Ressources\Fleche_IP2.bmp", -1, 0)
 	_CREATION_LOGMESS(2, "Ecriture de " & $XML_Type)
 
-	_XMLFileOpen($PathTmp)
+	_XMLFileOpen($PathTmp_GAME)
 	If @error Then
 		ConsoleWrite("!_XMLFileOpen : " & _XMLError("") & @CRLF) ; Debug
 		Return -1
@@ -1928,8 +1983,8 @@ Func _XML_PUTROMINFO($PathTmp, $Path_source, $xpath_root_cible, $xpath_root_sour
 				Local $PathImageSub_Temp = $PathImageSub & StringTrimRight($A_ROMList[$No_ROMXML][0], 4) & "-" & $A_XMLFormat[$B_XMLElements][0] & "." & $ExtImage
 
 				If StringLeft($XML_Value, 11) = "%mix_image%" Then
-					_MIX_IMAGE_CREATEARRAY($Path_source, $xpath_root_source, $XML_Type, $No_ROM, $PathImage_Temp, $No_ROMXML, $A_MIX_IMAGE_Format)
-					_XMLFileOpen($PathTmp)
+					If FileExists($PathImage_Temp) = 0 Then _MIX_IMAGE_CREATEARRAY($Path_source, $xpath_root_source, $XML_Type, $No_ROM, $PathImage_Temp, $No_ROMXML, $A_MIX_IMAGE_Format)
+					_XMLFileOpen($PathTmp_GAME)
 					If @error Then
 						ConsoleWrite("!_XMLFileOpen : " & _XMLError("") & @CRLF) ; Debug
 						Return -1
@@ -1950,151 +2005,306 @@ Func _XML_PUTROMINFO($PathTmp, $Path_source, $xpath_root_cible, $xpath_root_sour
 				If FileExists($PathImage_Temp) Then
 					_XMLCreateChildNode($xpath_root_cible & '/' & $TMP_LastChild & "[" & $No_ROM & "]", $A_XMLFormat[$B_XMLElements][0], $PathImageSub_Temp)
 					ConsoleWrite(">_XMLCreateChildNode : " & $A_XMLFormat[$B_XMLElements][0] & " = " & $PathImageSub_Temp & @CRLF) ; Debug
-;~ 					_ArrayDisplay($A_ROMList, "$A_ROMList");Debug
-;~ 				Else
-;~ 					$A_ROMList[$No_ROMXML][9] = $A_ROMList[$No_ROMXML][0]
-;~ 					_ArrayAdd($Missing_Image, StringTrimRight($A_ROMList[$No_ROMXML][0], 4) & "-" & $A_XMLFormat[$B_XMLElements][0] & "." & $ExtImage)
-;~ 					_ArrayDisplay($Missing_Image, "$Missing_Image");Debug
 				EndIf
 			Else
 				ConsoleWrite("+IGNORE : " & $XML_Value & @CRLF) ; Debug
 				_CREATION_LOGMESS(2, "IGNORE : " & $A_XMLFormat[$B_XMLElements][0])
 			EndIf
-;~ 			If FileExists($PathImage_Temp) = 0 Then
-;~ 				_ArrayAdd($Missing_Image, StringTrimRight($A_ROMList[$No_ROMXML][0], 4) & "-" & $A_XMLFormat[$B_XMLElements][0] & "." & $ExtImage)
-;~ 				_ArrayDisplay($Missing_Image, "$Missing_Image");Debug
-;~ 			EndIf
 	EndSwitch
 EndFunc   ;==>_XML_PUTROMINFO
 
 Func _MIX_IMAGE_CREATEARRAY($Path_source, $xpath_root_source, $XML_Type, $No_ROM, $PathImageFinal_Temp, $No_ROMXML = 1, $A_MIX_IMAGE_Format = 0)
-	Local $A_PathImage[1][10]
-	Local $MIX_IMG_HauteurImage = 0, $MIX_IMG_LargeurImage = 0, $outputformat, $maxheight = '', $maxwidth = ''
+	Local $A_PathImage[1][3]
+	Local $PathImage_Temp, $outputformat, $maxwidth = '', $maxheight = ''
 	_CREATION_LOGMESS(1, "Recuperation des Images pour le Mix")
+	$A_PathImage[0][0] = IniRead($PathConfigINI, "LAST_USE", "$LargeurImage", 0) ; Width Image Finale
+	If $A_PathImage[0][0] < 1 Then $A_PathImage[0][0] = IniRead($PathMixTmp & "\config.ini", "MIX_IMG", "$MIX_IMG_CIBLE_X", 0)
+	$A_PathImage[0][1] = IniRead($PathConfigINI, "LAST_USE", "$HauteurImage", 0) ; Height Image Finale
+	If $A_PathImage[0][1] < 1 Then $A_PathImage[0][1] = IniRead($PathMixTmp & "\config.ini", "MIX_IMG", "$MIX_IMG_CIBLE_Y", 0)
+
 ;~ 	_ArrayDisplay($A_MIX_IMAGE_Format, '$A_MIX_IMAGE_Format') ; Debug
 	For $B_Images = 1 To UBound($A_MIX_IMAGE_Format) - 1
-		$XML_Type = StringLeft($A_MIX_IMAGE_Format[$B_Images][3], 5)
-		If $XML_Type <> "" And $A_MIX_IMAGE_Format[$B_Images][1] <> 'fixe' Then
-;~ 			MsgBox(0, "GETROMINFO", $Path_source & " - " & $xpath_root_source & " - " & $XML_Type & " - " & $B_Images & " - " & $A_MIX_IMAGE_Format & " - " & $A_ROMList & " - " & $No_ROM & " - " & $INI_OPTION_MAJ & " - " & $No_system)
-			$XML_Value = _XML_GETROMINFO($Path_source, $xpath_root_source, $XML_Type, $B_Images, $A_MIX_IMAGE_Format, $A_ROMList, $No_ROM, $INI_OPTION_MAJ, $No_system) ;Lecture des differents elements
-		Else
-			$XML_Value = -1
-		EndIf
-		Local $ExtImage = StringRight($XML_Value, 3)
-		Local $PathImage_Temp = $PathDIRTmp & StringTrimRight($A_ROMList[$No_ROMXML][0], 4) & "-" & $A_MIX_IMAGE_Format[$B_Images][0] & "." & $ExtImage
-		If $XML_Value <> "0" Then ConsoleWrite("!" & $A_MIX_IMAGE_Format[$B_Images][0] & "->" & $A_MIX_IMAGE_Format[$B_Images][2] & " = " & $XML_Value & @CRLF) ;Debug
+		$PathImage_Temp = $PathDIRTmp & StringTrimRight($A_ROMList[$No_ROMXML][0], 4) & "-" & $A_MIX_IMAGE_Format[$B_Images][0] & ".PNG"
 
-		If FileExists($PathImage_Temp) = 0 Then
-			$MIX_IMG_LargeurImage = $A_MIX_IMAGE_Format[$B_Images][4]
-			$MIX_IMG_HauteurImage = $A_MIX_IMAGE_Format[$B_Images][5]
-			$outputformat = "&outputformat=" & $ExtImage
-			If $MIX_IMG_LargeurImage > 0 Then $maxwidth = "&maxwidth=" & $MIX_IMG_LargeurImage
-			If $MIX_IMG_HauteurImage > 0 Then $maxheight = "&maxheight=" & $MIX_IMG_HauteurImage
-			If $A_MIX_IMAGE_Format[$B_Images][1] = 'fixe' Then
-				$PathImage_Temp = $PathMixTmp & "\" & $A_MIX_IMAGE_Format[$B_Images][2]
-				_CREATION_LOGMESS(2, "Recup Images : " & $PathImage_Temp)
-			Else
-				_CREATION_LOGMESS(2, "Download Images : " & $PathImage_Temp)
-				ConsoleWrite("+ MIX Download : " & $XML_Value & $maxheight & $maxwidth & " dans " & $PathImage_Temp & @CRLF) ; Debug
-				$hDownload = InetGet($XML_Value & $maxheight & $maxwidth & $outputformat, $PathImage_Temp, 0, 1)
-				_TimeOut($hDownload)
+		Switch StringLeft($A_MIX_IMAGE_Format[$B_Images][1], 4)
+			Case 'Tran'
+				$TransLvl = StringMid($A_MIX_IMAGE_Format[$B_Images][1], 7)
+				_CREATION_LOGMESS(2, "Ajout de transparence : " & $TransLvl)
+				ConsoleWrite("> Ajout de transparence [" & $TransLvl & "]" & @CRLF)
+				If UBound($A_PathImage) - 1 > 0 Then
+					$PathImage_Temp = $A_PathImage[UBound($A_PathImage) - 1][0]
+					ConsoleWrite("> --- Sur " & $PathImage_Temp & @CRLF)
+					If FileExists($PathImage_Temp) Then $PathImage_Temp = _MIX_IMAGE_ADDTRANS($PathImage_Temp, $TransLvl)
+				EndIf
+;~ 				_ArrayDisplay($A_PathImage, '$A_PathImage (Trans)') ; Debug
+			Case 'Fus'
+				_CREATION_LOGMESS(2, "Fusion")
+				ConsoleWrite("> Fusion" & @CRLF)
+				If UBound($A_PathImage) - 2 > 0 Then
+					ConsoleWrite("> --- De " & $A_PathImage[UBound($A_PathImage) - 1][0] & @CRLF)
+					ConsoleWrite("> --- Sur " & $A_PathImage[UBound($A_PathImage) - 2][0] & @CRLF)
+					$A_PathImage = _MIX_IMAGE_FUS($A_PathImage)
+				EndIf
+;~ 				_ArrayDisplay($A_PathImage, '$A_PathImage (Fus)') ; Debug
+			Case 'Cut'
+				_CREATION_LOGMESS(2, "Decoupage de l'image")
+				ConsoleWrite("> Decoupage de l'image" & @CRLF)
+				If UBound($A_PathImage) - 1 > 0 Then $PathImage_Temp = _MIX_IMAGE_CUT($A_PathImage, $A_MIX_IMAGE_Format, $B_Images)
+;~ 				_ArrayDisplay($A_PathImage, '$A_PathImage (Cut)') ; Debug
+			Case 'fixe'
+				_CREATION_LOGMESS(2, "Images Fixe : " & $PathImage_Temp)
+				ConsoleWrite("> Images Fixe : " & $PathImage_Temp & @CRLF)
+				FileCopy($PathMixTmp & "\" & $A_MIX_IMAGE_Format[$B_Images][2], $PathImage_Temp, 9)
+				If FileExists($PathImage_Temp) Then
+					If $A_MIX_IMAGE_Format[$B_Images][8] = 'ROTATION' Then $A_MIX_IMAGE_Format = _ROTATION($PathImage_Temp, $A_MIX_IMAGE_Format, $B_Images)
+					$PathImage_Temp = _IMAGING($PathImage_Temp, $A_PathImage, $A_MIX_IMAGE_Format, $B_Images, $A_MIX_IMAGE_Format[$B_Images][1])
+					_ArrayAdd($A_PathImage, $PathImage_Temp & "|FIXE")
+				EndIf
+;~ 				_ArrayDisplay($A_PathImage, '$A_PathImage (fixe)') ; Debug
+			Case 'Game'
+				_CREATION_LOGMESS(2, "Download Game de : " & $PathImage_Temp)
+				ConsoleWrite("> Download Game de : " & $PathImage_Temp & @CRLF) ; Debug
+				If FileExists($PathImage_Temp) = 0 Then
+					$XML_Type = StringLeft($A_MIX_IMAGE_Format[$B_Images][3], 5)
+					If $XML_Type = "path:" Then
+						$XML_Value = _XML_GETROMINFO($PathTmp_GAME, $xpath_root_source, $XML_Type, $B_Images, $A_MIX_IMAGE_Format, $A_ROMList, $No_ROM, $INI_OPTION_MAJ, $No_system) ;Lecture des differents elements
+					Else
+						$XML_Value = -1
+					EndIf
+					$DL_Image_Width = _RELATIVPOS($A_MIX_IMAGE_Format[$B_Images][4], $A_PathImage[0][0])
+					$DL_Image_Height = _RELATIVPOS($A_MIX_IMAGE_Format[$B_Images][5], $A_PathImage[0][1])
+					$outputformat = "&outputformat=png"
+					If $DL_Image_Width > 0 Then $maxwidth = "&maxwidth=" & Round($DL_Image_Width, 0)
+					If $DL_Image_Height > 0 Then $maxheight = "&maxheight=" & Round($DL_Image_Height, 0)
+					$hDownload = InetGet($XML_Value & $maxheight & $maxwidth & $outputformat, $PathImage_Temp, 0, 1)
+					_TimeOut($hDownload)
+					If FileExists($PathImage_Temp) Then
+						If $A_MIX_IMAGE_Format[$B_Images][8] = 'ROTATION' Then $A_MIX_IMAGE_Format = _ROTATION($PathImage_Temp, $A_MIX_IMAGE_Format, $B_Images)
+						$PathImage_Temp = _IMAGING($PathImage_Temp, $A_PathImage, $A_MIX_IMAGE_Format, $B_Images, $A_MIX_IMAGE_Format[$B_Images][1])
+						_ArrayAdd($A_PathImage, $PathImage_Temp & "|Game")
+					EndIf
+				Else
+					ConsoleWrite("! ANNULE" & @CRLF) ; Debug
+				EndIf
+;~ 				_ArrayDisplay($A_PathImage, '$A_PathImage (Game)') ; Debug
+			Case 'Syst'
+				$Index = _ArraySearch($A_XMLSourcesFIXE, $No_system, 0, 0, 0, 0, 1, 2)
+				$Id_system = $A_XMLSourcesFIXE[$Index][3]
+;~ 				_ArrayDisplay($A_XMLSourcesFIXE, "$A_XMLSources : " & $No_system & " -> " & $Index & " = " & $Id_system)
+				_CREATION_LOGMESS(2, "Download Systeme de : " & $PathImage_Temp)
+				ConsoleWrite("> Download Systeme de : " & $PathImage_Temp & " (" & $Id_system & ")" & @CRLF) ; Debug
+				If FileExists($PathImage_Temp) = 0 Then
 
-			EndIf
-
-			If FileExists($PathImage_Temp) Then _ArrayAdd($A_PathImage, $PathImage_Temp & "|" & $A_MIX_IMAGE_Format[$B_Images][6] & "|" & $A_MIX_IMAGE_Format[$B_Images][7] & "||" & $A_MIX_IMAGE_Format[$B_Images][4] & "|" & $A_MIX_IMAGE_Format[$B_Images][5] & "|" & $A_MIX_IMAGE_Format[$B_Images][8] & "|" & $A_MIX_IMAGE_Format[$B_Images][9] & "|" & $A_MIX_IMAGE_Format[$B_Images][10] & "|" & $A_MIX_IMAGE_Format[$B_Images][11])
-			_CREATION_LOGMESS(2, $A_MIX_IMAGE_Format[$B_Images][0] & " : " & $PathImage_Temp)
-		EndIf
+					$XML_Type = StringLeft($A_MIX_IMAGE_Format[$B_Images][3], 5)
+					If $XML_Type = "path:" Then
+						$XML_Value = _XML_GETROMINFO($PathTmp_SYS, $xpath_root_source, $XML_Type, $B_Images, $A_MIX_IMAGE_Format, $A_ROMList, $Id_system, $INI_OPTION_MAJ, $Id_system, $Id_system) ;Lecture des differents elements
+					Else
+						$XML_Value = -1
+					EndIf
+					$DL_Image_Width = _RELATIVPOS($A_MIX_IMAGE_Format[$B_Images][4], $A_PathImage[0][0])
+					$DL_Image_Height = _RELATIVPOS($A_MIX_IMAGE_Format[$B_Images][5], $A_PathImage[0][1])
+					$outputformat = "&outputformat=png"
+					If $DL_Image_Width > 0 Then $maxwidth = "&maxwidth=" & Round($DL_Image_Width, 0)
+					If $DL_Image_Height > 0 Then $maxheight = "&maxheight=" & Round($DL_Image_Height, 0)
+					ConsoleWrite("! Link :" & $XML_Value & $maxheight & $maxwidth & $outputformat & @CRLF) ; Debug
+					$hDownload = InetGet($XML_Value & $maxheight & $maxwidth & $outputformat, $PathImage_Temp, 0, 1)
+					_TimeOut($hDownload)
+					If FileExists($PathImage_Temp) Then
+						If $A_MIX_IMAGE_Format[$B_Images][8] = 'ROTATION' Then $A_MIX_IMAGE_Format = _ROTATION($PathImage_Temp, $A_MIX_IMAGE_Format, $B_Images)
+						$PathImage_Temp = _IMAGING($PathImage_Temp, $A_PathImage, $A_MIX_IMAGE_Format, $B_Images, $A_MIX_IMAGE_Format[$B_Images][1])
+						_ArrayAdd($A_PathImage, $PathImage_Temp & "|Sys")
+					EndIf
+				Else
+					ConsoleWrite("! ANNULE" & @CRLF) ; Debug
+				EndIf
+;~ 				_ArrayDisplay($A_PathImage, '$A_PathImage (Game)') ; Debug
+		EndSwitch
 	Next
 ;~ 	_ArrayDisplay($A_PathImage, '$A_PathImage') ; Debug
 	_MIX_IMAGE_CREATECIBLE($A_PathImage, $PathImageFinal_Temp)
 EndFunc   ;==>_MIX_IMAGE_CREATEARRAY
 
-Func _MIX_IMAGE_CREATECIBLE($A_PathImage, $PathImage_Temp)
-	If UBound($A_PathImage) - 1 < 1 Then Return
-	_CREATION_LOGMESS(1, "Mixage des images")
+Func _MIX_IMAGE_FUS($A_PathImage)
+
+	Local $hGui, $hGraphicGUI, $hBMPBuff, $hGraphic
 	Local $MergedImageBackgroundColor = 0x00000000
+	Local $Image1 = $A_PathImage[UBound($A_PathImage) - 2][0]
+	Local $Image2 = $A_PathImage[UBound($A_PathImage) - 1][0]
+	Local $PathImage_FUS_Temp = StringTrimRight($Image1, 4) & "-FUS_Temp.PNG"
+	Local $PathImage_Temp = $Image1
+
+	FileDelete($PathImage_FUS_Temp)
+	FileCopy($PathImage_Temp, $PathImage_FUS_Temp, 9)
+	FileDelete($PathImage_Temp)
+
+	$Image1 = $PathImage_FUS_Temp
+
 	_GDIPlus_Startup()
-	For $B_Images = 1 To UBound($A_PathImage) - 1
-		$A_PathImage[$B_Images][3] = _GDIPlus_ImageLoadFromFile($A_PathImage[$B_Images][0])
-		$A_PathImage[$B_Images][4] = _GDIPlus_ImageGetWidth($A_PathImage[$B_Images][3])
-		If $A_PathImage[$B_Images][4] = 4294967295 Then $A_PathImage[$B_Images][4] = 0 ;4294967295 en cas d'erreur, soit 32 bits Ã  1 (11111...1111111).
-		$A_PathImage[$B_Images][5] = _GDIPlus_ImageGetHeight($A_PathImage[$B_Images][3])
-	Next
-
-;~ 	_ArrayDisplay($A_PathImage, '$A_PathImage') ; Debug
-
-	$IMG_CIBLE_X = IniRead($PathMixTmp & "\config.ini", "MIX_IMG", "$MIX_IMG_CIBLE_X", 0)
-	If $IMG_CIBLE_X < 1 Then $IMG_CIBLE_X = $A_PathImage[1][4]
-	$IMG_CIBLE_Y = IniRead($PathMixTmp & "\config.ini", "MIX_IMG", "$MIX_IMG_CIBLE_Y", 0)
-	If $IMG_CIBLE_Y < 1 Then $IMG_CIBLE_Y = $A_PathImage[1][5]
-
-	ConsoleWrite(">Taille de l'image cible " & $IMG_CIBLE_X & "x" & $IMG_CIBLE_Y & @CRLF) ; Debug
-
-	; Initialise the Drawing windows/composite image...
-	$hGui = GUICreate("GDIPlus Example", $IMG_CIBLE_X, $IMG_CIBLE_Y)
-
-	; Create Double Buffer, so the doesn't need to be repainted on PAINT-Event
+	$hImage1 = _GDIPlus_ImageLoadFromFile($Image1)
+	$hImage2 = _GDIPlus_ImageLoadFromFile($Image2)
+	$hGui = GUICreate("", $A_PathImage[0][0], $A_PathImage[0][1])
 	$hGraphicGUI = _GDIPlus_GraphicsCreateFromHWND($hGui) ;Draw to this graphics, $hGraphicGUI, to display on GUI
-	$hBMPBuff = _GDIPlus_BitmapCreateFromGraphics($IMG_CIBLE_X, $IMG_CIBLE_Y, $hGraphicGUI) ; $hBMPBuff is a bitmap in memory
+	$hBMPBuff = _GDIPlus_BitmapCreateFromGraphics($A_PathImage[0][0], $A_PathImage[0][1], $hGraphicGUI) ; $hBMPBuff is a bitmap in memory
 	$hGraphic = _GDIPlus_ImageGetGraphicsContext($hBMPBuff) ; Draw to this graphics, $hGraphic, being the graphics of $hBMPBuff
-	;Fill the Graphic Background (0x00000000 for transparent background in .png files)
+	_GDIPlus_GraphicsClear($hGraphic, $MergedImageBackgroundColor) ;Fill the Graphic Background (0x00000000 for transparent background in .png files)
+	_GDIPlus_GraphicsDrawImage($hGraphic, $hImage1, 0, 0)
+	_GDIPlus_GraphicsDrawImage($hGraphic, $hImage2, 0, 0)
+
+	_GDIPlus_ImageSaveToFile($hBMPBuff, $PathImage_Temp)
+
+	_GDIPlus_GraphicsDispose($hGraphic)
+	_GDIPlus_BitmapDispose($hBMPBuff)
+	_GDIPlus_GraphicsDispose($hGraphicGUI)
+	GUIDelete($hGui)
+	_GDIPlus_ImageDispose($hImage2)
+	_GDIPlus_ImageDispose($hImage1)
+	_GDIPlus_Shutdown()
+	FileDelete($PathImage_FUS_Temp)
+	_ArrayDelete($A_PathImage, UBound($A_PathImage) - 1)
+
+	Return $A_PathImage
+EndFunc   ;==>_MIX_IMAGE_FUS
+
+Func _MIX_IMAGE_CUT($A_PathImage, $A_MIX_IMAGE_Format, $B_Images)
+	Local $hImage, $hLeftImage, $hRightImage, $hUpImage, $hDownImage, $hGui, $hGraphicGUI, $hBMPBuff, $hGraphic
+	Local $MergedImageBackgroundColor = 0x00000000
+	Local $PathImage_Temp = $A_PathImage[UBound($A_PathImage) - 1][0]
+	Local $PathImage_CUT_Temp = StringTrimRight($PathImage_Temp, 4) & "-CUT_Temp.PNG"
+
+	ConsoleWrite("> --- Image : " & $PathImage_Temp & @CRLF)
+
+	FileDelete($PathImage_CUT_Temp)
+	FileCopy($PathImage_Temp, $PathImage_CUT_Temp, 9)
+	FileDelete($PathImage_Temp)
+
+	Local $Image_Width = _RELATIVPOS($A_MIX_IMAGE_Format[$B_Images][4], $A_PathImage[0][0])
+	Local $Image_Height = _RELATIVPOS($A_MIX_IMAGE_Format[$B_Images][5], $A_PathImage[0][1])
+	Local $Image_C1X = _RELATIVPOS($A_MIX_IMAGE_Format[$B_Images][6], $A_PathImage[0][0])
+	Local $Image_C1Y = _RELATIVPOS($A_MIX_IMAGE_Format[$B_Images][7], $A_PathImage[0][1])
+
+	Switch $Image_C1X
+		Case 'CENTER'
+			$Image_C1X = ($A_PathImage[0][0] / 2) - ($Image_Width / 2)
+		Case 'LEFT'
+			$Image_C1X = 0
+		Case 'RIGHT'
+			$Image_C1X = $A_PathImage[0][0] - $Image_Width
+	EndSwitch
+	Switch $Image_C1Y
+		Case 'CENTER'
+			$Image_C1Y = ($A_PathImage[0][1] / 2) - ($Image_Height / 2)
+		Case 'UP'
+			$Image_C1Y = 0
+		Case 'DOWN'
+			$Image_C1Y = $A_PathImage[0][1] - $Image_Height
+	EndSwitch
+
+	ConsoleWrite("> --- Pos = " & $Image_C1X & "x" & $Image_C1Y & @CRLF & "> --- Dim = " & $Image_Width & "x" & $Image_Height & @CRLF) ; Debug
+
+	_GDIPlus_Startup()
+	$hImage = _GDIPlus_ImageLoadFromFile($PathImage_CUT_Temp)
+	$hLeftImage = _GDIPlus_BitmapCloneArea($hImage, 0, 0, $Image_C1X + 1, $A_PathImage[0][1], $GDIP_PXF32ARGB)
+	$hRightImage = _GDIPlus_BitmapCloneArea($hImage, $Image_C1X + $Image_Width, 0, $A_PathImage[0][0] - ($Image_C1X + $Image_Width), $A_PathImage[0][1], $GDIP_PXF32ARGB)
+	$hUpImage = _GDIPlus_BitmapCloneArea($hImage, $Image_C1X, 0, $Image_Width + 1, $Image_C1Y, $GDIP_PXF32ARGB)
+	$hDownImage = _GDIPlus_BitmapCloneArea($hImage, $Image_C1X, $Image_C1Y + $Image_Height, $Image_Width + 1, $A_PathImage[0][1] - ($Image_C1Y + $Image_Height), $GDIP_PXF32ARGB)
+
+	$hGui = GUICreate("", $A_PathImage[0][0], $A_PathImage[0][1])
+	$hGraphicGUI = _GDIPlus_GraphicsCreateFromHWND($hGui) ;Draw to this graphics, $hGraphicGUI, to display on GUI
+	$hBMPBuff = _GDIPlus_BitmapCreateFromGraphics($A_PathImage[0][0], $A_PathImage[0][1], $hGraphicGUI) ; $hBMPBuff is a bitmap in memory
+	$hGraphic = _GDIPlus_ImageGetGraphicsContext($hBMPBuff) ; Draw to this graphics, $hGraphic, being the graphics of $hBMPBuff
 	_GDIPlus_GraphicsClear($hGraphic, $MergedImageBackgroundColor)
 
-	For $B_Images = 1 To UBound($A_PathImage) - 1
-		Switch $A_PathImage[$B_Images][1]
-			Case 'CENTER'
-				$A_PathImage[$B_Images][1] = ($IMG_CIBLE_X / 2) - ($A_PathImage[$B_Images][4] / 2)
-			Case 'LEFT'
-				$A_PathImage[$B_Images][1] = 0
-			Case 'RIGHT'
-				$A_PathImage[$B_Images][1] = $IMG_CIBLE_X - $A_PathImage[$B_Images][4]
-		EndSwitch
-		Switch $A_PathImage[$B_Images][2]
-			Case 'CENTER'
-				$A_PathImage[$B_Images][2] = ($IMG_CIBLE_Y / 2) - ($A_PathImage[$B_Images][5] / 2)
-			Case 'UP'
-				$A_PathImage[$B_Images][2] = 0
-			Case 'DOWN'
-				$A_PathImage[$B_Images][2] = $IMG_CIBLE_Y - $A_PathImage[$B_Images][5]
-		EndSwitch
-;~ 		_ArrayDisplay($A_PathImage, "$A_PathImage")
-		$X1 = $A_PathImage[$B_Images][1]
-		$Y1 = $A_PathImage[$B_Images][2]
-		If $A_PathImage[$B_Images][6] <> "" Then
-			$X2 = $A_PathImage[$B_Images][6]
-		Else
-			$X2 = $A_PathImage[$B_Images][1] + $A_PathImage[$B_Images][4]
-		EndIf
-		If $A_PathImage[$B_Images][7] <> "" Then
-			$Y2 = $A_PathImage[$B_Images][7]
-		Else
-			$Y2 = $A_PathImage[$B_Images][2]
-		EndIf
-		If $A_PathImage[$B_Images][8] <> "" Then
-			$X3 = $A_PathImage[$B_Images][8]
-		Else
-			$X3 = $A_PathImage[$B_Images][1]
-		EndIf
-		If $A_PathImage[$B_Images][9] <> "" Then
-			$Y3 = $A_PathImage[$B_Images][9]
-		Else
-			$Y3 = $A_PathImage[$B_Images][2] + $A_PathImage[$B_Images][5]
-		EndIf
+	_GDIPlus_GraphicsDrawImage($hGraphic, $hLeftImage, 0, 0)
+	_GDIPlus_GraphicsDrawImage($hGraphic, $hRightImage, $Image_C1X + $Image_Width, 0)
+	_GDIPlus_GraphicsDrawImage($hGraphic, $hUpImage, $Image_C1X, 0)
+	_GDIPlus_GraphicsDrawImage($hGraphic, $hDownImage, $Image_C1X, $Image_C1Y + $Image_Height)
 
-		_GDIPlus_DrawImagePoints($hGraphic, $A_PathImage[$B_Images][3], $X1, $Y1, $X2, $Y2, $X3, $Y3)
-		ConsoleWrite(">Integration " & $A_PathImage[$B_Images][0] & " en " & $A_PathImage[$B_Images][1] & "/" & $A_PathImage[$B_Images][2] & " pour une reso de : " & $A_PathImage[$B_Images][4] & "x" & $A_PathImage[$B_Images][5] & @CRLF) ; Debug
-		_GDIPlus_ImageDispose($A_PathImage[$B_Images][3])
-	Next
 	_GDIPlus_ImageSaveToFile($hBMPBuff, $PathImage_Temp)
-	_WinAPI_DeleteObject($hBMPBuff)
+
+	; Release resources
+	_GDIPlus_GraphicsDispose($hGraphic)
+	_GDIPlus_BitmapDispose($hBMPBuff)
+	_GDIPlus_GraphicsDispose($hGraphicGUI)
+	GUIDelete($hGui)
+	_GDIPlus_ImageDispose($hLeftImage)
+	_GDIPlus_ImageDispose($hRightImage)
+	_GDIPlus_ImageDispose($hUpImage)
+	_GDIPlus_ImageDispose($hDownImage)
+	_GDIPlus_ImageDispose($hImage)
 	_GDIPlus_Shutdown()
-;~ 	_ArrayDisplay($A_PathImage, '$A_PathImage') ; Debug
+	FileDelete($PathImage_CUT_Temp)
+
+	Return $PathImage_Temp
+EndFunc   ;==>_MIX_IMAGE_CUT
+
+Func _MIX_IMAGE_ADDTRANS($PathImage_Temp, $TransLvl)
+	Local $hImage, $ImageWidth, $ImageHeight, $hGui, $hGraphicGUI, $hBMPBuff, $hGraphic
+	Local $MergedImageBackgroundColor = 0x00000000
+	Local $PathImage_TRANS_Temp = StringTrimRight($PathImage_Temp, 4) & "-TRANS_Temp.PNG"
+
+	FileDelete($PathImage_TRANS_Temp)
+	FileCopy($PathImage_Temp, $PathImage_TRANS_Temp, 9)
+	FileDelete($PathImage_Temp)
+
+	_GDIPlus_Startup()
+	$hImage = _GDIPlus_ImageLoadFromFile($PathImage_TRANS_Temp)
+	$ImageWidth = _GDIPlus_ImageGetWidth($hImage)
+	If $ImageWidth = 4294967295 Then $Image1Width = 0 ;4294967295 en cas d'erreur.
+	$ImageHeight = _GDIPlus_ImageGetHeight($hImage)
+
+	$hGui = GUICreate("", $ImageWidth, $ImageHeight)
+	$hGraphicGUI = _GDIPlus_GraphicsCreateFromHWND($hGui) ;Draw to this graphics, $hGraphicGUI, to display on GUI
+	$hBMPBuff = _GDIPlus_BitmapCreateFromGraphics($ImageWidth, $ImageHeight, $hGraphicGUI) ; $hBMPBuff is a bitmap in memory
+	$hGraphic = _GDIPlus_ImageGetGraphicsContext($hBMPBuff) ; Draw to this graphics, $hGraphic, being the graphics of $hBMPBuff
+	_GDIPlus_GraphicsClear($hGraphic, $MergedImageBackgroundColor)
+	_GDIPlus_GraphicsDrawImageRectRectTrans($hGraphic, $hImage, 0, 0, "", "", "", "", "", "", 2, $TransLvl)
+	_GDIPlus_ImageSaveToFile($hBMPBuff, $PathImage_Temp)
+
+	_GDIPlus_GraphicsDispose($hGraphic)
+	_GDIPlus_BitmapDispose($hBMPBuff)
+	_GDIPlus_GraphicsDispose($hGraphicGUI)
+	GUIDelete($hGui)
+	_GDIPlus_ImageDispose($hImage)
+	_GDIPlus_Shutdown()
+	FileDelete($PathImage_TRANS_Temp)
+	Return $PathImage_Temp
+EndFunc   ;==>_MIX_IMAGE_ADDTRANS
+
+Func _MIX_IMAGE_CREATECIBLE($A_PathImage, $PathImage_Temp)
+	If UBound($A_PathImage) - 1 < 1 Then Return
+	Local $hGui, $hGraphicGUI, $hBMPBuff, $hGraphic
+	Local $MergedImageBackgroundColor = 0x00000000
+
+	_CREATION_LOGMESS(2, "Creation du MIX : " & $PathImage_Temp)
+	ConsoleWrite("> Creation du MIX : " & $PathImage_Temp & @CRLF)
+
+	_GDIPlus_Startup()
+	$hGui = GUICreate("", $A_PathImage[0][0], $A_PathImage[0][1])
+	$hGraphicGUI = _GDIPlus_GraphicsCreateFromHWND($hGui) ;Draw to this graphics, $hGraphicGUI, to display on GUI
+	$hBMPBuff = _GDIPlus_BitmapCreateFromGraphics($A_PathImage[0][0], $A_PathImage[0][1], $hGraphicGUI) ; $hBMPBuff is a bitmap in memory
+	$hGraphic = _GDIPlus_ImageGetGraphicsContext($hBMPBuff) ; Draw to this graphics, $hGraphic, being the graphics of $hBMPBuff
+	_GDIPlus_GraphicsClear($hGraphic, $MergedImageBackgroundColor) ;Fill the Graphic Background (0x00000000 for transparent background in .png files)
+
+	For $B_Images = 1 To UBound($A_PathImage) - 1
+		$A_PathImage[$B_Images][2] = _GDIPlus_ImageLoadFromFile($A_PathImage[$B_Images][0])
+		_GDIPlus_GraphicsDrawImage($hGraphic, $A_PathImage[$B_Images][2], 0, 0)
+		_GDIPlus_ImageDispose($A_PathImage[$B_Images][2])
+		FileDelete($A_PathImage[$B_Images][0])
+	Next
+
+	_GDIPlus_ImageSaveToFile($hBMPBuff, $PathImage_Temp)
+
+	_GDIPlus_GraphicsDispose($hGraphic)
+	_GDIPlus_BitmapDispose($hBMPBuff)
+	_GDIPlus_GraphicsDispose($hGraphicGUI)
+	GUIDelete($hGui)
+	_GDIPlus_Shutdown()
 EndFunc   ;==>_MIX_IMAGE_CREATECIBLE
 
 Func _MIX_IMAGE_CREATEFORMAT()
 	Local $A_MIX_IMAGE_Format[1][12]
 	Local $B_Sources, $M_Elements, $M_Elements2
-	Local $RechMultiLang = StringSplit(IniRead($PathConfigINI, "GENERAL", "$RechMultiLang  ", 'fr|eu|us|jp|xx'), "|")
+	Local $RechMultiLang = StringSplit(IniRead($PathConfigINI, "GENERAL", "$RechMultiLang  ", 'us|origine|eu|es|fr|de|pt|jp|xx'), "|")
 	$Nb_MIX_Image = IniRead($PathMixTmp & "\config.ini", "MIX_IMG", "$MIX_IMG_NBIMG", 0)
 	_CREATION_LOGMESS(1, "Creation des parametres pour le Mix")
 	For $B_Images = 1 To $Nb_MIX_Image
@@ -2196,91 +2406,232 @@ Func _TimeOut($hDownload)
 	Return $timedout
 EndFunc   ;==>_TimeOut
 
-Func _GDIPlus_BitmapCreateReflectionBitmap($hBitmap, $iReflectionHeight, $iAlpha)
+Func _RELATIVPOS($Image_Value, $Image_Value_Max)
+	If StringLeft($Image_Value, 1) = '%' Then Return $Image_Value_Max * StringTrimLeft($Image_Value, 1)
+	Return $Image_Value
+EndFunc   ;==>_RELATIVPOS
 
-    Local $hGraphics, $hBrush, $hReflection[2], $hAlpha, $hResult, $Size
+Func _RESIZEMAX($PathImage_Temp, $MAX_Width, $MAX_Height)
+	Local $Extension = StringRight($PathImage_Temp, 3)
+	Local $PathImage_RESIZEMAX_Temp = StringTrimRight($PathImage_Temp, 4) & "-RESIZE_Temp." & $Extension
+	Local $hImage, $Image_Width, $Image_Height, $Image_Width_New, $Image_Height_New
 
-    $Size = DllCall($__g_hGDIPDll, 'uint', 'GdipGetImageDimension', 'handle', $hBitmap, 'float*', 0, 'float*', 0)
-    If (@Error) Or ($Size[0]) Then
-        Return 0
-    EndIf
-    If $iReflectionHeight > $Size[3] Then
-        $iReflectionHeight = $Size[3]
-    EndIf
-    If $iReflectionHeight < 0 Then
-        $iReflectionHeight = 0
-    EndIf
-    $hReflection[0] = _GDIPlus_BitmapCloneArea($hBitmap, 0, $Size[3] - $iReflectionHeight, $Size[2], $iReflectionHeight, $GDIP_PXF32ARGB)
-    _GDIPlus_ImageRotateFlip($hReflection[0], 6)
-    $hAlpha = _GDIPlus_BitmapCreateFromScan0($Size[2], $iReflectionHeight, $GDIP_PXF32ARGB)
-    $hGraphics = _GDIPlus_ImageGetGraphicsContext($hAlpha)
-    _GDIPlus_GraphicsClear($hGraphics, 0)
-    $hBrush = _GDIPlus_LineBrushCreate(0, 0, 0, $iReflectionHeight, BitShift($iAlpha, -24), 0)
-    _GDIPlus_GraphicsFillRect($hGraphics, 0, 0, $Size[2], $iReflectionHeight, $hBrush)
-    _GDIPlus_GraphicsDispose($hGraphics)
-    $hReflection[1] = _GDIPlus_BitmapCreateBitmapWithAlpha($hReflection[0], $hAlpha)
-    $hResult = _GDIPlus_BitmapCreateFromScan0($Size[2], $Size[3] + $iReflectionHeight)
-    $hGraphics = _GDIPlus_ImageGetGraphicsContext($hResult)
-    _GDIPlus_GraphicsClear($hGraphics, 0)
-    _GDIPlus_GraphicsDrawImageRect($hGraphics, $hBitmap, 0, 0, $Size[2], $Size[3])
-    _GDIPlus_GraphicsDrawImageRect($hGraphics, $hReflection[1], 0, $Size[3], $Size[2], $iReflectionHeight)
-    _GDIPlus_GraphicsDispose($hGraphics)
-    _GDIPlus_BitmapDispose($hAlpha)
-    For $i = 0 To 1
-        _GDIPlus_BitmapDispose($hReflection[$i])
-    Next
-    _GDIPlus_BrushDispose($hBrush)
-    Return $hResult
-EndFunc   ;==>_GDIPlus_BitmapCreateReflectionBitmap
+	;Travail sur image temporaire
+	FileDelete($PathImage_RESIZEMAX_Temp)
+	FileCopy($PathImage_Temp, $PathImage_RESIZEMAX_Temp, 9)
+	FileDelete($PathImage_Temp)
 
-Func _GDIPlus_BitmapCreateBitmapWithAlpha($hBitmap, $hAlpha, $iChannel = 0)
+	_GDIPlus_Startup()
+	$hImage = _GDIPlus_ImageLoadFromFile($PathImage_RESIZEMAX_Temp)
+	$Image_Width = _GDIPlus_ImageGetWidth($hImage)
+	If $Image_Width = 4294967295 Then $Image_Width = 0 ;4294967295 en cas d'erreur.
+	$Image_Height = _GDIPlus_ImageGetHeight($hImage)
 
-    Local $hGraphics, $hBmp[2], $bProc, $tProc, $pProc, $Size1, $Size2, $Lenght, $Result
-    Local $tData[2] = [$GDIP_ILMWRITE, $GDIP_ILMREAD]
+	If $MAX_Width = '' Then $MAX_Width = $Image_Width
+	If $MAX_Height = '' Then $MAX_Height = $Image_Height
 
-    $Size1 = DllCall($__g_hGDIPDll, 'uint', 'GdipGetImageDimension', 'handle', $hBitmap, 'float*', 0, 'float*', 0)
-    If (@Error) Or ($Size1[0]) Then
-        Return 0
-    EndIf
-    $Size2 = DllCall($__g_hGDIPDll, 'uint', 'GdipGetImageDimension', 'handle', $hAlpha, 'float*', 0, 'float*', 0)
-    If (@Error) Or ($Size2[0]) Then
-        Return 0
-    EndIf
-    $hBmp[0] = _GDIPlus_BitmapCloneArea($hBitmap, 0, 0, $Size1[2], $Size1[3], $GDIP_PXF32ARGB)
-    If ($Size1[2] = $Size2[2]) And ($Size1[3] = $Size2[3]) Then
-        $hBmp[1] = $hAlpha
-    Else
-        $hBmp[1] = _GDIPlus_BitmapCreateFromScan0($Size1[2], $Size1[3], $GDIP_PXF32ARGB)
-        $hGraphics = _GDIPlus_ImageGetGraphicsContext($hBmp[1])
-        _GDIPlus_GraphicsClear($hGraphics, 0)
-        _GDIPlus_GraphicsDrawImageRect($hGraphics, $hAlpha, 0, 0, $Size1[2], $Size1[3])
-        _GDIPlus_GraphicsDispose($hGraphics)
-    EndIf
-    If ($iChannel < 0) Or ($iChannel > 3) Then
-        $iChannel = 0
-    EndIf
-    For $i = 0 To 1
-        $tData[$i] = _GDIPlus_BitmapLockBits($hBmp[$i], 0, 0, $Size1[2], $Size1[3], $tData[$i], $GDIP_PXF32ARGB)
-    Next
-    If @AutoItX64 Then
-        $bProc = Binary('0x48894C240848895424104C894424184C894C24205541574831C0505050504883EC2848837C24600074054831C0EB0748C7C0010000004821C00F858100000048837C24680074054831C0EB0748C7C0010000004821C07555837C24700074054831C0EB0748C7C0010000004821C0752A4C637C24784D21FF7C0D4C637C24784983FF037F02EB0948C7C001000000EB034831C04821C07502EB0948C7C001000000EB034831C04821C07502EB0948C7C001000000EB034831C04821C07502EB0948C7C001000000EB034831C04821C0740B4831C04863C0E9950000004C8B7C24604983C7034C897C24284C8B7C246848634424784929C74983C7034C897C243048C7442438000000004C637C247049FFCF4C3B7C24387C4A488B6C24284C0FB67D00488B6C2430480FB645004C0FAFF84C89F848C7C1FF000000489948F7F94989C74C89F850488B6C24305888450048834424280448834424300448FF44243871A748C7C0010000004863C0EB034831C04883C448415F5DC3')
-    Else
-        $bProc = Binary('0x555331C0505050837C241800740431C0EB05B80100000021C07568837C241C00740431C0EB05B80100000021C07545837C242000740431C0EB05B80100000021C075228B5C242421DB7C0B8B5C242483FB037F02EB07B801000000EB0231C021C07502EB07B801000000EB0231C021C07502EB07B801000000EB0231C021C07502EB07B801000000EB0231C021C0740431C0EB6B8B5C241883C303891C248B5C241C2B5C242483C303895C2404C7442408000000008B5C24204B3B5C24087C368B2C240FB65D008B6C24040FB645000FAFD889D8B9FF00000099F7F989C3538B6C240458884500830424048344240404FF44240871BFB801000000EB0231C083C40C5B5DC21000')
-    EndIf
-    $Length = BinaryLen($bProc)
-    $pProc = DllCall('kernel32.dll', 'ptr', 'VirtualAlloc', 'ptr', 0, 'ulong_ptr', $Length, 'dword', 0x1000, 'dword', 0x0040)
-    $tProc = DllStructCreate('byte[' & $Length & ']', $pProc[0])
-    DllStructSetData($tProc, 1, $bProc)
-    $Result = DllCallAddress('uint', $pProc[0], 'ptr', $tData[0].Scan0, 'ptr', $tData[1].Scan0, 'uint', $Size1[2] * $Size1[3], 'uint', $iChannel)
-    If Not $Result[0] Then
-        ; Nothing
-    EndIf
-    DllCall('kernel32.dll', 'int', 'VirtualFree', 'ptr', $pProc[0], 'ulong_ptr', 0, 'dword', 0x4000)
-    For $i = 0 To 1
-        _GDIPlus_BitmapUnlockBits($hBmp[$i], $tData[$i])
-    Next
-    If $hBmp[1] <> $hAlpha Then
-        _GDIPlus_BitmapDispose($hBmp[1])
-    EndIf
-    Return $hBmp[0]
-EndFunc   ;==>_GDIPlus_BitmapCreateBitmapWithAlpha
+	$Image_Width_New = $Image_Width
+	$Image_Height_New = $Image_Height
+
+	If $Image_Width > $MAX_Width Then
+		$Ratio = $Image_Width / $MAX_Width
+		$Image_Width_New = $MAX_Width
+		$Image_Height_New = $Image_Height / $Ratio
+		If $Image_Height_New > $MAX_Height Then
+			$Ratio = $Image_Height_New / $MAX_Height
+			$Image_Height_New = $MAX_Height
+			$Image_Width_New = $Image_Width_New / $Ratio
+		EndIf
+	EndIf
+
+	If $Image_Height > $MAX_Height Then
+		$Ratio = $Image_Height / $MAX_Height
+		$Image_Height_New = $MAX_Height
+		$Image_Width_New = $Image_Width / $Ratio
+		If $Image_Width_New > $MAX_Width Then
+			$Ratio = $Image_Width_New / $MAX_Width
+			$Image_Height_New = $Image_Height_New / $Ratio
+			$Image_Width_New = $MAX_Width
+		EndIf
+	EndIf
+
+	If $Image_Width <> $Image_Width_New Or $Image_Height <> $Image_Height_New Then
+		ConsoleWrite("+ Redimensionnement (RESIZEMAX) de " & $PathImage_Temp & @CRLF) ; Debug
+		ConsoleWrite("+ ----- Origine = " & $Image_Width & "x" & $Image_Height & @CRLF) ; Debug
+		ConsoleWrite("+ ----- Finale = " & $Image_Width_New & "x" & $Image_Height_New & @CRLF) ; Debug
+	Else
+		ConsoleWrite("+ Pas de redimensionnement (RESIZEMAX) de " & $PathImage_Temp & @CRLF) ; Debug
+	EndIf
+
+	$hImageResized = _GDIPlus_ImageResize($hImage, $Image_Width_New, $Image_Height_New)
+
+	_GDIPlus_ImageSaveToFile($hImageResized, $PathImage_Temp)
+	_GDIPlus_ImageDispose($hImageResized)
+	_GDIPlus_ImageDispose($hImage)
+	_GDIPlus_Shutdown()
+	FileDelete($PathImage_RESIZEMAX_Temp)
+
+	Return $PathImage_Temp
+EndFunc   ;==>_RESIZEMAX
+
+Func _ROTATION($PathImage_Temp, $A_MIX_IMAGE_Format, $B_Images)
+	Local $Extension = StringRight($PathImage_Temp, 3)
+	Local $PathImage_ROTATION_Temp = StringTrimRight($PathImage_Temp, 4) & "-RESIZE_Temp." & $Extension
+	Local $hImage, $Image_Width, $Image_Height, $Image_Width_New, $Image_Height_New, $RotationType
+
+	;Travail sur image temporaire
+	FileDelete($PathImage_ROTATION_Temp)
+	FileCopy($PathImage_Temp, $PathImage_ROTATION_Temp, 9)
+	FileDelete($PathImage_Temp)
+
+	If $A_MIX_IMAGE_Format[$B_Images][9] = '' Or $A_MIX_IMAGE_Format[$B_Images][9] > 7 Then
+		$RotationType = 0
+	Else
+		$RotationType = $A_MIX_IMAGE_Format[$B_Images][9]
+	EndIf
+
+	_GDIPlus_Startup()
+	$hImage = _GDIPlus_ImageLoadFromFile($PathImage_ROTATION_Temp)
+	$Image_Width = _GDIPlus_ImageGetWidth($hImage)
+	If $Image_Width = 4294967295 Then $Image_Width = 0 ;4294967295 en cas d'erreur.
+	$Image_Height = _GDIPlus_ImageGetHeight($hImage)
+
+	_GDIPlus_ImageRotateFlip($hImage, $RotationType)
+	$Image_Width_New = _GDIPlus_ImageGetWidth($hImage)
+	If $Image_Width = 4294967295 Then $Image_Width = 0 ;4294967295 en cas d'erreur.
+	$Image_Height_New = _GDIPlus_ImageGetHeight($hImage)
+
+	ConsoleWrite("+ Redimensionnement (ROTATION:" & $RotationType & ") de " & $PathImage_Temp & @CRLF) ; Debug
+	ConsoleWrite("+ ----- Origine = " & $Image_Width & "x" & $Image_Height & @CRLF) ; Debug
+	ConsoleWrite("+ ----- Finale = " & $Image_Width_New & "x" & $Image_Height_New & @CRLF) ; Debug
+
+	_GDIPlus_ImageSaveToFile($hImage, $PathImage_Temp)
+	_GDIPlus_ImageDispose($hImage)
+	_GDIPlus_Shutdown()
+	FileDelete($PathImage_ROTATION_Temp)
+	$A_MIX_IMAGE_Format[$B_Images][8] = ''
+	$A_MIX_IMAGE_Format[$B_Images][9] = ''
+	$A_MIX_IMAGE_Format[$B_Images][4] = $Image_Width_New
+	$A_MIX_IMAGE_Format[$B_Images][5] = $Image_Height_New
+	Return $A_MIX_IMAGE_Format
+EndFunc   ;==>_ROTATION
+
+Func _IMAGING($PathImage_Temp, $A_PathImage, $A_MIX_IMAGE_Format, $B_Images, $TYPE = '')
+	Local $Extension = StringRight($PathImage_Temp, 3)
+	Local $PathImage_IMAGING_Temp = StringTrimRight($PathImage_Temp, 4) & "-IMAGING_Temp." & $Extension
+	Local $hImage, $hGui, $hGraphicGUI, $hBMPBuff, $hGraphic
+	Local $MergedImageBackgroundColor = 0x00000000
+
+	Local $Image_Width = _RELATIVPOS($A_MIX_IMAGE_Format[$B_Images][4], $A_PathImage[0][0])
+	Local $Image_Height = _RELATIVPOS($A_MIX_IMAGE_Format[$B_Images][5], $A_PathImage[0][1])
+
+	If StringRight($TYPE, 3) = 'MAX' Then
+		$PathImage_Temp = _RESIZEMAX($PathImage_Temp, $Image_Width, $Image_Height)
+;~ 	Else
+;~ 		_RESIZEMAX($PathImage_Temp, $A_PathImage[0][0], $A_PathImage[0][1])
+	EndIf
+
+	;Travail sur image temporaire
+	FileDelete($PathImage_IMAGING_Temp)
+	FileCopy($PathImage_Temp, $PathImage_IMAGING_Temp, 9)
+	FileDelete($PathImage_Temp)
+
+	_GDIPlus_Startup()
+	$hImage = _GDIPlus_ImageLoadFromFile($PathImage_IMAGING_Temp)
+	$hGui = GUICreate("", $A_PathImage[0][0], $A_PathImage[0][1])
+	$hGraphicGUI = _GDIPlus_GraphicsCreateFromHWND($hGui) ;Draw to this graphics, $hGraphicGUI, to display on GUI
+	$hBMPBuff = _GDIPlus_BitmapCreateFromGraphics($A_PathImage[0][0], $A_PathImage[0][1], $hGraphicGUI) ; $hBMPBuff is a bitmap in memory
+	$hGraphic = _GDIPlus_ImageGetGraphicsContext($hBMPBuff) ; Draw to this graphics, $hGraphic, being the graphics of $hBMPBuff
+	_GDIPlus_GraphicsClear($hGraphic, $MergedImageBackgroundColor) ; Fill the Graphic Background (0x00000000 for transparent background in .png files)
+
+	If $Image_Width = "" Or StringRight($TYPE, 3) = 'MAX' Then $Image_Width = _GDIPlus_ImageGetWidth($hImage)
+	If $Image_Height = "" Or StringRight($TYPE, 3) = 'MAX' Then $Image_Height = _GDIPlus_ImageGetHeight($hImage)
+	Local $Image_C1X = _RELATIVPOS($A_MIX_IMAGE_Format[$B_Images][6], $A_PathImage[0][0])
+	Local $Image_C1Y = _RELATIVPOS($A_MIX_IMAGE_Format[$B_Images][7], $A_PathImage[0][1])
+	Local $Image_C2X = _RELATIVPOS($A_MIX_IMAGE_Format[$B_Images][8], $A_PathImage[0][0])
+	Local $Image_C2Y = _RELATIVPOS($A_MIX_IMAGE_Format[$B_Images][9], $A_PathImage[0][1])
+	Local $Image_C3X = _RELATIVPOS($A_MIX_IMAGE_Format[$B_Images][10], $A_PathImage[0][0])
+	Local $Image_C3Y = _RELATIVPOS($A_MIX_IMAGE_Format[$B_Images][11], $A_PathImage[0][1])
+
+	Switch $Image_C1X
+		Case 'CENTER'
+			$Image_C1X = ($A_PathImage[0][0] / 2) - ($Image_Width / 2)
+		Case 'LEFT'
+			$Image_C1X = 0
+		Case 'RIGHT'
+			$Image_C1X = $A_PathImage[0][0] - $Image_Width
+	EndSwitch
+	Switch $Image_C1Y
+		Case 'CENTER'
+			$Image_C1Y = ($A_PathImage[0][1] / 2) - ($Image_Height / 2)
+		Case 'UP'
+			$Image_C1Y = 0
+		Case 'DOWN'
+			$Image_C1Y = $A_PathImage[0][1] - $Image_Height
+	EndSwitch
+	Switch $Image_C2X
+		Case 'CENTER'
+			$Image_C2X = ($A_PathImage[0][0] / 2) + ($Image_Width / 2)
+		Case 'LEFT'
+			$Image_C2X = $Image_Width
+		Case 'RIGHT'
+			$Image_C2X = $A_PathImage[0][0]
+		Case ''
+			$Image_C2X = $Image_C1X + $Image_Width
+	EndSwitch
+	Switch $Image_C2Y
+		Case 'CENTER'
+			$Image_C2Y = ($A_PathImage[0][1] / 2) - ($Image_Height / 2)
+		Case 'UP'
+			$Image_C2Y = 0
+		Case 'DOWN'
+			$Image_C2Y = $A_PathImage[0][1] - $Image_Height
+		Case ''
+			$Image_C2Y = $Image_C1Y
+	EndSwitch
+	Switch $Image_C3X
+		Case 'CENTER'
+			$Image_C3X = ($A_PathImage[0][0] / 2) - ($Image_Width / 2)
+		Case 'LEFT'
+			$Image_C3X = 0
+		Case 'RIGHT'
+			$Image_C3X = $A_PathImage[0][0] - $Image_Width
+		Case ''
+			$Image_C3X = $Image_C1X
+	EndSwitch
+	Switch $Image_C3Y
+		Case 'CENTER'
+			$Image_C3Y = ($A_PathImage[0][1] / 2) + ($Image_Height / 2)
+		Case 'UP'
+			$Image_C3Y = 0 + $Image_Height
+		Case 'DOWN'
+			$Image_C3Y = $A_PathImage[0][1]
+		Case ''
+			$Image_C3Y = $Image_C1Y + $Image_Height
+	EndSwitch
+
+;~ 	If $Image_C2X = "" Then $Image_C2X = $Image_C1X + $Image_Width
+;~ 	If $Image_C2Y = "" Then $Image_C2Y = $Image_C1Y
+;~ 	If $Image_C3X = "" Then $Image_C3X = $Image_C1X
+;~ 	If $Image_C3Y = "" Then $Image_C3Y = $Image_C1Y + $Image_Height
+
+	ConsoleWrite("+ Preparation de l'image (_IMAGING) de " & $PathImage_Temp & @CRLF) ; Debug
+	ConsoleWrite("+ ----- C1 = " & $Image_C1X & "x" & $Image_C1Y & @CRLF) ; Debug
+	ConsoleWrite("+ ----- C2 = " & $Image_C2X & "x" & $Image_C2Y & @CRLF) ; Debug
+	ConsoleWrite("+ ----- C3 = " & $Image_C3X & "x" & $Image_C3Y & @CRLF) ; Debug
+	ConsoleWrite("+ ----- (Size) = " & $Image_Width & "x" & $Image_Height & @CRLF) ; Debug
+
+	_GDIPlus_DrawImagePoints($hGraphic, $hImage, $Image_C1X, $Image_C1Y, $Image_C2X, $Image_C2Y, $Image_C3X, $Image_C3Y)
+	_GDIPlus_ImageSaveToFile($hBMPBuff, $PathImage_Temp)
+	_GDIPlus_GraphicsDispose($hGraphic)
+	_GDIPlus_BitmapDispose($hBMPBuff)
+	_GDIPlus_GraphicsDispose($hGraphicGUI)
+	GUIDelete($hGui)
+	_GDIPlus_ImageDispose($hImage)
+	_GDIPlus_Shutdown()
+
+	FileDelete($PathImage_IMAGING_Temp)
+
+	Return $PathImage_Temp
+EndFunc   ;==>_IMAGING
+

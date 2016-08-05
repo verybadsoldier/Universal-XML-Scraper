@@ -22,6 +22,7 @@
 	<mess_autoconf_ask_Title>Auto Configuração</mess_autoconf_ask_Title>
 	<mess_autoconf_ask_Question>Você deseja usar a Configuração Automática?</mess_autoconf_ask_Question>
 	<mess_autoconf_ssh_killall>Tem certeza de que deseja parar o EmulationStation?</mess_autoconf_ssh_killall>
+	<mess_autoconf_ssh_start>Tem certeza de que deseja inicio o EmulationStation?</mess_autoconf_ssh_start>
 	<mess_autoconf_ssh_reboot>Tem certeza de que deseja reiniciar o sistema remotamente?</mess_autoconf_ssh_reboot>
 	<mess_autoconf_ssh_poweroff>Tem certeza de que deseja parar o sistema remotamente?</mess_autoconf_ssh_poweroff>
 </message>
@@ -40,7 +41,8 @@
 		<mnu_edit_langue>Mudar Linguagem</mnu_edit_langue>
 		<mnu_edit_config>Configurar</mnu_edit_config>
 		<mnu_ssh>Comandos SSH</mnu_ssh>
-		<mnu_ssh_killall>Fechar Emulationstation</mnu_ssh_killall>
+		<mnu_ssh_killall>Parar Emulationstation</mnu_ssh_killall>
+		<mnu_ssh_start>Inicio Emulationstation</mnu_ssh_start>
 		<mnu_ssh_reboot>Reiniciar Emulationstation</mnu_ssh_reboot>
 		<mnu_ssh_halt>Desligar Emulationstation</mnu_ssh_halt>
 		<mnu_mode>Modo de Scrape</mnu_mode>

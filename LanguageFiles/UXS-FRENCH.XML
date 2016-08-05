@@ -21,7 +21,8 @@
 	<mess_autoconf>Préparation configuration Automatique en cours</mess_autoconf>
 	<mess_autoconf_ask_Title>Configuration Automatique</mess_autoconf_ask_Title>
 	<mess_autoconf_ask_Question>Souhaitez-vous activer la configuration automatique ?</mess_autoconf_ask_Question>
-	<mess_autoconf_ssh_killall>Etes vous sur de vouloir arreter EmulationStation ?</mess_autoconf_ssh_killall>
+	<mess_autoconf_ssh_killall>Etes vous sur de vouloir arrêter EmulationStation ?</mess_autoconf_ssh_killall>
+	<mess_autoconf_ssh_start>Etes vous sur de vouloir démarrer EmulationStation ?</mess_autoconf_ssh_start>
 	<mess_autoconf_ssh_reboot>Etes vous sur de vouloir Rebooter la machine distante ?</mess_autoconf_ssh_reboot>
 	<mess_autoconf_ssh_poweroff>Etes vous sur de vouloir Arreter la machine distante ?</mess_autoconf_ssh_poweroff>
 </message>
@@ -40,9 +41,10 @@
 		<mnu_edit_langue>Changer de langue</mnu_edit_langue>
 		<mnu_edit_config>Configuration</mnu_edit_config>
 		<mnu_ssh>Commande SSH</mnu_ssh>
-		<mnu_ssh_killall>Tuer Emulationstation</mnu_ssh_killall>
-		<mnu_ssh_reboot>Redémarrer</mnu_ssh_reboot>
-		<mnu_ssh_halt>Eteindre</mnu_ssh_halt>
+		<mnu_ssh_killall>Arrêter Emulationstation</mnu_ssh_killall>
+		<mnu_ssh_start>Démarrer Emulationstation</mnu_ssh_start>
+		<mnu_ssh_reboot>Redémarrer Distant</mnu_ssh_reboot>
+		<mnu_ssh_halt>Eteindre Distant</mnu_ssh_halt>
 		<mnu_mode>Scrape Mode</mnu_mode>
 		<mnu_mode_new>Création d'un nouveau Fichier</mnu_mode_new>
 		<mnu_mode_append>Ajout des roms manquantes</mnu_mode_append>

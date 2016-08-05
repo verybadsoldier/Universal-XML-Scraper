@@ -21,7 +21,8 @@
 	<mess_autoconf>Setting auto configuration in progress</mess_autoconf>
 	<mess_autoconf_ask_Title>Auto Configuration</mess_autoconf_ask_Title>
 	<mess_autoconf_ask_Question>Do you want to use Auto Configuration</mess_autoconf_ask_Question>
-	<mess_autoconf_ssh_killall>Do you want to Kill emulationstation ?</mess_autoconf_ssh_killall>
+	<mess_autoconf_ssh_killall>Do you want to Stop emulationstation ?</mess_autoconf_ssh_killall>
+	<mess_autoconf_ssh_start>Do you want to Start emulationstation ?</mess_autoconf_ssh_start>
 	<mess_autoconf_ssh_reboot>Do you want to Reboot the computer ?</mess_autoconf_ssh_reboot>
 	<mess_autoconf_ssh_poweroff>Do you want to Stop the computer ?</mess_autoconf_ssh_poweroff>
 </message>
@@ -40,7 +41,8 @@
 		<mnu_edit_langue>Change language</mnu_edit_langue>
 		<mnu_edit_config>Config</mnu_edit_config>
 		<mnu_ssh>SSH Command</mnu_ssh>
-		<mnu_ssh_killall>Kill Emulationstation</mnu_ssh_killall>
+		<mnu_ssh_killall>Stop Emulationstation</mnu_ssh_killall>
+		<mnu_ssh_start>Start Emulationstation</mnu_ssh_start>
 		<mnu_ssh_reboot>Reboot</mnu_ssh_reboot>
 		<mnu_ssh_halt>Power off</mnu_ssh_halt>
 		<mnu_mode>Scrape Mode</mnu_mode>
