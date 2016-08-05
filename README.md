@@ -1,27 +1,50 @@
 # Universal XML Scraper
 
-Ce logiciel vous permet de scraper vos ROMs afin d'obtenir un fichier XML contenant les informations de vos jeux ainsi que les images correspondantes. Il permet meme de scraper l'intégralité de vos répertoires de ROM et de crééer des compositions d'images
+Logiciel de Scrape basé sur la base de données [Screenscraper](http://www.screenscraper.fr/).
+Vous avez toujours rêvé d'avoir vos descriptifs en français avec de superbe média, c'est maintenant possible ;)
+Ce logiciel fonctionne avec un système de profil pour la génération du fichier XML. Il est donc tout à fait possible de se créer son propre profil avec la récupération de ses propres médias ;)
+Aujourd'hui les profil existant sont : Recalbox V4, Recalbox V3, Emulationstation et Hyperspin/AttrackMode (en version beta les 2 derniers, ne possédant pas ces systèmes, je n'ai jamais pu les tester ^^)
 
-<img src="https://raw.githubusercontent.com/Universal-Rom-Tools/Universal-XML-Scraper/master/Images/Interface.jpg" alt="" width="366" height="219" />
-<ul>
-	<li>Il est multilingue (Anglais/Français)</li>
-	<li>Il est compatible (pour le moment) avec la recalbox V4, la recalbox V3 et Emulationstation (forcement le xml de la V3 est identique à celui d'emulationstation d'origine ;) ) et potentiellement plein d'autres systemes via son système de profil</li>
-	<li>Il va chercher ses infos sur <a href="http://www.screenscraper.fr/">www.screenscraper.fr</a> Une base de données en Français et en Anglais.</li>
-	<li>Il se veut simple d'utilisation ;)</li>
-</ul>
-<strong>Comment ça marche : </strong>
+*Scrape software based on the [Screenscraper](http://www.screenscraper.fr/) database .*
+*It can scrape in French, English, German, Spanish and Portuguese (very few data in these 3 last language ^^ but you can participate to the database) with HD Media*
+*This software works with a profile system to generate the XML file. It is therefore quite possible to create your own profile with the download of the media of your choice.*
+*Today existing profil are: Recalbox V4 V3 Recalbox , Emulationstation ( and Hyperspin / AttrackMode in beta)*
 
-1 - Telechargez la derniere version : [Universal XML Scraper](https://github.com/Universal-Rom-Tools/Universal-XML-Scraper/releases)  
-2 - Décompressez l'archive et lancez le fichier EXE.  
-3 - Dans le menu Fichier/Profil, choisissez un profil.  
-4 - Dans le menu Edition/Configuration, réglez vos chemins.  
-5 - Cliquez sur la flèche verte  
-6 - Et patientez...........  
+![Interface](https://raw.githubusercontent.com/Universal-Rom-Tools/Universal-XML-Scraper/master/Images/Interface.jpg)
 
-C'est finit, vous avez un beau fichier gamelist.xml sur votre recalbox avec les images qui vont avec ;)
+Ce logiciel se veut simple mais puissant et très configurable. Je ne vais pas rentrer dans le détail de toutes les options, seulement 2 :
 
-Mais vous pouvez faire plein d'autres choses.
-N'hesitez pas à venir en discuter sur le [forum de la Recalbox] (http://blog.recalbox.com/forums/topic/soft-universal-xml-scraper-scrappez-vos-roms-en-fr/) ou de regarder le [Wiki](https://github.com/Universal-Rom-Tools/Universal-XML-Scraper/wiki) (en cours de construction)
+*Easy to use but with a lots of possible configuration, I only present 2 of the options you can find :*
+
+**l'AutoConfig** : 
+Vous lui indiquez le répertoire contenant tous les répertoires de vos différents systèmes (directement sur le PI via le reseau, sur un NAS, une clef USB,...) et il s’occupe tout seul de configurer les chemins et substitution pour le fichier XML. Vous pourrez scraper 1 système sélectionné ou tous d'un coup.
+
+*Simply enter the path where all your system are (Directly on the PI with the network, on a NAS or USB support) and it auto configure all the path for the future XML. You just have to select the system you want (or scrape all of them with 1 clic)*
+
+**Le mode MIX** : 
+Vous ne voulez pas vous embêtez à créer des thèmes avec de multiple médias, 1 seule image vous suffit, mais un screenshot tout seul c'est un peu triste. UXS (Universal XML Scraper pour les intimes ;) ) vous permet de faire un mix de média pendant le scrape pour ne générer qu'une seule image. 
+
+*UXS (short name for Universal XML Scraper) can make 1 picture composition with many other.*
+
+![Nes](https://raw.githubusercontent.com/Universal-Rom-Tools/Universal-XML-Scraper/master/Images/Legend%20of%20Zelda%2C%20The%20(Europe)-image.png)![Arcade](https://raw.githubusercontent.com/Universal-Rom-Tools/Universal-XML-Scraper/master/Images/sf2ce-image.png)![Standard 3D Box](http://i.imgur.com/NP5qhzK.png)
+
+Le mode MIX fonctionne aussi à base de thèmes/profils configurable facilement et le [Wiki](https://github.com/Universal-Rom-Tools/Universal-XML-Scraper/wiki) vous explique comment créer le votre facilement.
+
+*The MIX mode work with themes/profils you can make, look at the [Wiki](https://github.com/Universal-Rom-Tools/Universal-XML-Scraper/wiki) (only in french for now sorry)*
+
+--> [LAST VERSION](https://github.com/Universal-Rom-Tools/Universal-XML-Scraper/releases)
+
+[[Tuto] Comment utiliser Universal XML Scraper pour la RECALBOX](https://github.com/Universal-Rom-Tools/Universal-XML-Scraper/wiki/%5BTuto%5D-Comment-utiliser-Universal-XML-Scraper-pour-la-RECALBOX)
+
+**WARNING**
+
+There is a big modification on Screenscraper.
+Now you can have data in french, english, but also german, spanish, and portuguese !!!
+
+So there is a modification of Universal XML Scraper to take that in charge ;)
+
+Please Use the very [last version](https://github.com/Universal-Rom-Tools/Universal-XML-Scraper/releases) (after 1.4.0.0)
+(If not only 'genre' doesn't work ^^ But I don't know if there are no side effect :p )
 
 __UDF utilisés__  
 [Extended Message Box](https://www.autoitscript.com/forum/topic/109096-extended-message-box-bugfix-version-9-aug-15/) par Melba23  
