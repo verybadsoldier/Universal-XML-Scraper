@@ -1884,6 +1884,20 @@ Func _XML_GETROMINFO($PathTmp_GAME, $xpath_root, $XML_Type, $B_XMLElements, $A_X
 			Return $XML_Value
 		Case 'varia'
 			Switch $A_XMLFormat[$B_XMLElements][2]
+				Case '%RomName%'
+					$XML_Value = $A_ROMList[$No_ROM][0]
+					_CREATION_LOGMESS(2, "RomName : " & $XML_Value)
+					Return $XML_Value
+				Case '%RomNameShort%'
+					$XML_Value_Temp = $A_ROMList[$No_ROM][0]
+					$XML_Value_Temp = StringSplit($XML_Value_Temp, ".")
+					If IsArray($XML_Value_Temp) Then
+						$XML_Value = $XML_Value_Temp[1]
+					Else
+						$XML_Value = $A_ROMList[$No_ROM][0]
+					EndIf
+					_CREATION_LOGMESS(2, "RomNameShort : " & $XML_Value)
+					Return $XML_Value
 				Case '%RomPath%'
 					$XML_Value = $PathRomSub & $A_ROMList[$No_ROM][0]
 					_CREATION_LOGMESS(2, "RomPath : " & $XML_Value)
