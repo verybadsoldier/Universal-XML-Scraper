@@ -21,10 +21,12 @@
 	<mess_autoconf>Préparation configuration Automatique en cours</mess_autoconf>
 	<mess_autoconf_ask_Title>Configuration Automatique</mess_autoconf_ask_Title>
 	<mess_autoconf_ask_Question>Souhaitez-vous activer la configuration automatique ?</mess_autoconf_ask_Question>
-	<mess_autoconf_ssh_killall>Etes vous sur de vouloir arrêter EmulationStation ?</mess_autoconf_ssh_killall>
-	<mess_autoconf_ssh_start>Etes vous sur de vouloir démarrer EmulationStation ?</mess_autoconf_ssh_start>
-	<mess_autoconf_ssh_reboot>Etes vous sur de vouloir Rebooter la machine distante ?</mess_autoconf_ssh_reboot>
-	<mess_autoconf_ssh_poweroff>Etes vous sur de vouloir Arreter la machine distante ?</mess_autoconf_ssh_poweroff>
+	<mess_ssh_killall>Etes vous sur de vouloir arrêter EmulationStation ?</mess_ssh_killall>
+	<mess_ssh_start>Etes vous sur de vouloir démarrer EmulationStation ?</mess_ssh_start>
+	<mess_ssh_reboot>Etes vous sur de vouloir Rebooter la machine distante ?</mess_ssh_reboot>
+	<mess_ssh_poweroff>Etes vous sur de vouloir Arreter la machine distante ?</mess_ssh_poweroff>
+	<mess_update_Title>Mise à jour disponible</mess_update_Title>
+	<mess_update_Question>Une mise à jour est disponible, voulez-vous la telecharger ?</mess_update_Question>
 </message>
 
 <gui>
@@ -123,7 +125,7 @@
 			<win_Cancel_Title>Scrape Annulé</win_Cancel_Title>
 			<win_Cancel_Text>Scrape Annulé</win_Cancel_Text>
 		</win_Cancel>
-	</windows>	
+	</windows>
 	<tips>
 		<tips_config>
 			<tips_config_GroupScrap_PathRom>Répertoire dans lequel se trouve les roms à scrapper</tips_config_GroupScrap_PathRom>

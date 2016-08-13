@@ -21,10 +21,12 @@
 	<mess_autoconf>Configuración automática en progreso</mess_autoconf>
 	<mess_autoconf_ask_Title>Configuración automática</mess_autoconf_ask_Title>
 	<mess_autoconf_ask_Question>Desea usar la configuración automática?</mess_autoconf_ask_Question>
-	<mess_autoconf_ssh_killall>Desea detener EmulationStation?</mess_autoconf_ssh_killall>
-	<mess_autoconf_ssh_start>Desea iniciar EmulationStation?</mess_autoconf_ssh_start>
-	<mess_autoconf_ssh_reboot>Desea reiniciar el sistema remotamente?</mess_autoconf_ssh_reboot>
-	<mess_autoconf_ssh_poweroff>Desea apagar el sistema remotamente?</mess_autoconf_ssh_poweroff>
+	<mess_ssh_killall>Desea detener EmulationStation?</mess_ssh_killall>
+	<mess_ssh_start>Desea iniciar EmulationStation?</mess_ssh_start>
+	<mess_ssh_reboot>Desea reiniciar el sistema remotamente?</mess_ssh_reboot>
+	<mess_ssh_poweroff>Desea apagar el sistema remotamente?</mess_ssh_poweroff>
+	<mess_update_Title>Nueva versión disponible</mess_update_Title>
+	<mess_update_Question>Una nueva versión está disponible , ¿Quieres descargarlo?</mess_update_Question>
 </message>
  
 <gui>

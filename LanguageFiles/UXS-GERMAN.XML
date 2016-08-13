@@ -21,10 +21,12 @@
 	<mess_autoconf>Automatische Konfiguration wird erstellt</mess_autoconf>
 	<mess_autoconf_ask_Title>Automatische Konfiguration</mess_autoconf_ask_Title>
 	<mess_autoconf_ask_Question>Möchtest Du die automatische Konfiguration benutzen?</mess_autoconf_ask_Question>
-	<mess_autoconf_ssh_killall>Möchtest Du EmulationStation wirklich beenden?</mess_autoconf_ssh_killall>
-	<mess_autoconf_ssh_start>Möchtest Du EmulationStation starten?</mess_autoconf_ssh_start>
-	<mess_autoconf_ssh_reboot>Möchtest Du das Gerät wirklich Neustarten?</mess_autoconf_ssh_reboot>
-	<mess_autoconf_ssh_poweroff>Möchtest Du das Gerät wirklich ausschalten?</mess_autoconf_ssh_poweroff>
+	<mess_ssh_killall>Möchtest Du EmulationStation wirklich beenden?</mess_ssh_killall>
+	<mess_ssh_start>Möchtest Du EmulationStation starten?</mess_ssh_start>
+	<mess_ssh_reboot>Möchtest Du das Gerät wirklich Neustarten?</mess_ssh_reboot>
+	<mess_ssh_poweroff>Möchtest Du das Gerät wirklich ausschalten?</mess_ssh_poweroff>
+	<mess_update_Title>Neue Version verfügbar</mess_update_Title>
+	<mess_update_Question>Eine neue Version verfügbar ist, wollen Sie es herunterladen?</mess_update_Question>
 </message>
 
 <gui>

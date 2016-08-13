@@ -5,7 +5,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper XML Universel
-#AutoIt3Wrapper_Res_Fileversion=1.5.0.4
+#AutoIt3Wrapper_Res_Fileversion=1.5.0.5
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -136,6 +136,7 @@ Global $INI_P_CIBLE = "empty.jpg"
 Global $PathSystemList = $SOURCE_DIRECTORY & "\Ressources\systemlist.txt"
 Global $PathTmp_GAME = $SOURCE_DIRECTORY & "\GAME_temp.tmp"
 Global $PathTmp_SYS = $SOURCE_DIRECTORY & "\SYS_temp.tmp"
+Global $PathTmp_Changelog = $SOURCE_DIRECTORY & "\changelog.txt"
 Global $PathDIRTmp = $SOURCE_DIRECTORY & "\TEMP\"
 Global $PathMix = $SOURCE_DIRECTORY & "\Mix\"
 Global $PathMixTmp = $SOURCE_DIRECTORY & "\Mix\TEMP"
@@ -180,6 +181,25 @@ _CREATION_LOGMESS(2, "Fin de Definition des variables")
 ;---------;
 
 _LANG_LOAD($LANG_DIR, $user_lang)
+
+; Update Checking
+_CREATION_LOGMESS(1, "Update Checking")
+FileDelete($PathTmp_Changelog)
+$hDownload = InetGet("https://raw.githubusercontent.com/Universal-Rom-Tools/Universal-XML-Scraper/master/changelog.txt", $PathTmp_Changelog, 0, 1)
+_TimeOut($hDownload)
+If FileExists($PathTmp_Changelog) Then
+	$ChangelogVersion = FileReadLine($PathTmp_Changelog)
+	ConsoleWrite("Local : " & $Rev & " - Github : " & $ChangelogVersion & @CRLF)
+	If $ChangelogVersion <> $Rev Then
+		_CREATION_LOGMESS(2, "Update dispo")
+		$UpdateVersion = MsgBox($MB_YESNO, _MultiLang_GetText("mess_update_Title"), _MultiLang_GetText("mess_update_Question"))
+		If $UpdateVersion = $IDYES Then
+			_CREATION_LOGMESS(2, "Ouverture de la page des release")
+			ShellExecute("https://github.com/Universal-Rom-Tools/Universal-XML-Scraper/releases")
+			Exit
+		EndIf
+	EndIf
+EndIf
 
 ; Initialisation interface
 Global $A_Profil = _INI_CREATEARRAY_SCRAPER()
@@ -268,7 +288,7 @@ While 1
 			_GUI_Config($A_Profil, $No_Profil)
 			_GUI_REFRESH($INI_P_SOURCE, $INI_P_CIBLE)
 		Case $MP_KILLALL
-			If MsgBox($MB_OKCANCEL, "Stop Emulationstation", _MultiLang_GetText("mess_autoconf_ssh_killall")) = $IDOK Then
+			If MsgBox($MB_OKCANCEL, "Stop Emulationstation", _MultiLang_GetText("mess_ssh_killall")) = $IDOK Then
 				ConsoleWrite($PathPlink & " " & $Plink_IP & " -l " & $Plink_root & " -pw " & $Plink_mdp & " /etc/init.d/S31emulationstation stop" & @CRLF)
 				Run($PathPlink & " " & $Plink_IP & " -l " & $Plink_root & " -pw " & $Plink_mdp & " /etc/init.d/S31emulationstation stop")
 				ConsoleWrite($PathPlink & " " & $Plink_IP & " -l " & $Plink_root & " -pw " & $Plink_mdp & " killall emulationstation" & @CRLF)
@@ -278,7 +298,7 @@ While 1
 				_CREATION_LOGMESS(1, "SSH : Stop Emulationstation ANNULE")
 			EndIf
 		Case $MP_START
-			If MsgBox($MB_OKCANCEL, "Start Emulationstation", _MultiLang_GetText("mess_autoconf_ssh_start")) = $IDOK Then
+			If MsgBox($MB_OKCANCEL, "Start Emulationstation", _MultiLang_GetText("mess_ssh_start")) = $IDOK Then
 				ConsoleWrite($PathPlink & " " & $Plink_IP & " -l " & $Plink_root & " -pw " & $Plink_mdp & " /etc/init.d/S31emulationstation start" & @CRLF)
 				Run($PathPlink & " " & $Plink_IP & " -l " & $Plink_root & " -pw " & $Plink_mdp & " /etc/init.d/S31emulationstation start")
 				_CREATION_LOGMESS(1, "SSH : Start Emulationstation OK")
@@ -286,14 +306,14 @@ While 1
 				_CREATION_LOGMESS(1, "SSH : Start Emulationstation ANNULE")
 			EndIf
 		Case $MP_REBOOT
-			If MsgBox($MB_OKCANCEL, "Reboot", _MultiLang_GetText("mess_autoconf_ssh_reboot")) = $IDOK Then
+			If MsgBox($MB_OKCANCEL, "Reboot", _MultiLang_GetText("mess_ssh_reboot")) = $IDOK Then
 				Run($PathPlink & " " & $Plink_IP & " -l " & $Plink_root & " -pw " & $Plink_mdp & " /sbin/reboot")
 				_CREATION_LOGMESS(1, "SSH : Reboot OK")
 			Else
 				_CREATION_LOGMESS(1, "SSH : Reboot ANNULE")
 			EndIf
 		Case $MP_POWEROFF
-			If MsgBox($MB_OKCANCEL, "Power Off", _MultiLang_GetText("mess_autoconf_ssh_poweroff")) = $IDOK Then
+			If MsgBox($MB_OKCANCEL, "Power Off", _MultiLang_GetText("mess_ssh_poweroff")) = $IDOK Then
 				Run($PathPlink & " " & $Plink_IP & " -l " & $Plink_root & " -pw " & $Plink_mdp & " /sbin/poweroff")
 				_CREATION_LOGMESS(1, "SSH : Power Off OK")
 			Else
