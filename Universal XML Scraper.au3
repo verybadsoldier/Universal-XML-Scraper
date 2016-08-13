@@ -5,7 +5,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper XML Universel
-#AutoIt3Wrapper_Res_Fileversion=1.5.0.5
+#AutoIt3Wrapper_Res_Fileversion=1.5.0.6
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -1923,9 +1923,9 @@ Func _XML_GETROMINFO($PathTmp_GAME, $xpath_root, $XML_Type, $B_XMLElements, $A_X
 
 			Switch StringMid($A_XMLFormat[$B_XMLElements][3], 6)
 				Case '%FileNameBracket%'
-					Local $BracketPos = 0
-					$XML_Value_Temp = StringSplit($A_ROMList[$No_ROM][0], ".")
-					$XML_Value = $XML_Value_Temp[1]
+					Local $BracketPos = 0, $PSDrive, $PSDir, $PSFilename, $PSExt
+					$PathSplit = _PathSplit($A_ROMList[$No_ROM][0], $PSDrive, $PSDir, $PSFilename, $PSExt)
+					$XML_Value = $PSFilename
 					If StringInStr($XML_Value, "(") > 0 Then $BracketPos = StringInStr($XML_Value, "(")
 					If StringInStr($XML_Value, "[") > 0 And StringInStr($XML_Value, "[") < $BracketPos Then $BracketPos = StringInStr($XML_Value, "[")
 					If $BracketPos > 0 Then $XML_Value2 = " " & StringMid($XML_Value, $BracketPos)
@@ -1956,13 +1956,9 @@ Func _XML_GETROMINFO($PathTmp_GAME, $xpath_root, $XML_Type, $B_XMLElements, $A_X
 					_CREATION_LOGMESS(2, "RomName : " & $XML_Value)
 					Return $XML_Value
 				Case '%RomNameShort%'
-					$XML_Value_Temp = $A_ROMList[$No_ROM][0]
-					$XML_Value_Temp = StringSplit($XML_Value_Temp, ".")
-					If IsArray($XML_Value_Temp) Then
-						$XML_Value = $XML_Value_Temp[1]
-					Else
-						$XML_Value = $A_ROMList[$No_ROM][0]
-					EndIf
+					Local $PSDrive, $PSDir, $PSFilename, $PSExt
+					$PathSplit = _PathSplit($A_ROMList[$No_ROM][0], $PSDrive, $PSDir, $PSFilename, $PSExt)
+					$XML_Value = $PSFilename
 					_CREATION_LOGMESS(2, "RomNameShort : " & $XML_Value)
 					Return $XML_Value
 				Case '%RomPath%'
