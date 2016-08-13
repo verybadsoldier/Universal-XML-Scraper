@@ -5,7 +5,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper XML Universel
-#AutoIt3Wrapper_Res_Fileversion=1.5.0.2
+#AutoIt3Wrapper_Res_Fileversion=1.5.0.4
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -1881,6 +1881,53 @@ Func _XML_GETROMINFO($PathTmp_GAME, $xpath_root, $XML_Type, $B_XMLElements, $A_X
 			If @error Then Return -2
 			$XML_Value = _XMLGetAttrib($xpath_root & '/' & StringMid($A_XMLFormat[$B_XMLElements][3], 6) & "[1]", $A_XMLFormat[$B_XMLElements][2])
 			_CREATION_LOGMESS(2, StringMid($A_XMLFormat[$B_XMLElements][3], 6) & " : " & $XML_Value)
+			Return $XML_Value
+		Case 'form:'
+			Local $XML_Value1 = "", $XML_Value2 = ""
+			_XMLFileOpen($PathTmp_GAME)
+			If @error Then Return -2
+			Local $sNode_Values = _XMLGetValue($xpath_root & "/*[1]/" & $A_XMLFormat[$B_XMLElements][2])
+			If IsArray($sNode_Values) Then
+				$XML_Value1 = $sNode_Values[1]
+				Switch $XML_Value1
+					Case Null
+						_CREATION_LOGMESS(2, $A_XMLFormat[$B_XMLElements][2] & " : <NULL>")
+						$XML_Value1 = ""
+					Case Else
+						If $INI_OPTION_MAJ = 1 Then $XML_Value1 = StringUpper($XML_Value1)
+						_CREATION_LOGMESS(2, $A_XMLFormat[$B_XMLElements][2] & " : " & $XML_Value1)
+						ConsoleWrite("+ Form1 :" & $XML_Value1 & @CRLF)
+				EndSwitch
+			EndIf
+			If $XML_Value1 = "" Then Return -1
+
+			Switch StringMid($A_XMLFormat[$B_XMLElements][3], 6)
+				Case '%FileNameBracket%'
+					Local $BracketPos = 0
+					$XML_Value_Temp = StringSplit($A_ROMList[$No_ROM][0], ".")
+					$XML_Value = $XML_Value_Temp[1]
+					If StringInStr($XML_Value, "(") > 0 Then $BracketPos = StringInStr($XML_Value, "(")
+					If StringInStr($XML_Value, "[") > 0 And StringInStr($XML_Value, "[") < $BracketPos Then $BracketPos = StringInStr($XML_Value, "[")
+					If $BracketPos > 0 Then $XML_Value2 = " " & StringMid($XML_Value, $BracketPos)
+					ConsoleWrite("+ Form2 :" & $XML_Value2 & @CRLF)
+					_CREATION_LOGMESS(2, StringMid($A_XMLFormat[$B_XMLElements][3], 6) & " : " & $XML_Value2)
+				Case Else
+					$sNode_Values = _XMLGetValue($xpath_root & "/*[1]/" & StringMid($A_XMLFormat[$B_XMLElements][3], 6))
+					If IsArray($sNode_Values) Then
+						$XML_Value2 = $sNode_Values[1]
+						Switch $XML_Value2
+							Case Null
+								_CREATION_LOGMESS(2, StringMid($A_XMLFormat[$B_XMLElements][3], 6) & " : <NULL>")
+								$XML_Value2 = ""
+							Case Else
+								If $INI_OPTION_MAJ = 1 Then $XML_Value2 = StringUpper($XML_Value2)
+								$XML_Value2 = " (" & $XML_Value2 & ")"
+								ConsoleWrite("+ Form2 :" & $XML_Value2 & @CRLF)
+								_CREATION_LOGMESS(2, StringMid($A_XMLFormat[$B_XMLElements][3], 6) & " : " & $XML_Value2)
+						EndSwitch
+					EndIf
+			EndSwitch
+			$XML_Value = $XML_Value1 & $XML_Value2
 			Return $XML_Value
 		Case 'varia'
 			Switch $A_XMLFormat[$B_XMLElements][2]
