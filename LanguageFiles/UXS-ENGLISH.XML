@@ -21,10 +21,12 @@
 	<mess_autoconf>Setting auto configuration in progress</mess_autoconf>
 	<mess_autoconf_ask_Title>Auto Configuration</mess_autoconf_ask_Title>
 	<mess_autoconf_ask_Question>Do you want to use Auto Configuration</mess_autoconf_ask_Question>
-	<mess_autoconf_ssh_killall>Do you want to Stop emulationstation ?</mess_autoconf_ssh_killall>
-	<mess_autoconf_ssh_start>Do you want to Start emulationstation ?</mess_autoconf_ssh_start>
-	<mess_autoconf_ssh_reboot>Do you want to Reboot the computer ?</mess_autoconf_ssh_reboot>
-	<mess_autoconf_ssh_poweroff>Do you want to Stop the computer ?</mess_autoconf_ssh_poweroff>
+	<mess_ssh_killall>Do you want to Stop emulationstation ?</mess_ssh_killall>
+	<mess_ssh_start>Do you want to Start emulationstation ?</mess_ssh_start>
+	<mess_ssh_reboot>Do you want to Reboot the computer ?</mess_ssh_reboot>
+	<mess_ssh_poweroff>Do you want to Stop the computer ?</mess_ssh_poweroff>
+	<mess_update_Title>New version available</mess_update_Title>
+	<mess_update_Question>A New version is available, Do you want to download it ?</mess_update_Question>
 </message>
 
 <gui>
