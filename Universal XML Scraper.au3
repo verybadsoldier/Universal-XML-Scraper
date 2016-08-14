@@ -5,7 +5,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper XML Universel
-#AutoIt3Wrapper_Res_Fileversion=1.5.0.8
+#AutoIt3Wrapper_Res_Fileversion=1.5.0.9
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -2419,14 +2419,23 @@ Func _MIX_IMAGE_CREATEFORMAT()
 		$M_Elements = IniRead($PathMixTmp & "\config.ini", "MIX_IMG", "$MIX_IMG" & $B_Images & "_SOURCE_" & $B_Sources, "Ending")
 		While $M_Elements <> "Ending"
 			If StringInStr($M_Elements, "%%") Then
-				If $Picture_Region = 1 Then
-					_ArrayAdd($A_MIX_IMAGE_Format, $M_Elements)
-					_FileReadToArray($PathRegionList, $A_RegionList, $FRTA_NOCOUNT, "|")
-				EndIf
-				For $B_RechMultiLang = 1 To UBound($RechMultiLang) - 1
-					$M_Elements2 = StringReplace($M_Elements, '%%', $RechMultiLang[$B_RechMultiLang])
-					_ArrayAdd($A_MIX_IMAGE_Format, $M_Elements2)
-				Next
+				Switch $Picture_Region
+					Case 1
+						_ArrayAdd($A_MIX_IMAGE_Format, $M_Elements)
+						_FileReadToArray($PathRegionList, $A_RegionList, $FRTA_NOCOUNT, "|")
+						For $B_RechMultiLang = 1 To UBound($RechMultiLang) - 1
+							$M_Elements2 = StringReplace($M_Elements, '%%', $RechMultiLang[$B_RechMultiLang])
+							_ArrayAdd($A_MIX_IMAGE_Format, $M_Elements2)
+						Next
+					Case 2
+						_ArrayAdd($A_MIX_IMAGE_Format, $M_Elements)
+						_FileReadToArray($PathRegionList, $A_RegionList, $FRTA_NOCOUNT, "|")
+					Case Else
+						For $B_RechMultiLang = 1 To UBound($RechMultiLang) - 1
+							$M_Elements2 = StringReplace($M_Elements, '%%', $RechMultiLang[$B_RechMultiLang])
+							_ArrayAdd($A_MIX_IMAGE_Format, $M_Elements2)
+						Next
+				EndSwitch
 			Else
 				_ArrayAdd($A_MIX_IMAGE_Format, $M_Elements)
 			EndIf
