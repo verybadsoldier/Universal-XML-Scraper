@@ -371,8 +371,32 @@
 	. NEW: Feature: _XML_Tidy:   if Parameter $sEncoding = -1 then .omitXMLDeclaration = true - mLipok
 	.			Feature asked by @GMK here:
 	.			https://www.autoitscript.com/forum/topic/176895-xmlau3-v-11109-formerly-xmlwrapperexau3-beta-support-topic/?do=findComment&comment=1294688
-	. Changed: _XML_Tidy(ByRef $oXmlDoc, $sEncoding = -1) - Default value is set to -1
-	. New:	XML__Example_TIDY.au3
+	. Changed: _XML_Tidy(ByRef $oXmlDoc, $sEncoding = -1) - Default value is set to -1    - mLipok
+	. New:	XML__Example_TIDY.au3 - mLipok
+	.
+	.
+	2016/06/16
+	"1.1.1.11"
+	. NEW: Function: __XML_IsValidObject_DOMDocumentOrElement - mLipok
+	. Changed: Function: _XML_SelectNodes - parameter validation __XML_IsValidObject_DOMDocumentOrElement - mLipok
+	. 		Currently _XML_SelectNodes can use relative XPath
+	. Changed: Function: _XML_SelectSingleNode - parameter validation __XML_IsValidObject_DOMDocumentOrElement - mLipok
+	. 		Currently _XML_SelectSingleNode can use relative XPath
+	. Refactored: Function: _XML_CreateComment - mLipok
+	. Changed: Function: @error > $XML_ERR_COMERROR - mLipok
+	. Fixed: Function: _XML_Array_GetNodesProperties - properly gets all attributes - mLipok
+	.
+	. EXAMPLES: New, and checked/refactored/fixed
+	.	XML__Examples_TIDY.au3
+	.	XML__Examples_User__asdf1nit.au3
+	.	XML__Examples_User_coma.au3
+	.	XML__Examples_User_Realm.au3
+	.	XML__Examples_User_scila1996.au3
+	.	XML__Examples_User_DarkAqua__Tasks.au3
+	.
+	.
+
+
 
 	@LAST - this keyword is usefull for quick jumping here
 
@@ -445,14 +469,14 @@
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
 ; __XML_IsValidObject_Attributes
 ; __XML_IsValidObject_DOMDocument
+; __XML_IsValidObject_DOMDocumentOrElement
 ; __XML_IsValidObject_Node
 ; __XML_IsValidObject_NodesColl
 ; __XML_MiscProperty_DomVersion
 ; __XML_ComErrorHandler_InternalFunction
 ; __XML_ComErrorHandler_UserFunction
 
-#EndRegion  XML.au3 - UDF Header
-
+#EndRegion XML.au3 - UDF Header
 
 
 
@@ -486,10 +510,6 @@ Global Enum _
 		$XML_ERR_EMPTYCOLLECTION, _ ; 	Collections of objects was empty
 		$XML_ERR_EMPTYOBJECT, _ ; 		Object is empty
 		$XML_ERR_ENUMCOUNTER ; not used in UDF - just for other/future testing
-
-
-
-
 Global Enum _
 		$XML_EXT_DEFAULT, _ ; 					Default - Do not return any additional information, The extended which is not specifically defined.
 		$XML_EXT_PARAM1, _ ;					Error Occurs in 1-Parameter
@@ -508,14 +528,14 @@ Global Enum _
 		$XML_EXT_STREAM, _ ; 					"ADODB.STREAM" related Error
 		$XML_EXT_ENCODING, _ ; 					Encoding related Error
 		$XML_EXT_ENUMCOUNTER ; not used in UDF - just for other/future testing
-
 Global Enum _
 		$XML_RET_FAILURE, _ ;			UDF Default Failure Return Value
 		$XML_RET_SUCCESS, _ ;			UDF Default Success Return Value
 		$XML_RET_ENUMCOUNTER ; not used in UDF - just for other/future testing
-#EndRegion  XML.au3 - Enumeration - ERROR EXTENDED RETURN
+#EndRegion XML.au3 - Enumeration - ERROR EXTENDED RETURN
 
 #Region XML.au3 - ARRAY Enums
+; Enums for _XML_Array_GetAttributesProperties() function
 Global Enum _
 		$__g_eARRAY_ATTR_NAME, _
 		$__g_eARRAY_ATTR_TYPESTRING, _
@@ -524,7 +544,6 @@ Global Enum _
 		$__g_eARRAY_ATTR_DATATYPE, _
 		$__g_eARRAY_ATTR_XML, _
 		$__g_eARRAY_ATTR_ARRAYCOLCOUNT
-
 ; Enums for _XML_Array_GetNodesProperties() function
 Global Enum _
 		$__g_eARRAY_NODE_NAME, _
@@ -535,8 +554,7 @@ Global Enum _
 		$__g_eARRAY_NODE_XML, _
 		$__g_eARRAY_NODE_ATTRIBUTES, _
 		$__g_eARRAY_NODE_ARRAYCOLCOUNT
-
-#EndRegion  XML.au3 - ARRAY Enums
+#EndRegion XML.au3 - ARRAY Enums
 
 #Region XML.au3 - XML DOM Enumerated Constants
 ;~ https://msdn.microsoft.com/en-us/library/ms766473(v=vs.85).aspx
@@ -552,7 +570,7 @@ Global Const $XML_NODE_DOCUMENT = 9
 Global Const $XML_NODE_DOCUMENT_TYPE = 10
 Global Const $XML_NODE_DOCUMENT_FRAGMENT = 11
 Global Const $XML_NODE_NOTATION = 12
-#EndRegion  XML.au3 - XML DOM Enumerated Constants
+#EndRegion XML.au3 - XML DOM Enumerated Constants
 
 #Region XML.au3 - readyState Property (DOMDocument)
 ;~ https://msdn.microsoft.com/en-us/library/ms753702(v=vs.85).aspx
@@ -560,7 +578,7 @@ Global Const $XML_DOCUMENT_READYSTATE_LOADING = 1
 Global Const $XML_DOCUMENT_READYSTATE_LOADED = 2
 Global Const $XML_DOCUMENT_READYSTATE_INTERACTIVE = 3
 Global Const $XML_DOCUMENT_READYSTATE_COMPLETED = 4
-#EndRegion  XML.au3 - readyState Property (DOMDocument)
+#EndRegion XML.au3 - readyState Property (DOMDocument)
 
 #Region XML.au3 - Functions - Not yet reviewed
 ; ===============================================================================================================================
@@ -570,7 +588,7 @@ Global Const $XML_DOCUMENT_READYSTATE_COMPLETED = 4
 ; Name ..........: _XML_CreateAttribute
 ; Description ...: Adds an XML Attribute to specified node.
 ; Syntax ........: _XML_CreateAttribute(Byref $oXmlDoc, $sXPath, $asAttributeList)
-; Parameters ....: $oXmlDoc             - [in/out] an object. A valid DOMDocument object.
+; Parameters ....: $oXmlDoc             - [in/out] an object. A valid DOMDocument or IXMLDOMElement object.
 ;                  $sXPath              - a string value. The XML tree path from root node (root/child/child..)
 ;                  $asAttributeList		- an array of strings. Column0=AtributeName, Column1=AtributeValue
 ; Return values .: On Success      	    - Returns $XML_RET_SUCCESS
@@ -611,7 +629,8 @@ Func _XML_CreateAttribute(ByRef $oXmlDoc, $sXPath, $asAttributeList)
 	$oAttribute = Null
 	$oNode_Selected = Null
 	Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
-EndFunc    ;==>_XML_CreateAttribute
+
+EndFunc   ;==>_XML_CreateAttribute
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _XML_CreateCDATA
@@ -651,18 +670,17 @@ Func _XML_CreateCDATA(ByRef $oXmlDoc, $sNode, $sCDATA, $sNameSpace = "")
 
 		$oChild = Null
 		Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
-
 	EndIf
 
 	Return SetError($XML_ERR_GENERAL, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
 
-EndFunc    ;==>_XML_CreateCDATA
+EndFunc   ;==>_XML_CreateCDATA
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _XML_CreateComment
 ; Description ...: Create a COMMENT node at specified path.
 ; Syntax ........: _XML_CreateComment(ByRef $oXmlDoc, $sXPath, $sComment)
-; Parameters ....: $oXmlDoc   - [in/out] an object. A valid DOMDocument object.
+; Parameters ....: $oXmlDoc   - [in/out] an object. A valid DOMDocument or IXMLDOMElement object.
 ;                  $sXPath    - a string value. The XML tree path from root node (root/child/child..)
 ;                  $sComment  - a string value. The comment to add the to the xml file.
 ; Return values .: On Success - Returns $XML_RET_SUCCESS
@@ -680,21 +698,19 @@ Func _XML_CreateComment(ByRef $oXmlDoc, $sXPath, $sComment)
 	#forceref $oXML_COM_ErrorHandler
 
 	Local $oNode_Selected = _XML_SelectSingleNode($oXmlDoc, $sXPath)
+	If @error Then	Return SetError(@error, @extended, $XML_RET_FAILURE)
+
+	Local $oChild = $oXmlDoc.createComment($sComment)
+	$oNode_Selected.insertBefore($oChild, $oNode_Selected.childNodes(0))
 	If @error Then
-		Return SetError(@error, @extended, $XML_RET_FAILURE)
-	Else
-		Local $oChild = $oXmlDoc.createComment($sComment)
-		$oNode_Selected.insertBefore($oChild, $oNode_Selected.childNodes(0))
-		If @error Then
-			Return SetError($XML_ERR_GENERAL, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
-		ElseIf $oXmlDoc.parseError.errorCode Then
-			Return SetError($XML_ERR_PARSE, $oXmlDoc.parseError.errorCode, $XML_RET_FAILURE)
-		Else
-			Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $XML_RET_SUCCESS) ; TODO Check for what we need to return on success
-		EndIf
+		Return SetError($XML_ERR_COMERROR, @error, $XML_RET_SUCCESS)
+	ElseIf $oXmlDoc.parseError.errorCode Then
+		Return SetError($XML_ERR_PARSE, $oXmlDoc.parseError.errorCode, $XML_RET_FAILURE)
 	EndIf
 
-EndFunc    ;==>_XML_CreateComment
+	Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $XML_RET_SUCCESS) ; TODO Check for what we need to return on success
+
+EndFunc   ;==>_XML_CreateComment
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _XML_CreateRootNode
@@ -735,7 +751,7 @@ Func _XML_CreateRootNode(ByRef $oXmlDoc, $sNode, $sData = "", $sNameSpace = "")
 
 	Return SetError($XML_ERR_GENERAL, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
 
-EndFunc    ;==>_XML_CreateRootNode
+EndFunc   ;==>_XML_CreateRootNode
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _XML_CreateRootNodeWAttr
@@ -796,13 +812,13 @@ Func _XML_CreateRootNodeWAttr(ByRef $oXmlDoc, $sNode, $aAttribute_Names, $aAttri
 
 	Return SetError($XML_ERR_GENERAL, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
 
-EndFunc    ;==>_XML_CreateRootNodeWAttr
+EndFunc   ;==>_XML_CreateRootNodeWAttr
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _XML_DeleteNode
 ; Description ...: Deletes XML Node based on XPath input from root node.
 ; Syntax ........: _XML_DeleteNode(ByRef $oXmlDoc, $sXPath)
-; Parameters ....: $oXmlDoc   - [in/out] an object. A valid DOMDocument object.
+; Parameters ....: $oXmlDoc   - [in/out] an object. A valid DOMDocument or IXMLDOMElement object.
 ;                  $sXPath    - a string value. The XML tree path from root node (root/child/child..)
 ; Return values .: On Success - Returns $XML_RET_SUCCESS
 ;                  On Failure - Returns $XML_RET_FAILURE and sets the @error flag to non-zero (look in #Region XML.au3 - ERROR Enums)
@@ -839,13 +855,13 @@ Func _XML_DeleteNode(ByRef $oXmlDoc, $sXPath)
 
 	Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
 
-EndFunc    ;==>_XML_DeleteNode
+EndFunc   ;==>_XML_DeleteNode
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _XML_GetAllAttrib
 ; Description ...: Get all XML Field(s) attributes based on XPath input from root node.
 ; Syntax ........: _XML_GetAllAttrib(ByRef $oXmlDoc, $sXPath, ByRef $aName, ByRef $aValue)
-; Parameters ....: $oXmlDoc   - [in/out] an object. A valid DOMDocument object.
+; Parameters ....: $oXmlDoc   - [in/out] an object. A valid DOMDocument or IXMLDOMElement object.
 ;                  $sXPath    - a string value. The XML tree path from root node (root/child/child..)
 ; Return values .: On Success - Returns array of fields text values (number of items is in [0][0])
 ;                  On Failure - Returns $XML_RET_FAILURE and sets the @error flag to non-zero (look in #Region XML.au3 - ERROR Enums)
@@ -882,13 +898,13 @@ Func _XML_GetAllAttrib(ByRef $oXmlDoc, $sXPath)
 	$aResponse[0][0] = $oAttributesColl.length
 	Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $aResponse)
 
-EndFunc    ;==>_XML_GetAllAttrib
+EndFunc   ;==>_XML_GetAllAttrib
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _XML_GetChildren
 ; Description ...: Selects XML child Node(s) of an element based on XPath input from root node and returns there text values.
 ; Syntax ........: _XML_GetChildren(ByRef $oXmlDoc, $sXPath)
-; Parameters ....: $oXmlDoc      - [in/out] an object. A valid DOMDocument object.
+; Parameters ....: $oXmlDoc      - [in/out] an object. A valid DOMDocument or IXMLDOMElement object.
 ;                  $sXPath       - a string value. The XML tree path from root node (root/child/child..)
 ; Return values .: On Success    - Returns an array where:
 ;                  |$array[0][0] = Size of array
@@ -936,21 +952,20 @@ Func _XML_GetChildren(ByRef $oXmlDoc, $sXPath)
 				Next
 			EndIf
 		Next
-
 		$aResponse[0][0] = $iResponseDimSize
 		; TODO Description for @extended
 		Return SetError($XML_ERR_OK, $iResponseDimSize, $aResponse)
-	Else
-		Return SetError($XML_ERR_NOCHILDMATCH, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
-	EndIf
 
-EndFunc    ;==>_XML_GetChildren
+	EndIf
+	Return SetError($XML_ERR_NOCHILDMATCH, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
+
+EndFunc   ;==>_XML_GetChildren
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _XML_GetChildText
 ; Description ...: Selects XML child Node(s) of an element based on XPath input from root node.
 ; Syntax ........: _XML_GetChildText(ByRef $oXmlDoc, $sXPath)
-; Parameters ....: $oXmlDoc    - [in/out] an object. A valid DOMDocument object.
+; Parameters ....: $oXmlDoc    - [in/out] an object. A valid DOMDocument or IXMLDOMElement object.
 ;                  $sXPath     - a string value. The XML tree path from root node (root/child/child..)
 ; Return values .: On Success  - Returns an array of Node's names and text.
 ;                  On Failure  - Returns $XML_RET_FAILURE and sets the @error flag to non-zero (look in #Region XML.au3 - ERROR Enums)
@@ -981,17 +996,16 @@ Func _XML_GetChildText(ByRef $oXmlDoc, $sXPath)
 
 		$aResponse[0] = UBound($aResponse) - 1
 		Return SetError($XML_ERR_OK, $aResponse[0], $aResponse) ; TODO Description for @extended
-	Else
-		Return SetError($XML_ERR_NOCHILDMATCH, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
 	EndIf
+	Return SetError($XML_ERR_NOCHILDMATCH, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
 
-EndFunc    ;==>_XML_GetChildText
+EndFunc   ;==>_XML_GetChildText
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _XML_GetField
 ; Description ...: Get XML Field(s) based on XPath input from root node.
 ; Syntax ........: _XML_GetField(ByRef $oXmlDoc, $sXPath)
-; Parameters ....: $oXmlDoc   - [in/out] an object. A valid DOMDocument object.
+; Parameters ....: $oXmlDoc   - [in/out] an object. A valid DOMDocument or IXMLDOMElement object.
 ;                  $sXPath    - a string value. The XML tree path from root node (root/child/child..)
 ; Return values .: On Success - Returns an array of fields text values (count is in first element)
 ;                  On Failure - $XML_RET_FAILURE and sets the @error flag to non-zero (look in #Region XML.au3 - ERROR Enums)
@@ -1025,28 +1039,26 @@ Func _XML_GetField(ByRef $oXmlDoc, $sXPath)
 			EndIf
 
 			$aRet = _XML_GetValue($oXmlDoc, $sNodePath)
-			If IsArray($aRet) Then
-				If UBound($aRet) > 1 Then _XML_Array_AddName($aResponse, $aRet[1])
+			If UBound($aRet) > 1 Then
+				_XML_Array_AddName($aResponse, $aRet[1])
 			Else
 				_XML_Array_AddName($aResponse, "")
 			EndIf
 
 		Next
-
 		$aResponse[0] = UBound($aResponse) - 1
 		Return SetError($XML_ERR_OK, $aResponse[0], $aResponse) ; TODO Description for @extended
 
-	Else
-		Return SetError($XML_ERR_GENERAL, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
 	EndIf
+	Return SetError($XML_ERR_GENERAL, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
 
-EndFunc    ;==>_XML_GetField
+EndFunc   ;==>_XML_GetField
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _XML_GetNodesPath
 ; Description ...: Return a nodes full path based on XPath input from root node.
 ; Syntax ........: _XML_GetNodesPath(ByRef $oXmlDoc, $sXPath)
-; Parameters ....: $oXmlDoc   - [in/out] an object. A valid DOMDocument object.
+; Parameters ....: $oXmlDoc   - [in/out] an object. A valid DOMDocument or IXMLDOMElement object.
 ;                  $sXPath    - a string value. The XML tree path from root node (root/child/child..)
 ; Return values .: On Success - An array of node names from root, count in [0] element.
 ;                  On Failure - $XML_RET_FAILURE and sets the @error flag to non-zero (look in #Region XML.au3 - ERROR Enums)
@@ -1107,7 +1119,7 @@ Func _XML_GetNodesPath(ByRef $oXmlDoc, $sXPath)
 	$aResponse[0] = UBound($aResponse) - 1
 	Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $aResponse)
 
-EndFunc    ;==>_XML_GetNodesPath
+EndFunc   ;==>_XML_GetNodesPath
 
 ; #FUNCTION# ===================================================================
 ; Name ..........: _XML_GetNodesPathInternal
@@ -1156,13 +1168,13 @@ Func _XML_GetNodesPathInternal(ByRef $oXML_Node)
 
 	Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $sNodePath)
 
-EndFunc    ;==>_XML_GetNodesPathInternal
+EndFunc   ;==>_XML_GetNodesPathInternal
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _XML_GetParentNodeName
 ; Description ...: Gets the parent node name of the node pointed to by the XPath
 ; Syntax ........: _XML_GetParentNodeName(ByRef $oXmlDoc, $sXPath)
-; Parameters ....: $oXmlDoc   - [in/out] an object. A valid DOMDocument object.
+; Parameters ....: $oXmlDoc   - [in/out] an object. A valid DOMDocument or IXMLDOMElement object.
 ;                  $sXPath    - a string value. The XML tree path from root node (root/child/child..)
 ; Return values .: On Success - @TODO
 ;                  On Failure - $XML_RET_FAILURE and sets the @error flag to non-zero (look in #Region XML.au3 - ERROR Enums)
@@ -1225,15 +1237,15 @@ Func _XML_GetParentNodeName(ByRef $oXmlDoc, $sXPath)
 	$aResponse[0] = UBound($aResponse) - 1
 	Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $sParentNodeName)
 
-EndFunc    ;==>_XML_GetParentNodeName
+EndFunc   ;==>_XML_GetParentNodeName
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _XML_GetValue
 ; Description ...: Get XML values based on XPath input from root node.
 ; Syntax ........: _XML_GetValue(ByRef $oXmlDoc, $sXPath)
-; Parameters ....: $oXmlDoc   - [in/out] an object. A valid DOMDocument object.
+; Parameters ....: $oXmlDoc   - [in/out] an object. A valid DOMDocument or IXMLDOMElement object.
 ;                  $sXPath    - a string value. The XML tree path from root node (root/child/child..)
-; Return values .: On Success - Returns an array of fields text values(count is in first element)
+; Return values .: On Success - Returns an array of fields text values (count is in first element)
 ;                  On Failure - Returns $XML_RET_FAILURE and sets the @error flag to non-zero (look in #Region XML.au3 - ERROR Enums)
 ;                  |0 - No matching node. ; TODO
 ;                  |1 - No object passed. ; TODO
@@ -1270,13 +1282,13 @@ Func _XML_GetValue(ByRef $oXmlDoc, $sXPath)
 	$aResponse[0] = UBound($aResponse) - 1
 	Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $aResponse)
 
-EndFunc    ;==>_XML_GetValue
+EndFunc   ;==>_XML_GetValue
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _XML_InsertChildNode
 ; Description ...: Insert a child node under the specified XPath Node.
 ; Syntax ........: _XML_InsertChildNode(ByRef $oXmlDoc, $sXPath, $sNode[, $sData = ""[, $sNameSpace = ""]])
-; Parameters ....: $oXmlDoc    - [in/out] an object. A valid DOMDocument object.
+; Parameters ....: $oXmlDoc    - [in/out] an object. A valid DOMDocument or IXMLDOMElement object.
 ;                  $sXPath     - a string value. The XML tree path from root node (root/child/child..)
 ;                  $sNode      - Node name to add.
 ;                  $iItem      - [optional] 0-based child item before which to insert. (Default = 0
@@ -1318,13 +1330,13 @@ Func _XML_InsertChildNode(ByRef $oXmlDoc, $sXPath, $sNode, $iItem = 0, $sData = 
 	$oChild = Null
 	Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
 
-EndFunc    ;==>_XML_InsertChildNode
+EndFunc   ;==>_XML_InsertChildNode
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _XML_RemoveAttributeNode
 ; Description ...: Delete XML Attribute node based on XPath input from root node.
 ; Syntax ........: _XML_RemoveAttributeNode(ByRef $oXmlDoc, $sXPath, $sAttribute)
-; Parameters ....: $oXmlDoc    - [in/out] an object. A valid DOMDocument object.
+; Parameters ....: $oXmlDoc    - [in/out] an object. A valid DOMDocument or IXMLDOMElement object.
 ;                  $sXPath     - a string value. The XML tree path from root node (root/child/child..)
 ;                  $sAttribute - a string value. The name of attribute node to delete
 ; Return values .: On Success  - Returns $XML_RET_SUCCESS
@@ -1345,19 +1357,21 @@ Func _XML_RemoveAttributeNode(ByRef $oXmlDoc, $sXPath, $sAttribute)
 	If @error Then Return SetError(@error, @extended, $XML_RET_FAILURE)
 
 	Local $oAttribute = $oNode_Selected.removeAttributeNode($oNode_Selected.getAttributeNode($sAttribute))
-	If IsObj($oAttribute) Then
-		Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
-	Else
+	If @error Then
+		Return SetError($XML_ERR_COMERROR, @error, $XML_RET_FAILURE)
+	ElseIf Not IsObj($oAttribute) Then
 		Return SetError($XML_ERR_NOATTRMATCH, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
 	EndIf
 
-EndFunc    ;==>_XML_RemoveAttributeNode
+	Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
+
+EndFunc   ;==>_XML_RemoveAttributeNode
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _XML_ReplaceChild
 ; Description ...: Replaces selected nodes with another
 ; Syntax ........: _XML_ReplaceChild(ByRef $oXmlDoc, $sXPath, $sNodeNew_Name[, $sNameSpace = ""])
-; Parameters ....: $oXmlDoc       - [in/out] an object. A valid DOMDocument object.
+; Parameters ....: $oXmlDoc       - [in/out] an object. A valid DOMDocument or IXMLDOMElement object.
 ;                  $sXPath        - a string value. The XML tree path from root node (root/child/child..)
 ;                  $sNodeNew_Name - a string value. The replacement node name.
 ;                  $sNameSpace    - [optional] a string value. Default is "".
@@ -1402,19 +1416,18 @@ Func _XML_ReplaceChild(ByRef $oXmlDoc, $sXPath, $sNodeNew_Name, $sNameSpace = ""
 		EndIf
 
 	Next
-
 	$oNodesColl = Null
 	$oNodeNew = Null
 
 	Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
 
-EndFunc    ;==>_XML_ReplaceChild
+EndFunc   ;==>_XML_ReplaceChild
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _XML_SetAttrib
 ; Description ...: Set XML Field(s) based on XPath input from root node.
 ; Syntax ........: _XML_SetAttrib(ByRef $oXmlDoc, $sXPath, $sAttribute[, $sValue = ""[, $iIndex = Default]])
-; Parameters ....: $oXmlDoc 		- [in/out] an object. A valid DOMDocument object.
+; Parameters ....: $oXmlDoc 		- [in/out] an object. A valid DOMDocument or IXMLDOMElement object.
 ;                  $sXPath          - a string value. The XML tree path from root node (root/child/child..)
 ;                  $sAttribute     	- The attribute to set.
 ;                  $sValue      	- The value to give the attribute defaults to ""
@@ -1452,11 +1465,10 @@ Func _XML_SetAttrib(ByRef $oXmlDoc, $sXPath, $sAttribute, $sValue = "", $iIndex 
 			EndIf
 		Next
 		Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $aResponse)
-	Else
-		Return SetError($XML_ERR_PARAMETER, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
 	EndIf
+	Return SetError($XML_ERR_PARAMETER, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
 
-EndFunc    ;==>_XML_SetAttrib
+EndFunc   ;==>_XML_SetAttrib
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _XML_Transform
@@ -1520,13 +1532,13 @@ Func _XML_Transform(ByRef $oXmlDoc, $sXSL_FileFullPath)
 
 	Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
 
-EndFunc    ;==>_XML_Transform
+EndFunc   ;==>_XML_Transform
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _XML_UpdateField
 ; Description ...: Update existing single node based on XPath specs.
 ; Syntax ........: _XML_UpdateField(ByRef $oXmlDoc, $sXPath, $sData)
-; Parameters ....: $oXmlDoc   - [in/out] an object. A valid DOMDocument object.
+; Parameters ....: $oXmlDoc   - [in/out] an object. A valid DOMDocument or IXMLDOMElement object
 ;                  $sXPath    - a string value. The XML tree path from root node (root/child/child..)
 ;                  $sData     - The data to update the node with.
 ; Return values .: On Success - Returns $XML_RET_SUCCESS
@@ -1563,17 +1575,16 @@ Func _XML_UpdateField(ByRef $oXmlDoc, $sXPath, $sData)
 		EndIf
 
 		Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
-	Else
-		Return SetError($XML_ERR_GENERAL, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
 	EndIf
+	Return SetError($XML_ERR_GENERAL, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
 
-EndFunc    ;==>_XML_UpdateField
+EndFunc   ;==>_XML_UpdateField
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _XML_UpdateField2
 ; Description ...: Update existing node(s) based on XPath specs.
 ; Syntax ........: _XML_UpdateField2(ByRef $oXmlDoc, $sXPath, $sData)
-; Parameters ....: $oXmlDoc   - [in/out] an object. A valid DOMDocument object.
+; Parameters ....: $oXmlDoc   - [in/out] an object. A valid DOMDocument or IXMLDOMElement object.
 ;                  $sXPath    - a string value. The XML tree path from root node (root/child/child..)
 ;                  $sData     - The data to update the node with.
 ; Return values .: On Success - Returns $XML_RET_SUCCESS
@@ -1607,7 +1618,7 @@ Func _XML_UpdateField2(ByRef $oXmlDoc, $sXPath, $sData)
 	Next
 	Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
 
-EndFunc    ;==>_XML_UpdateField2
+EndFunc   ;==>_XML_UpdateField2
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _XML_Validate_File
@@ -1652,8 +1663,8 @@ Func _XML_Validate_File($sXMLFile, $sNameSpace, $sXSD_FileFullPath)
 
 	Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
 
-EndFunc    ;==>_XML_Validate_File
-#EndRegion  XML.au3 - Functions - Not yet reviewed
+EndFunc   ;==>_XML_Validate_File
+#EndRegion XML.au3 - Functions - Not yet reviewed
 
 #Region XML.au3 - Functions - Work in progress
 
@@ -1661,7 +1672,7 @@ EndFunc    ;==>_XML_Validate_File
 ; Name ..........: _XML_GetNodesCount
 ; Description ...: Get node count based on $sXPath and selected $iNodeType
 ; Syntax ........: _XML_GetNodesCount(ByRef $oXmlDoc, $sXPath[, $iNodeType = Default])
-; Parameters ....: $oXmlDoc				- [in/out] an object. A valid DOMDocument object.
+; Parameters ....: $oXmlDoc				- [in/out] an object. A valid DOMDocument or IXMLDOMElement object.
 ;                  $sXPath				- a string value. The XML tree path from root node (root/child/child..)
 ;                  $iNodeType			- [optional] an integer value. Default value is Default which mean any type.
 ; Return values .: Success				- Number of nodes found (can be 0)
@@ -1689,16 +1700,16 @@ Func _XML_GetNodesCount(ByRef $oXmlDoc, $sXPath, $iNodeType = Default)
 			If $oNode_enum.nodeType = $iNodeType Then $iNodeCount += 1
 		Next
 		Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $iNodeCount)
-	Else
-		Return SetError($XML_ERR_PARAMETER, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
 	EndIf
-EndFunc    ;==>_XML_GetNodesCount
+	Return SetError($XML_ERR_PARAMETER, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
+
+EndFunc   ;==>_XML_GetNodesCount
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _XML_InsertChildWAttr
 ; Description ...: Inserts a child node(s) under the specified XPath NodeCollection with attributes.
 ; Syntax ........: _XML_InsertChildWAttr(ByRef $oXmlDoc, $sXPath, $sNodeName[, $aAttributeList = Default[, $sNodeText = ""[, $sNameSpace = ""]]])
-; Parameters ....: $oXmlDoc              - [in/out] an object. A valid DOMDocument object.
+; Parameters ....: $oXmlDoc              - [in/out] an object. A valid DOMDocument or IXMLDOMElement object.
 ;                  $sXPath               - a string value. The XML tree path from root node (root/child/child..)
 ;                  $sNodeName            - a string value. The nodeName
 ;                  $iItem                - [optional] Item before which to insert the child. (Default = 0)
@@ -1774,13 +1785,13 @@ Func _XML_InsertChildWAttr(ByRef $oXmlDoc, $sXPath, $sNodeName, $iItem = 0, $vAt
 	$oChild_Temp = Null
 	Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
 
-EndFunc    ;==>_XML_InsertChildWAttr
+EndFunc   ;==>_XML_InsertChildWAttr
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _XML_RemoveAttribute
 ; Description ...: Delete XML Attribute based on XPath input from root node.
 ; Syntax ........: _XML_RemoveAttribute(ByRef $oXmlDoc, $sXPath, $sAttribute_name)
-; Parameters ....: $oXmlDoc 			- [in/out] an object. A valid DOMDocument object.
+; Parameters ....: $oXmlDoc 			- [in/out] an object. A valid DOMDocument or IXMLDOMElement object.
 ;                  $sXPath              - a string value. The XML tree path from root node (root/child/child..)
 ;                  $sAttribute_name     - a string value.
 ; Return values .: Success        		- $XML_RET_SUCCESS
@@ -1811,11 +1822,10 @@ Func _XML_RemoveAttribute(ByRef $oXmlDoc, $sXPath, $sAttribute_Name)
 
 	If Not IsObj($oAttribute_Removed) Or ($iAttributesLength = 1 + $oNode_Selected.attributes.length) Then
 		Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
-	Else
-		Return SetError($XML_ERR_GENERAL, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
 	EndIf
+	Return SetError($XML_ERR_GENERAL, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
 
-EndFunc    ;==>_XML_RemoveAttribute
+EndFunc   ;==>_XML_RemoveAttribute
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _XML_TransformNode
@@ -1864,8 +1874,8 @@ Func _XML_TransformNode($sXML_FileFullPath, $sXSL_FileFullPath, $sHTML_FileFullP
 	FileClose($hFile)
 	Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
 
-EndFunc    ;==>_XML_TransformNode
-#EndRegion  XML.au3 - Functions - Work in progress
+EndFunc   ;==>_XML_TransformNode
+#EndRegion XML.au3 - Functions - Work in progress
 
 #Region XML.au3 - Functions - COMPLETED
 
@@ -1888,10 +1898,9 @@ Func __XML_IsValidObject_Attributes(ByRef $oAttributes)
 		Return SetError($XML_ERR_ISNOTOBJECT, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
 	ElseIf ObjName($oAttributes, $OBJ_NAME) <> 'IXMLDOMNamedNodeMap' Then
 		Return SetError($XML_ERR_INVALIDATTRIB, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
-	Else
-		Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
 	EndIf
-EndFunc    ;==>__XML_IsValidObject_Attributes
+	Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
+EndFunc   ;==>__XML_IsValidObject_Attributes
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
 ; Name ..........: __XML_IsValidObject_DOMDocument
@@ -1912,10 +1921,33 @@ Func __XML_IsValidObject_DOMDocument(ByRef $oXML)
 		Return SetError($XML_ERR_ISNOTOBJECT, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
 	ElseIf StringInStr(ObjName($oXML, $OBJ_NAME), 'DOMDocument') = 0 Then
 		Return SetError($XML_ERR_INVALIDDOMDOC, $XML_EXT_DOMDOCUMENT, $XML_RET_FAILURE)
-	Else
-		Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
 	EndIf
-EndFunc    ;==>__XML_IsValidObject_DOMDocument
+	Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
+EndFunc   ;==>__XML_IsValidObject_DOMDocument
+
+; #INTERNAL_USE_ONLY# ===========================================================================================================
+; Name ..........: __XML_IsValidObject_DOMDocumentOrElement
+; Description ...: Check if Object is valid Msxml2.DOMDocument.xxxx Object or IXMLDOMElement
+; Syntax ........: __XML_IsValidObject_DOMDocumentOrElement(Byref $oXML)
+; Parameters ....: $oXML                - [in/out] an object.
+; Return values .: Success             - $XML_RET_SUCCESS
+;                  Failure             - $XML_RET_FAILURE and sets the @error flag to non-zero (look in #Region XML.au3 - ERROR Enums)
+; Return values .: None
+; Author ........: Your Name
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func __XML_IsValidObject_DOMDocumentOrElement(ByRef $oXML)
+	If Not IsObj($oXML) Then
+		Return SetError($XML_ERR_ISNOTOBJECT, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
+	ElseIf StringInStr(ObjName($oXML, $OBJ_NAME), 'DOMDocument') = 0 And StringInStr(ObjName($oXML, $OBJ_NAME), 'IXMLDOMElement') = 0 Then
+		Return SetError($XML_ERR_INVALIDDOMDOC, $XML_EXT_DOMDOCUMENT, $XML_RET_FAILURE)
+	EndIf
+	Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
+EndFunc   ;==>__XML_IsValidObject_DOMDocument
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
 ; Name ..........: __XML_IsValidObject_Node
@@ -1943,13 +1975,11 @@ Func __XML_IsValidObject_Node(ByRef $oNode, $iNodeType = Default)
 	ElseIf $iNodeType >= $XML_NODE_ELEMENT And $iNodeType <= $XML_NODE_NOTATION Then
 		If $iNodeType = $oNode.type Then
 			Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
-		Else
-			Return SetError($XML_ERR_INVALIDNODETYPE, $oNode.type, $XML_RET_FAILURE)
 		EndIf
-	Else
-		Return SetError($XML_ERR_PARAMETER, $XML_EXT_PARAM2, $XML_RET_FAILURE)
+		Return SetError($XML_ERR_INVALIDNODETYPE, $oNode.type, $XML_RET_FAILURE)
 	EndIf
-EndFunc    ;==>__XML_IsValidObject_Node
+	Return SetError($XML_ERR_PARAMETER, $XML_EXT_PARAM2, $XML_RET_FAILURE)
+EndFunc   ;==>__XML_IsValidObject_Node
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
 ; Name ..........: __XML_IsValidObject_NodesColl
@@ -1970,17 +2000,16 @@ Func __XML_IsValidObject_NodesColl(ByRef $oNodesColl)
 		Return SetError($XML_ERR_ISNOTOBJECT, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
 	ElseIf ObjName($oNodesColl, $OBJ_NAME) <> 'IXMLDOMSelection' Then
 		Return SetError($XML_ERR_INVALIDNODETYPE, $XML_EXT_DEFAULT, ObjName($oNodesColl, $OBJ_NAME))
-	Else
-		Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
 	EndIf
-EndFunc    ;==>__XML_IsValidObject_NodesColl
+	Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
+EndFunc   ;==>__XML_IsValidObject_NodesColl
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _XML_CreateChildWAttr
 ; Description ...: Create a child node(s) under the specified XPath NodeCollection with attributes.
 ; Syntax ........: _XML_CreateChildWAttr(ByRef $oXmlDoc, $sXPath, $sNodeName[, $aAttributeList = Default[, $sNodeText = ""[,
 ;                  $sNameSpace = ""]]])
-; Parameters ....: $oXmlDoc 			- [in/out] an object. A valid DOMDocument object.
+; Parameters ....: $oXmlDoc 			- [in/out] an object. A valid DOMDocument or IXMLDOMElement object.
 ;                  $sXPath              - a string value. The XML tree path from root node (root/child/child..)
 ;                  $sNodeName           - a string value. The nodeName
 ;                  $aAttributeList      - [optional] an array of XML Attributes. Column0=Name, Column1=Value
@@ -2055,8 +2084,7 @@ Func _XML_CreateChildWAttr(ByRef $oXmlDoc, $sXPath, $sNodeName, $aAttributeList 
 
 	$oChild_Temp = Null
 	Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
-
-EndFunc    ;==>_XML_CreateChildWAttr
+EndFunc   ;==>_XML_CreateChildWAttr
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _XML_CreateDOMDocument
@@ -2105,8 +2133,7 @@ Func _XML_CreateDOMDocument($iDOM_Version = Default)
 	If @error Then Return SetError(@error, @extended, $XML_RET_FAILURE)
 
 	Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $oXmlDoc)
-
-EndFunc    ;==>_XML_CreateDOMDocument
+EndFunc   ;==>_XML_CreateDOMDocument
 
 ; #FUNCTION# ===================================================================
 ; Name ..........: _XML_CreateFile
@@ -2162,16 +2189,15 @@ Func _XML_CreateFile($sXML_FileFullPath, $sRoot, $bUTF8 = False, $iDOM_Version =
 	If $oXmlDoc.parseError.errorCode Then
 		Return SetError($XML_ERR_PARSE, $oXmlDoc.parseError.errorCode, $XML_RET_FAILURE)
 	EndIf
-
 	Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $oXmlDoc)
 
-EndFunc    ;==>_XML_CreateFile
+EndFunc   ;==>_XML_CreateFile
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _XML_GetAllAttribIndex
 ; Description ...: Get XML attributes collection from node element based on Xpath and specific index.
 ; Syntax ........: _XML_GetAllAttribIndex(ByRef $oXmlDoc, $sXPath[, $iNodeIndex = 0])
-; Parameters ....: $oXmlDoc 			- [in/out] an object. A valid DOMDocument object.
+; Parameters ....: $oXmlDoc 			- [in/out] an object. A valid DOMDocument or IXMLDOMElement object.
 ;                  $sXPath              - a string value. The XML tree path from root node (root/child/child..)
 ;                  $iNodeIndex          - [optional] an integer value. Default is 0. Specify which node in collection should be used.
 ; Return values .: Success        		- Attributes collection of object,
@@ -2200,17 +2226,16 @@ Func _XML_GetAllAttribIndex(ByRef $oXmlDoc, $sXPath, $iNodeIndex = 0)
 		Return SetError($XML_ERR_NOATTRMATCH, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
 	ElseIf $oAttributesColl.length = 0 Then
 		Return SetError($XML_ERR_EMPTYCOLLECTION, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
-	Else
-		Return SetError($XML_ERR_GENERAL, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
 	EndIf
+	Return SetError($XML_ERR_GENERAL, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
 
-EndFunc    ;==>_XML_GetAllAttribIndex
+EndFunc   ;==>_XML_GetAllAttribIndex
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _XML_GetChildNodes
 ; Description ...: Get XML child Node collection of node element based on XPath input from root node.
 ; Syntax ........: _XML_GetChildNodes(ByRef $oXmlDoc, $sXPath)
-; Parameters ....: $oXmlDoc 			- [in/out] an object. A valid DOMDocument object.
+; Parameters ....: $oXmlDoc 			- [in/out] an object. A valid DOMDocument or IXMLDOMElement object.
 ;                  $sXPath              - a string value. The XML tree path from root node (root/child/child..)
 ; Return values .: Success        		- Child Nodes collection, and @extended contains collection length (count)
 ;                  Failure             	- $XML_RET_FAILURE and sets the @error flag to non-zero (look in #Region XML.au3 - ERROR Enums)
@@ -2238,7 +2263,7 @@ Func _XML_GetChildNodes(ByRef $oXmlDoc, $sXPath)
 	; TODO Is it used ?
 	Return SetError($XML_ERR_GENERAL, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
 
-EndFunc    ;==>_XML_GetChildNodes
+EndFunc   ;==>_XML_GetChildNodes
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _XML_GetNodeAttributeValue
@@ -2272,11 +2297,10 @@ Func _XML_GetNodeAttributeValue(ByRef $oNode_Selected, $sAttribute_Name)
 		Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $sAttribute_Value)
 	ElseIf $sAttribute_Value = Null Then
 		Return SetError($XML_ERR_NOATTRMATCH, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
-	Else
-		Return SetError($XML_ERR_GENERAL, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
 	EndIf
+	Return SetError($XML_ERR_GENERAL, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
 
-EndFunc    ;==>_XML_GetNodeAttributeValue
+EndFunc   ;==>_XML_GetNodeAttributeValue
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _XML_Load
@@ -2322,7 +2346,7 @@ Func _XML_Load(ByRef $oXmlDoc, $sXML_FileFullPath, $sNameSpace = "", $bValidateO
 
 	Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $oXmlDoc)
 
-EndFunc    ;==>_XML_Load
+EndFunc   ;==>_XML_Load
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _XML_LoadXML
@@ -2369,13 +2393,13 @@ Func _XML_LoadXML(ByRef $oXmlDoc, $sXML_Content, $sNameSpace = "", $bValidateOnP
 
 	Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $oXmlDoc)
 
-EndFunc    ;==>_XML_LoadXML
+EndFunc   ;==>_XML_LoadXML
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _XML_NodeExists
 ; Description ...: Checks for the existence of a node matching the specified path
 ; Syntax ........: _XML_NodeExists(ByRef $oXmlDoc, $sXPath)
-; Parameters ....: $oXmlDoc 		- [in/out] an object. A valid DOMDocument object.
+; Parameters ....: $oXmlDoc 		- [in/out] an object. A valid DOMDocument or IXMLDOMElement object.
 ;                  $sXPath          - a string value. The XML tree path from root node (root/child/child..)
 ; Return values .: Success        	- $XML_RET_SUCCESS
 ;                  Failure			- $XML_RET_FAILURE and sets the @error flag to non-zero (look in #Region XML.au3 - ERROR Enums)
@@ -2395,13 +2419,12 @@ Func _XML_NodeExists(ByRef $oXmlDoc, $sXPath)
 	Local $oNode_Selected = _XML_SelectSingleNode($oXmlDoc, $sXPath)
 	If @error Then
 		Return SetError(@error, @extended, $XML_RET_FAILURE)
-	Else
-		Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
 	EndIf
+	Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
 
 	#forceref $oNode_Selected
 
-EndFunc    ;==>_XML_NodeExists
+EndFunc   ;==>_XML_NodeExists
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _XML_SaveToFile
@@ -2430,21 +2453,21 @@ Func _XML_SaveToFile(ByRef $oXmlDoc, $sXML_FileFullPath)
 		Return SetError($XML_ERR_PARAMETER, $XML_EXT_PARAM2, $XML_RET_FAILURE)
 	ElseIf FileExists($sXML_FileFullPath) Then
 		Return SetError($XML_ERR_SAVE, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
-	Else
-		$oXmlDoc.save($sXML_FileFullPath)
-		If $oXmlDoc.parseError.errorCode Then
-			Return SetError($XML_ERR_PARSE, $oXmlDoc.parseError.errorCode, $XML_RET_FAILURE)
-		EndIf
-		Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
 	EndIf
 
-EndFunc    ;==>_XML_SaveToFile
+	$oXmlDoc.save($sXML_FileFullPath)
+	If $oXmlDoc.parseError.errorCode Then
+		Return SetError($XML_ERR_PARSE, $oXmlDoc.parseError.errorCode, $XML_RET_FAILURE)
+	EndIf
+	Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
+
+EndFunc   ;==>_XML_SaveToFile
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _XML_SelectNodes
 ; Description ...: Selects XML Node(s) based on XPath input from root node.
 ; Syntax ........: _XML_SelectNodes(ByRef $oXmlDoc, $sXPath)
-; Parameters ....: $oXmlDoc 			- [in/out] an object. A valid DOMDocument object.
+; Parameters ....: $oXmlDoc 			- [in/out] an object. A valid DOMDocument or IXMLDOMElement object.
 ;                  $sXPath              - a string value. The XML tree path from root node (root/child/child..)
 ; Return values .: Success        		- $oNodesColl - Nodes collection, and set @extended = $oNodesColl.length
 ;                  Failure             	- $XML_RET_FAILURE and sets the @error flag to non-zero (look in #Region XML.au3 - ERROR Enums)
@@ -2460,7 +2483,7 @@ Func _XML_SelectNodes(ByRef $oXmlDoc, $sXPath)
 	Local $oXML_COM_ErrorHandler = ObjEvent("AutoIt.Error", __XML_ComErrorHandler_InternalFunction)
 	#forceref $oXML_COM_ErrorHandler
 
-	__XML_IsValidObject_DOMDocument($oXmlDoc)
+	__XML_IsValidObject_DOMDocumentOrElement($oXmlDoc)
 	If @error Then Return SetError(@error, @extended, $XML_RET_FAILURE)
 
 	Local $oNodesColl = $oXmlDoc.selectNodes($sXPath)
@@ -2469,16 +2492,15 @@ Func _XML_SelectNodes(ByRef $oXmlDoc, $sXPath)
 	ElseIf (Not IsObj($oNodesColl)) Or $oNodesColl.length = 0 Then
 		Return SetError($XML_ERR_EMPTYCOLLECTION, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
 	EndIf
-
 	Return SetError($XML_ERR_OK, $oNodesColl.length, $oNodesColl)
 
-EndFunc    ;==>_XML_SelectNodes
+EndFunc   ;==>_XML_SelectNodes
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _XML_SelectSingleNode
 ; Description ...: Select single XML Node based on XPath input from root node.
 ; Syntax ........: _XML_SelectSingleNode(ByRef $oXmlDoc, $sXPath)
-; Parameters ....: $oXmlDoc 			- [in/out] an object. A valid DOMDocument object.
+; Parameters ....: $oXmlDoc 			- [in/out] an object. A valid DOMDocument or IXMLDOMElement object.
 ;                  $sXPath              - a string value. The XML tree path from root node (root/child/child..)
 ; Return values .: Success        		- $oNode_Selected - single node
 ;                  Failure              - $XML_RET_FAILURE and sets the @error flag to non-zero (look in #Region XML.au3 - ERROR Enums)
@@ -2494,7 +2516,7 @@ Func _XML_SelectSingleNode(ByRef $oXmlDoc, $sXPath)
 	Local $oXML_COM_ErrorHandler = ObjEvent("AutoIt.Error", __XML_ComErrorHandler_InternalFunction)
 	#forceref $oXML_COM_ErrorHandler
 
-	__XML_IsValidObject_DOMDocument($oXmlDoc)
+	__XML_IsValidObject_DOMDocumentOrElement($oXmlDoc)
 	If @error Then Return SetError(@error, @extended, $XML_RET_FAILURE)
 
 	Local $oNode_Selected = $oXmlDoc.selectSingleNode($sXPath)
@@ -2505,11 +2527,9 @@ Func _XML_SelectSingleNode(ByRef $oXmlDoc, $sXPath)
 	ElseIf Not IsObj($oNode_Selected) Then ; https://www.autoitscript.com/forum/topic/177176-why-isobj-0-and-vargettype-object/
 		; $XML_ERR_EMPTYOBJECT
 		Return SetError($XML_ERR_NONODESMATCH, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
-	Else
-		Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $oNode_Selected)
 	EndIf
-
-EndFunc    ;==>_XML_SelectSingleNode
+	Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $oNode_Selected)
+EndFunc   ;==>_XML_SelectSingleNode
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _XML_Tidy
@@ -2589,8 +2609,8 @@ Func _XML_Tidy(ByRef $oXmlDoc, $sEncoding = -1)
 
 	Return SetError($XML_ERR_OK, $iSizeInBytes, $sXML_Return) ; TODO Description for @error and @extended
 
-EndFunc    ;==>_XML_Tidy
-#EndRegion  XML.au3 - Functions - COMPLETED
+EndFunc   ;==>_XML_Tidy
+#EndRegion XML.au3 - Functions - COMPLETED
 
 #Region XML.au3 - Functions - Misc
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
@@ -2616,14 +2636,14 @@ Func __XML_MiscProperty_DomVersion($sDomVersion = Default)
 		; set and return static variable
 		$sDomVersion_Static = $sDomVersion
 		Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $sDomVersion_Static)
-	Else
-		; reset static variable
-		$sDomVersion_Static = -1
-		; return error as incorrect parameter was passed to this function
-		Return SetError($XML_ERR_PARAMETER, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
 	EndIf
 
-EndFunc    ;==>__XML_MiscProperty_DomVersion
+	; reset static variable
+	$sDomVersion_Static = -1
+	; return error as incorrect parameter was passed to this function
+	Return SetError($XML_ERR_PARAMETER, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
+
+EndFunc   ;==>__XML_MiscProperty_DomVersion
 
 ; #FUNCTION# ===================================================================
 ; Name ..........: _XML_Misc_GetDomVersion
@@ -2641,7 +2661,7 @@ EndFunc    ;==>__XML_MiscProperty_DomVersion
 ; ==============================================================================
 Func _XML_Misc_GetDomVersion()
 	Return __XML_MiscProperty_DomVersion()
-EndFunc    ;==>_XML_Misc_GetDomVersion
+EndFunc   ;==>_XML_Misc_GetDomVersion
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _XML_Misc_Viewer
@@ -2671,7 +2691,7 @@ Func _XML_Misc_Viewer(ByRef $oXmlDoc, $sXML_FileFullPath = Default)
 	ShellExecute($sXML_FileFullPath)
 	Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
 
-EndFunc    ;==>_XML_Misc_Viewer
+EndFunc   ;==>_XML_Misc_Viewer
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _XML_MiscProperty_Encoding
@@ -2703,12 +2723,10 @@ Func _XML_MiscProperty_Encoding($sEncoding = Default)
 	ElseIf IsString($sEncoding) Then ; set and return current value
 		$sEncoding_Static = $sEncoding
 		Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $sEncoding_Static)
-
 	EndIf
-
 	Return SetError($XML_ERR_PARAMETER, $XML_EXT_PARAM1, $sEncoding_Static)
 
-EndFunc    ;==>_XML_MiscProperty_Encoding
+EndFunc   ;==>_XML_MiscProperty_Encoding
 
 ; #FUNCTION# ===================================================================
 ; Name ..........: _XML_MiscProperty_UDFVersion
@@ -2725,8 +2743,8 @@ EndFunc    ;==>_XML_MiscProperty_Encoding
 ; ==============================================================================
 Func _XML_MiscProperty_UDFVersion()
 	Return "1.1.1.10"
-EndFunc    ;==>_XML_MiscProperty_UDFVersion
-#EndRegion  XML.au3 - Functions - Misc
+EndFunc   ;==>_XML_MiscProperty_UDFVersion
+#EndRegion XML.au3 - Functions - Misc
 
 #Region XML.au3 - Functions - Arrays
 
@@ -2756,7 +2774,7 @@ Func _XML_Array_AddName(ByRef $avArray, $sValue)
 
 	; Else is not required, as this was always happen as a last resort.
 	Return SetError($XML_ERR_GENERAL, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
-EndFunc    ;==>_XML_Array_AddName
+EndFunc   ;==>_XML_Array_AddName
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _XML_Array_GetAttributesProperties
@@ -2798,10 +2816,9 @@ Func _XML_Array_GetAttributesProperties(ByRef $oAttributesColl)
 		$avArray[$iUBound][$__g_eARRAY_ATTR_DATATYPE] = $oAttributeEnum.dataType
 		$avArray[$iUBound][$__g_eARRAY_ATTR_XML] = $oAttributeEnum.xml
 	Next
-
 	Return SetError($XML_ERR_OK, UBound($avArray), $avArray)
 
-EndFunc    ;==>_XML_Array_GetAttributesProperties
+EndFunc   ;==>_XML_Array_GetAttributesProperties
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _XML_Array_GetNodesProperties
@@ -2850,16 +2867,15 @@ Func _XML_Array_GetNodesProperties(ByRef $oNodesColl)
 		Else
 			Local $sAttributes = ''
 			For $oAttribute In $oNode_enum.attributes
-				$sAttributes = $oAttribute.name & '="' & $oAttribute.text & '" '
+				$sAttributes &= $oAttribute.name & '="' & $oAttribute.text & '" '
 			Next
 			$avArray[$iUBound][$__g_eARRAY_NODE_ATTRIBUTES] = StringTrimRight($sAttributes, 1)
 		EndIf
 	Next
-
 	Return SetError($XML_ERR_OK, UBound($avArray), $avArray)
 
-EndFunc    ;==>_XML_Array_GetNodesProperties
-#EndRegion  XML.au3 - Functions - Arrays
+EndFunc   ;==>_XML_Array_GetNodesProperties
+#EndRegion XML.au3 - Functions - Arrays
 
 #Region XML.au3 - Functions - Error Handling
 
@@ -2882,7 +2898,7 @@ Func __XML_ComErrorHandler_InternalFunction($oCOMError)
 
 	Local $sUserFunction = _XML_ComErrorHandler_UserFunction()
 	If IsFunc($sUserFunction) Then $sUserFunction($oCOMError)
-EndFunc    ;==>__XML_ComErrorHandler_InternalFunction
+EndFunc   ;==>__XML_ComErrorHandler_InternalFunction
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: __XML_ComErrorHandler_UserFunction
@@ -2902,20 +2918,16 @@ Func _XML_ComErrorHandler_UserFunction($fnUserFunction = Default)
 	Local Static $fnUserFunction_Static = ''
 
 	If $fnUserFunction = Default Then
-		; just return stored static variable
-		Return $fnUserFunction_Static
+		Return $fnUserFunction_Static ; just return stored static variable
 	ElseIf IsFunc($fnUserFunction) Then
-		; set and return static variable
-		$fnUserFunction_Static = $fnUserFunction
+		$fnUserFunction_Static = $fnUserFunction ; set and return static variable
 		Return $fnUserFunction_Static
-	Else
-		; reset static variable
-		$fnUserFunction_Static = ''
-		; return error as incorrect parameter was passed to this function
-		Return SetError($XML_ERR_PARAMETER, $XML_EXT_DEFAULT, $fnUserFunction_Static)
 	EndIf
+	$fnUserFunction_Static = '' ; reset static variable
+	; return error as incorrect parameter was passed to this function
+	Return SetError($XML_ERR_PARAMETER, $XML_EXT_DEFAULT, $fnUserFunction_Static)
 
-EndFunc    ;==>_XML_ComErrorHandler_UserFunction
+EndFunc   ;==>_XML_ComErrorHandler_UserFunction
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _XML_ErrorParser_GetDescription
@@ -2942,10 +2954,20 @@ Func _XML_ErrorParser_GetDescription(ByRef $oXmlDoc)
 		$sParseError_FullDescription &= 'IXMLDOMParseError url = ' & $oXmlDoc.parseError.url & @CRLF ; Contains the URL of the XML document containing the last error.
 	EndIf
 	Return $sParseError_FullDescription
-EndFunc    ;==>_XML_ErrorParser_GetDescription
-#EndRegion  XML.au3 - Functions - Error Handling
+EndFunc   ;==>_XML_ErrorParser_GetDescription
+#EndRegion XML.au3 - Functions - Error Handling
 
 #Region XML.au3 - NEW TODO
+
+#CS
+	DOM Reference
+	https://msdn.microsoft.com/en-us/library/ms764730(v=vs.85).aspx
+
+	XPath Examples
+	https://msdn.microsoft.com/en-us/library/ms256086(v=vs.110).aspx
+
+#CE
+
 
 Func _EncodeXML($sFileToEncode)
 ;~ http://www.vb-helper.com/howto_encode_base64_hex.html
@@ -2963,5 +2985,6 @@ Func _EncodeXML($sFileToEncode)
 	$oNode.dataType = "bin.base64"
 	$oNode.nodeTypedValue = $dat
 	Return $oNode.Text
-EndFunc    ;==>_EncodeXML
-#EndRegion  XML.au3 - NEW TODO
+EndFunc   ;==>_EncodeXML
+#EndRegion XML.au3 - NEW TODO
+

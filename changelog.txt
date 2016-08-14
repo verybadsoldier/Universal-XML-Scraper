@@ -1,3 +1,6 @@
+1.5.0.6
+Adding a Tidy function to clean up the XML
+
 1.5.0.5
 Minor bug correction On filename function
 

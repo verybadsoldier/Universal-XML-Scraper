@@ -5,7 +5,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper XML Universel
-#AutoIt3Wrapper_Res_Fileversion=1.5.0.6
+#AutoIt3Wrapper_Res_Fileversion=1.5.0.7
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -49,6 +49,7 @@
 #include "./Include/_XMLDomWrapper.au3"
 #include "./Include/_zip.au3"
 #include "./Include/_ExtGDIPlus.au3"
+#include "./Include/_XML.au3"
 
 TraySetState(2)
 
@@ -680,10 +681,21 @@ Func _FUSIONXML($V_Header, $A_ROMList)
 		_FileWriteFromArray($PathNew, $A_XMLCible)
 		If @error Then MsgBox(1, "Erreur", "Ecriture du fichier impossible : " & $PathNew & "Error : " & @error & ")") ; Debug
 		ConsoleWrite(">Remplacement des CRLF" & @CRLF) ; Debug
-		_ReplaceStringInFile($PathNew, @CRLF, @LF)
+;~ 		_ReplaceStringInFile($PathNew, @CRLF, @LF)
+		_ReplaceStringInFile($PathNew, @CRLF, "")
 	EndIf
 	$ScrapeMode = IniRead($PathConfigINI, "LAST_USE", "$ScrapeMode", 0)
+
+	ConsoleWrite(">Tidy du XML" & @CRLF) ; Debug
+	Local $oXMLDoc = _XML_CreateDOMDocument(Default)
+	_XML_Load($oXMLDoc, $PathNew)
+	Local $sXmlAfterTidy = _XML_TIDY($oXMLDoc, -1)
+	_XML_LoadXML($oXMLDoc, $sXmlAfterTidy)
+	FileDelete($PathNew)
+	_XML_SaveToFile($oXMLDoc, $PathNew)
+
 	_CREATION_LOGMESS(1, "Fin de fusion des fichiers en " & Round((TimerDiff($TimerFusion) / 1000), 2) & "s")
+
 	Return
 EndFunc   ;==>_FUSIONXML
 
