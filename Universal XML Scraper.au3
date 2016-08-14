@@ -5,7 +5,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper XML Universel
-#AutoIt3Wrapper_Res_Fileversion=1.5.0.7
+#AutoIt3Wrapper_Res_Fileversion=1.5.0.8
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -119,6 +119,7 @@ FileInstall(".\Ressources\Fleche_IP1.bmp", $SOURCE_DIRECTORY & "\Ressources\Flec
 FileInstall(".\Ressources\Fleche_IP2.bmp", $SOURCE_DIRECTORY & "\Ressources\Fleche_IP2.bmp")
 FileInstall(".\Ressources\plink.exe", $SOURCE_DIRECTORY & "\Ressources\plink.exe")
 FileInstall(".\Ressources\systemlist.txt", $SOURCE_DIRECTORY & "\Ressources\systemlist.txt")
+FileInstall(".\Ressources\regionlist.txt", $SOURCE_DIRECTORY & "\Ressources\regionlist.txt")
 FileInstall(".\Mix\Arcade (moon) By Supernature2k.zip", $SOURCE_DIRECTORY & "\Mix\")
 FileInstall(".\Mix\Arcade (moon).zip", $SOURCE_DIRECTORY & "\Mix\")
 FileInstall(".\Mix\Background (Modified DarKade-Theme by Nachtgarm).zip", $SOURCE_DIRECTORY & "\Mix\")
@@ -135,6 +136,7 @@ Global $LANG_DIR = $SOURCE_DIRECTORY & "\LanguageFiles" ; Where we are storing t
 Global $INI_P_SOURCE = "empty.jpg"
 Global $INI_P_CIBLE = "empty.jpg"
 Global $PathSystemList = $SOURCE_DIRECTORY & "\Ressources\systemlist.txt"
+Global $PathRegionList = $SOURCE_DIRECTORY & "\Ressources\regionlist.txt"
 Global $PathTmp_GAME = $SOURCE_DIRECTORY & "\GAME_temp.tmp"
 Global $PathTmp_SYS = $SOURCE_DIRECTORY & "\SYS_temp.tmp"
 Global $PathTmp_Changelog = $SOURCE_DIRECTORY & "\changelog.txt"
@@ -155,6 +157,8 @@ Global $LargeurImage = IniRead($PathConfigINI, "LAST_USE", "$LargeurImage", 0)
 Global $EmptyRom = IniRead($PathConfigINI, "LAST_USE", "$EmptyRom", 0)
 Global $ScrapeMode = IniRead($PathConfigINI, "LAST_USE", "$ScrapeMode", 0)
 Global $Autoconf_Use = IniRead($PathConfigINI, "LAST_USE", "$Autoconf_Use", -1)
+Global $Picture_Region = IniRead($PathConfigINI, "LAST_USE", "$Picture_Region", 0)
+Global $A_RegionList
 Global $TMP_LastChild = ''
 Global $DevId = BinaryToString(_Crypt_DecryptData("0x1552EDED2FA9B5", "1gdf1g1gf", $CALG_RC4))
 Global $DevPassword = BinaryToString(_Crypt_DecryptData("0x1552EDED2FA9B547FBD0D9A623D954AE7BEDC681", "1gdf1g1gf", $CALG_RC4))
@@ -2009,7 +2013,21 @@ Func _XML_GETROMINFO($PathTmp_GAME, $xpath_root, $XML_Type, $B_XMLElements, $A_X
 				Case 'image'
 					_XMLFileOpen($PathTmp_GAME)
 					If @error Then Return -2
-					$sNode_Values = _XMLGetValue($xpath_root & "/*[" & $No_Elements & "]/" & $A_XMLFormat[$B_XMLElements][2])
+;~ 					MsgBox(0, "$A_XMLFormat[$B_XMLElements][2]", $A_XMLFormat[$B_XMLElements][2])
+					If StringRight($A_XMLFormat[$B_XMLElements][2], 2) = '%%' Then
+						$Node_Region = _XMLGetValue($xpath_root & "/*[1]/region")
+						If IsArray($Node_Region) Then
+							$XML_Region = $Node_Region[1]
+							$I_RegionName = _ArraySearch($A_RegionList, $XML_Region)
+							If $I_RegionName > 0 Then
+								$Region = $A_RegionList[$I_RegionName][1]
+;~ 								MsgBox(0, "$Region", $Region)
+								Local $sNode_Values = _XMLGetValue($xpath_root & "/*[1]/" & StringTrimRight($A_XMLFormat[$B_XMLElements][2], 2) & $Region)
+							EndIf
+						EndIf
+					Else
+						$sNode_Values = _XMLGetValue($xpath_root & "/*[" & $No_Elements & "]/" & $A_XMLFormat[$B_XMLElements][2])
+					EndIf
 					If IsArray($sNode_Values) Then
 						$XML_Value = $sNode_Values[1]
 						_CREATION_LOGMESS(2, "Chemin de l'image")
@@ -2401,6 +2419,10 @@ Func _MIX_IMAGE_CREATEFORMAT()
 		$M_Elements = IniRead($PathMixTmp & "\config.ini", "MIX_IMG", "$MIX_IMG" & $B_Images & "_SOURCE_" & $B_Sources, "Ending")
 		While $M_Elements <> "Ending"
 			If StringInStr($M_Elements, "%%") Then
+				If $Picture_Region = 1 Then
+					_ArrayAdd($A_MIX_IMAGE_Format, $M_Elements)
+					_FileReadToArray($PathRegionList, $A_RegionList, $FRTA_NOCOUNT, "|")
+				EndIf
 				For $B_RechMultiLang = 1 To UBound($RechMultiLang) - 1
 					$M_Elements2 = StringReplace($M_Elements, '%%', $RechMultiLang[$B_RechMultiLang])
 					_ArrayAdd($A_MIX_IMAGE_Format, $M_Elements2)
