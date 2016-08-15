@@ -5,7 +5,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper XML Universel
-#AutoIt3Wrapper_Res_Fileversion=1.5.0.10
+#AutoIt3Wrapper_Res_Fileversion=1.5.0.11
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -685,8 +685,10 @@ Func _FUSIONXML($V_Header, $A_ROMList)
 		_FileWriteFromArray($PathNew, $A_XMLCible)
 		If @error Then MsgBox(1, "Erreur", "Ecriture du fichier impossible : " & $PathNew & "Error : " & @error & ")") ; Debug
 		ConsoleWrite(">Remplacement des CRLF" & @CRLF) ; Debug
-;~ 		_ReplaceStringInFile($PathNew, @CRLF, @LF)
+		_ReplaceStringInFile($PathNew, @CR, "")
+		_ReplaceStringInFile($PathNew, @LF, "")
 		_ReplaceStringInFile($PathNew, @CRLF, "")
+		_ReplaceStringInFile($PathNew, @TAB, "")
 	EndIf
 	$ScrapeMode = IniRead($PathConfigINI, "LAST_USE", "$ScrapeMode", 0)
 
