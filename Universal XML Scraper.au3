@@ -1232,15 +1232,15 @@ Func _LANG_LOAD($LANG_DIR, $user_lang)
 
 	Switch StringRight($user_lang, 2)
 		Case '09'
-			IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'us|origine|eu|es|fr|de|pt|jp|xx')
+			IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'us|en|origine|eu|es|fr|de|pt|jp|xx')
 		Case '0c'
-			IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'fr|eu|us|origine|de|es|pt|jp|xx')
+			IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'fr|eu|us|en|origine|de|es|pt|jp|xx')
 		Case '16'
-			IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'pt|eu|us|origine|fr|de|es|jp|xx')
+			IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'pt|eu|us|en|origine|fr|de|es|jp|xx')
 		Case '07'
-			IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'de|eu|us|origine|fr|es|pt|jp|xx')
+			IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'de|eu|us|en|origine|fr|es|pt|jp|xx')
 		Case '0A'
-			IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'es|eu|us|origine|fr|de|pt|jp|xx')
+			IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'es|eu|us|en|origine|fr|de|pt|jp|xx')
 	EndSwitch
 	Return $LANGFILES
 EndFunc   ;==>_LANG_LOAD
@@ -1278,15 +1278,15 @@ Func _LANGUE_SelectGUI($_gh_aLangFileArray, $default = @OSLang, $demarrage = 0)
 			EndIf
 			Switch StringRight($user_lang, 2)
 				Case '09'
-					IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'us|origine|eu|es|fr|de|pt|jp|xx')
+					IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'us|en|origine|eu|es|fr|de|pt|jp|xx')
 				Case '0c'
-					IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'fr|eu|us|origine|de|es|pt|jp|xx')
+					IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'fr|eu|us|en|origine|de|es|pt|jp|xx')
 				Case '16'
-					IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'pt|eu|us|origine|fr|de|es|jp|xx')
+					IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'pt|eu|us|en|origine|fr|de|es|jp|xx')
 				Case '07'
-					IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'de|eu|us|origine|fr|es|pt|jp|xx')
+					IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'de|eu|us|en|origine|fr|es|pt|jp|xx')
 				Case '0A'
-					IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'es|eu|us|origine|fr|de|pt|jp|xx')
+					IniWrite($PathConfigINI, "GENERAL", "$RechMultiLang", 'es|eu|us|en|origine|fr|de|pt|jp|xx')
 			EndSwitch
 			Return StringLeft($_gh_aLangFileArray[$i][2], 4)
 		EndIf
@@ -1735,7 +1735,7 @@ Func _XML_CREATEFORMAT($Profil)
 	_CREATION_LOGMESS(1, "Recuperation des champs du profil")
 	Local $A_XMLFormat[1][4]
 	Local $B_Elements = 1, $V_Elements2
-	Local $RechMultiLang = StringSplit(IniRead($PathConfigINI, "GENERAL", "$RechMultiLang  ", 'us|origine|eu|es|fr|de|pt|jp|xx'), "|")
+	Local $RechMultiLang = StringSplit(IniRead($PathConfigINI, "GENERAL", "$RechMultiLang  ", 'us|en|origine|eu|es|fr|de|pt|jp|xx'), "|")
 	Local $V_Elements = IniRead($PathConfigINI, $Profil, "$ELEMENT_" & $B_Elements, "Ending")
 	While $V_Elements <> "Ending"
 		If StringInStr($V_Elements, "%%") Then
@@ -2412,7 +2412,7 @@ EndFunc   ;==>_MIX_IMAGE_CREATECIBLE
 Func _MIX_IMAGE_CREATEFORMAT()
 	Local $A_MIX_IMAGE_Format[1][12]
 	Local $B_Sources, $M_Elements, $M_Elements2
-	Local $RechMultiLang = StringSplit(IniRead($PathConfigINI, "GENERAL", "$RechMultiLang  ", 'us|origine|eu|es|fr|de|pt|jp|xx'), "|")
+	Local $RechMultiLang = StringSplit(IniRead($PathConfigINI, "GENERAL", "$RechMultiLang  ", 'us|en|origine|eu|es|fr|de|pt|jp|xx'), "|")
 	$Nb_MIX_Image = IniRead($PathMixTmp & "\config.ini", "MIX_IMG", "$MIX_IMG_NBIMG", 0)
 	_CREATION_LOGMESS(1, "Creation des parametres pour le Mix")
 	For $B_Images = 1 To $Nb_MIX_Image
