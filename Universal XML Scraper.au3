@@ -5,7 +5,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper XML Universel
-#AutoIt3Wrapper_Res_Fileversion=1.5.0.9
+#AutoIt3Wrapper_Res_Fileversion=1.5.0.10
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -2011,6 +2011,7 @@ Func _XML_GETROMINFO($PathTmp_GAME, $xpath_root, $XML_Type, $B_XMLElements, $A_X
 		Case 'path:'
 			Switch StringMid($A_XMLFormat[$B_XMLElements][3], 6, 5)
 				Case 'image'
+					Local $sNode_Values = ''
 					_XMLFileOpen($PathTmp_GAME)
 					If @error Then Return -2
 ;~ 					MsgBox(0, "$A_XMLFormat[$B_XMLElements][2]", $A_XMLFormat[$B_XMLElements][2])
@@ -2022,7 +2023,7 @@ Func _XML_GETROMINFO($PathTmp_GAME, $xpath_root, $XML_Type, $B_XMLElements, $A_X
 							If $I_RegionName > 0 Then
 								$Region = $A_RegionList[$I_RegionName][1]
 ;~ 								MsgBox(0, "$Region", $Region)
-								Local $sNode_Values = _XMLGetValue($xpath_root & "/*[1]/" & StringTrimRight($A_XMLFormat[$B_XMLElements][2], 2) & $Region)
+								$sNode_Values = _XMLGetValue($xpath_root & "/*[1]/" & StringTrimRight($A_XMLFormat[$B_XMLElements][2], 2) & $Region)
 							EndIf
 						EndIf
 					Else

@@ -1,3 +1,6 @@
+1.5.0.9
+Minor bug correction On Picture preference
+
 1.5.0.8
 Adding a value in Ini :
 $Picture_Region = 2 -> Picture preference by Rom Region only
