@@ -5,7 +5,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper XML Universel
-#AutoIt3Wrapper_Res_Fileversion=1.5.0.11
+#AutoIt3Wrapper_Res_Fileversion=1.5.0.12
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -685,8 +685,8 @@ Func _FUSIONXML($V_Header, $A_ROMList)
 		_FileWriteFromArray($PathNew, $A_XMLCible)
 		If @error Then MsgBox(1, "Erreur", "Ecriture du fichier impossible : " & $PathNew & "Error : " & @error & ")") ; Debug
 		ConsoleWrite(">Remplacement des CRLF" & @CRLF) ; Debug
-		_ReplaceStringInFile($PathNew, @CR, "")
-		_ReplaceStringInFile($PathNew, @LF, "")
+;~ 		_ReplaceStringInFile($PathNew, @CR, "")
+;~ 		_ReplaceStringInFile($PathNew, @LF, "")
 		_ReplaceStringInFile($PathNew, @CRLF, "")
 		_ReplaceStringInFile($PathNew, @TAB, "")
 	EndIf
@@ -1449,13 +1449,18 @@ Func _SCRAPING($No_Profil, $A_Profil, $PathRom, $No_system, $INI_OPTION_MAJ, $V_
 			_CREATION_LOGMESS(2, "Nom de la ROM : " & $A_ROMList[$B_ROMList][1])
 			$A_ROMList[$B_ROMList][2] = StringRight(_CRC32ForFile($A_ROMList[$B_ROMList][1]), 8)
 			_CREATION_LOGMESS(2, "CRC32 : " & $A_ROMList[$B_ROMList][2])
+			$A_ROMList[$B_ROMList][5] = FileGetSize($A_ROMList[$B_ROMList][1])
+			_CREATION_LOGMESS(2, "Taille de la ROM : " & $A_ROMList[$B_ROMList][5])
 			If IniRead($PathConfigINI, "GENERAL", "Quick", 0) = 0 Then
-				$A_ROMList[$B_ROMList][3] = _MD5ForFile($A_ROMList[$B_ROMList][1])
-				_CREATION_LOGMESS(2, "MD5 : " & $A_ROMList[$B_ROMList][3])
-				$A_ROMList[$B_ROMList][4] = _SHA1ForFile($A_ROMList[$B_ROMList][1])
-				_CREATION_LOGMESS(2, "SHA1 : " & $A_ROMList[$B_ROMList][4])
-				$A_ROMList[$B_ROMList][5] = FileGetSize($A_ROMList[$B_ROMList][1])
-				_CREATION_LOGMESS(2, "Taille de la ROM : " & $A_ROMList[$B_ROMList][5])
+				If Int(($A_ROMList[$B_ROMList][5] / 1048576)) < 50 Then
+					$A_ROMList[$B_ROMList][3] = _MD5ForFile($A_ROMList[$B_ROMList][1])
+					_CREATION_LOGMESS(2, "MD5 : " & $A_ROMList[$B_ROMList][3])
+					$A_ROMList[$B_ROMList][4] = _SHA1ForFile($A_ROMList[$B_ROMList][1])
+					_CREATION_LOGMESS(2, "SHA1 : " & $A_ROMList[$B_ROMList][4])
+				Else
+					_CREATION_LOGMESS(2, "Quick Mode ON (Rom Size = " & Int(($A_ROMList[$B_ROMList][5] / 1048576)) & ")")
+					ConsoleWrite("Quick Mode ON (Rom Size = " & ($A_ROMList[$B_ROMList][5] / 1048576) & ")" & @CRLF)
+				EndIf
 			EndIf
 			_CREATION_LOGMESS(1, "Calcul des Hash en : " & Round((TimerDiff($TimerHash) / 1000), 2) & "s")
 			ConsoleWrite("Calcul des Hash en : " & Round((TimerDiff($TimerHash) / 1000), 2) & "s" & @CRLF)
@@ -1775,6 +1780,9 @@ Func _XML_CREATEROM($Path_source, $xpath_root_source, $xpath_root_cible, $A_XMLF
 	Local $timedout = 0
 ;~ 	_ArrayDisplay($A_RechAPI, "$A_RechAPI") ; Debug
 
+	$RomName = StringReplace($A_ROMList[$No_ROM][0], "&", "%26")
+	$RomName = StringReplace($RomName, " ", "%20")
+
 ;~ 	Download du XML source
 	For $B_RechAPI = 1 To UBound($A_RechAPI) - 1
 		Switch $A_RechAPI[$B_RechAPI]
@@ -1782,23 +1790,23 @@ Func _XML_CREATEROM($Path_source, $xpath_root_source, $xpath_root_cible, $A_XMLF
 				If (StringInStr(FileReadLine($Path_source), "Erreur") Or Not FileExists($Path_source)) And $No_system <> "" Then
 					FileDelete($Path_source)
 					_CREATION_LOGMESS(1, "Recuperation des informations de la Rom no " & $No_ROM & " (CRC + SYSTEM)")
-					ConsoleWrite(">(CRC + SYSTEM) = http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=xml&crc=" & $A_ROMList[$No_ROM][2] & "&md5=" & $A_ROMList[$No_ROM][3] & "&sha1=" & $A_ROMList[$No_ROM][4] & "&systemeid=" & $No_system & "&romtype=rom&romnom=" & StringReplace($A_ROMList[$No_ROM][0], " ", "%20") & "&romtaille=" & $A_ROMList[$No_ROM][5] & @CRLF) ;Debug
-					$hDownload = InetGet("http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=xml&crc=" & $A_ROMList[$No_ROM][2] & "&md5=" & $A_ROMList[$No_ROM][3] & "&sha1=" & $A_ROMList[$No_ROM][4] & "&systemeid=" & $No_system & "&romtype=rom&romnom=" & StringReplace($A_ROMList[$No_ROM][0], " ", "%20") & "&romtaille=" & $A_ROMList[$No_ROM][5], $Path_source, 1, 1)
+					ConsoleWrite(">(CRC + SYSTEM) = http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=xml&crc=" & $A_ROMList[$No_ROM][2] & "&md5=" & $A_ROMList[$No_ROM][3] & "&sha1=" & $A_ROMList[$No_ROM][4] & "&systemeid=" & $No_system & "&romtype=rom&romnom=" & $RomName & "&romtaille=" & $A_ROMList[$No_ROM][5] & @CRLF) ;Debug
+					$hDownload = InetGet("http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=xml&crc=" & $A_ROMList[$No_ROM][2] & "&md5=" & $A_ROMList[$No_ROM][3] & "&sha1=" & $A_ROMList[$No_ROM][4] & "&systemeid=" & $No_system & "&romtype=rom&romnom=" & $RomName & "&romtaille=" & $A_ROMList[$No_ROM][5], $Path_source, 1, 1)
 					$timedout = _TimeOut($hDownload)
 				EndIf
 			Case 2
 				If StringInStr(FileReadLine($Path_source), "Erreur") Or Not FileExists($Path_source) Then
 					FileDelete($Path_source)
 					_CREATION_LOGMESS(1, "--Recuperation des informations de la Rom no " & $No_ROM & " (CRC)")
-					ConsoleWrite(">(CRC) = http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=xml&crc=" & $A_ROMList[$No_ROM][2] & "&md5=" & $A_ROMList[$No_ROM][3] & "&sha1=" & $A_ROMList[$No_ROM][4] & "&systemeid=" & "&romtype=rom&romnom=" & StringReplace($A_ROMList[$No_ROM][0], " ", "%20") & "&romtaille=" & $A_ROMList[$No_ROM][5] & @CRLF) ;Debug
-					$hDownload = InetGet("http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=xml&crc=" & $A_ROMList[$No_ROM][2] & "&md5=" & $A_ROMList[$No_ROM][3] & "&sha1=" & $A_ROMList[$No_ROM][4] & "&systemeid=" & "&romtype=rom&romnom=" & StringReplace($A_ROMList[$No_ROM][0], " ", "%20") & "&romtaille=" & $A_ROMList[$No_ROM][5], $Path_source, 1, 1)
+					ConsoleWrite(">(CRC) = http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=xml&crc=" & $A_ROMList[$No_ROM][2] & "&md5=" & $A_ROMList[$No_ROM][3] & "&sha1=" & $A_ROMList[$No_ROM][4] & "&systemeid=" & "&romtype=rom&romnom=" & $RomName & "&romtaille=" & $A_ROMList[$No_ROM][5] & @CRLF) ;Debug
+					$hDownload = InetGet("http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=xml&crc=" & $A_ROMList[$No_ROM][2] & "&md5=" & $A_ROMList[$No_ROM][3] & "&sha1=" & $A_ROMList[$No_ROM][4] & "&systemeid=" & "&romtype=rom&romnom=" & $RomName & "&romtaille=" & $A_ROMList[$No_ROM][5], $Path_source, 1, 1)
 					$timedout = _TimeOut($hDownload)
 				EndIf
 			Case 3
 				If (StringInStr(FileReadLine($Path_source), "Erreur") Or Not FileExists($Path_source)) And $No_system <> "" Then
 					FileDelete($Path_source)
 					_CREATION_LOGMESS(1, "Recuperation des informations de la Rom no " & $No_ROM & " (FileName + SYSTEM)")
-					$FileName = StringLeft(StringReplace($A_ROMList[$No_ROM][0], " ", "%20"), StringInStr(StringReplace($A_ROMList[$No_ROM][0], " ", "%20"), ".", Default, -1) - 1)
+					$FileName = StringLeft($RomName, StringInStr($RomName, ".", Default, -1) - 1)
 					ConsoleWrite(">(FileName + SYSTEM) = http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=xml&crc=" & "&md5=" & "&sha1=" & "&systemeid=" & $No_system & "&romtype=rom&romnom=" & $FileName & "&romtaille=" & $A_ROMList[$No_ROM][5] & @CRLF) ;Debug
 					$hDownload = InetGet("http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $DevId & "&devpassword=" & $DevPassword & "&softname=" & $Softname & "&output=xml&crc=" & "&md5=" & "&sha1=" & "&systemeid=" & $No_system & "&romtype=rom&romnom=" & $FileName & "&romtaille=" & $A_ROMList[$No_ROM][5], $Path_source, 1, 1)
 					$timedout = _TimeOut($hDownload)

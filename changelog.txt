@@ -1,3 +1,9 @@
+1.5.0.11
+Minor bug correction On Profil
+Minor bug correction On exclusion list
+Minor bug correction On FileName (Character "&")
+Adding a "Quick Mode" for big file (Only CRC32 hash, no MD5 or SHA1)
+
 1.5.0.10
 Minor bug correction On language preference
 
@@ -26,7 +32,6 @@ UXS Update Verfication at start
 Adding 2 New function to Profil :
 'name|value|noms/nom_%%|form:region' -> Scraped name + scraped region
 'name|value|noms/nom_%%|form:%FileNameBracket%' -> Scraped name + bracket info from filename
-
 
 1.5.0.2
 Adding 2 New function to Profil :
