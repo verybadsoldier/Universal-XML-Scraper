@@ -1279,6 +1279,11 @@ Func _XML_GetValue(ByRef $oXmlDoc, $sXPath)
 		EndIf
 	Next
 
+	Local $i
+    For $i = UBound($aResponse) - 1 To 1 Step - 1
+        $aResponse[$i] = $aResponse[$i - 1]
+    Next
+
 	$aResponse[0] = UBound($aResponse) - 1
 	Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $aResponse)
 
