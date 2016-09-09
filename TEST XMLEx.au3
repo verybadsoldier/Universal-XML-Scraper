@@ -1,6 +1,8 @@
 #AutoIt3Wrapper_Au3Check_Parameters=-d -w 1 -w 2 -w 3 -w- 4 -w 5 -w 6 -w 7
 #Tidy_Parameters=/sort_funcs /reel
 
+Global $iVerboseLVL = 2
+
 #include <GDIPlus.au3>
 #include <GUIConstantsEx.au3>
 #include <File.au3>
@@ -9,14 +11,16 @@
 #include <date.au3>
 #include <InetConstants.au3>
 #include "./Include/_XML.au3"
-#include "./Include/_UXS_Functions.au3"
+#include "./Include/_MyFunction.au3"
 
 
 Local $XML_Path = "C:\Developpement\Github\Universal-XML-Scraper\Scrape_Profil\Screenscraper-RecalboxV4.xml"
 Local $sXPath = "Profil/Element/Source_Type"
 Local $sXPath_Attr = "Profil"
 Local $sXPath_Attr_Name = "Name"
+Local $URL = "http://www.screenscraper.fr/api/jeuInfos.php?devid=xxx&devpassword=yyy&softname=zzz&output=xml&crc=50ABC90A&systemeid=1&romtype=rom&romnom=Sonic%20The%20Hedgehog%202%20(World).zip&romtaille=749652"
 Local $XML_Path_API = "C:\Developpement\Github\Universal-XML-Scraper\API.xml"
+Local $XML_Path_DEST = "C:\Developpement\Github\Universal-XML-Scraper\TEST.xml"
 Local $RechMultiLang = StringSplit('us|en|origine|eu|es|fr|de|pt|jp|xx', "|")
 Local $ROM_NAME = "Sonic The Hedgehog 2 (World).zip"
 Local $Local_Rom_Path = "C:\Local_Rom_Path\" & $ROM_NAME
@@ -24,6 +28,11 @@ Local $XML_Rom_Path = "./XML_Rom_Path/" & $ROM_NAME
 Local $Local_Path_File = "C:\Local_Path_File\"
 Local $XML_Path_File = "./XML_Path_File/"
 
+
+_CREATION_LOG()
+
+FileDelete($XML_Path_API)
+_DownloadWRetry($URL, $XML_Path_API)
 
 ; first you must create $oXmlDoc object
 Local $oXMLDoc = _XML_CreateDOMDocument()
@@ -131,4 +140,5 @@ While 1
 	EndIf
 WEnd
 _ArrayDisplay($A_Element, "$A_Element")
+
 
