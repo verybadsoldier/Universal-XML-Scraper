@@ -714,6 +714,71 @@ Func _XML_Read($iXpath, $iXMLType = 0, $iXMLPath = "", $oXMLDoc = "")
 
 	Return -1
 EndFunc   ;==>_XML_Read
+
+; #FUNCTION# ===================================================================================================
+; Name...........: _XML_Replace
+; Description ...: replace Data in XML File or XML Object
+; Syntax.........: _XML_Replace($iXpath, $iValue, [$iXMLType=0], [$iXMLPath=""], [$oXMLDoc=""])
+; Parameters ....: $iXpath		- Xpath to the value to replace
+;~ 				   $iValue		- Value to replace
+;                  $iXMLType	- Type of Value (0 = Node Value, 1 = Attribute Value)
+;                  $iXMLPath	- Path to the XML File
+;                  $oXMLDoc		- Object contening the XML File
+; Return values .: Success      - 1
+;                  Failure      - -1
+; Author ........: Screech
+; Modified.......:
+; Remarks .......:
+; Related .......:
+; Link ..........;
+; Example .......; No
+Func _XML_Replace($iXpath, $iValue, $iXMLType = 0, $iXMLPath = "", $oXMLDoc = "")
+	Local $iXMLValue = -1, $oNode, $iXpathSplit, $iXMLAttributeName
+	If $iXMLPath = "" And $oXMLDoc = "" Then Return -1
+	If $iXMLPath <> "" Then
+		_XML_Load($oXMLDoc, $iXMLPath)
+		If @error Then
+			_LOG('_XML_Load @error:' & @CRLF & XML_My_ErrorParser(@error), 2)
+			Return -1
+		EndIf
+		_XML_TIDY($oXMLDoc)
+		If @error Then
+			_LOG('_XML_TIDY @error:' & @CRLF & XML_My_ErrorParser(@error), 2)
+			Return -1
+		EndIf
+	EndIf
+
+	Switch $iXMLType
+		Case 0
+			$iXMLValue = _XML_ReplaceChild($oXMLDoc, $iXpath, $iValue)
+			If @error Then
+				_LOG('_XML_ReplaceChild @error:' & @CRLF & XML_My_ErrorParser(@error), 2)
+				Return -1
+			EndIf
+			Return 1
+		Case 1
+			$iXpathSplit = StringSplit($iXpath, "/")
+			$iXMLAttributeName = $iXpathSplit[UBound($iXpathSplit) - 1]
+			$iXpath = StringTrimRight($iXpath, StringLen($iXMLAttributeName) + 1)
+			$oNode = _XML_SelectSingleNode($oXMLDoc, $iXpath)
+			If @error Then
+				_LOG('_XML_SelectSingleNode @error:' & @CRLF & XML_My_ErrorParser(@error), 2)
+				Return -1
+			EndIf
+			$iXMLValue = _XML_GetNodeAttributeValue($oNode, $iXMLAttributeName)
+			If @error Then
+				_LOG('_XML_GetNodeAttributeValue @error:' & @CRLF & XML_My_ErrorParser(@error), 2)
+				Return -1
+			EndIf
+			Return $iXMLValue
+		Case Else
+			Return -1
+	EndSwitch
+
+	Return -1
+EndFunc   ;==>_XML_Read
+
+
 #EndRegion XML Function
 
 #Region XML DOM Error/Event Handling
