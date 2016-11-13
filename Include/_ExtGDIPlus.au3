@@ -147,30 +147,22 @@ EndFunc   ;==>_XML_Read
 ; Related .......:
 ; Link ..........;
 ; Example .......; No
-Func _LOG($iMessage = "", $iLOGType = 0, $iLOGPath = @ScriptDir & "\Log.txt")
-	Local $tCur, $dtCur, $iTimestamp, $iVerboseLVL = 1
-	$tCur = _Date_Time_GetLocalTime()
-	$dtCur = _Date_Time_SystemTimeToArray($tCur)
-	$iTimestamp = "[" & StringRight("0" & $dtCur[3], 2) & ":" & StringRight("0" & $dtCur[4], 2) & ":" & StringRight("0" & $dtCur[5], 2) & "] - "
+Func _LOG($iMessage = "", $iLOGType = 0, $iVerboseLVL = 0, $iLOGPath = @ScriptDir & "\Log.txt")
 	Switch $iLOGType
-		Case 0
+		Case = 0
 			FileWrite($iLOGPath, $iTimestamp & $iMessage & @CRLF)
 			ConsoleWrite($iMessage & @CRLF)
-		Case 1
-			If $iLOGType <= $iVerboseLVL Then FileWrite($iLOGPath, $iTimestamp & "> " & $iMessage & @CRLF)
+		Case = 1
+			If $iLOGType <= $iVerboseLVL Then FileWrite($iLOGPath, $iTimestamp & $iMessage & @CRLF)
 			ConsoleWrite("+" & $iMessage & @CRLF)
-		Case 2
-			If $iLOGType <= $iVerboseLVL Then FileWrite($iLOGPath, $iTimestamp & "/!\ " & $iMessage & @CRLF)
+		Case = 2
+			If $iLOGType <= $iVerboseLVL Then FileWrite($iLOGPath, $iTimestamp & $iMessage & @CRLF)
 			ConsoleWrite("!" & $iMessage & @CRLF)
-		Case 3
-			If $iLOGType <= $iVerboseLVL Then
-				FileWrite($iLOGPath, $iTimestamp & "--------------------------------------------------------------------------------" & @CRLF)
-				FileWrite($iLOGPath, $iTimestamp & $iMessage & @CRLF)
-				FileWrite($iLOGPath, $iTimestamp & "--------------------------------------------------------------------------------" & @CRLF)
-			EndIf
+		Case Else
 			ConsoleWrite(">----" & $iMessage & @CRLF)
 	EndSwitch
 EndFunc   ;==>_LOG
+
 
 #Region XMLWrapperEx__Examples.au3 - XML DOM Error/Event Handling
 Func ErrFunc_CustomUserHandler_MAIN($oError)
