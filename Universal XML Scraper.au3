@@ -7,7 +7,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper XML Universel
-#AutoIt3Wrapper_Res_Fileversion=2.0.0.0
+#AutoIt3Wrapper_Res_Fileversion=2.0.0.2
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -898,9 +898,11 @@ Func _GUI_Config_MISC()
 			$vNbThreadMax = 1
 		Case 1 To 9
 			$vNbThreadMax = 2
-		Case 10 To 39
-			$vNbThreadMax = 5
-		Case 40 To 10000
+		Case 10 To 19
+			$vNbThreadMax = 4
+		Case 20 To 29
+			$vNbThreadMax = 6
+		Case 30 To 499
 			$vNbThreadMax = 10
 		Case Else
 			$vNbThreadMax = 1
@@ -968,12 +970,17 @@ Func _GUI_Config_MISC()
 						$vNbThreadDefault = 0
 						_LOG("Registered Lvl : " & $vSSLevel & " - Nb Thread Available : " & $vNbThreadMax, 0, $iLOGPath)
 						MsgBox($MB_ICONINFORMATION, _MultiLang_GetText("mess_ssregister_title"), _MultiLang_GetText("mess_ssregister_OK") & " " & $vNbThreadMax & " Threads", 10, $F_CONFIG)
-					Case 10 To 39
-						$vNbThreadMax = 5
+					Case 10 To 19
+						$vNbThreadMax = 4
 						$vNbThreadDefault = 0
 						_LOG("Registered Lvl : " & $vSSLevel & " - Nb Thread Available : " & $vNbThreadMax, 0, $iLOGPath)
 						MsgBox($MB_ICONINFORMATION, _MultiLang_GetText("mess_ssregister_title"), _MultiLang_GetText("mess_ssregister_OK") & " " & $vNbThreadMax & " Threads", 10, $F_CONFIG)
-					Case 40 To 499
+					Case 20 To 29
+						$vNbThreadMax = 6
+						$vNbThreadDefault = 0
+						_LOG("Registered Lvl : " & $vSSLevel & " - Nb Thread Available : " & $vNbThreadMax, 0, $iLOGPath)
+						MsgBox($MB_ICONINFORMATION, _MultiLang_GetText("mess_ssregister_title"), _MultiLang_GetText("mess_ssregister_OK") & " " & $vNbThreadMax & " Threads", 10, $F_CONFIG)
+					Case 30 To 499
 						$vNbThreadMax = 10
 						$vNbThreadDefault = 5
 						_LOG("Registered Lvl : " & $vSSLevel & " - Nb Thread Available : " & $vNbThreadMax, 0, $iLOGPath)
@@ -1289,12 +1296,14 @@ Func _Check_autoconf($oXMLProfil)
 			$MS_AutoConfigItem[$vBoucle] = GUICtrlCreateMenuItem($aDIRList[$vBoucle][0], $MS_AutoConfig)
 		Next
 		GUISetState(@SW_ENABLE, $F_UniversalScraper)
+		WinActivate($F_UniversalScraper)
 		SplashOff()
 		Return $aDIRList
 	Else
 		GUICtrlSetState($MS_AutoConfig, $GUI_DISABLE)
 		GUICtrlSetState($MS_FullScrape, $GUI_DISABLE)
 		GUISetState(@SW_ENABLE, $F_UniversalScraper)
+		WinActivate($F_UniversalScraper)
 		SplashOff()
 		MsgBox($MB_ICONERROR, _MultiLang_GetText("err_title"), _MultiLang_GetText("err_autoconfPathRom"))
 		IniWrite($iINIPath, "LAST_USE", "$vAutoconf_Use", 0)
@@ -1604,6 +1613,7 @@ Func _SCRAPE($oXMLProfil, $vNbThread = 1, $vFullScrape = 0)
 
 	DirRemove($iTEMPPath, 1)
 	DirCreate($iTEMPPath)
+	FileSetAttrib($iTEMPPath, "+H")
 	DirCreate($iTEMPPath & "\scraped")
 ;~ 	$nMsg = ""
 
@@ -1626,9 +1636,11 @@ Func _SCRAPE($oXMLProfil, $vNbThread = 1, $vFullScrape = 0)
 				$vNbThreadMax = 1
 			Case 1 To 9
 				$vNbThreadMax = 2
-			Case 10 To 39
-				$vNbThreadMax = 5
-			Case 40 To 10000
+			Case 10 To 19
+				$vNbThreadMax = 4
+			Case 20 To 29
+				$vNbThreadMax = 6
+			Case 30 To 499
 				$vNbThreadMax = 10
 			Case Else
 				$vNbThreadMax = 1
@@ -1796,7 +1808,7 @@ EndFunc   ;==>_SCRAPE
 Func _CreateMissing($aRomList, $aConfig)
 	$vSysName = _XML_Read('/Data/systeme[id=' & $aConfig[12] & ']/noms/nom_eu', 0, $iScriptPath & "\Ressources\systemlist.xml")
 ;~ 	_ArrayDisplay($aConfig, "$aConfig")
-	If Not _FileCreate($aConfig[1] & '\' & $vSysName & "_missing.txt") Then MsgBox(4096, "Error", " Erreur creation du Fichier missing      error:" & @error)
+	If Not _FileCreate($aConfig[1] & '\_' & $vSysName & "_missing.txt") Then MsgBox(4096, "Error", " Erreur creation du Fichier missing      error:" & @error)
 	For $vBoucle = 1 To UBound($aRomList) - 1
 		If $aRomList[$vBoucle][9] = 0 Then
 			$tCur = _Date_Time_GetLocalTime()
@@ -1809,7 +1821,7 @@ Func _CreateMissing($aRomList, $aConfig)
 			$vTime = _Date_Time_FileTimeToStr($aTime[2])
 			$vTime = StringMid($vTime, 12, 5) & ".00 " & StringMid($vTime, 7, 4) & "-" & StringLeft($vTime, 2) & "-" & StringMid($vTime, 4, 2)
 			$vMissing_Line4 = "    " & $aRomList[$vBoucle][6]
-			FileWrite($aConfig[1] & '\' & $vSysName & "_missing.txt", $vMissing_Line1 & $vMissing_Line2 & $vMissing_Line3 & $vTime & $vMissing_Line4 & @CRLF)
+			FileWrite($aConfig[1] & '\_' & $vSysName & "_missing.txt", $vMissing_Line1 & $vMissing_Line2 & $vMissing_Line3 & $vTime & $vMissing_Line4 & @CRLF)
 		EndIf
 	Next
 EndFunc   ;==>_CreateMissing

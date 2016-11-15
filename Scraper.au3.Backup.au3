@@ -6,7 +6,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper
-#AutoIt3Wrapper_Res_Fileversion=1.0.0.1
+#AutoIt3Wrapper_Res_Fileversion=1.0.0.0
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -68,7 +68,7 @@ Local $iSoftname = "UniversalXMLScraperV" & $iScriptVer
 
 Global $iDevId = BinaryToString(_Crypt_DecryptData("0x1552EDED2FA9B5", "1gdf1g1gf", $CALG_RC4))
 Global $iDevPassword = BinaryToString(_Crypt_DecryptData("0x1552EDED2FA9B547FBD0D9A623D954AE7BEDC681", "1gdf1g1gf", $CALG_RC4))
-Global $iTEMPPath = $iScriptPath & "\TEMP\MIX" & $vThreadNumber
+Global $iTEMPPath = $iScriptPath & "\TEMP" & $vThreadNumber
 Global $iTEMPPathGlobal = $iScriptPath & "\TEMP"
 Global $iRessourcesPath = $iScriptPath & "\Ressources"
 Global $iLangPath = $iScriptPath & "\LanguageFiles" ; Where we are storing the language files.
@@ -237,7 +237,7 @@ Func _XML_Read_Source($aRomList, $vBoucle, $aConfig, $oXMLProfil, $vWhile)
 			Next
 			Return ""
 		Case "Fixe_Value"
-			Return _XML_Read("/Profil/Element[" & $vWhile & "]/Source_Value", 0, "", $oXMLProfil)
+			_XML_Read("/Profil/Element[" & $vWhile & "]/Source_Value", 0, "", $oXMLProfil)
 		Case "Variable_Value"
 			Switch _XML_Read("/Profil/Element[" & $vWhile & "]/Source_Value", 0, "", $oXMLProfil)
 				Case '%XML_Rom_Path%'
@@ -348,7 +348,6 @@ Func _MIX_Engine($aRomList, $vBoucle, $aConfig, $oXMLProfil)
 	Dim $aMiXPicTemp[1]
 	FileDelete($iTEMPPath & "\MIX")
 	DirCreate($iTEMPPath & "\MIX")
-	FileSetAttrib($iTEMPPath, "+H")
 	While 1
 ;~ 		If Not _Check_Cancel() Then Return ""
 		Switch StringLower(_XML_Read("/Profil/Element[" & $vWhile & "]/Source_Type", 0, "", $oMixConfig))
