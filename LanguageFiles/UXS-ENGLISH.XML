@@ -182,26 +182,4 @@
 			</win_Wizard_END>
 		</win_Wizard>
 	</windows>
-	<tips>
-		<tips_config>
-			<tips_config_GroupScrap_PathRom>Répertoire dans lequel se trouve les roms à scrapper</tips_config_GroupScrap_PathRom>
-			<tips_config_GroupScrap_PathXML>Répertoire et nom du fichier XML généré par le scraper</tips_config_GroupScrap_PathXML>
-			<tips_config_GroupScrap_PathRomSub>Indication dans le fichier XML du chemin ou les roms seront trouvées en local</tips_config_GroupScrap_PathRomSub>
-			<tips_config_GroupImage_PathImage>Répertoire dans lequel les images seront téléchargées</tips_config_GroupImage_PathImage>
-			<tips_config_GroupImage_hautImage>Hauteur maximum des images téléchargées(Redimensionne)</tips_config_GroupImage_hautImage>
-			<tips_config_GroupImage_LongImage>Largeur maximum des images téléchargées(Redimensionne)</tips_config_GroupImage_LongImage>
-			<tips_config_GroupImage_PathImageSub>Indication dans le fichier XML du chemin ou les images seront trouvées en local</tips_config_GroupImage_PathImageSub>
-			<tips_config_GroupImage_Extension>Extension des images (defaut = identique au site de scrape)</tips_config_GroupImage_Extension>
-			<tips_config_GroupAutoconf_PathRom>Répertoire dans lequel se trouve les différents systèmes à scraper</tips_config_GroupAutoconf_PathRom>
-			<tips_config_GroupAutoconf_PathXML>Nom du fichier XML généré par le scraper</tips_config_GroupAutoconf_PathXML>
-			<tips_config_GroupAutoconf_PathRomSub>Indication dans le fichier XML du chemin ou les roms seront trouvées en local</tips_config_GroupAutoconf_PathRomSub>
-			<tips_config_GroupAutoconf_PathImage>Nom du répertoire ou seront téléchargé les images</tips_config_GroupAutoconf_PathImage>
-			<tips_config_GroupAutoconf_PathImageSub>Indication dans le fichier XML du chemin ou les images seront trouvées en local</tips_config_GroupAutoconf_PathImageSub>
-			<tips_config_GroupAutoconf_Use>Activation du menu de Configuration Automatique</tips_config_GroupAutoconf_Use>
-			<tips_config_mode_new>Le scraper créera un nouveau fichier XML (écrase l'existant)</tips_config_mode_new>
-			<tips_config_mode_append>Le scraper ajoutera les roms manquantes aux fichiers XML existants</tips_config_mode_append>
-			<tips_config_mode_empty>Ajout d'entrées vide concernant les Roms non trouvées</tips_config_mode_empty>
-			<tips_config_mode_MAJ>Conversion en majuscule des valeurs scrapées</tips_config_mode_MAJ>
-		</tips_config>
-	<tips>
 </gui>
