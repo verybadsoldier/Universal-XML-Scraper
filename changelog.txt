@@ -1,3 +1,6 @@
+2.0.0.0
+New V2 Release in Beta !!!
+
 1.5.0.11
 Minor bug correction On Profil
 Minor bug correction On exclusion list
