@@ -1,5 +1,24 @@
+2.0.0.1
+BETA
+Option name, corrected
+adding an "_" to the missing file name
+Source always = 0, corrected
+
 2.0.0.0
-New V2 Release in Beta !!!
+BETA
+Total rewrote of XML functions
+Total rewrote of GDI functions (the one who make the MIX ^^)
+Now all Scraping profil are in XML with tone of options
+Now all MIX profil are in XML with also tone of options
+Multithread, you can have several rom scraped at the same time. For this you need to register on Screenscraper (with a single registration you will have 2 threads, if you participate to the BDD you can have up to 10 threads.)
+Wizard at start to help the first configuration
+Scrape with recursivity (subfolder can now be scraped)
+lot's of configuration menu (but they are easy to understand... And I need to make tooltips :p )
+Autoconfiguration and Fullscrape work
+New function to handle timeout and network problem
+Changing standard things are easy now (2D Box instead of Screenshot, Game Name with region,...)
+Autohide function (Bios are auto hidden, and if you have a cue+bin, the bin will be hide too.. So are the "track" files) and it's configurable in the XML Scrape profil
+... Lot's of more things I can't remember... 3 month on this ^^
 
 1.5.0.11
 Minor bug correction On Profil
