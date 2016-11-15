@@ -2,10 +2,11 @@
 #AutoIt3Wrapper_Icon=Ressources\Scraper.ico
 #AutoIt3Wrapper_Outfile=.\Scraper.exe
 #AutoIt3Wrapper_Outfile_x64=.\Scraper64.exe
+#AutoIt3Wrapper_UseUpx=n
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper
-#AutoIt3Wrapper_Res_Fileversion=1.0.0.18
+#AutoIt3Wrapper_Res_Fileversion=1.0.0.0
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -147,12 +148,14 @@ Func _Game_Make($aRomList, $vBoucle, $aConfig, $oXMLProfil)
 			Case "XML_Value"
 				$vValue = _XML_Read_Source($aRomList, $vBoucle, $aConfig, $oXMLProfil, $vWhile)
 				$vNode = _XML_Read("/Profil/Element[" & $vWhile & "]/Target_Value", 0, "", $oXMLProfil)
+				If StringLower(_XML_Read("/Profil/Element[" & $vWhile & "]/Target_Maj", 0, "", $oXMLProfil)) = "true" Then $vValue = StringUpper($vValue)
 				_LOG($vNode & " <-- " & $vValue, 1, $iLOGPath)
 				_XML_WriteValue($vNode, $vValue, "", $aConfig[8])
 			Case "XML_Attribute"
 				$vValue = _XML_Read_Source($aRomList, $vBoucle, $aConfig, $oXMLProfil, $vWhile)
 				$vAttributeName = _XML_Read("/Profil/Element[" & $vWhile & "]/Target_Attribute_Name", 0, "", $oXMLProfil)
 				$vNode = _XML_Read("/Profil/Element[" & $vWhile & "]/Target_Value", 0, "", $oXMLProfil)
+				If StringLower(_XML_Read("/Profil/Element[" & $vWhile & "]/Target_Maj", 0, "", $oXMLProfil)) = "true" Then $vValue = StringUpper($vValue)
 				_LOG($vNode & " <-- " & $vValue, 1, $iLOGPath)
 				_XML_WriteAttributs($vNode, $vAttributeName, $vValue, "", $aConfig[8])
 			Case "XML_Path"
@@ -179,6 +182,7 @@ Func _Game_Make($aRomList, $vBoucle, $aConfig, $oXMLProfil)
 						$vValue = $vValue & " (" & $vCountry & ")"
 				EndSwitch
 				$vNode = _XML_Read("/Profil/Element[" & $vWhile & "]/Target_Value", 0, "", $oXMLProfil)
+				If StringLower(_XML_Read("/Profil/Element[" & $vWhile & "]/Target_Maj", 0, "", $oXMLProfil)) = "true" Then $vValue = StringUpper($vValue)
 				_LOG($vNode & " <-- " & $vValue, 1, $iLOGPath)
 				_XML_WriteValue($vNode, $vValue, "", $aConfig[8])
 			Case Else

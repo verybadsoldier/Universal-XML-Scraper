@@ -1,7 +1,9 @@
 #Region ;**** Directives created by AutoIt3Wrapper_GUI ****
 #AutoIt3Wrapper_Icon=Ressources\Universal_Xml_Scraper.ico
-#AutoIt3Wrapper_Outfile=.\Universal_XML_Scraper.exe
-#AutoIt3Wrapper_Outfile_x64=.\Universal_XML_Scraper64.exe
+#AutoIt3Wrapper_Outfile=..\BIN\Universal_XML_Scraper.exe
+#AutoIt3Wrapper_Outfile_x64=..\BIN\Universal_XML_Scraper64.exe
+#AutoIt3Wrapper_Compression=3
+#AutoIt3Wrapper_UseUpx=n
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper XML Universel
@@ -12,8 +14,6 @@
 #AutoIt3Wrapper_AU3Check_Stop_OnWarning=y
 #AutoIt3Wrapper_Run_Tidy=y
 #Tidy_Parameters=/reel
-#AutoIt3Wrapper_Run_Before=ShowOriginalLine.exe %in%
-#AutoIt3Wrapper_Run_After=ShowOriginalLine.exe %in%
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
 
 ;*************************************************************************
@@ -71,10 +71,10 @@ Global $MS_AutoConfigItem
 #include "./Include/MailSlot.au3"
 #include "./Include/_GraphGDIPlus.au3"
 #include "./Include/_MyFunction.au3"
-#include "./Include/_AutoItErrorTrap.au3"
+;~ #include "./Include/_AutoItErrorTrap.au3"
 
-_AutoItErrorTrap("Main Module", "Hi!" & @CRLF & @CRLF & "An error was detected in the program, you can try again," & _
-		" cancel to exit or continue to see more details of the error." & @CRLF & @CRLF & "Sorry for the inconvenience!")
+;~ _AutoItErrorTrap("Main Module", "Hi!" & @CRLF & @CRLF & "An error was detected in the program, you can try again," & _
+;~ 		" cancel to exit or continue to see more details of the error." & @CRLF & @CRLF & "Sorry for the inconvenience!")
 
 ;Checking Version
 ;----------------
@@ -505,7 +505,7 @@ While 1
 	If $aDIRList <> -1 Then
 		For $vBoucle = 1 To UBound($MS_AutoConfigItem) - 1
 			If $nMsg = $MS_AutoConfigItem[$vBoucle] Then
-				_LOG("Autoconfig Selected :" & $aDIRList[$vBoucle][0],0, $iLOGPath)
+				_LOG("Autoconfig Selected :" & $aDIRList[$vBoucle][0], 0, $iLOGPath)
 				For $vBoucle2 = 1 To UBound($MS_AutoConfigItem) - 1
 					GUICtrlSetState($MS_AutoConfigItem[$vBoucle2], $GUI_UNCHECKED)
 				Next
@@ -1440,9 +1440,10 @@ EndFunc   ;==>_XMLSystem_Create
 Func _DownloadROMXML($aRomList, $vBoucle, $vSystemID, $vSSLogin = "", $vSSPassword = "")
 	If Not _Check_Cancel() Then Return $aRomList
 	Local $vXMLRom = $iTEMPPath & "\" & StringRegExpReplace($aRomList[$vBoucle][2], "[\[\]/\|\:\?""\*\\<>]", "") & ".xml"
-	$aRomList[$vBoucle][8] = _DownloadWRetry("http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $iDevId & "&devpassword=" & $iDevPassword & "&softname=" & $iSoftname & "&output=xml&ssid=" & $vSSLogin & "&sspassword=" & $vSSPassword & "&crc=" & $aRomList[$vBoucle][5] & "&md5=" & $aRomList[$vBoucle][6] & "&sha1=" & $aRomList[$vBoucle][7] & "&systemeid=" & $vSystemID & "&romtype=rom&romnom=" & $aRomList[$vBoucle][2] & "&romtaille=" & $aRomList[$vBoucle][4], $vXMLRom)
+	$vRomName = StringReplace(StringRegExpReplace($aRomList[$vBoucle][2], "[äëïöüÿ]", ""), " ", "%20")
+	$aRomList[$vBoucle][8] = _DownloadWRetry("http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $iDevId & "&devpassword=" & $iDevPassword & "&softname=" & $iSoftname & "&output=xml&ssid=" & $vSSLogin & "&sspassword=" & $vSSPassword & "&crc=" & $aRomList[$vBoucle][5] & "&md5=" & $aRomList[$vBoucle][6] & "&sha1=" & $aRomList[$vBoucle][7] & "&systemeid=" & $vSystemID & "&romtype=rom&romnom=" & $vRomName & "&romtaille=" & $aRomList[$vBoucle][4], $vXMLRom)
 	If (StringInStr(FileReadLine($aRomList[$vBoucle][8]), "Erreur") Or Not FileExists($aRomList[$vBoucle][8])) Then
-		$aRomList[$vBoucle][8] = _DownloadWRetry("http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $iDevId & "&devpassword=" & $iDevPassword & "&softname=" & $iSoftname & "&output=xml&ssid=" & $vSSLogin & "&sspassword=" & $vSSPassword & "&crc=&md5=&sha1=&systemeid=" & $vSystemID & "&romtype=rom&romnom=" & $aRomList[$vBoucle][2] & "&romtaille=" & $aRomList[$vBoucle][4], $vXMLRom)
+		$aRomList[$vBoucle][8] = _DownloadWRetry("http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $iDevId & "&devpassword=" & $iDevPassword & "&softname=" & $iSoftname & "&output=xml&ssid=" & $vSSLogin & "&sspassword=" & $vSSPassword & "&crc=&md5=&sha1=&systemeid=" & $vSystemID & "&romtype=rom&romnom=" & $vRomName & "&romtaille=" & $aRomList[$vBoucle][4], $vXMLRom)
 		If (StringInStr(FileReadLine($aRomList[$vBoucle][8]), "Erreur") Or Not FileExists($aRomList[$vBoucle][8])) Then
 			FileDelete($aRomList[$vBoucle][8])
 			$aRomList[$vBoucle][8] = ""

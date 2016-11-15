@@ -130,7 +130,7 @@ Func _Download($iURL, $iPath, $iTimeOut = "")
 		Return $iPath
 	Else
 		_LOG("Error Downloading File : " & $iPath, 2, $iLOGPath)
-		_LOG("Error Downloading URL : " & $iURL, 2, $iLOGPath)
+;~ 		_LOG("Error Downloading URL : " & $iURL, 2, $iLOGPath)
 		_LOG("Bytes read: " & $aData[$INET_DOWNLOADREAD], 2, $iLOGPath)
 		_LOG("Size: " & $aData[$INET_DOWNLOADSIZE], 2, $iLOGPath)
 		_LOG("Complete: " & $aData[$INET_DOWNLOADCOMPLETE], 2, $iLOGPath)
@@ -575,11 +575,12 @@ Func _GDIPlus_ResizeMax($iPath, $iMAX_Width, $iMAX_Height)
 	$iWidth = _GDIPlus_ImageGetWidth($hImage)
 	If $iWidth = 4294967295 Then $iWidth = 0 ;4294967295 en cas d'erreur.
 	$iHeight = _GDIPlus_ImageGetHeight($hImage)
-	If $iMAX_Width <= 0 Then $iMAX_Width = $iWidth
-	If $iMAX_Height <= 0 Then $iMAX_Height = $iHeight
+	$iRatio = $iHeight / $iWidth
+	If $iMAX_Width <= 0 Then $iMAX_Width = $iHeight/$iRatio
+	If $iMAX_Height <= 0 Then $iMAX_Height = $iWidth*$iRatio
 	$iWidth_New = $iWidth
 	$iHeight_New = $iHeight
-	$iRatio = $iHeight / $iWidth
+
 
 	If $iWidth_New > $iMAX_Width Then
 		$iWidth_New = $iMAX_Width

@@ -326,7 +326,7 @@
 	. Removed: Function: _XSL_GetDefaultStyleSheet - mLipok
 	.	This was example from:
 	.	http://www.xml.com/lpt/a/1681
-	.	But it is: Copyright Â© 1998-2006 O'Reilly Media, Inc.
+	.	But it is: Copyright © 1998-2006 O'Reilly Media, Inc.
 	. Renamed: Function: _XMLGetField >> _XML_GetField - mLipok
 	. Renamed: Function: _XMLGetValue >> _XML_GetValue - mLipok
 	. Renamed: Function: _XMLGetAllAttrib >> _XML_GetAllAttrib - mLipok
@@ -408,7 +408,7 @@
 	. TODO: Return SetError($XML_ERR_GENERAL ... should be used only once per function
 	. TODO: Return SetError($XML_ERR_GENERAL ... should be always ONLY as the last Error returned from function
 	. TODO: $XML_ERR_ .... should be reordered it will be SCRIPT BREAKING CHANGES: only if used MAGIC NUMBERS for @error checking
-	. TODO: GMK: What's a better way to insert a node before a specified node object or XPath for _XML_InsertChildNode and _XML_InsertChildWAttr?Â  Replace $iItem with $oInsertBeforeNode?
+	. TODO: GMK: What's a better way to insert a node before a specified node object or XPath for _XML_InsertChildNode and _XML_InsertChildWAttr?  Replace $iItem with $oInsertBeforeNode?
 	. TODO: GMK: Rename _XML_Transform ==> _XML_TransformNodeToObj (?)
 	. TODO: GMK: Why not combine _XML_UpdateField and _XML_UpdateField2?  Would inputting parameters for a single node XPath not work the same for _XML_UpdateField2 as it would for _XML_UpdateField?
 
