@@ -369,15 +369,18 @@ While 1
 								_XML_SaveToFile($oXMLProfil, $vProfilsPath)
 								IniWrite($iINIPath, "LAST_USE", "$vAutoconf_Use", 1)
 								$aDIRList = _Check_autoconf($oXMLProfil)
-								IniWrite($iINIPath, "LAST_USE", "$vSource_RomPath", $aDIRList[1][1])
-								IniWrite($iINIPath, "LAST_USE", "$vTarget_RomPath", $aDIRList[1][2])
-								IniWrite($iINIPath, "LAST_USE", "$vTarget_XMLName", $aDIRList[1][3])
-								IniWrite($iINIPath, "LAST_USE", "$vSource_ImagePath", $aDIRList[1][4])
-								IniWrite($iINIPath, "LAST_USE", "$vTarget_ImagePath", $aDIRList[1][5])
-								_LoadConfig($oXMLProfil)
-								_GUI_Refresh($oXMLProfil)
-								If IniRead($iINIPath, "LAST_USE", "$vRechFiles", 0) = 0 Then IniWrite($iINIPath, "LAST_USE", "$vRechFiles", "*.*|*.xml;*.txt;*.dv;*.fs;*.xor;*.drv;*.dat;*.cfg;*.nv;*.sav*|")
-								If IniRead($iINIPath, "LAST_USE", "$vAutoconf_Use", 0) <> 0 Then $vBoucle = $vBoucle + 1
+								If IsArray($aDIRList) Then
+									IniWrite($iINIPath, "LAST_USE", "$vSource_RomPath", $aDIRList[1][1])
+									IniWrite($iINIPath, "LAST_USE", "$vTarget_RomPath", $aDIRList[1][2])
+									IniWrite($iINIPath, "LAST_USE", "$vTarget_XMLName", $aDIRList[1][3])
+									IniWrite($iINIPath, "LAST_USE", "$vSource_ImagePath", $aDIRList[1][4])
+									IniWrite($iINIPath, "LAST_USE", "$vTarget_ImagePath", $aDIRList[1][5])
+									_LoadConfig($oXMLProfil)
+									_GUI_Refresh($oXMLProfil)
+									If IniRead($iINIPath, "LAST_USE", "$vRechFiles", 0) = 0 Then IniWrite($iINIPath, "LAST_USE", "$vRechFiles", "*.*|*.xml;*.txt;*.dv;*.fs;*.xor;*.drv;*.dat;*.cfg;*.nv;*.sav*|")
+									If IniRead($iINIPath, "LAST_USE", "$vAutoconf_Use", 0) <> 0 Then $vBoucle = $vBoucle + 1
+								EndIf
+
 						EndSwitch
 					Case 3
 						If StringLower(_XML_Read('Profil/General/Mix', 0, "", $oXMLProfil)) = "true" Then
