@@ -127,6 +127,7 @@ Func _Download($iURL, $iPath, $iTimeOut = "")
 
 	If $aData[$INET_DOWNLOADSUCCESS] Then
 		_LOG("File Downloaded Path : " & $iPath, 1, $iLOGPath)
+;~ 		_LOG("File Downloading URL : " & $iURL, 2, $iLOGPath)
 		Return $iPath
 	Else
 		_LOG("Error Downloading File : " & $iPath, 2, $iLOGPath)
