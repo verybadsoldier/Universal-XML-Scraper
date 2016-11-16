@@ -7,7 +7,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper XML Universel
-#AutoIt3Wrapper_Res_Fileversion=2.0.0.2
+#AutoIt3Wrapper_Res_Fileversion=2.0.0.3
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -179,6 +179,11 @@ Global $iLangPath = $iScriptPath & "\LanguageFiles" ; Where we are storing the l
 Global $iProfilsPath = $iScriptPath & "\ProfilsFiles" ; Where we are storing the profils files.
 Global $iMIXPath = $iScriptPath & "\Mix" ; Where we are storing the MIX files.
 Global $iPathMixTmp = $iMIXPath & "\TEMP" ; Where we are storing the current MIX files.
+Global $iURLMirror3 = "http://mirror-screenscraper-preprod.recalbox.org/"
+Global $iURLMirror = "http://uxs-screenscraper.recalbox.com/"
+Global $iURLMirror2 = "http://uxs-mirror-screenscraper-preprod.recalbox.org/"
+Global $iURLSS = "http://www.screenscraper.fr/"
+Global $iURLScraper = $iURLSS
 
 If @OSArch = "X64" Then
 	_LOG("Scrape in x64", 0, $iLOGPath)
@@ -889,9 +894,10 @@ Func _GUI_Config_MISC()
 	$vTEMPPathSSCheck = $iScriptPath & "\Ressources\SSCheck.xml"
 	$vSSLogin = GUICtrlRead($I_SSLogin) ;$vSSLogin
 	$vSSPassword = GUICtrlRead($I_SSPassword) ;$vSSPassword
-	_LOG("SS Check ssid=" & $vSSLogin, 1, $iLOGPath)
-	$vTEMPPathSSCheck = _DownloadWRetry("http://www.screenscraper.fr/api/ssuserInfos.php?devid=xxx&devpassword=yyy&softname=zzz&output=XML&ssid=" & $vSSLogin & "&sspassword=" & $vSSPassword, $vTEMPPathSSCheck)
+
+	$vTEMPPathSSCheck = _DownloadWRetry($iURLScraper & "api/ssuserInfos.php?devid=xxx&devpassword=yyy&softname=zzz&output=XML&ssid=" & $vSSLogin & "&sspassword=" & $vSSPassword, $vTEMPPathSSCheck)
 	$vSSLevel = Number(_XML_Read("/Data/ssuser/niveau", 0, $vTEMPPathSSCheck))
+	_LOG("SS Check ssid=" & $vSSLogin & " LVL = " & $vSSLevel, 1, $iLOGPath)
 	If $vSSLevel < 1 Then $vSSLevel = 0
 	Switch $vSSLevel
 		Case 0
@@ -904,6 +910,8 @@ Func _GUI_Config_MISC()
 			$vNbThreadMax = 6
 		Case 30 To 499
 			$vNbThreadMax = 10
+		Case 500 To 99999
+			$vNbThreadMax = 99
 		Case Else
 			$vNbThreadMax = 1
 	EndSwitch
@@ -926,6 +934,7 @@ Func _GUI_Config_MISC()
 				Return
 			Case $B_CONFENREG
 				IniWrite($iINIPath, "LAST_USE", "$vNbThread", GUICtrlRead($C_Thread))
+				_LOG("SS lvl=" & $vSSLevel & " Max Thread = " & $vNbThreadMax & " Thread selected = " & GUICtrlRead($C_Thread), 1, $iLOGPath)
 				IniWrite($iINIPath, "LAST_USE", "$vScrape_Mode", StringLeft(GUICtrlRead($C_ScrapeMode), 1))
 				IniWrite($iINIPath, "LAST_USE", "$vCountryPic_Mode", StringLeft(GUICtrlRead($C_CountryPic_Mode), 1))
 				IniWrite($iINIPath, "GENERAL", "$vVerbose", StringLeft(GUICtrlRead($C_Verbose), 1))
@@ -949,14 +958,14 @@ Func _GUI_Config_MISC()
 				Return GUICtrlRead($C_Thread)
 			Case $B_SSRegister
 				_LOG("Launch Internet Browser to Register", 0, $iLOGPath)
-				ShellExecute("http://www.screenscraper.fr/membreinscription.php")
+				ShellExecute($iURLScraper & "membreinscription.php")
 			Case $B_SSCheck
 				GUICtrlSetData($C_Thread, "", "")
 				$vTEMPPathSSCheck = $iScriptPath & "\Ressources\SSCheck.xml"
 				$vSSLogin = GUICtrlRead($I_SSLogin) ;$vSSLogin
 				$vSSPassword = GUICtrlRead($I_SSPassword) ;$vSSPassword
 				_LOG("SS Check ssid=" & $vSSLogin, 3, $iLOGPath)
-				$vTEMPPathSSCheck = _DownloadWRetry("http://www.screenscraper.fr/api/ssuserInfos.php?devid=xxx&devpassword=yyy&softname=zzz&output=XML&ssid=" & $vSSLogin & "&sspassword=" & $vSSPassword, $vTEMPPathSSCheck)
+				$vTEMPPathSSCheck = _DownloadWRetry($iURLScraper & "api/ssuserInfos.php?devid=xxx&devpassword=yyy&softname=zzz&output=XML&ssid=" & $vSSLogin & "&sspassword=" & $vSSPassword, $vTEMPPathSSCheck)
 				$vSSLevel = Number(_XML_Read("/Data/ssuser/niveau", 0, $vTEMPPathSSCheck))
 				If $vSSLevel < 1 Then $vSSLevel = 0
 				Switch $vSSLevel
@@ -1429,7 +1438,7 @@ EndFunc   ;==>_CalcHash
 
 Func _XMLSystem_Create($vSSLogin = "", $vSSPassword = "")
 	Local $oXMLSystem, $vXMLSystemPath = $iScriptPath & "\Ressources\systemlist.xml"
-	$vXMLSystemPath = _DownloadWRetry("http://www.screenscraper.fr/api/systemesListe.php?devid=" & $iDevId & "&devpassword=" & $iDevPassword & "&softname=" & $iSoftname & "&output=XML&ssid=" & $vSSLogin & "&sspassword=" & $vSSPassword, $vXMLSystemPath)
+	$vXMLSystemPath = _DownloadWRetry($iURLScraper & "api/systemesListe.php?devid=" & $iDevId & "&devpassword=" & $iDevPassword & "&softname=" & $iSoftname & "&output=XML&ssid=" & $vSSLogin & "&sspassword=" & $vSSPassword, $vXMLSystemPath)
 	Switch $vXMLSystemPath
 		Case -1
 			MsgBox($MB_ICONERROR, _MultiLang_GetText("err_title"), _MultiLang_GetText("err_UXSGlobal") & @CRLF & _MultiLang_GetText("err_Connection"))
@@ -1453,9 +1462,9 @@ Func _DownloadROMXML($aRomList, $vBoucle, $vSystemID, $vSSLogin = "", $vSSPasswo
 	If Not _Check_Cancel() Then Return $aRomList
 	Local $vXMLRom = $iTEMPPath & "\" & StringRegExpReplace($aRomList[$vBoucle][2], "[\[\]/\|\:\?""\*\\<>]", "") & ".xml"
 	$vRomName = StringReplace(StringRegExpReplace($aRomList[$vBoucle][2], "[äëïöüÿ]", ""), " ", "%20")
-	$aRomList[$vBoucle][8] = _DownloadWRetry("http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $iDevId & "&devpassword=" & $iDevPassword & "&softname=" & $iSoftname & "&output=xml&ssid=" & $vSSLogin & "&sspassword=" & $vSSPassword & "&crc=" & $aRomList[$vBoucle][5] & "&md5=" & $aRomList[$vBoucle][6] & "&sha1=" & $aRomList[$vBoucle][7] & "&systemeid=" & $vSystemID & "&romtype=rom&romnom=" & $vRomName & "&romtaille=" & $aRomList[$vBoucle][4], $vXMLRom)
+	$aRomList[$vBoucle][8] = _DownloadWRetry($iURLScraper & "api/jeuInfos.php?devid=" & $iDevId & "&devpassword=" & $iDevPassword & "&softname=" & $iSoftname & "&output=xml&ssid=" & $vSSLogin & "&sspassword=" & $vSSPassword & "&crc=" & $aRomList[$vBoucle][5] & "&md5=" & $aRomList[$vBoucle][6] & "&sha1=" & $aRomList[$vBoucle][7] & "&systemeid=" & $vSystemID & "&romtype=rom&romnom=" & $vRomName & "&romtaille=" & $aRomList[$vBoucle][4], $vXMLRom)
 	If (StringInStr(FileReadLine($aRomList[$vBoucle][8]), "Erreur") Or Not FileExists($aRomList[$vBoucle][8])) Then
-		$aRomList[$vBoucle][8] = _DownloadWRetry("http://www.screenscraper.fr/api/jeuInfos.php?devid=" & $iDevId & "&devpassword=" & $iDevPassword & "&softname=" & $iSoftname & "&output=xml&ssid=" & $vSSLogin & "&sspassword=" & $vSSPassword & "&crc=&md5=&sha1=&systemeid=" & $vSystemID & "&romtype=rom&romnom=" & $vRomName & "&romtaille=" & $aRomList[$vBoucle][4], $vXMLRom)
+		$aRomList[$vBoucle][8] = _DownloadWRetry($iURLScraper & "api/jeuInfos.php?devid=" & $iDevId & "&devpassword=" & $iDevPassword & "&softname=" & $iSoftname & "&output=xml&ssid=" & $vSSLogin & "&sspassword=" & $vSSPassword & "&crc=&md5=&sha1=&systemeid=" & $vSystemID & "&romtype=rom&romnom=" & $vRomName & "&romtaille=" & $aRomList[$vBoucle][4], $vXMLRom)
 		If (StringInStr(FileReadLine($aRomList[$vBoucle][8]), "Erreur") Or Not FileExists($aRomList[$vBoucle][8])) Then
 			FileDelete($aRomList[$vBoucle][8])
 			$aRomList[$vBoucle][8] = ""
@@ -1628,7 +1637,7 @@ Func _SCRAPE($oXMLProfil, $vNbThread = 1, $vFullScrape = 0)
 		Local $vThreadUsed = 1
 		$aConfig[8] = "0000"
 
-		$vTEMPPathSSCheck = _DownloadWRetry("http://www.screenscraper.fr/api/ssuserInfos.php?devid=xxx&devpassword=yyy&softname=zzz&output=XML&ssid=" & $aConfig[13] & "&sspassword=" & $aConfig[14], $iScriptPath & "\Ressources\SSCheck.xml")
+		$vTEMPPathSSCheck = _DownloadWRetry($iURLScraper & "api/ssuserInfos.php?devid=xxx&devpassword=yyy&softname=zzz&output=XML&ssid=" & $aConfig[13] & "&sspassword=" & $aConfig[14], $iScriptPath & "\Ressources\SSCheck.xml")
 		$vSSLevel = Number(_XML_Read("/Data/ssuser/niveau", 0, $vTEMPPathSSCheck))
 		If $vSSLevel < 1 Then $vSSLevel = 0
 		Switch $vSSLevel
@@ -1642,6 +1651,8 @@ Func _SCRAPE($oXMLProfil, $vNbThread = 1, $vFullScrape = 0)
 				$vNbThreadMax = 6
 			Case 30 To 499
 				$vNbThreadMax = 10
+			Case 500 To 99999
+				$vNbThreadMax = 99
 			Case Else
 				$vNbThreadMax = 1
 		EndSwitch

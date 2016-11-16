@@ -126,7 +126,7 @@ Func _Download($iURL, $iPath, $iTimeOut = "")
 	InetClose($hDownload)
 
 	If $aData[$INET_DOWNLOADSUCCESS] Then
-		_LOG("File Downloaded : " & $iPath, 1, $iLOGPath)
+		_LOG("File Downloaded Path : " & $iPath, 1, $iLOGPath)
 		Return $iPath
 	Else
 		_LOG("Error Downloading File : " & $iPath, 2, $iLOGPath)
@@ -304,8 +304,6 @@ EndFunc   ;==>_MultiLang_LoadLangDef
 ; Link ..........;
 ; Example .......; No
 Func _SelectGUI($aSelectionItem, $default = -1, $vText = "standard", $vLanguageSelector = 0)
-;~ 	_CREATION_LOGMESS(2, "Selection de la langue")
-;~ 	If $demarrage = 0 Then GUISetState(@SW_DISABLE, $F_UniversalScraper)
 	If $aSelectionItem = -1 Or IsArray($aSelectionItem) = 0 Then
 		_LOG("Selection Array Invalid", 2, $iLOGPath)
 		Return -1
@@ -314,6 +312,7 @@ Func _SelectGUI($aSelectionItem, $default = -1, $vText = "standard", $vLanguageS
 		$_gh_aLangFileArray = $aSelectionItem
 		If $default = -1 Then $default = @OSLang
 	EndIf
+
 
 
 	Local $_Selector_gui_GUI = GUICreate(_MultiLang_GetText("win_sel_" & $vText & "_Title"), 230, 100)
@@ -330,14 +329,18 @@ Func _SelectGUI($aSelectionItem, $default = -1, $vText = "standard", $vLanguageS
 	While 1
 		$nMsg = GUIGetMsg()
 		Switch $nMsg
-			Case -3, $_Selector_gui_Button
+			Case $_Selector_gui_Button
 				ExitLoop
 		EndSwitch
 	WEnd
 	Local $_selected = GUICtrlRead($_Selector_gui_Combo)
 	GUIDelete($_Selector_gui_GUI)
+
+;~ 	MsgBox(0,"$_selected",$_selected)
+;~ 	_ArrayDisplay($aSelectionItem,"$aSelectionItem")
+
 	For $i = 0 To UBound($aSelectionItem) - 1
-		If StringInStr($aSelectionItem[$i][0], $_selected) Then
+		If $aSelectionItem[$i][0]= $_selected Then
 			If $vLanguageSelector = 1 Then
 				_LOG("Value selected : " & StringLeft($aSelectionItem[$i][2], 4), 1, $iLOGPath)
 				Return StringLeft($aSelectionItem[$i][2], 4)
