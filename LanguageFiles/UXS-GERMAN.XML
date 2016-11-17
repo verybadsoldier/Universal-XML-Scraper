@@ -101,7 +101,7 @@
 			<win_config_Option_Title>Optionen</win_config_Option_Title>
 			<win_config_Option_GroupOption>Option die geändert werden soll</win_config_Option_GroupOption>
 			<win_config_Option_GroupOption_Choice>Auswahl</win_config_Option_GroupOption_Choice>
-			<win_config_Option_GroupParam>Parameter die geändert werden sollen</win_config_Option_GroupOption>
+			<win_config_Option_GroupParam>Parameter die geändert werden sollen</win_config_Option_GroupParam>
 			
 			<win_config_MISC_Title>Allgemein</win_config_MISC_Title>
 			<win_config_MISC_GroupMISC>Sonstiges</win_config_MISC_GroupMISC>

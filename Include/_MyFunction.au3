@@ -341,7 +341,7 @@ Func _SelectGUI($aSelectionItem, $default = -1, $vText = "standard", $vLanguageS
 ;~ 	_ArrayDisplay($aSelectionItem,"$aSelectionItem")
 
 	For $i = 0 To UBound($aSelectionItem) - 1
-		If $aSelectionItem[$i][0]= $_selected Then
+		If $aSelectionItem[$i][0] = $_selected Then
 			If $vLanguageSelector = 1 Then
 				_LOG("Value selected : " & StringLeft($aSelectionItem[$i][2], 4), 1, $iLOGPath)
 				Return StringLeft($aSelectionItem[$i][2], 4)
@@ -580,8 +580,8 @@ Func _GDIPlus_ResizeMax($iPath, $iMAX_Width, $iMAX_Height)
 	If $iWidth = 4294967295 Then $iWidth = 0 ;4294967295 en cas d'erreur.
 	$iHeight = _GDIPlus_ImageGetHeight($hImage)
 	$iRatio = $iHeight / $iWidth
-	If $iMAX_Width <= 0 Then $iMAX_Width = $iHeight/$iRatio
-	If $iMAX_Height <= 0 Then $iMAX_Height = $iWidth*$iRatio
+	If $iMAX_Width <= 0 Then $iMAX_Width = $iHeight / $iRatio
+	If $iMAX_Height <= 0 Then $iMAX_Height = $iWidth * $iRatio
 	$iWidth_New = $iWidth
 	$iHeight_New = $iHeight
 
@@ -1088,6 +1088,7 @@ Func _GDIPlus_Imaging($iPath, $aPicParameters, $vTarget_Width, $vTarget_Height)
 	Local $MergedImageBackgroundColor = 0x00000000
 	Local $iWidth = _GDIPlus_RelativePos($aPicParameters[0], $vTarget_Width)
 	Local $iHeight = _GDIPlus_RelativePos($aPicParameters[1], $vTarget_Height)
+
 	If $aPicParameters[8] = 'YES' Then $iResized = _GDIPlus_ResizeMax($iPath, $iWidth, $iHeight)
 	If _MakeTEMPFile($iPath, $iPath_Temp) = -1 Then Return -1
 	_GDIPlus_Startup()

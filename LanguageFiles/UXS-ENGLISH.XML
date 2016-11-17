@@ -21,10 +21,10 @@
 	<mess_autoconf>Autoconfiguration preparation in progress</mess_autoconf>
 	<mess_autoconf_ask_Title>Autoconfiguration</mess_autoconf_ask_Title>
 	<mess_autoconf_ask_Question>Do you want to use autoconfiguration ?</mess_autoconf_ask_Question>
-	<mess_ssh_killall>Are you sur you want to kill EmulationStation ?</mess_ssh_killall>
-	<mess_ssh_start>Are you sur you want to start EmulationStation ?</mess_ssh_start>
-	<mess_ssh_reboot>Are you sur you want to reboot distant peripheral ?</mess_ssh_reboot>
-	<mess_ssh_poweroff>Are you sur you want to halt distant peripheral ?</mess_ssh_poweroff>
+	<mess_ssh_killall>Are you sure you want to kill EmulationStation ?</mess_ssh_killall>
+	<mess_ssh_start>Are you sure you want to start EmulationStation ?</mess_ssh_start>
+	<mess_ssh_reboot>Are you sure you want to reboot distant peripheral ?</mess_ssh_reboot>
+	<mess_ssh_poweroff>Are you sure you want to halt distant peripheral ?</mess_ssh_poweroff>
 	<mess_update_Title>Update needed</mess_update_Title>
 	<mess_update_Question>Do you want to download the updated version ?</mess_update_Question>
 	<mess_ssregister_title>Account logged</mess_ssregister_title>
@@ -99,7 +99,7 @@
 			<win_config_Option_Title>Options configuration</win_config_Option_Title>
 			<win_config_Option_GroupOption>Item to change</win_config_Option_GroupOption>
 			<win_config_Option_GroupOption_Choice>Item Choice</win_config_Option_GroupOption_Choice>
-			<win_config_Option_GroupParam>Parameter to change</win_config_Option_GroupOption>
+			<win_config_Option_GroupParam>Parameter to change</win_config_Option_GroupParam>
 			
 			<win_config_MISC_Title>General configuration</win_config_MISC_Title>
 			<win_config_MISC_GroupMISC>Misc</win_config_MISC_GroupMISC>
