@@ -41,7 +41,7 @@
 		<mnu_file_exit>Salir</mnu_file_exit>
 		
 		<mnu_cfg>Configuración</mnu_cfg>
-		<mnu_cfg_Wizard>Asistente de lanzamiento</mnu_cfg_Wizard>
+		<mnu_cfg_Wizard>Iniciar Asistente</mnu_cfg_Wizard>
 		<mnu_cfg_config_LU>Configuración de ruta</mnu_cfg_config_LU>
 		<mnu_cfg_config_MISC>Configuración general</mnu_cfg_config_MISC>
 		<mnu_cfg_config_Option>Configuración de opciones</mnu_cfg_config_Option>
