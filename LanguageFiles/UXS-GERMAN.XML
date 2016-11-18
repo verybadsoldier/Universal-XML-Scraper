@@ -41,6 +41,7 @@
 		<mnu_file_exit>Beenden</mnu_file_exit>
 		
 		<mnu_cfg>Einstellungen</mnu_cfg>
+		<mnu_cfg_Wizard>Starten Sie den Assistenten</mnu_cfg_Wizard>
 		<mnu_cfg_config_LU>Dateipfade</mnu_cfg_config_LU>
 		<mnu_cfg_config_MISC>Allgemein</mnu_cfg_config_MISC>
 		<mnu_cfg_config_Option>Optionen</mnu_cfg_config_Option>

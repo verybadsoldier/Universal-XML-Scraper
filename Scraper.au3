@@ -18,13 +18,6 @@
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
 TraySetState(2)
 
-;~ If $CmdLine[0] = 0 And @Compiled Then Exit
-;~ If @Compiled Then
-;~ 	$vThreadNumber = $CmdLine[1]
-;~ Else
-;~ 	$vThreadNumber = "1"
-;~ EndIf
-
 If $CmdLine[0] = 0 Then Exit
 $vThreadNumber = $CmdLine[1]
 

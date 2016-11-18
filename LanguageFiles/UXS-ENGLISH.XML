@@ -39,6 +39,7 @@
 		<mnu_file_exit>Exit</mnu_file_exit>
 		
 		<mnu_cfg>Configuration</mnu_cfg>
+		<mnu_cfg_Wizard>Launch wizard</mnu_cfg_Wizard>
 		<mnu_cfg_config_LU>Path configuration</mnu_cfg_config_LU>
 		<mnu_cfg_config_MISC>General configuration</mnu_cfg_config_MISC>
 		<mnu_cfg_config_Option>Options configuration</mnu_cfg_config_Option>

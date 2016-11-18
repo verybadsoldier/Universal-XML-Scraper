@@ -1,3 +1,10 @@
+2.0.0.3
+German Translation (Thanks to Madmeggo, Paradadf and Lackyluuk)
+Spanish Translation (Thanks to Paradadf)
+Resizing correction (ratio problem in Fullback theme)
+Minor bug correction
+Preparing Screenscraper Cache system
+
 2.0.0.2
 Preparing language file for translation
 System selection corrected

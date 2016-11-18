@@ -580,41 +580,15 @@ Func _GDIPlus_ResizeMax($iPath, $iMAX_Width, $iMAX_Height)
 	If $iWidth = 4294967295 Then $iWidth = 0 ;4294967295 en cas d'erreur.
 	$iHeight = _GDIPlus_ImageGetHeight($hImage)
 	$iRatio = $iHeight / $iWidth
-	If $iMAX_Width <= 0 Then $iMAX_Width = $iHeight / $iRatio
-	If $iMAX_Height <= 0 Then $iMAX_Height = $iWidth * $iRatio
-	$iWidth_New = $iWidth
-	$iHeight_New = $iHeight
-
-
+	If $iMAX_Width <= 0 And $iMAX_Height > 0 Then $iMAX_Width = $iMAX_Height / $iRatio
+	If $iMAX_Height <= 0 And $iMAX_Width > 0 Then $iMAX_Height = $iMAX_Width * $iRatio
+	$iHeight_New = $iMAX_Height
+	$iWidth_New = $iMAX_Height / $iRatio
 	If $iWidth_New > $iMAX_Width Then
 		$iWidth_New = $iMAX_Width
 		$iHeight_New = $iWidth_New * $iRatio
+		_LOG("$iHeight_New too BIG $iSize_New " & $iHeight_New & " x " & $iWidth_New  &"("&$iHeight_New/$iWidth_New&")", 2, $iLOGPath)
 	EndIf
-	If $iHeight_New > $iMAX_Height Then
-		$iHeight_New = $iMAX_Height
-		$iWidth_New = $iHeight_New / $iRatio
-	EndIf
-
-;~ 	If $iWidth > $iMAX_Width Then
-;~ 		$iRatio = $iWidth / $iMAX_Width
-;~ 		$iWidth_New = $iMAX_Width
-;~ 		$iHeight_New = $iHeight / $iRatio
-;~ 		If $iHeight_New > $iMAX_Height Then
-;~ 			$iRatio = $iHeight_New / $iMAX_Height
-;~ 			$iHeight_New = $iMAX_Height
-;~ 			$iWidth_New = $iWidth_New / $iRatio
-;~ 		EndIf
-;~ 	EndIf
-;~ 	If $iHeight > $iMAX_Height Then
-;~ 		$iRatio = $iHeight / $iMAX_Height
-;~ 		$iHeight_New = $iMAX_Height
-;~ 		$iWidth_New = $iWidth / $iRatio
-;~ 		If $iWidth_New > $iMAX_Width Then
-;~ 			$iRatio = $iWidth_New / $iMAX_Width
-;~ 			$iHeight_New = $iHeight_New / $iRatio
-;~ 			$iWidth_New = $iMAX_Width
-;~ 		EndIf
-;~ 	EndIf
 	$iWidth_New = Int($iWidth_New)
 	$iHeight_New = Int($iHeight_New)
 	If $iWidth <> $iWidth_New Or $iHeight <> $iHeight_New Then
@@ -1086,19 +1060,14 @@ Func _GDIPlus_Imaging($iPath, $aPicParameters, $vTarget_Width, $vTarget_Height)
 	$iPath_Temp = $sDrive & $sDir & $sFileName & "-IMAGING_Temp" & $iExtension
 	Local $hImage, $hGui, $hGraphicGUI, $hBMPBuff, $hGraphic
 	Local $MergedImageBackgroundColor = 0x00000000
-	_LOG("Starting Value " & $aPicParameters[0] & " x " & $aPicParameters[1], 2, $iLOGPath)
 	Local $iWidth = _GDIPlus_RelativePos($aPicParameters[0], $vTarget_Width)
 	Local $iHeight = _GDIPlus_RelativePos($aPicParameters[1], $vTarget_Height)
-	_LOG("After RelativePos Value " & $iWidth & " x " & $iHeight, 2, $iLOGPath)
-
 	If $aPicParameters[8] = 'YES' Then $iResized = _GDIPlus_ResizeMax($iPath, $iWidth, $iHeight)
-	_LOG("After Resize Value " & $iWidth & " x " & $iHeight, 2, $iLOGPath)
 	If _MakeTEMPFile($iPath, $iPath_Temp) = -1 Then Return -1
 	_GDIPlus_Startup()
 	$hImage = _GDIPlus_ImageLoadFromFile($iPath_Temp)
 	If $iWidth <= 0 Or ($aPicParameters[8] = 'YES' And $iResized = 1) Then $iWidth = _GDIPlus_ImageGetWidth($hImage)
 	If $iHeight <= 0 Or ($aPicParameters[8] = 'YES' And $iResized = 1) Then $iHeight = _GDIPlus_ImageGetHeight($hImage)
-	_LOG("After Size Check Value ($aPicParameters[8]=" & $aPicParameters[8] & " - $iResized =" & $iResized & ")" & $iWidth & " x " & $iHeight, 2, $iLOGPath)
 	$hGui = GUICreate("", $vTarget_Width, $vTarget_Height)
 	$hGraphicGUI = _GDIPlus_GraphicsCreateFromHWND($hGui) ;Draw to this graphics, $hGraphicGUI, to display on GUI
 	$hBMPBuff = _GDIPlus_BitmapCreateFromGraphics($vTarget_Width, $vTarget_Height, $hGraphicGUI) ; $hBMPBuff is a bitmap in memory
