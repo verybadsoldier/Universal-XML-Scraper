@@ -1755,6 +1755,8 @@ Func _SCRAPE($oXMLProfil, $vNbThread = 1, $vFullScrape = 0)
 ;~ 				Sleep(100)
 			Next
 
+			Sleep(1000)
+
 			For $vBoucle = 1 To UBound($aRomList) - 1
 				$vSendTimer = TimerInit()
 				Local $PercentProgression = Round(($vBoucle * 100) / UBound($aRomList) - 1)
