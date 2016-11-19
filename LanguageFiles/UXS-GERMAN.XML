@@ -63,6 +63,9 @@
 		<mnu_ssh_poweroff>System ausschalten</mnu_ssh_poweroff>
 		
 		<mnu_help>Hilfe</mnu_help>
+		<mnu_help_wiki>Help (wiki)</mnu_help_wiki>
+		<mnu_help_support>Help us</mnu_help_support>
+		<mnu_help_link>Links</mnu_help_link>
 		<mnu_help_about>Über</mnu_help_about>
 	</menu>
 	<windows>
@@ -116,6 +119,7 @@
 			<win_config_MISC_GroupMISC_VerboseChoice>0 - standard|1 - erweitert|2 - komplett</win_config_MISC_GroupMISC_VerboseChoice>
 			<win_config_MISC_GroupMISC_MissingMode>Eintrag für fehlende Roms in XML-Datei hinzufügen</win_config_MISC_GroupMISC_MissingMode>
 			<win_config_MISC_GroupMISC_RechSys>automatische Systemauswahl</win_config_MISC_GroupMISC_RechSys>
+			<win_config_MISC_GroupMISC_Mirror>Use DigiMirror</win_config_MISC_GroupMISC_Mirror>
 			<win_config_MISC_GroupScreenScraper>Screenscraper.fr</win_config_MISC_GroupScreenScraper>
 			<win_config_MISC_GroupScreenScraper_Login>Screenscraper.fr Login</win_config_MISC_GroupScreenScraper_Login>
 			<win_config_MISC_GroupScreenScraper_Password>Screenscraper.fr Passwort</win_config_MISC_GroupScreenScraper_Password>
@@ -167,6 +171,7 @@
 			<win_Wizard_Next>Weiter</win_Wizard_Next>
 			<win_Wizard_Back>Zurück</win_Wizard_Back>
 			<win_Wizard_End>OK</win_Wizard_End>
+			<win_Wizard_Cancel>Abbrechen</win_Wizard_Cancel>
 			<win_Wizard_Profil>
 				<win_Wizard_Profil_Title>Profil Auswahl</win_Wizard_Profil_Title>
 				<win_Wizard_Profil_Desc>Hier kannst du das entsprechende Profil für dein Betriebssystem auswählen.|!||!|Die MIX-Version erstellt aus verschiedenen Bildern, wie Screenshot, 3D Box und Spiel-Logo, ein einzelnes Bild für das jeweilige Spiel.|!||!|Das MIX-Profil kann im Menü geändert werden : |!|"Mix-Image Profil wechseln"|!|oder später in diesem Assistenten.</win_Wizard_Profil_Desc>

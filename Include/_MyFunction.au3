@@ -518,7 +518,7 @@ Func _Compression($iPath, $isoft = 'pngquant.exe', $iParamater = '--force --verb
 		Return -1
 	EndIf
 	$vPathSize = _ByteSuffix(FileGetSize($iPath))
-	$sRun = $iScriptPath & '\Ressources\pngquant.exe ' & $iParamater & ' ' & $iPath
+	$sRun = '"' & $iScriptPath & '\Ressources\pngquant.exe" ' & $iParamater & ' "' & $iPath &'"'
 	_LOG("PNGQuant command: " & $sRun, 1, $iLOGPath)
 	$iPid = Run($sRun, '', @SW_HIDE, $STDERR_CHILD + $STDOUT_CHILD)
 	While ProcessExists($iPid)
@@ -587,7 +587,7 @@ Func _GDIPlus_ResizeMax($iPath, $iMAX_Width, $iMAX_Height)
 	If $iWidth_New > $iMAX_Width Then
 		$iWidth_New = $iMAX_Width
 		$iHeight_New = $iWidth_New * $iRatio
-		_LOG("$iHeight_New too BIG $iSize_New " & $iHeight_New & " x " & $iWidth_New  &"("&$iHeight_New/$iWidth_New&")", 2, $iLOGPath)
+		_LOG("$iWidth_New too BIG $iSize_New " & $iWidth_New  & " x " & $iHeight_New  &"("&$iHeight_New/$iWidth_New&")", 2, $iLOGPath)
 	EndIf
 	$iWidth_New = Int($iWidth_New)
 	$iHeight_New = Int($iHeight_New)
@@ -599,6 +599,8 @@ Func _GDIPlus_ResizeMax($iPath, $iMAX_Width, $iMAX_Height)
 	Else
 		$iResized = 0
 		_LOG("No Resizing : " & $iPath, 0, $iLOGPath) ; Debug
+		_LOG("Origine = " & $iWidth & "x" & $iHeight, 1, $iLOGPath) ; Debug
+		_LOG("Finale = " & $iWidth_New & "x" & $iHeight_New, 1, $iLOGPath) ; Debug
 	EndIf
 	$hImageResized = _GDIPlus_ImageResize($hImage, $iWidth_New, $iHeight_New)
 	_GDIPlus_ImageSaveToFile($hImageResized, $iPath)
@@ -1054,7 +1056,7 @@ EndFunc   ;==>_GDIPlus_GraphicsDrawImageRectRectTrans
 ; Link ..........;
 ; Example .......; No
 Func _GDIPlus_Imaging($iPath, $aPicParameters, $vTarget_Width, $vTarget_Height)
-	Local $sDrive, $sDir, $sFileName, $iExtension, $iPath_Temp, $iResized = 0
+	Local $sDrive, $sDir, $sFileName, $iExtension, $iPath_Temp
 	_PathSplit($iPath, $sDrive, $sDir, $sFileName, $iExtension)
 	$aPicParameters[8] = StringUpper($aPicParameters[8])
 	$iPath_Temp = $sDrive & $sDir & $sFileName & "-IMAGING_Temp" & $iExtension
@@ -1062,12 +1064,12 @@ Func _GDIPlus_Imaging($iPath, $aPicParameters, $vTarget_Width, $vTarget_Height)
 	Local $MergedImageBackgroundColor = 0x00000000
 	Local $iWidth = _GDIPlus_RelativePos($aPicParameters[0], $vTarget_Width)
 	Local $iHeight = _GDIPlus_RelativePos($aPicParameters[1], $vTarget_Height)
-	If $aPicParameters[8] = 'YES' Then $iResized = _GDIPlus_ResizeMax($iPath, $iWidth, $iHeight)
+	If $aPicParameters[8] = 'YES' Then _GDIPlus_ResizeMax($iPath, $iWidth, $iHeight)
 	If _MakeTEMPFile($iPath, $iPath_Temp) = -1 Then Return -1
 	_GDIPlus_Startup()
 	$hImage = _GDIPlus_ImageLoadFromFile($iPath_Temp)
-	If $iWidth <= 0 Or ($aPicParameters[8] = 'YES' And $iResized = 1) Then $iWidth = _GDIPlus_ImageGetWidth($hImage)
-	If $iHeight <= 0 Or ($aPicParameters[8] = 'YES' And $iResized = 1) Then $iHeight = _GDIPlus_ImageGetHeight($hImage)
+	If $iWidth <= 0 Or $aPicParameters[8] = 'YES' Then $iWidth = _GDIPlus_ImageGetWidth($hImage)
+	If $iHeight <= 0 Or $aPicParameters[8] = 'YES' Then $iHeight = _GDIPlus_ImageGetHeight($hImage)
 	$hGui = GUICreate("", $vTarget_Width, $vTarget_Height)
 	$hGraphicGUI = _GDIPlus_GraphicsCreateFromHWND($hGui) ;Draw to this graphics, $hGraphicGUI, to display on GUI
 	$hBMPBuff = _GDIPlus_BitmapCreateFromGraphics($vTarget_Width, $vTarget_Height, $hGraphicGUI) ; $hBMPBuff is a bitmap in memory

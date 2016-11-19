@@ -5,7 +5,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper XML Universel
-#AutoIt3Wrapper_Res_Fileversion=2.0.0.4
+#AutoIt3Wrapper_Res_Fileversion=2.0.0.5
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -113,13 +113,6 @@ FileInstall(".\LanguageFiles\UXS-FRENCH.XML", $iScriptPath & "\LanguageFiles\UXS
 FileInstall(".\LanguageFiles\UXS-PORTUGUESE.XML", $iScriptPath & "\LanguageFiles\UXS-PORTUGUESE.XML")
 FileInstall(".\LanguageFiles\UXS-GERMAN.XML", $iScriptPath & "\LanguageFiles\UXS-GERMAN.XML")
 FileInstall(".\LanguageFiles\UXS-SPANISH.XML", $iScriptPath & "\LanguageFiles\UXS-SPANISH.XML")
-;~ FileInstall(".\Ressources\empty.jpg", $iScriptPath & "\Ressources\empty.jpg")
-;~ FileInstall(".\Ressources\emptySYS.jpg", $iScriptPath & "\Ressources\emptySYS.jpg")
-;~ FileInstall(".\Ressources\Fleche.jpg", $iScriptPath & "\Ressources\Fleche.jpg")
-;~ FileInstall(".\Ressources\Fleche_DISABLE.bmp", $iScriptPath & "\Ressources\Fleche_DISABLE.bmp")
-;~ FileInstall(".\Ressources\Fleche_ENABLE.bmp", $iScriptPath & "\Ressources\Fleche_ENABLE.bmp")
-;~ FileInstall(".\Ressources\Fleche_IP1.bmp", $iScriptPath & "\Ressources\Fleche_IP1.bmp")
-;~ FileInstall(".\Ressources\Fleche_IP2.bmp", $iScriptPath & "\Ressources\Fleche_IP2.bmp")
 FileInstall(".\Ressources\plink.exe", $iScriptPath & "\Ressources\plink.exe")
 FileInstall(".\Ressources\optipng.exe", $iScriptPath & "\Ressources\optipng.exe")
 FileInstall(".\Ressources\pngquant.exe", $iScriptPath & "\Ressources\pngquant.exe")
@@ -136,19 +129,13 @@ FileInstall(".\Mix\Arcade Zoomed (moon).zip", $iScriptPath & "\Mix\")
 FileInstall(".\Mix\Full Back.zip", $iScriptPath & "\Mix\")
 FileInstall(".\Mix\Standard (3img).zip", $iScriptPath & "\Mix\")
 FileInstall(".\Mix\Standard (4img).zip", $iScriptPath & "\Mix\")
-;~ FileInstall(".\Mix\Oldtv (Multi Sys).zip", $iScriptPath & "\Mix\")
-;~ FileInstall(".\Mix\Standard (3img).zip", $iScriptPath & "\Mix\")
-;~ FileInstall(".\Mix\Standard (4img)  By Supernature2k.zip", $iScriptPath & "\Mix\")
 FileInstall(".\ProfilsFiles\Screenscraper(MIX)-RecalboxV4.xml", $iScriptPath & "\ProfilsFiles\", 0)
 FileInstall(".\ProfilsFiles\Screenscraper(MIX)-RecalboxV3.xml", $iScriptPath & "\ProfilsFiles\", 0)
 FileInstall(".\ProfilsFiles\Screenscraper(MIX)-Retropie.xml", $iScriptPath & "\ProfilsFiles\", 0)
 FileInstall(".\ProfilsFiles\Screenscraper-RecalboxV4.xml", $iScriptPath & "\ProfilsFiles\", 0)
 FileInstall(".\ProfilsFiles\Screenscraper-RecalboxV3.xml", $iScriptPath & "\ProfilsFiles\", 0)
 FileInstall(".\ProfilsFiles\Screenscraper-Retropie.xml", $iScriptPath & "\ProfilsFiles\", 0)
-;~ FileInstall(".\ProfilsFiles\Ressources\Attract-Mode.jpg", $iScriptPath & "\ProfilsFiles\Ressources\", 0)
 FileInstall(".\ProfilsFiles\Ressources\empty.jpg", $iScriptPath & "\ProfilsFiles\Ressources\", 0)
-;~ FileInstall(".\ProfilsFiles\Ressources\Emulationstation.jpg", $iScriptPath & "\ProfilsFiles\Ressources\", 0)
-;~ FileInstall(".\ProfilsFiles\Ressources\Hyperspin.jpg", $iScriptPath & "\ProfilsFiles\Ressources\", 0)
 FileInstall(".\ProfilsFiles\Ressources\Screenscraper(MIX)-RecalboxV4.jpg", $iScriptPath & "\ProfilsFiles\Ressources\", 0)
 FileInstall(".\ProfilsFiles\Ressources\Screenscraper(MIX)-RecalboxV3.jpg", $iScriptPath & "\ProfilsFiles\Ressources\", 0)
 FileInstall(".\ProfilsFiles\Ressources\Screenscraper(MIX)-Retropie.jpg", $iScriptPath & "\ProfilsFiles\Ressources\", 0)
@@ -157,8 +144,9 @@ FileInstall(".\ProfilsFiles\Ressources\Screenscraper-RecalboxV3.jpg", $iScriptPa
 FileInstall(".\ProfilsFiles\Ressources\Screenscraper-Retropie.jpg", $iScriptPath & "\ProfilsFiles\Ressources\", 0)
 FileInstall(".\Scraper.exe", $iScriptPath & "\Scraper.exe", 0)
 FileInstall(".\Scraper64.exe", $iScriptPath & "\Scraper64.exe", 0)
+FileSetAttrib($iScriptPath & "\Scraper.exe", "+H")
+FileSetAttrib($iScriptPath & "\Scraper64.exe", "+H")
 _LOG("Ending files installation", 1, $iLOGPath)
-
 #EndRegion FileInstall
 
 ;Splash Screen
@@ -177,11 +165,9 @@ Global $iLangPath = $iScriptPath & "\LanguageFiles" ; Where we are storing the l
 Global $iProfilsPath = $iScriptPath & "\ProfilsFiles" ; Where we are storing the profils files.
 Global $iMIXPath = $iScriptPath & "\Mix" ; Where we are storing the MIX files.
 Global $iPathMixTmp = $iMIXPath & "\TEMP" ; Where we are storing the current MIX files.
-Global $iURLMirror3 = "http://mirror-screenscraper-preprod.recalbox.org/"
 Global $iURLMirror = "http://uxs-screenscraper.recalbox.com/"
-Global $iURLMirror2 = "http://uxs-mirror-screenscraper-preprod.recalbox.org/"
 Global $iURLSS = "http://www.screenscraper.fr/"
-Global $iURLScraper = $iURLSS
+Global $iURLScraper = $iURLMirror
 
 If @OSArch = "X64" Then
 	_LOG("Scrape in x64", 0, $iLOGPath)
@@ -210,7 +196,7 @@ Local $sMailSlotMother = "\\.\mailslot\Mother"
 Local $sMailSlotCancel = "\\.\mailslot\Cancel"
 Local $hMailSlotMother = _CreateMailslot($sMailSlotMother)
 Local $vNbThread = IniRead($iINIPath, "LAST_USE", "$vNbThread", 1)
-Local $vStart = 0
+Local $vStart = 0, $vWizCancel = 0
 
 ;---------;
 ;Principal;
@@ -285,8 +271,18 @@ Local $MS_FullScrape = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_scrape_full
 
 Local $MP = GUICtrlCreateMenu(_MultiLang_GetText("mnu_ssh"))
 GUICtrlSetState($MP, $GUI_DISABLE)
+
 Local $MH = GUICtrlCreateMenu(_MultiLang_GetText("mnu_help"))
-Local $MH_Help = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_help_about"), $MH)
+Local $MH_Help = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_help_wiki"), $MH)
+Local $MH_Support = GUICtrlCreateMenu(_MultiLang_GetText("mnu_help_support"), $MH)
+Local $MH_Support_Screenscraper = GUICtrlCreateMenuItem("Screenscraper", $MH_Support, 1)
+Local $MH_Support_Tipee = GUICtrlCreateMenuItem("Tipee (€)", $MH_Support, 2)
+Local $MH_Support_Patreon = GUICtrlCreateMenuItem("Patreon ($)", $MH_Support, 3)
+Local $MH_Link = GUICtrlCreateMenu(_MultiLang_GetText("mnu_help_link"), $MH)
+Local $MH_Link_Screenzone = GUICtrlCreateMenuItem("http://www.screenzone.fr/", $MH_Link, 1)
+Local $MH_Link_Recalbox = GUICtrlCreateMenuItem("https://www.recalbox.com/", $MH_Link, 2)
+Local $MH_Link_Retropie = GUICtrlCreateMenuItem("https://retropie.org.uk/", $MH_Link, 3)
+Local $MH_About = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_help_about"), $MH)
 
 Local $P_BACKGROUND = GUICtrlCreatePic($iScriptPath & "\ProfilsFiles\Ressources\empty.jpg", -1, 0, 600, 293)
 Local $PB_SCRAPE = GUICtrlCreateProgress(2, 297, 478, 25)
@@ -301,6 +297,7 @@ GUISetState(@SW_SHOW)
 $vProfilDefault = IniRead($iINIPath, "LAST_USE", "$vProfilsPath", "")
 If $vProfilDefault = "" Then
 	$vStart = 1
+	IniWrite($iINIPath, "LAST_USE", "$vMirror", 1)
 Else
 	;Opening XML Profil file
 	$oXMLProfil = _XML_Open($vProfilsPath)
@@ -324,6 +321,9 @@ Else
 				_LOG("Unknown Zip Error (" & @error & ")", 2, $iLOGPath)
 		EndSwitch
 	EndIf
+
+	If IniRead($iINIPath, "LAST_USE", "$vMirror", 1) = 0 Then $iURLScraper = $iURLSS
+
 	$aDIRList = _Check_autoconf($oXMLProfil)
 	_LoadConfig($oXMLProfil)
 	_GUI_Refresh($oXMLProfil)
@@ -332,19 +332,17 @@ _LOG("GUI Constructed", 1, $iLOGPath)
 
 While 1
 	$nMsg = GUIGetMsg()
-	If $vStart = 1 Then
-		$nMsg = $MC_Wizard
-		$vStart = 0
-	EndIf
+	If $vStart = 1 Then $nMsg = $MC_Wizard
 
 	Switch $nMsg
 		Case $MC_Wizard ;Wizard
+			If $vStart = 0 Then $vWizCancel = 1
 			$vBoucle = 1
 			$vMaxWizard = 5
 			While $vBoucle < $vMaxWizard
 				Switch $vBoucle
 					Case 1
-						$vResult = _WizardProfil()
+						$vResult = _WizardProfil($vWizCancel)
 						Switch $vResult
 							Case -2
 								$vBoucle = $vMaxWizard
@@ -360,7 +358,7 @@ While 1
 						EndSwitch
 
 					Case 2
-						$vResult = _WizardAutoconf()
+						$vResult = _WizardAutoconf($vWizCancel)
 						Switch $vResult
 							Case -2
 								$vBoucle = $vMaxWizard
@@ -387,10 +385,10 @@ While 1
 						EndSwitch
 					Case 3
 						If StringLower(_XML_Read('Profil/General/Mix', 0, "", $oXMLProfil)) = "true" Then
-							$vResult = _WizardWindow(_MultiLang_GetText("win_Wizard_MIX_Title"), _MultiLang_GetText("win_Wizard_MIX_Desc"), "", "", 0, 1, 1, 0)
+							$vResult = _WizardWindow(_MultiLang_GetText("win_Wizard_MIX_Title"), _MultiLang_GetText("win_Wizard_MIX_Desc"), "", "", 0, 1, 1, $vWizCancel)
 							If $vResult > 0 Then _GUI_Config_MIX($iMIXPath, $iPathMixTmp)
 						Else
-							_WizardWindow(_MultiLang_GetText("win_Wizard_END_Title"), _MultiLang_GetText("win_Wizard_END_Desc"), "", "", 0, 1, 1, 0)
+							_WizardWindow(_MultiLang_GetText("win_Wizard_END_Title"), _MultiLang_GetText("win_Wizard_END_Desc"), "", "", 0, 1, 1, $vWizCancel)
 							$vResult = -2
 						EndIf
 						Switch $vResult
@@ -402,10 +400,11 @@ While 1
 								$vBoucle = $vBoucle + 1
 						EndSwitch
 					Case 4
-						$vResult = _WizardWindow(_MultiLang_GetText("win_Wizard_END_Title"), _MultiLang_GetText("win_Wizard_END_Desc"), "", "", 0, 0, 0, 1)
+						$vResult = _WizardWindow(_MultiLang_GetText("win_Wizard_END_Title"), _MultiLang_GetText("win_Wizard_END_Desc"), "", "", 0, 0, 0, 2)
 						$vBoucle = $vMaxWizard
 				EndSwitch
 			WEnd
+			If $vStart = 1 Then $vStart = 0
 		Case $GUI_EVENT_CLOSE, $MF_Exit ; Exit
 			DirRemove($iTEMPPath, 1)
 			_LOG("Universal XML Scraper Closed", 0, $iLOGPath)
@@ -454,14 +453,33 @@ While 1
 			EndIf
 			$aDIRList = _Check_autoconf($oXMLProfil)
 			_GUI_Refresh($oXMLProfil)
-		Case $MH_Help ;Help
+		Case $MH_Help
+			ShellExecute("https://github.com/Universal-Rom-Tools/Universal-XML-Scraper/wiki")
+		Case $MH_Support_Screenscraper
+			ShellExecute("http://www.screenscraper.fr/")
+		Case $MH_Support_Tipee
+			ShellExecute("https://www.tipeee.com/screenscraper")
+		Case $MH_Support_Patreon
+			ShellExecute("https://www.patreon.com/screenscraper")
+		Case $MH_Link_Screenzone
+			ShellExecute("http://www.screenzone.fr/")
+		Case $MH_Link_Recalbox
+			ShellExecute("https://www.recalbox.com/")
+		Case $MH_Link_Retropie
+			ShellExecute("https://retropie.org.uk/")
+		Case $MH_About ;Help
+			SoundPlay($iScriptPath & "\Ressources\jingle_uxs.MP3")
 			$sMsg = "UNIVERSAL XML SCRAPER - " & $iScriptVer & @CRLF
 			$sMsg &= _MultiLang_GetText("win_About_By") & @CRLF & @CRLF
 			$sMsg &= _MultiLang_GetText("win_About_Thanks") & @CRLF
-			$sMsg &= "http://www.screenzone.fr/" & @CRLF
-			$sMsg &= "http://www.screenscraper.fr/" & @CRLF
-			$sMsg &= "http://www.recalbox.com/" & @CRLF
-			$sMsg &= "http://www.emulationstation.org/" & @CRLF
+			$sMsg &= "All Screenzone comunity" & @CRLF
+			$sMsg &= "All Recalbox comunity" & @CRLF
+			$sMsg &= "All Friends on IRC and forum" & @CRLF
+			$sMsg &= "Special dedicace :" & @CRLF
+			$sMsg &= "MarbleMad for Screenscraper" & @CRLF
+			$sMsg &= "Kam3leon for Splashscreen" & @CRLF
+			$sMsg &= "Neogeronimo for the Jingle" & @CRLF
+			$sMsg &= "Digital Lumberjack for the Mirror" & @CRLF
 			_ExtMsgBoxSet(1, 2, 0x34495c, 0xFFFF00, 10, "Arial")
 			_ExtMsgBox($EMB_ICONINFO, "OK", _MultiLang_GetText("win_About_Title"), $sMsg, 15)
 		Case $B_SCRAPE, $MS_Scrape ;Solo Scrape or Cancel
@@ -646,7 +664,7 @@ Func _GUI_Config_Options($oXMLProfil)
 	GUISetState(@SW_DISABLE, $F_UniversalScraper)
 	#EndRegion ### END Koda GUI section ###
 
-	$aOption = _XML_ListValue('Profil/Options/Option/Name', "", $oXMLProfil)
+	$aOption = _XML_ListValue('Profil/Options/Option/Option_Name', "", $oXMLProfil)
 	$vOption = ""
 	For $vBoucle = 1 To UBound($aOption) - 1
 		$vOption = $vOption & $aOption[$vBoucle] & "|"
@@ -665,15 +683,16 @@ Func _GUI_Config_Options($oXMLProfil)
 			Case $C_Option
 				$vValue_Option = ""
 				GUICtrlSetData($C_OptionParam, $vValue_Option)
-				$aValue_Option = _XML_ListValue('Profil/Options/Option[Name="' & GUICtrlRead($C_Option) & '"]/Source_Value_Option', "", $oXMLProfil)
+				$aValue_Option = _XML_ListValue('Profil/Options/Option[Option_Name="' & GUICtrlRead($C_Option) & '"]/Source_Value_Option', "", $oXMLProfil)
 				_ArrayColInsert($aValue_Option, 1)
 				For $vBoucle = 1 To UBound($aValue_Option) - 1
-					$aValue_Option[$vBoucle][1] = _XML_Read('Profil/Options/Option[Name="' & GUICtrlRead($C_Option) & '"]/Source_Value_Option[' & $vBoucle & ']/Name', 1, "", $oXMLProfil)
+					$aValue_Option[$vBoucle][1] = _XML_Read('Profil/Options/Option[Option_Name="' & GUICtrlRead($C_Option) & '"]/Source_Value_Option[' & $vBoucle & ']/Name', 1, "", $oXMLProfil)
 					$vValue_Option = $vValue_Option & $aValue_Option[$vBoucle][1] & "|"
 				Next
 
-				$vNode = _XML_Read('Profil/Options/Option[Name="' & GUICtrlRead($C_Option) & '"]/NodeName', 0, "", $oXMLProfil)
-				$vDefaultOptionValue = _XML_Read('Profil/Element[@Type="' & GUICtrlRead($C_Option) & '"]/' & $vNode, 0, "", $oXMLProfil)
+				$vNode = _XML_Read('Profil/Options/Option[Option_Name="' & GUICtrlRead($C_Option) & '"]/NodeName', 0, "", $oXMLProfil)
+				$vType = _XML_Read('Profil/Options/Option[Option_Name="' & GUICtrlRead($C_Option) & '"]/Type', 0, "", $oXMLProfil)
+				$vDefaultOptionValue = _XML_Read('Profil/Element[@Type="' & $vType & '"]/' & $vNode, 0, "", $oXMLProfil)
 				$vDefaultOptionName = _ArraySearch($aValue_Option, $vDefaultOptionValue)
 				If $vDefaultOptionName > 0 Then
 					$vDefaultOptionName = $aValue_Option[$vDefaultOptionName][1]
@@ -681,18 +700,19 @@ Func _GUI_Config_Options($oXMLProfil)
 					$vDefaultOptionName = $aValue_Option[1][1]
 				EndIf
 				GUICtrlSetData($C_OptionParam, $vValue_Option, $vDefaultOptionName)
-				GUICtrlSetData($E_OptionParamDesc, _XML_Read('Profil/Options/Option[Name="' & GUICtrlRead($C_Option) & '"]/Source_Value_Option[@Name="' & GUICtrlRead($C_OptionParam) & '"]/Desc', 1, "", $oXMLProfil))
+				GUICtrlSetData($E_OptionParamDesc, _XML_Read('Profil/Options/Option[Option_Name="' & GUICtrlRead($C_Option) & '"]/Source_Value_Option[@Name="' & GUICtrlRead($C_OptionParam) & '"]/Desc', 1, "", $oXMLProfil))
 			Case $C_OptionParam
-				GUICtrlSetData($E_OptionParamDesc, _XML_Read('Profil/Options/Option[Name="' & GUICtrlRead($C_Option) & '"]/Source_Value_Option[@Name="' & GUICtrlRead($C_OptionParam) & '"]/Desc', 1, "", $oXMLProfil))
+				GUICtrlSetData($E_OptionParamDesc, _XML_Read('Profil/Options/Option[Option_Name="' & GUICtrlRead($C_Option) & '"]/Source_Value_Option[@Name="' & GUICtrlRead($C_OptionParam) & '"]/Desc', 1, "", $oXMLProfil))
 			Case $B_CONFENREG
 				$vDefaultOptionName = GUICtrlRead($C_OptionParam)
 				If IsArray($aValue_Option) Then
 					$vDefaultOptionValue = _ArraySearch($aValue_Option, $vDefaultOptionName)
 					If $vDefaultOptionValue > 0 Then
-						$vNode = _XML_Read('Profil/Options/Option[Name="' & GUICtrlRead($C_Option) & '"]/NodeName', 0, "", $oXMLProfil)
+						$vNode = _XML_Read('Profil/Options/Option[Option_Name="' & GUICtrlRead($C_Option) & '"]/NodeName', 0, "", $oXMLProfil)
 						$vDefaultOptionValue = $aValue_Option[$vDefaultOptionValue][0]
 ;~ 						MsgBox(0, "$vDefaultOptionValue - Node", 'Profil/Element[@Type="' & GUICtrlRead($C_Option) & '"]/' & $vNode & " -> " & $vDefaultOptionValue)
-						_XML_Replace('Profil/Element[@Type="' & GUICtrlRead($C_Option) & '"]/' & $vNode, $vDefaultOptionValue, 0, "", $oXMLProfil)
+						$vType = _XML_Read('Profil/Options/Option[Option_Name="' & GUICtrlRead($C_Option) & '"]/Type', 0, "", $oXMLProfil)
+						_XML_Replace('Profil/Element[@Type="' & $vType & '"]/' & $vNode, $vDefaultOptionValue, 0, "", $oXMLProfil)
 						_LOG("Option Configuration Saved", 0, $iLOGPath)
 						_LOG("------------------------", 1, $iLOGPath)
 						_LOG(GUICtrlRead($C_Option) & " = " & $vDefaultOptionValue, 1, $iLOGPath)
@@ -841,7 +861,7 @@ Func _GUI_Config_MISC()
 
 	#Region ### START Koda GUI section ### Form=
 	$F_CONFIG = GUICreate(_MultiLang_GetText("win_config_MISC_Title"), 475, 372, -1, -1, -1, BitOR($WS_EX_TOPMOST, $WS_EX_WINDOWEDGE))
-	$G_Misc = GUICtrlCreateGroup(_MultiLang_GetText("win_config_MISC_GroupMISC"), 8, 0, 225, 321)
+	$G_Misc = GUICtrlCreateGroup(_MultiLang_GetText("win_config_MISC_GroupMISC"), 8, 0, 225, 361)
 	$L_CountryPref = GUICtrlCreateLabel(_MultiLang_GetText("win_config_MISC_GroupMISC_CountryPref"), 16, 15)
 	$I_CountryPref = GUICtrlCreateInput(IniRead($iINIPath, "LAST_USE", "$vCountryPref", ""), 16, 34, 209, 21)
 	$L_LangPref = GUICtrlCreateLabel(_MultiLang_GetText("win_config_MISC_GroupMISC_LangPref"), 16, 60)
@@ -857,6 +877,7 @@ Func _GUI_Config_MISC()
 	GUICtrlSetData($C_Verbose, _MultiLang_GetText("win_config_MISC_GroupMISC_VerboseChoice"), $aVerbose[IniRead($iINIPath, "GENERAL", "$vVerbose", 0)])
 	$CB_MissingRom_Mode = GUICtrlCreateCheckbox(_MultiLang_GetText("win_config_MISC_GroupMISC_MissingMode"), 16, 254)
 	$CB_RechSys = GUICtrlCreateCheckbox(_MultiLang_GetText("win_config_MISC_GroupMISC_RechSys"), 16, 278)
+	$CB_Mirror = GUICtrlCreateCheckbox(_MultiLang_GetText("win_config_MISC_GroupMISC_Mirror"), 16, 302)
 	GUICtrlCreateGroup("", -99, -99, 1, 1)
 	$G_ScreenScraper = GUICtrlCreateGroup(_MultiLang_GetText("win_config_MISC_GroupScreenScraper"), 240, 0, 225, 153)
 	$L_SSLogin = GUICtrlCreateLabel(_MultiLang_GetText("win_config_MISC_GroupScreenScraper_Login"), 248, 15)
@@ -870,15 +891,15 @@ Func _GUI_Config_MISC()
 	$B_SSRegister = GUICtrlCreateButton(_MultiLang_GetText("win_config_MISC_GroupScreenScraper_SSRegister"), 248, 112, 211, 25)
 	GUICtrlCreateGroup("", -99, -99, 1, 1)
 	$G_RechFiles = GUICtrlCreateGroup(_MultiLang_GetText("win_config_MISC_GroupRechFiles"), 240, 160, 225, 161)
-	$L_Include = GUICtrlCreateLabel(_MultiLang_GetText("win_config_MISC_GroupRechFiles_Include"), 248, 175, 71, 17)
+	$L_Include = GUICtrlCreateLabel(_MultiLang_GetText("win_config_MISC_GroupRechFiles_Include"), 248, 175)
 	$I_Include = GUICtrlCreateInput($aRechFiles[0], 248, 194, 209, 21)
-	$L_Exclude = GUICtrlCreateLabel(_MultiLang_GetText("win_config_MISC_GroupRechFiles_Exclude"), 248, 220, 74, 17)
+	$L_Exclude = GUICtrlCreateLabel(_MultiLang_GetText("win_config_MISC_GroupRechFiles_Exclude"), 248, 220)
 	$I_Exclude = GUICtrlCreateInput($aRechFiles[1], 248, 240, 209, 21)
-	$L_ExcludeFolder = GUICtrlCreateLabel(_MultiLang_GetText("win_config_MISC_GroupRechFiles_ExcludeFolder"), 248, 268, 92, 17)
+	$L_ExcludeFolder = GUICtrlCreateLabel(_MultiLang_GetText("win_config_MISC_GroupRechFiles_ExcludeFolder"), 248, 268)
 	$I_ExcludeFolder = GUICtrlCreateInput($aRechFiles[2], 248, 288, 209, 21)
 	GUICtrlCreateGroup("", -99, -99, 1, 1)
-	$B_CONFENREG = GUICtrlCreateButton(_MultiLang_GetText("win_config_Enreg"), 64, 328, 105, 33)
-	$B_CONFANNUL = GUICtrlCreateButton(_MultiLang_GetText("win_config_Cancel"), 294, 328, 105, 33)
+	$B_CONFENREG = GUICtrlCreateButton(_MultiLang_GetText("win_config_Enreg"), 240, 328, 105, 33)
+	$B_CONFANNUL = GUICtrlCreateButton(_MultiLang_GetText("win_config_Cancel"), 358, 328, 105, 33)
 	GUISetState(@SW_SHOW)
 	GUISetState(@SW_DISABLE, $F_UniversalScraper)
 	#EndRegion ### END Koda GUI section ###
@@ -887,6 +908,8 @@ Func _GUI_Config_MISC()
 	If IniRead($iINIPath, "LAST_USE", "$vMissingRom_Mode", 0) = 1 Then GUICtrlSetState($CB_MissingRom_Mode, $GUI_CHECKED)
 	GUICtrlSetState($CB_RechSys, $GUI_UNCHECKED)
 	If IniRead($iINIPath, "LAST_USE", "$vRechSYS", 1) = 1 Then GUICtrlSetState($CB_RechSys, $GUI_CHECKED)
+	GUICtrlSetState($CB_Mirror, $GUI_UNCHECKED)
+	If IniRead($iINIPath, "LAST_USE", "$vMirror", 1) = 1 Then GUICtrlSetState($CB_Mirror, $GUI_CHECKED)
 
 	$vNbThread = IniRead($iINIPath, "LAST_USE", "$vNbThread", 1)
 	$vTEMPPathSSCheck = $iScriptPath & "\Ressources\SSCheck.xml"
@@ -894,25 +917,37 @@ Func _GUI_Config_MISC()
 	$vSSPassword = GUICtrlRead($I_SSPassword) ;$vSSPassword
 
 	$vTEMPPathSSCheck = _DownloadWRetry($iURLScraper & "api/ssuserInfos.php?devid=xxx&devpassword=yyy&softname=zzz&output=XML&ssid=" & $vSSLogin & "&sspassword=" & $vSSPassword, $vTEMPPathSSCheck)
-	$vSSLevel = Number(_XML_Read("/Data/ssuser/niveau", 0, $vTEMPPathSSCheck))
-	_LOG("SS Check ssid=" & $vSSLogin & " LVL = " & $vSSLevel, 1, $iLOGPath)
-	If $vSSLevel < 1 Then $vSSLevel = 0
-	Switch $vSSLevel
+	$vSSParticipation = Number(_XML_Read("/Data/ssuser/uploadsysteme", 0, $vTEMPPathSSCheck)) + Number(_XML_Read("/Data/ssuser/uploadinfos", 0, $vTEMPPathSSCheck)) + Number(_XML_Read("/Data/ssuser/romasso", 0, $vTEMPPathSSCheck)) + Number(_XML_Read("/Data/ssuser/uploadmedia", 0, $vTEMPPathSSCheck))
+	$vSSContrib = Number(_XML_Read("/Data/ssuser/contribution", 0, $vTEMPPathSSCheck))
+	_LOG("SS Check ssid=" & $vSSLogin & " participation = " & $vSSParticipation & " contribution = " & $vSSContrib, 1, $iLOGPath)
+	If $vSSParticipation < 1 Then $vSSParticipation = 0
+	Switch $vSSParticipation
 		Case 0
 			$vNbThreadMax = 1
-		Case 1 To 9
+		Case 1
 			$vNbThreadMax = 2
-		Case 10 To 19
+		Case 2 To 49
+			$vNbThreadMax = 3
+		Case 50 To 199
 			$vNbThreadMax = 4
-		Case 20 To 29
+		Case 200 To 499
+			$vNbThreadMax = 5
+		Case 500 To 749
 			$vNbThreadMax = 6
-		Case 30 To 499
-			$vNbThreadMax = 10
-		Case 500 To 99999
-			$vNbThreadMax = 99
+		Case 750 To 999
+			$vNbThreadMax = 7
+		Case 999 To 9999999
+			$vNbThreadMax = 8
 		Case Else
 			$vNbThreadMax = 1
 	EndSwitch
+	Switch $vSSContrib
+		Case 2
+			$vNbThreadMax = $vNbThreadMax + 1
+		Case 3 To 999999
+			$vNbThreadMax = $vNbThreadMax + 5
+	EndSwitch
+
 	$vNbThreadC = ""
 	For $vBoucle = 1 To $vNbThreadMax
 		$vNbThreadC = $vNbThreadC & $vBoucle & "|"
@@ -932,7 +967,7 @@ Func _GUI_Config_MISC()
 				Return
 			Case $B_CONFENREG
 				IniWrite($iINIPath, "LAST_USE", "$vNbThread", GUICtrlRead($C_Thread))
-				_LOG("SS lvl=" & $vSSLevel & " Max Thread = " & $vNbThreadMax & " Thread selected = " & GUICtrlRead($C_Thread), 1, $iLOGPath)
+				_LOG("SS lvl=" & $vSSParticipation & " Max Thread = " & $vNbThreadMax & " Thread selected = " & GUICtrlRead($C_Thread), 1, $iLOGPath)
 				IniWrite($iINIPath, "LAST_USE", "$vScrape_Mode", StringLeft(GUICtrlRead($C_ScrapeMode), 1))
 				IniWrite($iINIPath, "LAST_USE", "$vCountryPic_Mode", StringLeft(GUICtrlRead($C_CountryPic_Mode), 1))
 				IniWrite($iINIPath, "GENERAL", "$vVerbose", StringLeft(GUICtrlRead($C_Verbose), 1))
@@ -941,6 +976,15 @@ Func _GUI_Config_MISC()
 				If _IsChecked($CB_MissingRom_Mode) Then IniWrite($iINIPath, "LAST_USE", "$vMissingRom_Mode", 1)
 				IniWrite($iINIPath, "LAST_USE", "$vRechSYS", 0)
 				If _IsChecked($CB_RechSys) Then IniWrite($iINIPath, "LAST_USE", "$vRechSYS", 1)
+
+				If _IsChecked($CB_Mirror) Then
+					IniWrite($iINIPath, "LAST_USE", "$vMirror", 1)
+					$iURLScraper = $iURLMirror
+				Else
+					IniWrite($iINIPath, "LAST_USE", "$vMirror", 0)
+					$iURLScraper = $iURLSS
+				EndIf
+
 				IniWrite($iINIPath, "LAST_USE", "$vRechFiles", GUICtrlRead($I_Include) & "|" & GUICtrlRead($I_Exclude) & "|" & GUICtrlRead($I_ExcludeFolder))
 				$vCountryPref = GUICtrlRead($I_CountryPref) ;$vCountryPref
 				IniWrite($iINIPath, "LAST_USE", "$vCountryPref", $vCountryPref)
@@ -964,45 +1008,60 @@ Func _GUI_Config_MISC()
 				$vSSPassword = GUICtrlRead($I_SSPassword) ;$vSSPassword
 				_LOG("SS Check ssid=" & $vSSLogin, 3, $iLOGPath)
 				$vTEMPPathSSCheck = _DownloadWRetry($iURLScraper & "api/ssuserInfos.php?devid=xxx&devpassword=yyy&softname=zzz&output=XML&ssid=" & $vSSLogin & "&sspassword=" & $vSSPassword, $vTEMPPathSSCheck)
+				$vSSParticipation = Number(_XML_Read("/Data/ssuser/uploadsysteme", 0, $vTEMPPathSSCheck)) + Number(_XML_Read("/Data/ssuser/uploadinfos", 0, $vTEMPPathSSCheck)) + Number(_XML_Read("/Data/ssuser/romasso", 0, $vTEMPPathSSCheck)) + Number(_XML_Read("/Data/ssuser/uploadmedia", 0, $vTEMPPathSSCheck))
+				$vSSContrib = Number(_XML_Read("/Data/ssuser/contribution", 0, $vTEMPPathSSCheck))
 				$vSSLevel = Number(_XML_Read("/Data/ssuser/niveau", 0, $vTEMPPathSSCheck))
-				If $vSSLevel < 1 Then $vSSLevel = 0
+				_LOG("SS Check ssid=" & $vSSLogin & " participation = " & $vSSParticipation & " contribution = " & $vSSContrib, 1, $iLOGPath)
+				If $vSSParticipation < 1 Then $vSSParticipation = 0
+				Switch $vSSParticipation
+					Case 0
+						$vNbThreadMax = 1
+					Case 1
+						$vNbThreadMax = 2
+					Case 2 To 49
+						$vNbThreadMax = 3
+					Case 50 To 199
+						$vNbThreadMax = 4
+					Case 200 To 499
+						$vNbThreadMax = 5
+					Case 500 To 749
+						$vNbThreadMax = 6
+					Case 750 To 999
+						$vNbThreadMax = 7
+					Case 999 To 9999999
+						$vNbThreadMax = 8
+					Case Else
+						$vNbThreadMax = 1
+				EndSwitch
+				Switch $vSSContrib
+					Case 2
+						$vNbThreadMax = $vNbThreadMax + 1
+					Case 3 To 999999
+						$vNbThreadMax = $vNbThreadMax + 5
+				EndSwitch
 				Switch $vSSLevel
 					Case 0
 						$vNbThreadMax = 1
-						$vNbThreadDefault = 0
 						_LOG("Not Registered", 0, $iLOGPath)
 						MsgBox($MB_ICONERROR, _MultiLang_GetText("err_title"), _MultiLang_GetText("err_NotRegistered"), 10, $F_CONFIG)
-					Case 1 To 9
-						$vNbThreadMax = 2
-						$vNbThreadDefault = 0
-						_LOG("Registered Lvl : " & $vSSLevel & " - Nb Thread Available : " & $vNbThreadMax, 0, $iLOGPath)
-						MsgBox($MB_ICONINFORMATION, _MultiLang_GetText("mess_ssregister_title"), _MultiLang_GetText("mess_ssregister_OK") & " " & $vNbThreadMax & " Threads", 10, $F_CONFIG)
-					Case 10 To 19
-						$vNbThreadMax = 4
-						$vNbThreadDefault = 0
-						_LOG("Registered Lvl : " & $vSSLevel & " - Nb Thread Available : " & $vNbThreadMax, 0, $iLOGPath)
-						MsgBox($MB_ICONINFORMATION, _MultiLang_GetText("mess_ssregister_title"), _MultiLang_GetText("mess_ssregister_OK") & " " & $vNbThreadMax & " Threads", 10, $F_CONFIG)
-					Case 20 To 29
-						$vNbThreadMax = 6
-						$vNbThreadDefault = 0
-						_LOG("Registered Lvl : " & $vSSLevel & " - Nb Thread Available : " & $vNbThreadMax, 0, $iLOGPath)
-						MsgBox($MB_ICONINFORMATION, _MultiLang_GetText("mess_ssregister_title"), _MultiLang_GetText("mess_ssregister_OK") & " " & $vNbThreadMax & " Threads", 10, $F_CONFIG)
-					Case 30 To 499
-						$vNbThreadMax = 10
-						$vNbThreadDefault = 5
-						_LOG("Registered Lvl : " & $vSSLevel & " - Nb Thread Available : " & $vNbThreadMax, 0, $iLOGPath)
-						MsgBox($MB_ICONINFORMATION, _MultiLang_GetText("mess_ssregister_title"), _MultiLang_GetText("mess_ssregister_OK") & " " & $vNbThreadMax & " Threads", 10, $F_CONFIG)
-					Case Else
+					Case 499 To 9999999
 						$vNbThreadMax = 99
-						$vNbThreadDefault = 10
 						_LOG("God Mode", 0, $iLOGPath)
 						MsgBox($MB_ICONWARNING, _MultiLang_GetText("mess_ssregister_title"), _MultiLang_GetText("mess_ssregister_GodMode"), 10, $F_CONFIG)
+					Case Else
+						_LOG("Nb Thread Available : " & $vNbThreadMax, 0, $iLOGPath)
+						MsgBox($MB_ICONINFORMATION, _MultiLang_GetText("mess_ssregister_title"), _MultiLang_GetText("mess_ssregister_OK") & " " & $vNbThreadMax & " Threads", 10, $F_CONFIG)
 				EndSwitch
+
 				$vNbThreadC = ""
 				For $vBoucle = 1 To $vNbThreadMax
 					$vNbThreadC = $vNbThreadC & $vBoucle & "|"
 				Next
-				If $vNbThreadDefault = 0 Then $vNbThreadDefault = $vNbThreadMax
+				If $vNbThreadMax > 5 Then
+					$vNbThreadDefault = 5
+				Else
+					$vNbThreadDefault = $vNbThreadMax
+				EndIf
 				GUICtrlSetData($C_Thread, $vNbThreadC, $vNbThreadDefault)
 		EndSwitch
 	WEnd
@@ -1236,7 +1295,7 @@ Func _GUI_Refresh($oXMLProfil = -1, $ScrapIP = 0, $vScrapeOK = 0) ;Refresh GUI
 
 			GUICtrlSetState($MH, $GUI_ENABLE)
 			GUICtrlSetData($MH, _MultiLang_GetText("mnu_help"))
-			GUICtrlSetData($MH_Help, _MultiLang_GetText("mnu_help_about"))
+			GUICtrlSetData($MH_About, _MultiLang_GetText("mnu_help_about"))
 
 			GUICtrlSetData($B_SCRAPE, _MultiLang_GetText("scrap_button"))
 			_GUICtrlStatusBar_SetText($L_SCRAPE, "")
@@ -1641,28 +1700,40 @@ Func _SCRAPE($oXMLProfil, $vNbThread = 1, $vFullScrape = 0)
 		$aConfig[8] = "0000"
 
 		$vTEMPPathSSCheck = _DownloadWRetry($iURLScraper & "api/ssuserInfos.php?devid=xxx&devpassword=yyy&softname=zzz&output=XML&ssid=" & $aConfig[13] & "&sspassword=" & $aConfig[14], $iScriptPath & "\Ressources\SSCheck.xml")
+		$vSSParticipation = Number(_XML_Read("/Data/ssuser/uploadsysteme", 0, $vTEMPPathSSCheck)) + Number(_XML_Read("/Data/ssuser/uploadinfos", 0, $vTEMPPathSSCheck)) + Number(_XML_Read("/Data/ssuser/romasso", 0, $vTEMPPathSSCheck)) + Number(_XML_Read("/Data/ssuser/uploadmedia", 0, $vTEMPPathSSCheck))
+		$vSSContrib = Number(_XML_Read("/Data/ssuser/contribution", 0, $vTEMPPathSSCheck))
 		$vSSLevel = Number(_XML_Read("/Data/ssuser/niveau", 0, $vTEMPPathSSCheck))
-		If $vSSLevel < 1 Then $vSSLevel = 0
-		Switch $vSSLevel
+		If $vSSParticipation < 1 Then $vSSParticipation = 0
+		Switch $vSSParticipation
 			Case 0
 				$vNbThreadMax = 1
-			Case 1 To 9
+			Case 1
 				$vNbThreadMax = 2
-			Case 10 To 19
+			Case 2 To 49
+				$vNbThreadMax = 3
+			Case 50 To 199
 				$vNbThreadMax = 4
-			Case 20 To 29
+			Case 200 To 499
+				$vNbThreadMax = 5
+			Case 500 To 749
 				$vNbThreadMax = 6
-			Case 30 To 499
-				$vNbThreadMax = 10
-			Case 500 To 99999
-				$vNbThreadMax = 99
+			Case 750 To 999
+				$vNbThreadMax = 7
+			Case 999 To 9999999
+				$vNbThreadMax = 8
 			Case Else
 				$vNbThreadMax = 1
+		EndSwitch
+		Switch $vSSContrib
+			Case 2
+				$vNbThreadMax = $vNbThreadMax + 1
+			Case 3 To 999999
+				$vNbThreadMax = $vNbThreadMax + 5
 		EndSwitch
 
 		If $vNbThread > $vNbThreadMax Then
 			_LOG("Are you a cheater ? BAD NbThread in INI : " & $vNbThread & "(MAX = " & $vNbThreadMax & ")", 0, $iLOGPath)
-			$vNbThread = $vNbThreadMax
+			$vNbThread = 1
 			IniWrite($iINIPath, "LAST_USE", "$vNbThread", $vNbThread)
 		EndIf
 
@@ -1852,7 +1923,7 @@ Func _WizardWindow($vTitle, $vDescription, $vInputValue, $vInputDefault = "", $v
 	$I_INPUT = GUICtrlCreateInput("", 216, 248, 161, 21)
 	$B_BROWSE = GUICtrlCreateButton("...", 384, 248, 27, 21)
 	$B_BACK = GUICtrlCreateButton(_MultiLang_GetText("win_Wizard_Back"), 296, 280, 59, 25)
-	$B_CANCEL = GUICtrlCreateButton(_MultiLang_GetText("win_Wizard_End"), 216, 280, 75, 25)
+	$B_CANCEL = GUICtrlCreateButton(_MultiLang_GetText("win_Wizard_Cancel"), 216, 280, 75, 25)
 	$B_NEXT = GUICtrlCreateButton(_MultiLang_GetText("win_Wizard_Next"), 360, 280, 59, 25)
 	$C_COMBO = GUICtrlCreateCombo("", 216, 248, 201, 25, BitOR($GUI_SS_DEFAULT_COMBO, $CBS_SIMPLE))
 	GUISetState(@SW_SHOW)
@@ -1880,6 +1951,7 @@ Func _WizardWindow($vTitle, $vDescription, $vInputValue, $vInputDefault = "", $v
 	If $vNext = 0 Then GUICtrlSetState($B_NEXT, $GUI_HIDE)
 	If $vBack = 0 Then GUICtrlSetState($B_BACK, $GUI_HIDE)
 	If $vCancel = 0 Then GUICtrlSetState($B_CANCEL, $GUI_HIDE)
+	If $vCancel = 2 Then GUICtrlSetData($B_CANCEL, _MultiLang_GetText("win_Wizard_End"))
 
 	While 1
 		$nMsg = GUIGetMsg()
@@ -1917,7 +1989,7 @@ Func _WizardWindow($vTitle, $vDescription, $vInputValue, $vInputDefault = "", $v
 
 EndFunc   ;==>_WizardWindow
 
-Func _WizardProfil()
+Func _WizardProfil($vWizCancel)
 	; Loading profils list
 	Local $vProfilDefault, $vProfilList = ""
 	Local $aProfilList = _FileListToArrayRec($iProfilsPath, "*.xml", $FLTAR_FILES, $FLTAR_NORECUR, $FLTAR_SORT, $FLTAR_FULLPATH)
@@ -1943,7 +2015,7 @@ Func _WizardProfil()
 		Next
 	EndIf
 
-	$vResultWZ = _WizardWindow(_MultiLang_GetText("win_Wizard_Profil_Title"), _MultiLang_GetText("win_Wizard_Profil_Desc"), $vProfilList, $vProfilDefault, 1, 1, 0, 0)
+	$vResultWZ = _WizardWindow(_MultiLang_GetText("win_Wizard_Profil_Title"), _MultiLang_GetText("win_Wizard_Profil_Desc"), $vProfilList, $vProfilDefault, 1, 1, 0, $vWizCancel)
 	If $vResultWZ < 0 Then Return $vResultWZ
 	For $i = 0 To UBound($aProfilList) - 1
 		If StringInStr($aProfilList[$i][0], $vResultWZ) Then $vProfilsPath = $aProfilList[$i][2]
@@ -1951,9 +2023,9 @@ Func _WizardProfil()
 	Return $vProfilsPath
 EndFunc   ;==>_WizardProfil
 
-Func _WizardAutoconf()
+Func _WizardAutoconf($vWizCancel)
 	; Autoconf
-	$vResultWZ = _WizardWindow(_MultiLang_GetText("win_Wizard_Autoconf_Title"), _MultiLang_GetText("win_Wizard_Autoconf_Desc"), "", _XML_Read("Profil/AutoConf/Source_RootPath", 0, "", $oXMLProfil), 2, 1, 1, 0)
+	$vResultWZ = _WizardWindow(_MultiLang_GetText("win_Wizard_Autoconf_Title"), _MultiLang_GetText("win_Wizard_Autoconf_Desc"), "", _XML_Read("Profil/AutoConf/Source_RootPath", 0, "", $oXMLProfil), 2, 1, 1, $vWizCancel)
 	If $vResultWZ < 0 Then Return $vResultWZ
 	_LOG("Wizard - Autoconf Path : " & $vResultWZ, 0, $iLOGPath)
 	If (StringRight($vResultWZ, 1) = '\') Then StringTrimRight($vResultWZ, 1)

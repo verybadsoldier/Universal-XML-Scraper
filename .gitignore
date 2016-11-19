@@ -53,13 +53,15 @@ Network Trash Folder
 Temporary Items
 .apdisk
 BackUp
+
+# Added Ignored Files
 Include/MailSlot.au3.Backup.au3
 Include/_GraphGDIPlus.au3.Backup.au3
 Include/_MultiLang.au3.Backup.au3
 Include/_MyFunction.au3.Backup.au3
 Include/_XML.au3.Backup.au3
+Ressources/systemlist.xml
 Ressources/SSCheck.xml
 Scraper.exe
 Scraper64.exe
-Scraper.exe
-Scraper64.exe
+

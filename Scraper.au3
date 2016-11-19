@@ -6,7 +6,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper
-#AutoIt3Wrapper_Res_Fileversion=1.0.0.3
+#AutoIt3Wrapper_Res_Fileversion=1.0.0.4
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -141,14 +141,24 @@ Func _Game_Make($aRomList, $vBoucle, $aConfig, $oXMLProfil)
 			Case "XML_Value"
 				$vValue = _XML_Read_Source($aRomList, $vBoucle, $aConfig, $oXMLProfil, $vWhile)
 				$vNode = _XML_Read("/Profil/Element[" & $vWhile & "]/Target_Value", 0, "", $oXMLProfil)
-				If StringLower(_XML_Read("/Profil/Element[" & $vWhile & "]/Target_Maj", 0, "", $oXMLProfil)) = "true" Then $vValue = StringUpper($vValue)
+				Switch _Coalesce(StringLower(_XML_Read("/Profil/Element[" & $vWhile & "]/Target_CASE", 0, "", $oXMLProfil)), "default")
+					Case "true"
+						$vValue = StringUpper($vValue)
+					Case "false"
+						$vValue = StringLower($vValue)
+				EndSwitch
 				_LOG($vNode & " <-- " & $vValue, 1, $iLOGPath)
 				_XML_WriteValue($vNode, $vValue, "", $aConfig[8])
 			Case "XML_Attribute"
 				$vValue = _XML_Read_Source($aRomList, $vBoucle, $aConfig, $oXMLProfil, $vWhile)
 				$vAttributeName = _XML_Read("/Profil/Element[" & $vWhile & "]/Target_Attribute_Name", 0, "", $oXMLProfil)
 				$vNode = _XML_Read("/Profil/Element[" & $vWhile & "]/Target_Value", 0, "", $oXMLProfil)
-				If StringLower(_XML_Read("/Profil/Element[" & $vWhile & "]/Target_Maj", 0, "", $oXMLProfil)) = "true" Then $vValue = StringUpper($vValue)
+				Switch _Coalesce(StringLower(_XML_Read("/Profil/Element[" & $vWhile & "]/Target_CASE", 0, "", $oXMLProfil)), "default")
+					Case "true"
+						$vValue = StringUpper($vValue)
+					Case "false"
+						$vValue = StringLower($vValue)
+				EndSwitch
 				_LOG($vNode & " <-- " & $vValue, 1, $iLOGPath)
 				_XML_WriteAttributs($vNode, $vAttributeName, $vValue, "", $aConfig[8])
 			Case "XML_Path"
@@ -175,7 +185,12 @@ Func _Game_Make($aRomList, $vBoucle, $aConfig, $oXMLProfil)
 						$vValue = $vValue & " (" & $vCountry & ")"
 				EndSwitch
 				$vNode = _XML_Read("/Profil/Element[" & $vWhile & "]/Target_Value", 0, "", $oXMLProfil)
-				If StringLower(_XML_Read("/Profil/Element[" & $vWhile & "]/Target_Maj", 0, "", $oXMLProfil)) = "true" Then $vValue = StringUpper($vValue)
+				Switch _Coalesce(StringLower(_XML_Read("/Profil/Element[" & $vWhile & "]/Target_CASE", 0, "", $oXMLProfil)), "default")
+					Case "true"
+						$vValue = StringUpper($vValue)
+					Case "false"
+						$vValue = StringLower($vValue)
+				EndSwitch
 				_LOG($vNode & " <-- " & $vValue, 1, $iLOGPath)
 				_XML_WriteValue($vNode, $vValue, "", $aConfig[8])
 			Case Else
@@ -303,13 +318,13 @@ Func _Picture_Download($vCountryPref, $aRomList, $vBoucle, $vWhile, $oXMLProfil,
 	$vDownloadURL = _XML_Read($vCountryPref, 0, $aRomList[8])
 	$vDownloadTag = _XML_Read("/Profil/Element[" & $vWhile & "]/Source_Download_Tag", 0, "", $oXMLProfil)
 	$vDownloadExt = _Coalesce(IniRead($iINIPath, "LAST_USE", "$vTarget_Image_Ext", ""), _XML_Read("/Profil/Element[" & $vWhile & "]/Source_Download_Ext", 0, "", $oXMLProfil))
-;~ 	$vDownloadMaxWidth = "&maxwidth=" & _Coalesce(IniRead($iINIPath, "LAST_USE", "$vTarget_Image_Width", ""), _XML_Read("Profil/General/Target_Image_Width", 0, "", $oXMLProfil))
-;~ 	$vDownloadMaxHeight = "&maxheight=" & _Coalesce(IniRead($iINIPath, "LAST_USE", "$vTarget_Image_Height", ""), _XML_Read("Profil/General/Target_Image_Height", 0, "", $oXMLProfil))
+	$vDownloadMaxWidth = "&maxwidth=" & _Coalesce(IniRead($iINIPath, "LAST_USE", "$vTarget_Image_Width", ""), _XML_Read("Profil/General/Target_Image_Width", 0, "", $oXMLProfil))
+	$vDownloadMaxHeight = "&maxheight=" & _Coalesce(IniRead($iINIPath, "LAST_USE", "$vTarget_Image_Height", ""), _XML_Read("Profil/General/Target_Image_Height", 0, "", $oXMLProfil))
 	$vDownloadOutputFormat = "&outputformat=" & $vDownloadExt
 	$aPathSplit = _PathSplit(StringReplace($aRomList[0], "\", "_"), $sDrive, $sDir, $sFileName, $sExtension)
 	$vTargetPicturePath = $vTarget_ImagePath & $sFileName & $vDownloadTag & "." & $vDownloadExt
 	If $vDownloadExt = "%Source%" Then $vDownloadExt = StringRight($vDownloadURL, 3)
-	$vDownloadURL = $vDownloadURL & $vDownloadOutputFormat ;& $vDownloadMaxWidth & $vDownloadMaxHeight & $vDownloadOutputFormat
+	$vDownloadURL = $vDownloadURL & $vDownloadMaxWidth & $vDownloadMaxHeight & $vDownloadOutputFormat
 	Switch _XML_Read("/Profil/Element[" & $vWhile & "]/Source_Download_Path", 0, "", $oXMLProfil)
 		Case '%Local_Path_File%'
 			$vDownloadPath = $vSource_ImagePath & "\" & $sFileName & $vDownloadTag & "." & $vDownloadExt
@@ -364,7 +379,10 @@ Func _MIX_Engine($aRomList, $vBoucle, $aConfig, $oXMLProfil)
 						Case 'game'
 							$vDownloadURL = StringTrimRight(_XML_Read($vRoot_Game & $aXpathCountry[$vBoucle2], 0, $aRomList[8]), 3) & "png"
 							If $vDownloadURL <> "png" And Not FileExists($vPicTarget) Then
-								$vValue = _DownloadWRetry($vDownloadURL, $vPicTarget)
+								$vDownloadMaxWidth = "&maxwidth=" & _GDIPlus_RelativePos($aPicParameters[0], $vTarget_Width)
+								$vDownloadMaxHeight = "&maxheight=" & _GDIPlus_RelativePos($aPicParameters[1], $vTarget_Width)
+								$vDownloadOutputFormat = "&outputformat=png"
+								$vValue = _DownloadWRetry($vDownloadURL & $vDownloadMaxWidth & $vDownloadMaxHeight & $vDownloadOutputFormat, $vPicTarget)
 								If $vValue < 0 Then
 									_LOG("xml_value (game) : " & $vPicTarget & " Not Added", 2, $iLOGPath)
 								Else
@@ -376,7 +394,10 @@ Func _MIX_Engine($aRomList, $vBoucle, $aConfig, $oXMLProfil)
 						Case 'system'
 							$vDownloadURL = StringTrimRight(_XML_Read($vRoot_System & $aXpathCountry[$vBoucle2], 0, "", $oXMLSystem), 3) & "png"
 							If $vDownloadURL <> "png" And Not FileExists($vPicTarget) Then
-								$vValue = _DownloadWRetry($vDownloadURL, $vPicTarget)
+								$vDownloadMaxWidth = "&maxwidth=" & _GDIPlus_RelativePos($aPicParameters[0], $vTarget_Width)
+								$vDownloadMaxHeight = "&maxheight=" & _GDIPlus_RelativePos($aPicParameters[1], $vTarget_Width)
+								$vDownloadOutputFormat = "&outputformat=png"
+								$vValue = _DownloadWRetry($vDownloadURL & $vDownloadMaxWidth & $vDownloadMaxHeight & $vDownloadOutputFormat, $vPicTarget)
 								If $vValue < 0 Then
 									_LOG("xml_value (system) : " & $vPicTarget & " Not Added", 2, $iLOGPath)
 								Else
@@ -453,3 +474,4 @@ Func _XMLSystem_Create()
 		Return $oXMLSystem
 	EndIf
 EndFunc   ;==>_XMLSystem_Create
+

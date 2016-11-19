@@ -63,6 +63,9 @@
 		<mnu_ssh_poweroff>Apagado Remoto</mnu_ssh_poweroff>
 		
 		<mnu_help>Ayuda</mnu_help>
+		<mnu_help_wiki>Help (wiki)</mnu_help_wiki>
+		<mnu_help_support>Help us</mnu_help_support>
+		<mnu_help_link>Links</mnu_help_link>
 		<mnu_help_about>Acerca de</mnu_help_about>
 	</menu>
 	<windows>
@@ -116,6 +119,7 @@
 			<win_config_MISC_GroupMISC_VerboseChoice>0 - Estándar|1 - Avanzado|2 - Full</win_config_MISC_GroupMISC_VerboseChoice>
 			<win_config_MISC_GroupMISC_MissingMode>Agregar roms faltantes al XML</win_config_MISC_GroupMISC_MissingMode>
 			<win_config_MISC_GroupMISC_RechSys>Selección automática del sistema</win_config_MISC_GroupMISC_RechSys>
+			<win_config_MISC_GroupMISC_Mirror>Use DigiMirror</win_config_MISC_GroupMISC_Mirror>
 			<win_config_MISC_GroupScreenScraper>Screenscraper</win_config_MISC_GroupScreenScraper>
 			<win_config_MISC_GroupScreenScraper_Login>Usuario Screenscraper</win_config_MISC_GroupScreenScraper_Login>
 			<win_config_MISC_GroupScreenScraper_Password>Contraseña Screenscraper</win_config_MISC_GroupScreenScraper_Password>
@@ -167,6 +171,7 @@
 			<win_Wizard_Next>Siguiente</win_Wizard_Next>
 			<win_Wizard_Back>Volver</win_Wizard_Back>
 			<win_Wizard_End>OK</win_Wizard_End>
+			<win_Wizard_Cancel>Cancelar</win_Wizard_Cancel>
 			<win_Wizard_Profil>
 				<win_Wizard_Profil_Title>Selección de Perfil</win_Wizard_Profil_Title>
 				<win_Wizard_Profil_Desc>Aquí puede seleccionar el perfil correspondiente a su SO.|!||!|Las versiones MIX crean una imagen compuesta de varias otras tales como captura de pantalla, caja 3D y el logotipo del juego.|!||!|Puede cambiar el perfil MIX en el menú : |!|"Cambiar perfil de imágenes mixtas"|!|o más adelante en este asistente.</win_Wizard_Profil_Desc>
