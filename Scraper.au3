@@ -437,12 +437,13 @@ Func _MIX_Engine($aRomList, $vBoucle, $aConfig, $oXMLProfil)
 		If FileExists($aMiXPicTemp[$vBoucle2 - 1]) Then _GDIPlus_Merge($aMiXPicTemp[$vBoucle2 - 1], $aMiXPicTemp[$vBoucle2])
 	Next
 
+	If Not IsArray($aMiXPicTemp) Or UBound($aMiXPicTemp) - 1 = 0 Then Return -1
+
 	$vCompression = _XML_Read("/Profil/Compression/use", 0, "", $oMixConfig)
 	$vCompressionSoft = _XML_Read("/Profil/Compression/soft", 0, "", $oMixConfig)
 	$vCompressionParameter = _XML_Read("/Profil/Compression/parameter", 0, "", $oMixConfig)
 	If StringLower($vCompression) = 'yes' Then _Compression($aMiXPicTemp[1], $vCompressionSoft, $vCompressionParameter)
 
-	If Not IsArray($aMiXPicTemp) Then Return -1
 	If UBound($aMiXPicTemp) - 1 > 0 Then Return $aMiXPicTemp[1]
 	Return -1
 EndFunc   ;==>_MIX_Engine

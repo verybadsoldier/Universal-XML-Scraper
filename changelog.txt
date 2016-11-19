@@ -1,3 +1,7 @@
+2.0.0.5
+Corrected :
+Issue with no image found and compression
+
 2.0.0.4
 Corrected :
 Include/Exclude Label Size to small in generale config
