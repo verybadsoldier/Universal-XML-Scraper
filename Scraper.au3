@@ -138,6 +138,15 @@ Func _Game_Make($aRomList, $vBoucle, $aConfig, $oXMLProfil)
 	_XML_WriteValue($vNode, "", "", $aConfig[8])
 	While 1
 		Switch _XML_Read("/Profil/Element[" & $vWhile & "]/Target_Type", 0, "", $oXMLProfil)
+			Case "Child"
+				$vXpath = _XML_Read("/Profil/Root/Target_Value", 0, "", $oXMLProfil)
+				$vNode = _XML_Read("/Profil/Element[" & $vWhile & "]/Target_Value", 0, "", $oXMLProfil)
+				_XML_CreateChildWAttr($aConfig[8], "/" & $vXpath, $vNode)
+				If @error Then
+					_LOG('_XML_CreateChildWAttr ERROR ( /' & $vXpath & "/" & $vNode & ')', 2, $iLOGPath)
+					_LOG('_XML_CreateChildWAttr @error:' & @CRLF & XML_My_ErrorParser(@error), 3, $iLOGPath)
+					Return -1
+				EndIf
 			Case "XML_Value"
 				$vValue = _XML_Read_Source($aRomList, $vBoucle, $aConfig, $oXMLProfil, $vWhile)
 				$vNode = _XML_Read("/Profil/Element[" & $vWhile & "]/Target_Value", 0, "", $oXMLProfil)

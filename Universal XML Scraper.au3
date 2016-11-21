@@ -653,7 +653,7 @@ Func _GUI_Config_Options($oXMLProfil)
 	$L_Option = GUICtrlCreateLabel(_MultiLang_GetText("win_config_Option_GroupOption_Choice"), 16, 23)
 	$C_Option = GUICtrlCreateCombo("", 16, 40, 209, 25, BitOR($GUI_SS_DEFAULT_COMBO, $CBS_SIMPLE))
 	GUICtrlCreateGroup("", -99, -99, 1, 1)
-	$G_OptionParam = GUICtrlCreateGroup(_MultiLang_GetText("win_config_Option_GroupOption"), 8, 80, 225, 129)
+	$G_OptionParam = GUICtrlCreateGroup(_MultiLang_GetText("win_config_Option_GroupParam"), 8, 80, 225, 129)
 	$C_OptionParam = GUICtrlCreateCombo("", 16, 104, 209, 25, BitOR($GUI_SS_DEFAULT_COMBO, $CBS_SIMPLE))
 	$E_OptionParamDesc = GUICtrlCreateEdit("", 16, 128, 209, 73, BitOR($ES_AUTOVSCROLL, $ES_AUTOHSCROLL, $ES_READONLY, $ES_WANTRETURN))
 	GUICtrlSetData(-1, "")
@@ -1000,7 +1000,7 @@ Func _GUI_Config_MISC()
 				Return GUICtrlRead($C_Thread)
 			Case $B_SSRegister
 				_LOG("Launch Internet Browser to Register", 0, $iLOGPath)
-				ShellExecute($iURLScraper & "membreinscription.php")
+				ShellExecute($iURLSS & "membreinscription.php")
 			Case $B_SSCheck
 				GUICtrlSetData($C_Thread, "", "")
 				$vTEMPPathSSCheck = $iScriptPath & "\Ressources\SSCheck.xml"
@@ -1393,12 +1393,18 @@ Func _Check_Cancel()
 	EndIf
 EndFunc   ;==>_Check_Cancel
 
-Func _RomList_Create($aConfig, $vFullScrape = 0)
+Func _RomList_Create($aConfig, $vFullScrape = 0, $oXMLProfil = "")
 	Local $sDrive = "", $sDir = "", $sFileName = "", $sExtension = "", $aPathSplit
 	$vRechFiles = IniRead($iINIPath, "LAST_USE", "$vRechFiles ", "*.*z*")
 	Local $vPicDir = StringSplit($aConfig[3], "\")
 	$vPipeCount = StringSplit($vRechFiles, "|")
 	If $vPipeCount[0] = 2 Then $vRechFiles = $vRechFiles & "|"
+
+	If $oXMLProfil <> "" Then
+		$vBypass_Research = _Coalesce(_XML_Read("Profil/General/Bypass_Research", 0, "", $oXMLProfil), -1)
+		If $vBypass_Research <> -1 Then $vRechFiles = $vBypass_Research
+	EndIf
+
 	If StringRight($vRechFiles, 1) = "|" Then
 		$vRechFiles = $vRechFiles & $vPicDir[UBound($vPicDir) - 1]
 	Else
@@ -1522,8 +1528,8 @@ EndFunc   ;==>_XMLSystem_Create
 
 Func _DownloadROMXML($aRomList, $vBoucle, $vSystemID, $vSSLogin = "", $vSSPassword = "")
 	If Not _Check_Cancel() Then Return $aRomList
-	Local $vXMLRom = $iTEMPPath & "\" & StringRegExpReplace($aRomList[$vBoucle][2], "[\[\]/\|\:\?""\*\\<>]", "") & ".xml"
-	$vRomName = StringReplace(StringRegExpReplace($aRomList[$vBoucle][2], "[äëïöüÿ]", ""), " ", "%20")
+	Local $vXMLRom = $iTEMPPath & "\" & StringRegExpReplace($aRomList[$vBoucle][2], '[\[\]/\|\:\?"\*\\<>]', "") & ".xml"
+	$vRomName = StringReplace(StringRegExpReplace($aRomList[$vBoucle][2], "[äëïöüÿ'àéèùâêîôû]", ""), " ", "%20")
 	$aRomList[$vBoucle][8] = _DownloadWRetry($iURLScraper & "api/jeuInfos.php?devid=" & $iDevId & "&devpassword=" & $iDevPassword & "&softname=" & $iSoftname & "&output=xml&ssid=" & $vSSLogin & "&sspassword=" & $vSSPassword & "&crc=" & $aRomList[$vBoucle][5] & "&md5=" & $aRomList[$vBoucle][6] & "&sha1=" & $aRomList[$vBoucle][7] & "&systemeid=" & $vSystemID & "&romtype=rom&romnom=" & $vRomName & "&romtaille=" & $aRomList[$vBoucle][4], $vXMLRom)
 	If (StringInStr(FileReadLine($aRomList[$vBoucle][8]), "Erreur") Or Not FileExists($aRomList[$vBoucle][8])) Then
 		$aRomList[$vBoucle][8] = _DownloadWRetry($iURLScraper & "api/jeuInfos.php?devid=" & $iDevId & "&devpassword=" & $iDevPassword & "&softname=" & $iSoftname & "&output=xml&ssid=" & $vSSLogin & "&sspassword=" & $vSSPassword & "&crc=&md5=&sha1=&systemeid=" & $vSystemID & "&romtype=rom&romnom=" & $vRomName & "&romtaille=" & $aRomList[$vBoucle][4], $vXMLRom)
@@ -1738,7 +1744,7 @@ Func _SCRAPE($oXMLProfil, $vNbThread = 1, $vFullScrape = 0)
 		EndIf
 
 		$aConfig[12] = _SelectSystem($oXMLSystem)
-		$aRomList = _RomList_Create($aConfig, $vFullScrape)
+		$aRomList = _RomList_Create($aConfig, $vFullScrape, $oXMLProfil)
 		If IsArray($aRomList) And _Check_Cancel() Then
 
 			If $aConfig[5] = 0 Or ($aConfig[5] > 0 And FileGetSize($aConfig[0]) < 100) Then

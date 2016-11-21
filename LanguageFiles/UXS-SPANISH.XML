@@ -63,9 +63,9 @@
 		<mnu_ssh_poweroff>Apagado Remoto</mnu_ssh_poweroff>
 		
 		<mnu_help>Ayuda</mnu_help>
-		<mnu_help_wiki>Help (wiki)</mnu_help_wiki>
-		<mnu_help_support>Help us</mnu_help_support>
-		<mnu_help_link>Links</mnu_help_link>
+		<mnu_help_wiki>Ayuda (Wiki)</mnu_help_wiki>
+		<mnu_help_support>Ayúdanos</mnu_help_support>
+		<mnu_help_link>Enlaces</mnu_help_link>
 		<mnu_help_about>Acerca de</mnu_help_about>
 	</menu>
 	<windows>
@@ -181,12 +181,12 @@
 				<win_Wizard_Autoconf_Desc>La configuración automática le permite scrapear su sistema sin perder tiempo en la configuración de la ruta.|!||!|La ruta predeterminada (basada em su perfil seleccionado) se encuentra justo debajo de este texto.|!|Puede modificarlo con el directorio de origen de roms.|!||!|Ejemplo :|!|Sus roms de SNES están en|!|E:\Emulation\Rom\SNES,|!|así que la ruta de origen será|!|E:\Emulation\Rom</win_Wizard_Autoconf_Desc>
 			</win_Wizard_Autoconf>
 			<win_Wizard_MIX>
-				<win_Wizard_MIX_Title>MIX Image Profil Selection</win_Wizard_MIX_Title>
+				<win_Wizard_MIX_Title>Selección de perfil de imágenes mixtas</win_Wizard_MIX_Title>
 				<win_Wizard_MIX_Desc>Há elegido un perfil con imágenes mixtas|!||!|La imagen generada por UXS depende de un perfil que puede seleccionar en la siguiente ventana.|!||!|Atención, algunos perfiles de imágenes mixtas dependen del tema de su interfaz|!|(Ejemplo, el perfil "Full Back" requiere de un tema específico.)|!|No dude en consultar la wiki si lo necesita.</win_Wizard_MIX_Desc>
 			</win_Wizard_MIX>
 			<win_Wizard_END>
 				<win_Wizard_END_Title>Fin del Asistente</win_Wizard_END_Title>
-				<win_Wizard_END_Desc>TLa configuración básica de UXS está hecha.|!||!|Ahora puede seleccionar su sistema en|!|"Scrapeado"|!|->"Seleccione su sistema (Conf Auto)"|!|y scrapear por primera vez.|!||!|Gracias por utilizar Universal XML Scraper.</win_Wizard_END_Desc>
+				<win_Wizard_END_Desc>La configuración básica de UXS está hecha.|!||!|Ahora puede seleccionar su sistema en|!|"Scrapeado"|!|->"Seleccione su sistema (Conf Auto)"|!|y scrapear por primera vez.|!||!|Gracias por utilizar Universal XML Scraper.</win_Wizard_END_Desc>
 			</win_Wizard_END>
 		</win_Wizard>
 	</windows>

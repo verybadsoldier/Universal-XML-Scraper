@@ -115,7 +115,7 @@
 			<win_config_MISC_GroupMISC_CountryPicModeChoice>0 - Language Pic|1 - Rom Pic|2 - Language Pic Strict|3 - Rom Pic Strict</win_config_MISC_GroupMISC_CountryPicModeChoice>
 			<win_config_MISC_GroupMISC_Verbose>Log level</win_config_MISC_GroupMISC_Verbose>
 			<win_config_MISC_GroupMISC_VerboseChoice>0 - Standard|1 - Advanced|2 - Full</win_config_MISC_GroupMISC_VerboseChoice>
-			<win_config_MISC_GroupMISC_MissingMode>Add an enter for missing roms in XML</win_config_MISC_GroupMISC_MissingMode>
+			<win_config_MISC_GroupMISC_MissingMode>Add missing roms in XML</win_config_MISC_GroupMISC_MissingMode>
 			<win_config_MISC_GroupMISC_RechSys>Auto select your system</win_config_MISC_GroupMISC_RechSys>
 			<win_config_MISC_GroupMISC_Mirror>Use DigiMirror</win_config_MISC_GroupMISC_Mirror>
 			<win_config_MISC_GroupScreenScraper>Screenscraper</win_config_MISC_GroupScreenScraper>
@@ -172,11 +172,11 @@
 			<win_Wizard_Cancel>Cancel</win_Wizard_Cancel>
 			<win_Wizard_Profil>
 				<win_Wizard_Profil_Title>Profil Selection</win_Wizard_Profil_Title>
-				<win_Wizard_Profil_Desc>Here You can select the profil corresponding to you OS.|!||!|MIX Version make picture with several other like screenshot, 3D box and Game logo.|!||!|You can change the MIX Profil in the menu : |!|"Change your Mix Images profil"|!|or later in this wizard.</win_Wizard_Profil_Desc>
+				<win_Wizard_Profil_Desc>Here You can select the profil corresponding to your OS.|!||!|MIX Version make picture with several other like screenshot, 3D box and Game logo.|!||!|You can change the MIX Profil in the menu : |!|"Change your Mix Images profil"|!|or later in this wizard.</win_Wizard_Profil_Desc>
 			</win_Wizard_Profil>
 			<win_Wizard_Autoconf>
 				<win_Wizard_Autoconf_Title>Autoconfiguration Path</win_Wizard_Autoconf_Title>
-				<win_Wizard_Autoconf_Desc>The Autoconfiguration let you scrape your system without spending time in path configuration.|!||!|The default path (selected from you selected profil) is just under this text.|!|You can change it with your system root directory.|!||!|Exemple :|!|Your SNES roms are in|!|E:\Emulation\Rom\SNES,|!|so the root path will be|!|E:\Emulation\Rom</win_Wizard_Autoconf_Desc>
+				<win_Wizard_Autoconf_Desc>The Autoconfiguration let you scrape your system without spending time in path configuration.|!||!|The default path (selected from your selected profil) is just under this text.|!|You can change it with your system root directory.|!||!|Exemple :|!|Your SNES roms are in|!|E:\Emulation\Rom\SNES,|!|so the root path will be|!|E:\Emulation\Rom</win_Wizard_Autoconf_Desc>
 			</win_Wizard_Autoconf>
 			<win_Wizard_MIX>
 				<win_Wizard_MIX_Title>MIX Image Profil Selection</win_Wizard_MIX_Title>

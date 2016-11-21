@@ -117,7 +117,7 @@
 			<win_config_MISC_GroupMISC_CountryPicModeChoice>0 - nach Sprache|1 - nach Rom|2 - nach Sprache - strikt|3 - nach Rom - strikt</win_config_MISC_GroupMISC_CountryPicModeChoice>
 			<win_config_MISC_GroupMISC_Verbose>Log-Modus</win_config_MISC_GroupMISC_Verbose>
 			<win_config_MISC_GroupMISC_VerboseChoice>0 - standard|1 - erweitert|2 - komplett</win_config_MISC_GroupMISC_VerboseChoice>
-			<win_config_MISC_GroupMISC_MissingMode>Eintrag für fehlende Roms in XML-Datei hinzufügen</win_config_MISC_GroupMISC_MissingMode>
+			<win_config_MISC_GroupMISC_MissingMode>Fehlende Roms in XML-Datei hinzufügen</win_config_MISC_GroupMISC_MissingMode>
 			<win_config_MISC_GroupMISC_RechSys>automatische Systemauswahl</win_config_MISC_GroupMISC_RechSys>
 			<win_config_MISC_GroupMISC_Mirror>Use DigiMirror</win_config_MISC_GroupMISC_Mirror>
 			<win_config_MISC_GroupScreenScraper>Screenscraper.fr</win_config_MISC_GroupScreenScraper>

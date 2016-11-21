@@ -1,12 +1,14 @@
-<?xml version="1.0" encoding="UTF-8"?><Profil Name="ScreenScraper(MIX)-Recalbox v4">
+<?xml version="1.0" encoding="UTF-8"?><Profil Name="ScreenScraper(MIX)-SCUMMVM-Recalbox v4">
 	<General>
-		<Source_Image>Screenscraper(MIX)-RecalboxV4.jpg</Source_Image>
+		<Source_Image>Screenscraper(MIX)-SCUMMVM-RecalboxV4.jpg</Source_Image>
 		<UpperCase>True</UpperCase>
 		<Mix>True</Mix>
 		<Image_Extension>png</Image_Extension>
+		<SCUMMVM>True</SCUMMVM>
+		<Bypass_Research>*.scummvm;*.svm||</Bypass_Research>
 	</General>
 	<AutoConf>
-		<Source_RootPath>\\RECALBOX\share\roms</Source_RootPath>
+		<Source_RootPath>\\SYNO-SCREECH\Emulation\Roms TEST</Source_RootPath>
 		<Target_XMLName>gamelist.xml</Target_XMLName>
 		<Target_RomPath>./</Target_RomPath>
 		<Source_ImagePath>downloaded_images</Source_ImagePath>
@@ -132,6 +134,55 @@
 		<AutoHideValue>(Track |[Bios]|(Bios)</AutoHideValue>
 		<Target_Type>XML_Value</Target_Type>
 		<Target_Value>game/hidden</Target_Value>
+	</Element>
+	<Element Type="Folder">
+		<Target_Type>Child</Target_Type>
+		<Target_Value>folder</Target_Value>
+	</Element>
+	<Element Type="FolderId">
+		<Source_Type>XML_Value</Source_Type>
+		<Source_Value>Data/jeu/id</Source_Value>
+		<Target_Type>XML_Attribute</Target_Type>
+		<Target_Attribute_Name>id</Target_Attribute_Name>
+		<Target_Value>folder</Target_Value>
+	</Element>
+	<Element Type="FolderSource">
+		<Source_Type>Fixe_Value</Source_Type>
+		<Source_Value>ScreenScraper</Source_Value>
+		<Target_Type>XML_Attribute</Target_Type>
+		<Target_Attribute_Name>source</Target_Attribute_Name>
+		<Target_Value>folder</Target_Value>
+	</Element>
+	<Element Type="FolderRomPath">
+		<Source_Type>Variable_Value</Source_Type>
+		<Source_Value>%XML_Rom_Path%</Source_Value>
+		<Target_Type>XML_Value_FORMAT</Target_Type>
+		<Target_FORMAT>%Folder%</Target_FORMAT>
+		<Target_Value>folder/path</Target_Value>
+	</Element>
+	<Element Type="FolderName">
+		<Source_Type>XML_Value</Source_Type>
+		<Source_Value>Data/jeu/noms/nom_%COUNTRY%</Source_Value>
+		<Target_Type>XML_Value_FORMAT</Target_Type>
+		<Target_FORMAT>%Name+Country%</Target_FORMAT>
+		<Target_Value>folder/name</Target_Value>
+		<Target_CASE>True</Target_CASE>
+	</Element>
+	<Element Type="FolderDescription">
+		<Source_Type>XML_Value</Source_Type>
+		<Source_Value>Data/jeu/synopsis/synopsis_%LANG%</Source_Value>
+		<Target_Type>XML_Value</Target_Type>
+		<Target_Value>folder/desc</Target_Value>
+		<Target_CASE>True</Target_CASE>
+	</Element>
+	<Element Type="FolderPicture">
+		<Source_Type>MIX_Template</Source_Type>
+		<Source_Download_Path>%Local_Path_File%</Source_Download_Path>
+		<Source_Download_Tag>-image</Source_Download_Tag>
+		<Source_Download_Ext>png</Source_Download_Ext>
+		<Target_Type>XML_Path</Target_Type>
+		<Target_Path_Type>%XML_Path_File%</Target_Path_Type>
+		<Target_Value>folder/image</Target_Value>
 	</Element>
 	<Options>
 		<Option>
