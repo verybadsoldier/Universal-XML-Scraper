@@ -125,7 +125,7 @@ While $iNumberOfMessagesOverall < 5
 		_XML_SaveToFile($oXMLAfterTidy, $iTEMPPathGlobal & "\scraped\" & $vBoucle & ".xml")
 		$iNumberOfMessagesOverall = 1
 		$vScrapedTime = Round((TimerDiff($vRomTimer) / 1000), 2)
-		_LOG($aRomList[2] & " scraped in " & $vScrapedTime & "s", 3, $iLOGPath)
+;~ 		_LOG($aRomList[2] & " scraped in " & $vScrapedTime & "s", 3, $iLOGPath)
 		_SendMail($sMailSlotMother, $vBoucle & "|" & $vScrapedTime)
 		If _CheckCount($hMailSlotCancel) >= 1 Then Exit
 	EndIf
@@ -133,18 +133,18 @@ WEnd
 
 Func _Game_Make($aRomList, $vBoucle, $aConfig, $oXMLProfil)
 	Local $vValue = "", $vAttributeName, $vWhile = 1, $vNode, $vBracketPos = 0, $vHookPos = 0
-	$vNode = "//" & _XML_Read("Profil/Game/Target_Value", 0, "", $oXMLProfil)
-	_LOG($vNode & " <-- " & $vValue, 1, $iLOGPath)
-	_XML_WriteValue($vNode, "", "", $aConfig[8])
+;~ 	$vNode = "/" & _XML_Read("Profil/Game/Target_Value", 0, "", $oXMLProfil)
+;~ 	_LOG($vNode & " <-- " & $vValue, 1, $iLOGPath)
+;~ 	_XML_CreateRootNode($aConfig[8], $vNode)
 	While 1
 		Switch _XML_Read("/Profil/Element[" & $vWhile & "]/Target_Type", 0, "", $oXMLProfil)
 			Case "Child"
-				$vXpath = _XML_Read("/Profil/Root/Target_Value", 0, "", $oXMLProfil)
-				$vNode = _XML_Read("/Profil/Element[" & $vWhile & "]/Target_Value", 0, "", $oXMLProfil)
-				_XML_CreateChildWAttr($aConfig[8], "/" & $vXpath, $vNode)
+				$vNode = "/" & _XML_Read("/Profil/Element[" & $vWhile & "]/Target_Value", 0, "", $oXMLProfil)
+;~ 				_XML_CreateRootNode($aConfig[8], $vNode)
+				_XML_CreateRootNode($aConfig[8], "folder")
 				If @error Then
-					_LOG('_XML_CreateChildWAttr ERROR ( /' & $vXpath & "/" & $vNode & ')', 2, $iLOGPath)
-					_LOG('_XML_CreateChildWAttr @error:' & @CRLF & XML_My_ErrorParser(@error), 3, $iLOGPath)
+					_LOG('_XML_CreateRootNode ERROR (' & $vNode & ')', 2, $iLOGPath)
+					_LOG('_XML_CreateRootNode @error:' & @CRLF & XML_My_ErrorParser(@error), 2, $iLOGPath)
 					Return -1
 				EndIf
 			Case "XML_Value"
