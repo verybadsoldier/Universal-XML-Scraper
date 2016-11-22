@@ -1,3 +1,20 @@
+2.0.0.6
+Corrected :
+French, German, spanish and english translation correction.
+First rom sometime doesn't be scrapped corrected.
+Include/Exclude label size corrected
+Registering link with Digimirror corrected.
+Some roms don't be scraped because of "not allowed" characteres corrected.
+Added :
+New XML Include
+Bypass research function (to make dedicated profil for some system like scummvm)
+Merge with verybadsoldier fork :
+Added a new function to scrape IN zip files when zip file rom isn't found. (THANKS A LOT verybadsoldier)
+
+2.0.0.5
+Corrected :
+Issue with no image found and compression
+
 2.0.0.4
 Corrected :
 Include/Exclude Label Size to small in generale config

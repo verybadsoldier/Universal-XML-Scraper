@@ -1,34 +1,59 @@
+2.0.0.6
+*Corrected :
+-French, German, spanish and english translation correction.
+-First rom sometime doesn't be scrapped corrected.
+-Include/Exclude label size corrected
+-Registering link with Digimirror corrected.
+-Some roms don't be scraped because of "not allowed" characteres corrected.
+*Added :
+-New XML Include
+-Bypass research function (to make dedicated profil for some system like scummvm)
+-New Mix Profil to Test SCUMMVM on Recalbox V4 (MIX)
+-Rewrite of path option to add some tag : 
+  +%SystemDir% = Full path to the system directory
+  +%System% = Name of the System directory
+  +%Source_RootPath% = Path to the local Root
+-Rewrite of Retropie Profil to match Retropie Path (to test)
+*Merge with verybadsoldier fork :
+-Added a new function to scrape IN zip files when zip file rom isn't found. (THANKS A LOT verybadsoldier)
+
 2.0.0.5
-Corrected :
-Issue with no image found and compression
+*Corrected :
+-Issue with no image found and compression corrected.
 
 2.0.0.4
-Corrected :
-Include/Exclude Label Size to small in generale config
-PngQuant in MIX profil don't work
-Size and quality for MaxResize MIX profil doesn't work very well
-Added :
-Help, Thanks, and support Menu
-Cache function (by default) It use the DigiMirror
-Uppercase option for some text info (in Option Menu)
-Hide Scraper.exe and Scraper64.exe to not confuse...
+*Corrected :
+-Include/Exclude Label Size to small in generale config corrected.
+-PngQuant in MIX profil don't work corrected.
+-Size and quality for MaxResize MIX profil doesn't work very well corrected.
+*Added :
+-Help, Thanks, and support Menu
+-Cache function (by default) It use the DigiMirror
+-Uppercase option for some text info (in Option Menu)
+-Hide Scraper.exe and Scraper64.exe to not confuse...
 
 2.0.0.3
-German Translation (Thanks to Madmeggo, Paradadf and Lackyluuk)
-Spanish Translation (Thanks to Paradadf)
-Resizing correction (ratio problem in Fullback theme)
-Minor bug correction
-Preparing Screenscraper Cache system
+*Added :
+-German Translation (Thanks to Madmeggo, Paradadf and Lackyluuk)
+-Spanish Translation (Thanks to Paradadf)
+*Corrected :
+-Resizing (ratio problem in Fullback theme) corrected.
+-Minor bug corrected.
+*Preparing :
+-Screenscraper Cache system
 
 2.0.0.2
-Preparing language file for translation
-System selection corrected
+*Preparing :
+-language file for translation
+*Corrected :
+-System selection corrected
 
 2.0.0.1
-BETA
-Option name, corrected
-adding an "_" to the missing file name
-Source always = 0, corrected
+*Corrected :
+Option name corrected
+-Source always = 0 corrected
+*Added :
+-A "_" to the missing file name
 
 2.0.0.0
 BETA

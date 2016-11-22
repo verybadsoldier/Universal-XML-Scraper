@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><Profil Name="ScreenScraper-Recalbox v3">
+<?xml version="1.0" encoding="UTF-8"?><Profil Name="Recalbox v3">
 	<General>
 		<Source_Image>Screenscraper-RecalboxV3.jpg</Source_Image>
 		<UpperCase>True</UpperCase>
@@ -9,9 +9,9 @@
 	</General>
 	<AutoConf>
 		<Source_RootPath>\\RECALBOX\roms</Source_RootPath>
-		<Target_XMLName>gamelist.xml</Target_XMLName>
+		<Target_XMLName>%Source_RootPath%\gamelist.xml</Target_XMLName>
 		<Target_RomPath>./</Target_RomPath>
-		<Source_ImagePath>downloaded_images</Source_ImagePath>
+		<Source_ImagePath>%Source_RootPath%\downloaded_images</Source_ImagePath>
 		<Target_ImagePath>./downloaded_images/</Target_ImagePath>
 	</AutoConf>
 	<Plink>
@@ -20,7 +20,6 @@
 		<Pswd>recalboxroot</Pswd>
 		<Command>
 			<killall>killall emulationstation</killall>
-			<start>/etc/init.d/S31emulationstation start</start>
 			<reboot>/sbin/reboot</reboot>
 			<poweroff>/sbin/poweroff</poweroff>
 		</Command>
@@ -60,7 +59,7 @@
 		<Source_Type>XML_Value</Source_Type>
 		<Source_Value>Data/jeu/noms/nom_%COUNTRY%</Source_Value>
 		<Target_Type>XML_Value_FORMAT</Target_Type>
-		<Target_FORMAT>%%</Target_FORMAT>
+		<Target_FORMAT>%Name+Country%</Target_FORMAT>
 		<Target_Value>game/name</Target_Value>
 		<Target_CASE>True</Target_CASE>
 	</Element>

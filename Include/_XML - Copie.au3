@@ -16,7 +16,7 @@
 ; Description ...: Functions to use for reading and writing XML using msxml. (UDF based on XMLWrapper.au3)
 ; Remarks .......: BETA Version
 ; Author(s) .....: mLipok, Eltorro, Weaponx, drlava, Lukasz Suleja, oblique, Mike Rerick, Tom Hohmann, guinness, GMK
-; Version .......: "1.1.1.12" ; _XML_MiscProperty_UDFVersion()
+; Version .......: "1.1.1.10" ; _XML_MiscProperty_UDFVersion()
 
 #CS
 	This UDF is created on the basis of:
@@ -119,8 +119,8 @@
 	. event handler renamed to $__g_oXMLDOM_EventsHandler - mLipok
 	. added $XMLWRAPPER_ERROR_SAVEFILERO and checking in - mLipok
 	. if variable is ObjectsCollection then variable name ends with sufix "Coll" - mLipok
-	. variable used in loops are named with sufix "_idx" like this For $iAttribute_idx = 0 To $oAttributes_coll.length - 1 - mLipok
-	. variable used in loops are named with sufix "Enum" like this For $oNode_enum in $oNodes_coll - mLipok
+	. variable used in loops are named with sufix "_idx" like this For $iAttribute_idx = 0 To $oAttributesColl.length - 1 - mLipok
+	. variable used in loops are named with sufix "Enum" like this For $oNode_enum in $oNodesColl - mLipok
 	. Local Variable renaming: $strQuery > $sQuery - mLipok - thanks to guinness
 	. Local Variable renaming: $sComment > $sComment - mLipok - thanks to guinness
 	. Function renamed fixed typo in function name _XML_CreateAttributeute => _XML_CreateAttribute - mLipok - thanks to guinness
@@ -182,7 +182,7 @@
 	. NEW: ENUMs: $XMLWRAPPER_ERROR_NONODESMATCH - mLipok
 	. Changed: MAGIC NUMBERS: for StringStripWS in _XML_DeleteNode() - mLipok
 	. COMPLETED: _XML_NodeExists - mLipok
-	. COMPLETED: Refactroing all functions with "selectNodes" Method now have checking: If (Not IsObj($oNodes_coll)) Or $oNodes_coll.length = 0 Then ... SetError($XMLWRAPPER_ERROR_EMPTYCOLLECTION ..... - mLipok
+	. COMPLETED: Refactroing all functions with "selectNodes" Method now have checking: If (Not IsObj($oNodesColl)) Or $oNodesColl.length = 0 Then ... SetError($XMLWRAPPER_ERROR_EMPTYCOLLECTION ..... - mLipok
 	. COMPLETED: Refactroing all functions with "selectSingleNode" Method now have checking: If $oNode_Selected = Null Then .. SetError($XMLWRAPPER_ERROR_NONODESMATCH ..... - mLipok
 
 	2015/09/09
@@ -363,7 +363,7 @@
 	. Added: Descripton: _XML_GetNodeAttributeValue - mLipok - thanks to GMK
 	. Changed: Descripton: _XML_Misc_Viewer - mLipok - thanks to GMK
 	.
-	. Changed: Function: _XML_SelectNodes in case of success @extended = $oNodes_coll.length
+	. Changed: Function: _XML_SelectNodes in case of success @extended = $oNodesColl.length
 	.
 	.
 	2016/05/18
@@ -393,41 +393,16 @@
 	.	XML__Examples_User_Realm.au3
 	.	XML__Examples_User_scila1996.au3
 	.	XML__Examples_User_DarkAqua__Tasks.au3
-
-
-	2016/10/27
-	"1.1.1.12"
-	. Changed: Function: _XML_SetAttrib - supprot for $vAttributeNameOrList - GMK
-	. Added: Enums:  $XMLATTR_COLNAME, $XMLATTR_COLVALUE, $XMLATTR_COLCOUNTER - mLipok
-	. Changed: Function: _XML_GetAllAttrib - !!! array result is reordered ROWS<>COLS - mLipok
-	.			now are coherent manner for: _XML_InsertChildWAttr, _XML_CreateChildWAttr, _XML_SetAttrib, _XML_GetAllAttrib
-	. Added: Function parameter: _XML_Load new parameter $bPreserveWhiteSpace = True - GMK
-	. Added: Function parameter: _XML_LoadXML new parameter $bPreserveWhiteSpace = True - GMK
-	. Changed: Enums:  $XML_ERR_OK >> $XML_ERR_SUCCESS - for unification/coherence in relatation to some other UDF's - mLipok
-	.
-	. EXAMPLES: New, and checked/refactored/fixed
-	.	XML__Examples_TIDY2.au3
-	.	XML__Examples_User_BlaBlaFoo__Dellwarranty.au3
-	.	XML__Examples_User_Shrapnel.au3
 	.
 	.
 
-	2016/10/xx
-	"1.1.1.xx"
-	.
-	.
-	.
-	.
-	.
-	.
-	.
-	.
+
 
 	@LAST - this keyword is usefull for quick jumping here
 
 	TODO LIST:
 	. TODO CHECK: _XML_GetField, _XML_GetValue
-	. @WIP TODO: COUNT = 50
+	. @WIP TODO: COUNT = 54
 	. TODO: Description, Function Header CleanUp (are still old)
 	. TODO: browse entire UDF for TODO "Keyword"
 	. TODO: Return SetError($XML_ERR_GENERAL ... should be used only once per function
@@ -506,7 +481,7 @@
 ; #VARIABLES# ===================================================================================================================
 #Region XML.au3 - Enumeration - ERROR EXTENDED RETURN
 Global Enum _
-		$XML_ERR_SUCCESS, _ ; 				All is ok
+		$XML_ERR_OK, _ ; 				All is ok
 		$XML_ERR_GENERAL, _ ; 			The error which is not specifically defined.
 		$XML_ERR_COMERROR, _ ; 			COM Error occured - Check @extended for COMERROR Number or check you COM Error Handler Function
 		$XML_ERR_DOMVERSION, _ ; 		Check @extended for required DOM Version
@@ -574,12 +549,6 @@ Global Enum _
 		$__g_eARRAY_NODE_XML, _
 		$__g_eARRAY_NODE_ATTRIBUTES, _
 		$__g_eARRAY_NODE_ARRAYCOLCOUNT
-
-; Enums for _XML_InsertChildWAttr, _XML_CreateChildWAttr, _XML_SetAttrib, _XML_GetAllAttrib
-Global Enum _
-		$XMLATTR_COLNAME, _
-		$XMLATTR_COLVALUE, _
-		$XMLATTR_COLCOUNTER
 #EndRegion XML.au3 - ARRAY Enums
 
 #Region XML.au3 - XML DOM Enumerated Constants
@@ -627,7 +596,7 @@ Global Const $XML_DOCUMENT_READYSTATE_COMPLETED = 4
 ; Example .......: Yes
 ; ===============================================================================================================================
 Func _XML_CreateAttribute(ByRef $oXmlDoc, $sXPath, $asAttributeList)
-	; Error handler, automatic cleanup at end of function
+	; Local Error handler declaration, it will be automatic CleanUp when returning from function
 	Local $oXML_COM_ErrorHandler = ObjEvent("AutoIt.Error", __XML_ComErrorHandler_InternalFunction)
 	#forceref $oXML_COM_ErrorHandler
 
@@ -654,8 +623,8 @@ Func _XML_CreateAttribute(ByRef $oXmlDoc, $sXPath, $asAttributeList)
 	; CleanUp
 	$oAttribute = Null
 	$oNode_Selected = Null
+	Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
 
-	Return SetError($XML_ERR_SUCCESS, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
 EndFunc   ;==>_XML_CreateAttribute
 
 ; #FUNCTION# ====================================================================================================================
@@ -676,7 +645,7 @@ EndFunc   ;==>_XML_CreateAttribute
 ; Example .......; [yes/no]
 ; ===============================================================================================================================
 Func _XML_CreateCDATA(ByRef $oXmlDoc, $sNode, $sCDATA, $sNameSpace = "")
-	; Error handler, automatic cleanup at end of function
+	; Local Error handler declaration, it will be automatic CleanUp when returning from function
 	Local $oXML_COM_ErrorHandler = ObjEvent("AutoIt.Error", __XML_ComErrorHandler_InternalFunction)
 	#forceref $oXML_COM_ErrorHandler
 
@@ -695,10 +664,11 @@ Func _XML_CreateCDATA(ByRef $oXmlDoc, $sNode, $sCDATA, $sNameSpace = "")
 		If @error Then Return SetError($XML_ERR_NODEAPPEND, @error, $XML_RET_FAILURE)
 
 		$oChild = Null
-		Return SetError($XML_ERR_SUCCESS, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
+		Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
 	EndIf
 
 	Return SetError($XML_ERR_GENERAL, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
+
 EndFunc   ;==>_XML_CreateCDATA
 
 ; #FUNCTION# ====================================================================================================================
@@ -718,7 +688,7 @@ EndFunc   ;==>_XML_CreateCDATA
 ; Example .......; [yes/no]
 ; ===============================================================================================================================
 Func _XML_CreateComment(ByRef $oXmlDoc, $sXPath, $sComment)
-	; Error handler, automatic cleanup at end of function
+	; Local Error handler declaration, it will be automatic CleanUp when returning from function
 	Local $oXML_COM_ErrorHandler = ObjEvent("AutoIt.Error", __XML_ComErrorHandler_InternalFunction)
 	#forceref $oXML_COM_ErrorHandler
 
@@ -733,7 +703,8 @@ Func _XML_CreateComment(ByRef $oXmlDoc, $sXPath, $sComment)
 		Return SetError($XML_ERR_PARSE, $oXmlDoc.parseError.errorCode, $XML_RET_FAILURE)
 	EndIf
 
-	Return SetError($XML_ERR_SUCCESS, $XML_EXT_DEFAULT, $XML_RET_SUCCESS) ; TODO Check for what we need to return on success
+	Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $XML_RET_SUCCESS) ; TODO Check for what we need to return on success
+
 EndFunc   ;==>_XML_CreateComment
 
 ; #FUNCTION# ====================================================================================================================
@@ -754,7 +725,7 @@ EndFunc   ;==>_XML_CreateComment
 ; Example .......; [yes/no]
 ; ===============================================================================================================================
 Func _XML_CreateRootNode(ByRef $oXmlDoc, $sNode, $sData = "", $sNameSpace = "")
-	; Error handler, automatic cleanup at end of function
+	; Local Error handler declaration, it will be automatic CleanUp when returning from function
 	Local $oXML_COM_ErrorHandler = ObjEvent("AutoIt.Error", __XML_ComErrorHandler_InternalFunction)
 	#forceref $oXML_COM_ErrorHandler
 
@@ -770,10 +741,11 @@ Func _XML_CreateRootNode(ByRef $oXmlDoc, $sNode, $sData = "", $sNameSpace = "")
 		If @error Then Return SetError($XML_ERR_NODEAPPEND, @error, $XML_RET_FAILURE)
 
 		$oChild = 0
-		Return SetError($XML_ERR_SUCCESS, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
+		Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
 	EndIf
 
 	Return SetError($XML_ERR_GENERAL, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
+
 EndFunc   ;==>_XML_CreateRootNode
 
 ; #FUNCTION# ====================================================================================================================
@@ -794,7 +766,7 @@ EndFunc   ;==>_XML_CreateRootNode
 ; Example .......; [yes/no]
 ; ===============================================================================================================================
 Func _XML_CreateRootNodeWAttr(ByRef $oXmlDoc, $sNode, $aAttribute_Names, $aAttribute_Values, $sData = "", $sNameSpace = "")
-	; Error handler, automatic cleanup at end of function
+	; Local Error handler declaration, it will be automatic CleanUp when returning from function
 	Local $oXML_COM_ErrorHandler = ObjEvent("AutoIt.Error", __XML_ComErrorHandler_InternalFunction)
 	#forceref $oXML_COM_ErrorHandler
 
@@ -830,10 +802,11 @@ Func _XML_CreateRootNodeWAttr(ByRef $oXmlDoc, $sNode, $aAttribute_Names, $aAttri
 		If @error Then Return SetError($XML_ERR_NODEAPPEND, @error, $XML_RET_FAILURE)
 
 		$oChild_Node = Null
-		Return SetError($XML_ERR_SUCCESS, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
+		Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
 	EndIf
 
 	Return SetError($XML_ERR_GENERAL, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
+
 EndFunc   ;==>_XML_CreateRootNodeWAttr
 
 ; #FUNCTION# ====================================================================================================================
@@ -855,14 +828,14 @@ EndFunc   ;==>_XML_CreateRootNodeWAttr
 ; Example .......; [yes/no]
 ; ===============================================================================================================================
 Func _XML_DeleteNode(ByRef $oXmlDoc, $sXPath)
-	; Error handler, automatic cleanup at end of function
+	; Local Error handler declaration, it will be automatic CleanUp when returning from function
 	Local $oXML_COM_ErrorHandler = ObjEvent("AutoIt.Error", __XML_ComErrorHandler_InternalFunction)
 	#forceref $oXML_COM_ErrorHandler
 
-	Local $oNodes_coll = _XML_SelectNodes($oXmlDoc, $sXPath)
+	Local $oNodesColl = _XML_SelectNodes($oXmlDoc, $sXPath)
 	If @error Then Return SetError(@error, @extended, $XML_RET_FAILURE)
 
-	For $oNode_enum In $oNodes_coll
+	For $oNode_enum In $oNodesColl
 		If $oNode_enum.hasChildNodes Then
 			For $oNode_enum_Child In $oNode_enum.childNodes
 				If $oNode_enum_Child.nodeType = $XML_NODE_TEXT Then
@@ -875,7 +848,8 @@ Func _XML_DeleteNode(ByRef $oXmlDoc, $sXPath)
 		$oNode_enum.parentNode.removeChild($oNode_enum)
 	Next
 
-	Return SetError($XML_ERR_SUCCESS, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
+	Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
+
 EndFunc   ;==>_XML_DeleteNode
 
 ; #FUNCTION# ====================================================================================================================
@@ -894,31 +868,31 @@ EndFunc   ;==>_XML_DeleteNode
 ; Example .......; [yes/no]
 ; ===============================================================================================================================
 Func _XML_GetAllAttrib(ByRef $oXmlDoc, $sXPath)
-	; Error handler, automatic cleanup at end of function
+	; Local Error handler declaration, it will be automatic CleanUp when returning from function
 	Local $oXML_COM_ErrorHandler = ObjEvent("AutoIt.Error", __XML_ComErrorHandler_InternalFunction)
 	#forceref $oXML_COM_ErrorHandler
 
-	Local $oNodes_coll = _XML_SelectNodes($oXmlDoc, $sXPath)
+	Local $oNodesColl = _XML_SelectNodes($oXmlDoc, $sXPath)
 	If @error Then Return SetError(@error, @extended, $XML_RET_FAILURE)
 
-	Local $oAttributes_coll = Null
-	Local $aResponse[1][$XMLATTR_COLCOUNTER]
-	For $oNode_enum In $oNodes_coll
-		$oAttributes_coll = $oNode_enum.attributes
-		If ($oAttributes_coll.length) = 0 Then
+	Local $oAttributesColl = Null
+	Local $aResponse[2][1]
+	For $oNode_enum In $oNodesColl
+		$oAttributesColl = $oNode_enum.attributes
+		If ($oAttributesColl.length) = 0 Then
 			ContinueLoop
 			Return SetError($XML_ERR_GENERAL, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
 		EndIf
 
-		ReDim $aResponse[$oAttributes_coll.length + 2][$XMLATTR_COLCOUNTER]
-		For $iAttribute_idx = 0 To $oAttributes_coll.length - 1
-			$aResponse[$iAttribute_idx + 1][$XMLATTR_COLNAME] = $oAttributes_coll.item($iAttribute_idx).nodeName
-			$aResponse[$iAttribute_idx + 1][$XMLATTR_COLVALUE] = $oAttributes_coll.item($iAttribute_idx).Value
+		ReDim $aResponse[2][$oAttributesColl.length + 2]
+		For $iAttribute_idx = 0 To $oAttributesColl.length - 1
+			$aResponse[0][$iAttribute_idx + 1] = $oAttributesColl.item($iAttribute_idx).nodeName
+			$aResponse[1][$iAttribute_idx + 1] = $oAttributesColl.item($iAttribute_idx).Value
 		Next
 	Next
-	$aResponse[0][0] = $oAttributes_coll.length
+	$aResponse[0][0] = $oAttributesColl.length
+	Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $aResponse)
 
-	Return SetError($XML_ERR_SUCCESS, $XML_EXT_DEFAULT, $aResponse)
 EndFunc   ;==>_XML_GetAllAttrib
 
 ; #FUNCTION# ====================================================================================================================
@@ -945,7 +919,7 @@ EndFunc   ;==>_XML_GetAllAttrib
 ; Example .......; [yes/no]
 ; ===============================================================================================================================
 Func _XML_GetChildren(ByRef $oXmlDoc, $sXPath)
-	; Error handler, automatic cleanup at end of function
+	; Local Error handler declaration, it will be automatic CleanUp when returning from function
 	Local $oXML_COM_ErrorHandler = ObjEvent("AutoIt.Error", __XML_ComErrorHandler_InternalFunction)
 	#forceref $oXML_COM_ErrorHandler
 
@@ -974,12 +948,12 @@ Func _XML_GetChildren(ByRef $oXmlDoc, $sXPath)
 			EndIf
 		Next
 		$aResponse[0][0] = $iResponseDimSize
-
 		; TODO Description for @extended
-		Return SetError($XML_ERR_SUCCESS, $iResponseDimSize, $aResponse)
-	EndIf
+		Return SetError($XML_ERR_OK, $iResponseDimSize, $aResponse)
 
+	EndIf
 	Return SetError($XML_ERR_NOCHILDMATCH, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
+
 EndFunc   ;==>_XML_GetChildren
 
 ; #FUNCTION# ====================================================================================================================
@@ -998,7 +972,7 @@ EndFunc   ;==>_XML_GetChildren
 ; Example .......; [yes/no]
 ; ===============================================================================================================================
 Func _XML_GetChildText(ByRef $oXmlDoc, $sXPath)
-	; Error handler, automatic cleanup at end of function
+	; Local Error handler declaration, it will be automatic CleanUp when returning from function
 	Local $oXML_COM_ErrorHandler = ObjEvent("AutoIt.Error", __XML_ComErrorHandler_InternalFunction)
 	#forceref $oXML_COM_ErrorHandler
 
@@ -1016,10 +990,10 @@ Func _XML_GetChildText(ByRef $oXmlDoc, $sXPath)
 		Next
 
 		$aResponse[0] = UBound($aResponse) - 1
-		Return SetError($XML_ERR_SUCCESS, $aResponse[0], $aResponse) ; TODO Description for @extended
+		Return SetError($XML_ERR_OK, $aResponse[0], $aResponse) ; TODO Description for @extended
 	EndIf
-
 	Return SetError($XML_ERR_NOCHILDMATCH, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
+
 EndFunc   ;==>_XML_GetChildText
 
 ; #FUNCTION# ====================================================================================================================
@@ -1038,7 +1012,7 @@ EndFunc   ;==>_XML_GetChildText
 ; Example .......; [yes/no]
 ; ===============================================================================================================================
 Func _XML_GetField(ByRef $oXmlDoc, $sXPath)
-	; Error handler, automatic cleanup at end of function
+	; Local Error handler declaration, it will be automatic CleanUp when returning from function
 	Local $oXML_COM_ErrorHandler = ObjEvent("AutoIt.Error", __XML_ComErrorHandler_InternalFunction)
 	#forceref $oXML_COM_ErrorHandler
 
@@ -1068,11 +1042,11 @@ Func _XML_GetField(ByRef $oXmlDoc, $sXPath)
 
 		Next
 		$aResponse[0] = UBound($aResponse) - 1
-		Return SetError($XML_ERR_SUCCESS, $aResponse[0], $aResponse) ; TODO Description for @extended
+		Return SetError($XML_ERR_OK, $aResponse[0], $aResponse) ; TODO Description for @extended
 
 	EndIf
-
 	Return SetError($XML_ERR_GENERAL, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
+
 EndFunc   ;==>_XML_GetField
 
 ; #FUNCTION# ====================================================================================================================
@@ -1091,7 +1065,7 @@ EndFunc   ;==>_XML_GetField
 ; Example .......; [yes/no]
 ; ===============================================================================================================================
 Func _XML_GetNodesPath(ByRef $oXmlDoc, $sXPath)
-	; Error handler, automatic cleanup at end of function
+	; Local Error handler declaration, it will be automatic CleanUp when returning from function
 	Local $oXML_COM_ErrorHandler = ObjEvent("AutoIt.Error", __XML_ComErrorHandler_InternalFunction)
 	#forceref $oXML_COM_ErrorHandler
 
@@ -1099,13 +1073,13 @@ Func _XML_GetNodesPath(ByRef $oXmlDoc, $sXPath)
 		Return SetError($XML_ERR_DOMVERSION, 4, $XML_RET_FAILURE) ; TODO @extended Description
 	EndIf
 
-	Local $oNodes_coll = _XML_SelectNodes($oXmlDoc, $sXPath)
+	Local $oNodesColl = _XML_SelectNodes($oXmlDoc, $sXPath)
 	If @error Then Return SetError(@error, @extended, $XML_RET_FAILURE)
 
 	Local $aResponse[1], $sNodePath, $sNameSpace
 
 	Local $oParent, $oNode_enum_Temp
-	For $oNode_enum In $oNodes_coll
+	For $oNode_enum In $oNodesColl
 		$oNode_enum_Temp = $oNode_enum
 		$sNodePath = ""
 		If $oNode_enum.nodeType <> $XML_NODE_DOCUMENT Then
@@ -1138,7 +1112,8 @@ Func _XML_GetNodesPath(ByRef $oXmlDoc, $sXPath)
 	Next
 
 	$aResponse[0] = UBound($aResponse) - 1
-	Return SetError($XML_ERR_SUCCESS, $XML_EXT_DEFAULT, $aResponse)
+	Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $aResponse)
+
 EndFunc   ;==>_XML_GetNodesPath
 
 ; #FUNCTION# ===================================================================
@@ -1158,7 +1133,7 @@ EndFunc   ;==>_XML_GetNodesPath
 ; Example .......; [yes/no]
 ; ===============================================================================================================================
 Func _XML_GetNodesPathInternal(ByRef $oXML_Node)
-	; Error handler, automatic cleanup at end of function
+	; Local Error handler declaration, it will be automatic CleanUp when returning from function
 	Local $oXML_COM_ErrorHandler = ObjEvent("AutoIt.Error", __XML_ComErrorHandler_InternalFunction)
 	#forceref $oXML_COM_ErrorHandler
 
@@ -1186,7 +1161,8 @@ Func _XML_GetNodesPathInternal(ByRef $oXML_Node)
 		$oParentNode = Null
 	Until (Not (IsObj($oXML_Node)))
 
-	Return SetError($XML_ERR_SUCCESS, $XML_EXT_DEFAULT, $sNodePath)
+	Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $sNodePath)
+
 EndFunc   ;==>_XML_GetNodesPathInternal
 
 ; #FUNCTION# ====================================================================================================================
@@ -1205,7 +1181,7 @@ EndFunc   ;==>_XML_GetNodesPathInternal
 ; Example .......: [yes/no]
 ; ===============================================================================================================================
 Func _XML_GetParentNodeName(ByRef $oXmlDoc, $sXPath)
-	; Error handler, automatic cleanup at end of function
+	; Local Error handler declaration, it will be automatic CleanUp when returning from function
 	Local $oXML_COM_ErrorHandler = ObjEvent("AutoIt.Error", __XML_ComErrorHandler_InternalFunction)
 	#forceref $oXML_COM_ErrorHandler
 
@@ -1213,13 +1189,13 @@ Func _XML_GetParentNodeName(ByRef $oXmlDoc, $sXPath)
 		Return SetError($XML_ERR_DOMVERSION, 4, $XML_RET_FAILURE) ; TODO @extended Description
 	EndIf
 
-	Local $oNodes_coll = _XML_SelectNodes($oXmlDoc, $sXPath)
+	Local $oNodesColl = _XML_SelectNodes($oXmlDoc, $sXPath)
 	If @error Then Return SetError(@error, @extended, $XML_RET_FAILURE)
 
 	Local $aResponse[1], $sNodePath, $sNameSpace = ''
 	Local $sParentNodeName = "", $oParent_Node = Null
 
-	For $oNode_enum In $oNodes_coll
+	For $oNode_enum In $oNodesColl
 		Local $oNode_enum1 = $oNode_enum
 		$sNodePath = ""
 		If $oNode_enum.nodeType <> $XML_NODE_DOCUMENT Then
@@ -1254,7 +1230,8 @@ Func _XML_GetParentNodeName(ByRef $oXmlDoc, $sXPath)
 	Next
 
 	$aResponse[0] = UBound($aResponse) - 1
-	Return SetError($XML_ERR_SUCCESS, $XML_EXT_DEFAULT, $sParentNodeName)
+	Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $sParentNodeName)
+
 EndFunc   ;==>_XML_GetParentNodeName
 
 ; #FUNCTION# ====================================================================================================================
@@ -1275,15 +1252,15 @@ EndFunc   ;==>_XML_GetParentNodeName
 ; Example .......; [yes/no]
 ; ===============================================================================================================================
 Func _XML_GetValue(ByRef $oXmlDoc, $sXPath)
-	; Error handler, automatic cleanup at end of function
+	; Local Error handler declaration, it will be automatic CleanUp when returning from function
 	Local $oXML_COM_ErrorHandler = ObjEvent("AutoIt.Error", __XML_ComErrorHandler_InternalFunction)
 	#forceref $oXML_COM_ErrorHandler
 
-	Local $oNodes_coll = _XML_SelectNodes($oXmlDoc, $sXPath)
+	Local $oNodesColl = _XML_SelectNodes($oXmlDoc, $sXPath)
 	If @error Then Return SetError(@error, @extended, $XML_RET_FAILURE)
 
 	Local $aResponse[1]
-	For $oNode_enum In $oNodes_coll
+	For $oNode_enum In $oNodesColl
 		If $oNode_enum.hasChildNodes() Then
 			For $oNode_enum_Child In $oNode_enum.childNodes()
 				If $oNode_enum_Child.nodeType = $XML_NODE_CDATA_SECTION Then
@@ -1303,7 +1280,8 @@ Func _XML_GetValue(ByRef $oXmlDoc, $sXPath)
 	Next
 
 	$aResponse[0] = UBound($aResponse) - 1
-	Return SetError($XML_ERR_SUCCESS, $XML_EXT_DEFAULT, $aResponse)
+	Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $aResponse)
+
 EndFunc   ;==>_XML_GetValue
 
 ; #FUNCTION# ====================================================================================================================
@@ -1326,15 +1304,15 @@ EndFunc   ;==>_XML_GetValue
 ; Example .......;
 ; ===============================================================================================================================
 Func _XML_InsertChildNode(ByRef $oXmlDoc, $sXPath, $sNode, $iItem = 0, $sData = "", $sNameSpace = "")
-	; Error handler, automatic cleanup at end of function
+	; Local Error handler declaration, it will be automatic CleanUp when returning from function
 	Local $oXML_COM_ErrorHandler = ObjEvent("AutoIt.Error", __XML_ComErrorHandler_InternalFunction)
 	#forceref $oXML_COM_ErrorHandler
 
-	Local $oNodes_coll = _XML_SelectNodes($oXmlDoc, $sXPath)
+	Local $oNodesColl = _XML_SelectNodes($oXmlDoc, $sXPath)
 	If @error Then Return SetError(@error, @extended, $XML_RET_FAILURE)
 
 	Local $oChild
-	For $oNode_enum In $oNodes_coll
+	For $oNode_enum In $oNodesColl
 		If $sNameSpace = "" Then
 			If Not ($oNode_enum.namespaceURI = 0 Or $oNode_enum.namespaceURI = "") Then $sNameSpace = $oNode_enum.namespaceURI
 		EndIf
@@ -1348,9 +1326,10 @@ Func _XML_InsertChildNode(ByRef $oXmlDoc, $sXPath, $sNode, $iItem = 0, $sData = 
 
 	Next
 
-	$oNodes_coll = Null
+	$oNodesColl = Null
 	$oChild = Null
-	Return SetError($XML_ERR_SUCCESS, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
+	Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
+
 EndFunc   ;==>_XML_InsertChildNode
 
 ; #FUNCTION# ====================================================================================================================
@@ -1370,7 +1349,7 @@ EndFunc   ;==>_XML_InsertChildNode
 ; Example .......; [yes/no]
 ; ===============================================================================================================================
 Func _XML_RemoveAttributeNode(ByRef $oXmlDoc, $sXPath, $sAttribute)
-	; Error handler, automatic cleanup at end of function
+	; Local Error handler declaration, it will be automatic CleanUp when returning from function
 	Local $oXML_COM_ErrorHandler = ObjEvent("AutoIt.Error", __XML_ComErrorHandler_InternalFunction)
 	#forceref $oXML_COM_ErrorHandler
 
@@ -1384,7 +1363,8 @@ Func _XML_RemoveAttributeNode(ByRef $oXmlDoc, $sXPath, $sAttribute)
 		Return SetError($XML_ERR_NOATTRMATCH, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
 	EndIf
 
-	Return SetError($XML_ERR_SUCCESS, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
+	Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
+
 EndFunc   ;==>_XML_RemoveAttributeNode
 
 ; #FUNCTION# ====================================================================================================================
@@ -1405,15 +1385,15 @@ EndFunc   ;==>_XML_RemoveAttributeNode
 ; Example .......; yes
 ; ===============================================================================================================================
 Func _XML_ReplaceChild(ByRef $oXmlDoc, $sXPath, $sNodeNew_Name, $sNameSpace = "")
-	; Error handler, automatic cleanup at end of function
+	; Local Error handler declaration, it will be automatic CleanUp when returning from function
 	Local $oXML_COM_ErrorHandler = ObjEvent("AutoIt.Error", __XML_ComErrorHandler_InternalFunction)
 	#forceref $oXML_COM_ErrorHandler
 
-	Local $oNodes_coll = _XML_SelectNodes($oXmlDoc, $sXPath)
+	Local $oNodesColl = _XML_SelectNodes($oXmlDoc, $sXPath)
 	If @error Then Return SetError(@error, @extended, $XML_RET_FAILURE)
 
 	Local $oNodeNew = Null
-	For $oNode_enum_old In $oNodes_coll
+	For $oNode_enum_old In $oNodesColl
 		; Create a New Node element
 		$oNodeNew = $oXmlDoc.createNode($XML_NODE_ELEMENT, $sNodeNew_Name, $sNameSpace)
 		If @error Then Return SetError($XML_ERR_NODECREATE, @error, $XML_RET_FAILURE)
@@ -1436,72 +1416,55 @@ Func _XML_ReplaceChild(ByRef $oXmlDoc, $sXPath, $sNodeNew_Name, $sNameSpace = ""
 		EndIf
 
 	Next
-	$oNodes_coll = Null
+	$oNodesColl = Null
 	$oNodeNew = Null
 
-	Return SetError($XML_ERR_SUCCESS, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
+	Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
+
 EndFunc   ;==>_XML_ReplaceChild
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _XML_SetAttrib
 ; Description ...: Set XML Field(s) based on XPath input from root node.
-; Syntax ........: _XML_SetAttrib(ByRef $oXmlDoc, $sXPath, $vAttributeNameOrList[, $sValue = ""[, $iIndex = Default]])
-; Parameters ....: $oXmlDoc         		- [in/out] an object. A valid DOMDocument or IXMLDOMElement object.
-;                  $sXPath          		- a string value. The XML tree path from root node (root/child/child..)
-;                  $vAttributeNameOrList	- An array of attributes and values to set, or just one attribute name.
-;                  $sValue          		- The value to give the attribute (if $vAttributeNameOrList is a string); defaults to ""
-;                  $iIndex          		- Used to specify a specific index for "same named" nodes.
-; Return values .: Success          		- An array of fields text values
-;                  Failure          		- $XML_RET_FAILURE and sets the @error flag to non-zero (look in #Region XML.au3 - ERROR Enums)
+; Syntax ........: _XML_SetAttrib(ByRef $oXmlDoc, $sXPath, $sAttribute[, $sValue = ""[, $iIndex = Default]])
+; Parameters ....: $oXmlDoc 		- [in/out] an object. A valid DOMDocument or IXMLDOMElement object.
+;                  $sXPath          - a string value. The XML tree path from root node (root/child/child..)
+;                  $sAttribute     	- The attribute to set.
+;                  $sValue      	- The value to give the attribute defaults to ""
+;                  $iIndex        	- Used to specify a specific index for "same named" nodes.
+; Return values .: Success        	- An array of fields text values
+;                  Failure          - $XML_RET_FAILURE and sets the @error flag to non-zero (look in #Region XML.au3 - ERROR Enums)
 ; Author ........: Eltorro
-; Modified ......: mLipok, GMK
+; Modified ......: mLipok
 ; Remarks .......:
 ; Related .......:
 ; Link ..........;
 ; Example .......; [yes/no]
 ; ===============================================================================================================================
-Func _XML_SetAttrib(ByRef $oXmlDoc, $sXPath, $vAttributeNameOrList, $sValue = "", $iIndex = Default)
+Func _XML_SetAttrib(ByRef $oXmlDoc, $sXPath, $sAttribute, $sValue = "", $iIndex = Default)
 	; Local Error handler declaration, it will be automatic CleanUp when returning from function
 	Local $oXML_COM_ErrorHandler = ObjEvent("AutoIt.Error", __XML_ComErrorHandler_InternalFunction)
 	#forceref $oXML_COM_ErrorHandler
 
-	Local $oNodes_coll = _XML_SelectNodes($oXmlDoc, $sXPath)
+	Local $oNodesColl = _XML_SelectNodes($oXmlDoc, $sXPath)
 	If @error Then Return SetError(@error, @extended, $XML_RET_FAILURE)
 
 	Local $aResponse[1]
-	Local $iAttributes_count = UBound($vAttributeNameOrList)
-	Local $iLastAttribute = $iAttributes_count - 1
 
-	If IsInt($iIndex) And $iIndex > 0 Then
-		If $iAttributes_count > 0 Then
-			ReDim $aResponse[1][$iAttributes_count]
-			For $iAttribute_idx = 0 To $iLastAttribute
-				$aResponse[0][$iAttribute_idx] = $oNodes_coll.item($iIndex).SetAttribute($vAttributeNameOrList[$iAttribute_idx][$XMLATTR_COLNAME], $vAttributeNameOrList[$iAttribute_idx][$XMLATTR_COLVALUE])
-				If @error Then Return SetError($XML_ERR_PARAMETER, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
-			Next
-		Else
-			$aResponse[0] = $oNodes_coll.item($iIndex).SetAttribute($vAttributeNameOrList, $sValue)
-			If @error Then Return SetError($XML_ERR_PARAMETER, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
+	If IsNumber($iIndex) And $iIndex > 0 Then
+		$aResponse[0] = $oNodesColl.item($iIndex).SetAttribute($sAttribute, $sValue)
+		If @error Then
+			Return SetError($XML_ERR_PARAMETER, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
 		EndIf
 	ElseIf $iIndex = Default Then
-		If $iAttributes_count > 0 Then
-			ReDim $aResponse[$oNodes_coll.length][$iAttributes_count]
-			For $iNode_idx = 0 To $oNodes_coll.length - 1
-				For $iAttribute_idx = 0 To $iLastAttribute
-					$aResponse[0][$iAttribute_idx] = $oNodes_coll.item($iNode_idx).SetAttribute($vAttributeNameOrList[$iAttribute_idx][$XMLATTR_COLNAME], $vAttributeNameOrList[$iAttribute_idx][$XMLATTR_COLVALUE])
-					If @error Then Return SetError($XML_ERR_PARAMETER, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
-				Next
-			Next
-		Else
-			ReDim $aResponse[$oNodes_coll.length]
-			For $iNode_idx = 0 To $oNodes_coll.length - 1
-				$aResponse[$iNode_idx] = $oNodes_coll.item($iNode_idx).SetAttribute($vAttributeNameOrList, $sValue)
-				If $oXmlDoc.parseError.errorCode Then
-					Return SetError($XML_ERR_PARSE, $oXmlDoc.parseError.errorCode, $XML_RET_FAILURE)
-				EndIf
-			Next
-		EndIf
-		Return SetError($XML_ERR_SUCCESS, $XML_EXT_DEFAULT, $aResponse)
+		ReDim $aResponse[$oNodesColl.length]
+		For $iNode_idx = 0 To $oNodesColl.length - 1
+			$aResponse[$iNode_idx] = $oNodesColl.item($iNode_idx).SetAttribute($sAttribute, $sValue)
+			If $oXmlDoc.parseError.errorCode Then
+				Return SetError($XML_ERR_PARSE, $oXmlDoc.parseError.errorCode, $XML_RET_FAILURE)
+			EndIf
+		Next
+		Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $aResponse)
 	EndIf
 	Return SetError($XML_ERR_PARAMETER, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
 
@@ -1523,7 +1486,7 @@ EndFunc   ;==>_XML_SetAttrib
 ; Example .......; [yes/no]
 ; ===============================================================================================================================
 Func _XML_Transform(ByRef $oXmlDoc, $sXSL_FileFullPath)
-	; Error handler, automatic cleanup at end of function
+	; Local Error handler declaration, it will be automatic CleanUp when returning from function
 	Local $oXML_COM_ErrorHandler = ObjEvent("AutoIt.Error", __XML_ComErrorHandler_InternalFunction)
 	#forceref $oXML_COM_ErrorHandler
 
@@ -1567,7 +1530,8 @@ Func _XML_Transform(ByRef $oXmlDoc, $sXSL_FileFullPath)
 	$oXSL_Document = Null
 	$oXmlDoc_Temp = Null
 
-	Return SetError($XML_ERR_SUCCESS, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
+	Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
+
 EndFunc   ;==>_XML_Transform
 
 ; #FUNCTION# ====================================================================================================================
@@ -1587,7 +1551,7 @@ EndFunc   ;==>_XML_Transform
 ; Example .......; [yes/no]
 ; ===============================================================================================================================
 Func _XML_UpdateField(ByRef $oXmlDoc, $sXPath, $sData)
-	; Error handler, automatic cleanup at end of function
+	; Local Error handler declaration, it will be automatic CleanUp when returning from function
 	Local $oXML_COM_ErrorHandler = ObjEvent("AutoIt.Error", __XML_ComErrorHandler_InternalFunction)
 	#forceref $oXML_COM_ErrorHandler
 
@@ -1610,10 +1574,10 @@ Func _XML_UpdateField(ByRef $oXmlDoc, $sXPath, $sData)
 			If @error Then Return SetError($XML_ERR_NODEAPPEND, @error, $XML_RET_FAILURE)
 		EndIf
 
-		Return SetError($XML_ERR_SUCCESS, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
+		Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
 	EndIf
-
 	Return SetError($XML_ERR_GENERAL, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
+
 EndFunc   ;==>_XML_UpdateField
 
 ; #FUNCTION# ====================================================================================================================
@@ -1633,14 +1597,14 @@ EndFunc   ;==>_XML_UpdateField
 ; Example .......: [yes/no]
 ; ===============================================================================================================================
 Func _XML_UpdateField2(ByRef $oXmlDoc, $sXPath, $sData)
-	; Error handler, automatic cleanup at end of function
+	; Local Error handler declaration, it will be automatic CleanUp when returning from function
 	Local $oXML_COM_ErrorHandler = ObjEvent("AutoIt.Error", __XML_ComErrorHandler_InternalFunction)
 	#forceref $oXML_COM_ErrorHandler
 
-	Local $oNodes_coll = _XML_SelectNodes($oXmlDoc, $sXPath)
+	Local $oNodesColl = _XML_SelectNodes($oXmlDoc, $sXPath)
 	If @error Then Return SetError(@error, @extended, $XML_RET_FAILURE)
 
-	For $oNode_enum In $oNodes_coll
+	For $oNode_enum In $oNodesColl
 		If $oNode_enum.hasChildNodes() Then
 			For $oNode_enum_Child In $oNode_enum.childNodes()
 				If $oNode_enum_Child.nodetype = $XML_NODE_TEXT Then
@@ -1652,8 +1616,8 @@ Func _XML_UpdateField2(ByRef $oXmlDoc, $sXPath, $sData)
 			; TODO What here ???
 		EndIf
 	Next
+	Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
 
-	Return SetError($XML_ERR_SUCCESS, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
 EndFunc   ;==>_XML_UpdateField2
 
 ; #FUNCTION# ====================================================================================================================
@@ -1673,7 +1637,7 @@ EndFunc   ;==>_XML_UpdateField2
 ; Example .......; [yes/no]
 ; ===============================================================================================================================
 Func _XML_Validate_File($sXMLFile, $sNameSpace, $sXSD_FileFullPath)
-	; Error handler, automatic cleanup at end of function
+	; Local Error handler declaration, it will be automatic CleanUp when returning from function
 	Local $oXML_COM_ErrorHandler = ObjEvent("AutoIt.Error", __XML_ComErrorHandler_InternalFunction)
 	#forceref $oXML_COM_ErrorHandler
 
@@ -1697,7 +1661,8 @@ Func _XML_Validate_File($sXMLFile, $sNameSpace, $sXSD_FileFullPath)
 		Return SetError($XML_ERR_PARSE, $oXmlDoc.parseError.errorCode, $XML_RET_FAILURE)
 	EndIf
 
-	Return SetError($XML_ERR_SUCCESS, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
+	Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
+
 EndFunc   ;==>_XML_Validate_File
 #EndRegion XML.au3 - Functions - Not yet reviewed
 
@@ -1720,24 +1685,24 @@ EndFunc   ;==>_XML_Validate_File
 ; Example .......; [yes/no]
 ; ===============================================================================================================================
 Func _XML_GetNodesCount(ByRef $oXmlDoc, $sXPath, $iNodeType = Default)
-	; Error handler, automatic cleanup at end of function
+	; Local Error handler declaration, it will be automatic CleanUp when returning from function
 	Local $oXML_COM_ErrorHandler = ObjEvent("AutoIt.Error", __XML_ComErrorHandler_InternalFunction)
 	#forceref $oXML_COM_ErrorHandler
 
-	Local $oNodes_coll = _XML_SelectNodes($oXmlDoc, $sXPath)
+	Local $oNodesColl = _XML_SelectNodes($oXmlDoc, $sXPath)
 	If @error Then Return SetError(@error, @extended, $XML_RET_FAILURE)
 
 	If $iNodeType = Default Then
-		Return SetError($XML_ERR_SUCCESS, $XML_EXT_DEFAULT, $oNodes_coll.length)
+		Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $oNodesColl.length)
 	ElseIf $iNodeType >= $XML_NODE_ELEMENT And $iNodeType <= $XML_NODE_NOTATION Then
 		Local $iNodeCount = 0
-		For $oNode_enum In $oNodes_coll
+		For $oNode_enum In $oNodesColl
 			If $oNode_enum.nodeType = $iNodeType Then $iNodeCount += 1
 		Next
-		Return SetError($XML_ERR_SUCCESS, $XML_EXT_DEFAULT, $iNodeCount)
+		Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $iNodeCount)
 	EndIf
-
 	Return SetError($XML_ERR_PARAMETER, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
+
 EndFunc   ;==>_XML_GetNodesCount
 
 ; #FUNCTION# ====================================================================================================================
@@ -1762,28 +1727,33 @@ EndFunc   ;==>_XML_GetNodesCount
 ; Example .......; [yes/no]
 ; ===============================================================================================================================
 Func _XML_InsertChildWAttr(ByRef $oXmlDoc, $sXPath, $sNodeName, $iItem = 0, $vAttributeNameOrList = Default, $sAttribute_Value = "", $sNodeText = "", $sNameSpace = "")
-	; Error handler, automatic cleanup at end of function
+	; Local Error handler declaration, it will be automatic CleanUp when returning from function
 	Local $oXML_COM_ErrorHandler = ObjEvent("AutoIt.Error", __XML_ComErrorHandler_InternalFunction)
 	#forceref $oXML_COM_ErrorHandler
 
-	If (UBound($vAttributeNameOrList) > 0 And UBound($vAttributeNameOrList, $UBOUND_COLUMNS) <> $XMLATTR_COLCOUNTER) Then Return SetError($XML_ERR_ARRAY, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
+	Local Enum _
+			$eATTRIBUTES_NAME, _
+			$eATTRIBUTES_VALUE, _
+			$eATTRIBUTES_ARRAYCOLCOUNT
+
+	If (UBound($vAttributeNameOrList) > 0 And UBound($vAttributeNameOrList, 2) <> $eATTRIBUTES_ARRAYCOLCOUNT) Then Return SetError($XML_ERR_ARRAY, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
 
 	Local $iLastAttribute = UBound($vAttributeNameOrList) - 1
 	For $iAttribute_idx = 0 To $iLastAttribute
 		If _
-				$vAttributeNameOrList[$iAttribute_idx][$XMLATTR_COLNAME] = '' _
-				Or (Not IsString($vAttributeNameOrList[$iAttribute_idx][$XMLATTR_COLNAME])) _
-				Or (Not IsString($vAttributeNameOrList[$iAttribute_idx][$XMLATTR_COLVALUE])) _
-				Then
+				$vAttributeNameOrList[$iAttribute_idx][$eATTRIBUTES_NAME] = '' _
+				Or (Not IsString($vAttributeNameOrList[$iAttribute_idx][$eATTRIBUTES_NAME])) _
+				Or (Not IsString($vAttributeNameOrList[$iAttribute_idx][$eATTRIBUTES_VALUE])) _
+				 Then
 			Return SetError($XML_ERR_ARRAY, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
 		EndIf
 	Next
 
-	Local $oNodes_coll = _XML_SelectNodes($oXmlDoc, $sXPath)
+	Local $oNodesColl = _XML_SelectNodes($oXmlDoc, $sXPath)
 	If @error Then Return SetError(@error, @extended, $XML_RET_FAILURE)
 
 	Local $oChild_Temp = Null, $oAttribute_Temp = Null
-	For $oNode_enum In $oNodes_coll
+	For $oNode_enum In $oNodesColl
 		If $sNameSpace = "" Then
 			If Not ($oNode_enum.namespaceURI = 0 Or $oNode_enum.namespaceURI = "") Then $sNameSpace = $oNode_enum.namespaceURI
 		EndIf
@@ -1793,11 +1763,11 @@ Func _XML_InsertChildWAttr(ByRef $oXmlDoc, $sXPath, $sNodeName, $iItem = 0, $vAt
 
 		If $sNodeText <> "" Then $oChild_Temp.text = $sNodeText
 
-		If UBound($vAttributeNameOrList) Then
+		If IsArray($vAttributeNameOrList) And UBound($vAttributeNameOrList) > 0 Then
 			For $iAttribute_idx = 0 To UBound($vAttributeNameOrList) - 1
-				$oAttribute_Temp = $oXmlDoc.createAttribute($vAttributeNameOrList[$iAttribute_idx][$XMLATTR_COLNAME]) ;, $sNameSpace) ; TODO Check this comment
+				$oAttribute_Temp = $oXmlDoc.createAttribute($vAttributeNameOrList[$iAttribute_idx][$eATTRIBUTES_NAME]) ;, $sNameSpace) ; TODO Check this comment
 				If @error Then ExitLoop ; TODO Description ?
-				$oAttribute_Temp.value = $vAttributeNameOrList[$iAttribute_idx][$XMLATTR_COLVALUE]
+				$oAttribute_Temp.value = $vAttributeNameOrList[$iAttribute_idx][$eATTRIBUTES_VALUE]
 				$oChild_Temp.setAttributeNode($oAttribute_Temp)
 			Next
 		Else
@@ -1813,7 +1783,8 @@ Func _XML_InsertChildWAttr(ByRef $oXmlDoc, $sXPath, $sNodeName, $iItem = 0, $vAt
 	Next
 
 	$oChild_Temp = Null
-	Return SetError($XML_ERR_SUCCESS, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
+	Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
+
 EndFunc   ;==>_XML_InsertChildWAttr
 
 ; #FUNCTION# ====================================================================================================================
@@ -1833,7 +1804,7 @@ EndFunc   ;==>_XML_InsertChildWAttr
 ; Example .......: [yes/no]
 ; ===============================================================================================================================
 Func _XML_RemoveAttribute(ByRef $oXmlDoc, $sXPath, $sAttribute_Name)
-	; Error handler, automatic cleanup at end of function
+	; Local Error handler declaration, it will be automatic CleanUp when returning from function
 	Local $oXML_COM_ErrorHandler = ObjEvent("AutoIt.Error", __XML_ComErrorHandler_InternalFunction)
 	#forceref $oXML_COM_ErrorHandler
 
@@ -1850,10 +1821,10 @@ Func _XML_RemoveAttribute(ByRef $oXmlDoc, $sXPath, $sAttribute_Name)
 	Local $oAttribute_Removed = $oNode_Selected.removeAttributeNode($oAttribute)
 
 	If Not IsObj($oAttribute_Removed) Or ($iAttributesLength = 1 + $oNode_Selected.attributes.length) Then
-		Return SetError($XML_ERR_SUCCESS, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
+		Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
 	EndIf
-
 	Return SetError($XML_ERR_GENERAL, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
+
 EndFunc   ;==>_XML_RemoveAttribute
 
 ; #FUNCTION# ====================================================================================================================
@@ -1874,7 +1845,7 @@ EndFunc   ;==>_XML_RemoveAttribute
 ; Example .......: No
 ; ===============================================================================================================================
 Func _XML_TransformNode($sXML_FileFullPath, $sXSL_FileFullPath, $sHTML_FileFullPath, $iEncoding = $FO_UTF8_NOBOM)
-	; Error handler, automatic cleanup at end of function
+	; Local Error handler declaration, it will be automatic CleanUp when returning from function
 	Local $oXML_COM_ErrorHandler = ObjEvent("AutoIt.Error", __XML_ComErrorHandler_InternalFunction)
 	#forceref $oXML_COM_ErrorHandler
 
@@ -1901,8 +1872,8 @@ Func _XML_TransformNode($sXML_FileFullPath, $sXSL_FileFullPath, $sHTML_FileFullP
 	Local $hFile = FileOpen($sHTML_FileFullPath, $FO_OVERWRITE + $iEncoding)
 	FileWrite($hFile, $sHTML)
 	FileClose($hFile)
+	Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
 
-	Return SetError($XML_ERR_SUCCESS, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
 EndFunc   ;==>_XML_TransformNode
 #EndRegion XML.au3 - Functions - Work in progress
 
@@ -1928,8 +1899,7 @@ Func __XML_IsValidObject_Attributes(ByRef $oAttributes)
 	ElseIf ObjName($oAttributes, $OBJ_NAME) <> 'IXMLDOMNamedNodeMap' Then
 		Return SetError($XML_ERR_INVALIDATTRIB, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
 	EndIf
-
-	Return SetError($XML_ERR_SUCCESS, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
+	Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
 EndFunc   ;==>__XML_IsValidObject_Attributes
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
@@ -1952,8 +1922,7 @@ Func __XML_IsValidObject_DOMDocument(ByRef $oXML)
 	ElseIf StringInStr(ObjName($oXML, $OBJ_NAME), 'DOMDocument') = 0 Then
 		Return SetError($XML_ERR_INVALIDDOMDOC, $XML_EXT_DOMDOCUMENT, $XML_RET_FAILURE)
 	EndIf
-
-	Return SetError($XML_ERR_SUCCESS, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
+	Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
 EndFunc   ;==>__XML_IsValidObject_DOMDocument
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
@@ -1977,8 +1946,7 @@ Func __XML_IsValidObject_DOMDocumentOrElement(ByRef $oXML)
 	ElseIf StringInStr(ObjName($oXML, $OBJ_NAME), 'DOMDocument') = 0 And StringInStr(ObjName($oXML, $OBJ_NAME), 'IXMLDOMElement') = 0 Then
 		Return SetError($XML_ERR_INVALIDDOMDOC, $XML_EXT_DOMDOCUMENT, $XML_RET_FAILURE)
 	EndIf
-
-	Return SetError($XML_ERR_SUCCESS, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
+	Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
 EndFunc   ;==>__XML_IsValidObject_DOMDocumentOrElement
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
@@ -2003,22 +1971,21 @@ Func __XML_IsValidObject_Node(ByRef $oNode, $iNodeType = Default)
 		Return SetError($XML_ERR_INVALIDNODETYPE, $XML_EXT_DEFAULT, ObjName($oNode, $OBJ_NAME))
 	ElseIf $iNodeType = Default Then
 		; do not check type
-		Return SetError($XML_ERR_SUCCESS, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
+		Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
 	ElseIf $iNodeType >= $XML_NODE_ELEMENT And $iNodeType <= $XML_NODE_NOTATION Then
 		If $iNodeType = $oNode.type Then
-			Return SetError($XML_ERR_SUCCESS, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
+			Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
 		EndIf
 		Return SetError($XML_ERR_INVALIDNODETYPE, $oNode.type, $XML_RET_FAILURE)
 	EndIf
-
 	Return SetError($XML_ERR_PARAMETER, $XML_EXT_PARAM2, $XML_RET_FAILURE)
 EndFunc   ;==>__XML_IsValidObject_Node
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
 ; Name ..........: __XML_IsValidObject_NodesColl
 ; Description ...: Check if Object is valid IXMLDOMSelection Object
-; Syntax ........: __XML_IsValidObject_NodesColl(ByRef $oNodes_coll)
-; Parameters ....: $oNodes_coll                - [in/out] an object.
+; Syntax ........: __XML_IsValidObject_NodesColl(ByRef $oNodesColl)
+; Parameters ....: $oNodesColl                - [in/out] an object.
 ; Return values .: Success             - $XML_RET_SUCCESS
 ;                  Failure             - $XML_RET_FAILURE and sets the @error flag to non-zero (look in #Region XML.au3 - ERROR Enums)
 ; Author ........: mLipok
@@ -2028,14 +1995,13 @@ EndFunc   ;==>__XML_IsValidObject_Node
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func __XML_IsValidObject_NodesColl(ByRef $oNodes_coll)
-	If Not IsObj($oNodes_coll) Then
+Func __XML_IsValidObject_NodesColl(ByRef $oNodesColl)
+	If Not IsObj($oNodesColl) Then
 		Return SetError($XML_ERR_ISNOTOBJECT, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
-	ElseIf ObjName($oNodes_coll, $OBJ_NAME) <> 'IXMLDOMSelection' Then
-		Return SetError($XML_ERR_INVALIDNODETYPE, $XML_EXT_DEFAULT, ObjName($oNodes_coll, $OBJ_NAME))
+	ElseIf ObjName($oNodesColl, $OBJ_NAME) <> 'IXMLDOMSelection' Then
+		Return SetError($XML_ERR_INVALIDNODETYPE, $XML_EXT_DEFAULT, ObjName($oNodesColl, $OBJ_NAME))
 	EndIf
-
-	Return SetError($XML_ERR_SUCCESS, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
+	Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
 EndFunc   ;==>__XML_IsValidObject_NodesColl
 
 ; #FUNCTION# ====================================================================================================================
@@ -2059,22 +2025,27 @@ EndFunc   ;==>__XML_IsValidObject_NodesColl
 ; Example .......; [yes/no]
 ; ===============================================================================================================================
 Func _XML_CreateChildWAttr(ByRef $oXmlDoc, $sXPath, $sNodeName, $aAttributeList = Default, $sNodeText = "", $sNameSpace = "")
-	; Error handler, automatic cleanup at end of function
+	; Local Error handler declaration, it will be automatic CleanUp when returning from function
 	Local $oXML_COM_ErrorHandler = ObjEvent("AutoIt.Error", __XML_ComErrorHandler_InternalFunction)
 	#forceref $oXML_COM_ErrorHandler
 
+	Local Enum _
+			$eATTRIBUTES_NAME, _
+			$eATTRIBUTES_VALUE, _
+			$eATTRIBUTES_ARRAYCOLCOUNT
+
 	If IsArray($aAttributeList) Then
-		If Not (UBound($aAttributeList) > 0 And UBound($aAttributeList, $UBOUND_COLUMNS ) = $XMLATTR_COLCOUNTER) Then
+		If Not (UBound($aAttributeList) > 0 And UBound($aAttributeList, 2) = $eATTRIBUTES_ARRAYCOLCOUNT) Then
 			Return SetError($XML_ERR_ARRAY, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
 		EndIf
 
 		For $iAttribute_idx = 0 To UBound($aAttributeList) - 1
 			If _
-					$aAttributeList[$iAttribute_idx][$XMLATTR_COLNAME] = '' _
-					Or (Not IsString($aAttributeList[$iAttribute_idx][$XMLATTR_COLNAME])) _
-					Or $aAttributeList[$iAttribute_idx][$XMLATTR_COLVALUE] = '' _ ;  TODO: QUESTION: is Value must be not empty string ?
-					Or (Not IsString($aAttributeList[$iAttribute_idx][$XMLATTR_COLVALUE])) _
-					Then
+					$aAttributeList[$iAttribute_idx][$eATTRIBUTES_NAME] = '' _
+					Or (Not IsString($aAttributeList[$iAttribute_idx][$eATTRIBUTES_NAME])) _
+					Or $aAttributeList[$iAttribute_idx][$eATTRIBUTES_VALUE] = '' _ ;  TODO: QUESTION: is Value must be not empty string ?
+					Or (Not IsString($aAttributeList[$iAttribute_idx][$eATTRIBUTES_VALUE])) _
+					 Then
 				Return SetError($XML_ERR_ARRAY, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
 			EndIf
 		Next
@@ -2082,11 +2053,11 @@ Func _XML_CreateChildWAttr(ByRef $oXmlDoc, $sXPath, $sNodeName, $aAttributeList 
 		Return SetError($XML_ERR_ARRAY, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
 	EndIf
 
-	Local $oNodes_coll = _XML_SelectNodes($oXmlDoc, $sXPath)
+	Local $oNodesColl = _XML_SelectNodes($oXmlDoc, $sXPath)
 	If @error Then Return SetError(@error, @extended, $XML_RET_FAILURE)
 
 	Local $oChild_Temp = Null, $oAttribute_Temp = Null
-	For $oNode_enum In $oNodes_coll
+	For $oNode_enum In $oNodesColl
 		If $sNameSpace = "" Then
 			If Not ($oNode_enum.namespaceURI = 0 Or $oNode_enum.namespaceURI = "") Then $sNameSpace = $oNode_enum.namespaceURI
 		EndIf
@@ -2098,10 +2069,10 @@ Func _XML_CreateChildWAttr(ByRef $oXmlDoc, $sXPath, $sNodeName, $aAttributeList 
 
 		If UBound($aAttributeList) Then
 			For $iAttribute_idx = 0 To UBound($aAttributeList) - 1
-				$oAttribute_Temp = $oXmlDoc.createAttribute($aAttributeList[$iAttribute_idx][$XMLATTR_COLNAME]) ;, $sNameSpace) ; TODO Check this comment
+				$oAttribute_Temp = $oXmlDoc.createAttribute($aAttributeList[$iAttribute_idx][$eATTRIBUTES_NAME]) ;, $sNameSpace) ; TODO Check this comment
 				If @error Then ExitLoop ; TODO Description ?
 
-				$oAttribute_Temp.value = $aAttributeList[$iAttribute_idx][$XMLATTR_COLVALUE]
+				$oAttribute_Temp.value = $aAttributeList[$iAttribute_idx][$eATTRIBUTES_VALUE]
 				$oChild_Temp.setAttributeNode($oAttribute_Temp)
 			Next
 		EndIf
@@ -2112,7 +2083,7 @@ Func _XML_CreateChildWAttr(ByRef $oXmlDoc, $sXPath, $sNodeName, $aAttributeList 
 	Next
 
 	$oChild_Temp = Null
-	Return SetError($XML_ERR_SUCCESS, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
+	Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
 EndFunc   ;==>_XML_CreateChildWAttr
 
 ; #FUNCTION# ====================================================================================================================
@@ -2130,7 +2101,7 @@ EndFunc   ;==>_XML_CreateChildWAttr
 ; Example .......: yes
 ; ===============================================================================================================================
 Func _XML_CreateDOMDocument($iDOM_Version = Default)
-	; Error handler, automatic cleanup at end of function
+	; Local Error handler declaration, it will be automatic CleanUp when returning from function
 	Local $oXML_COM_ErrorHandler = ObjEvent("AutoIt.Error", __XML_ComErrorHandler_InternalFunction)
 	#forceref $oXML_COM_ErrorHandler
 
@@ -2152,13 +2123,16 @@ Func _XML_CreateDOMDocument($iDOM_Version = Default)
 	EndIf
 
 	Local $oXmlDoc = ObjCreate("Msxml2.DOMDocument." & $iDOM_Version & ".0")
-	If @error Then Return SetError($XML_ERR_OBJCREATE, $XML_EXT_DOMDOCUMENT, $XML_RET_FAILURE)
+	If @error Then
+		Return SetError($XML_ERR_OBJCREATE, $XML_EXT_DOMDOCUMENT, $XML_RET_FAILURE)
+	Else
+		__XML_MiscProperty_DomVersion($iDOM_Version)
+	EndIf
 
-	__XML_MiscProperty_DomVersion($iDOM_Version)
 	__XML_IsValidObject_DOMDocument($oXmlDoc)
 	If @error Then Return SetError(@error, @extended, $XML_RET_FAILURE)
 
-	Return SetError($XML_ERR_SUCCESS, $XML_EXT_DEFAULT, $oXmlDoc)
+	Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $oXmlDoc)
 EndFunc   ;==>_XML_CreateDOMDocument
 
 ; #FUNCTION# ===================================================================
@@ -2179,7 +2153,7 @@ EndFunc   ;==>_XML_CreateDOMDocument
 ; Example .......; [yes/no]
 ; ==============================================================================
 Func _XML_CreateFile($sXML_FileFullPath, $sRoot, $bUTF8 = False, $iDOM_Version = Default)
-	; Error handler, automatic cleanup at end of function
+	; Local Error handler declaration, it will be automatic CleanUp when returning from function
 	Local $oXML_COM_ErrorHandler = ObjEvent("AutoIt.Error", __XML_ComErrorHandler_InternalFunction)
 	#forceref $oXML_COM_ErrorHandler
 
@@ -2210,12 +2184,13 @@ Func _XML_CreateFile($sXML_FileFullPath, $sRoot, $bUTF8 = False, $iDOM_Version =
 	EndIf
 
 	_XML_SaveToFile($oXmlDoc, $sXML_FileFullPath)
-	If @error Then _
-			Return SetError(@error, @extended, $XML_RET_FAILURE)
-	If $oXmlDoc.parseError.errorCode Then _
-			Return SetError($XML_ERR_PARSE, $oXmlDoc.parseError.errorCode, $XML_RET_FAILURE)
+	If @error Then Return SetError(@error, @extended, $XML_RET_FAILURE)
 
-	Return SetError($XML_ERR_SUCCESS, $XML_EXT_DEFAULT, $oXmlDoc)
+	If $oXmlDoc.parseError.errorCode Then
+		Return SetError($XML_ERR_PARSE, $oXmlDoc.parseError.errorCode, $XML_RET_FAILURE)
+	EndIf
+	Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $oXmlDoc)
+
 EndFunc   ;==>_XML_CreateFile
 
 ; #FUNCTION# ====================================================================================================================
@@ -2235,25 +2210,25 @@ EndFunc   ;==>_XML_CreateFile
 ; Example .......: yes
 ; ===============================================================================================================================
 Func _XML_GetAllAttribIndex(ByRef $oXmlDoc, $sXPath, $iNodeIndex = 0)
-	; Error handler, automatic cleanup at end of function
+	; Local Error handler declaration, it will be automatic CleanUp when returning from function
 	Local $oXML_COM_ErrorHandler = ObjEvent("AutoIt.Error", __XML_ComErrorHandler_InternalFunction)
 	#forceref $oXML_COM_ErrorHandler
 
-	Local $oNodes_coll = _XML_SelectNodes($oXmlDoc, $sXPath)
+	Local $oNodesColl = _XML_SelectNodes($oXmlDoc, $sXPath)
 	If @error Then Return SetError(@error, @extended, $XML_RET_FAILURE)
 
-	Local $oAttributes_coll = $oNodes_coll.item($iNodeIndex).attributes
+	Local $oAttributesColl = $oNodesColl.item($iNodeIndex).attributes
 	If @error Then
 		Return SetError($XML_ERR_COMERROR, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
-	ElseIf IsObj($oAttributes_coll) Then
-		Return SetError($XML_ERR_SUCCESS, $XML_EXT_DEFAULT, $oAttributes_coll)
-	ElseIf $oAttributes_coll = Null Then
+	ElseIf IsObj($oAttributesColl) Then
+		Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $oAttributesColl)
+	ElseIf $oAttributesColl = Null Then
 		Return SetError($XML_ERR_NOATTRMATCH, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
-	ElseIf $oAttributes_coll.length = 0 Then
+	ElseIf $oAttributesColl.length = 0 Then
 		Return SetError($XML_ERR_EMPTYCOLLECTION, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
 	EndIf
-
 	Return SetError($XML_ERR_GENERAL, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
+
 EndFunc   ;==>_XML_GetAllAttribIndex
 
 ; #FUNCTION# ====================================================================================================================
@@ -2272,7 +2247,7 @@ EndFunc   ;==>_XML_GetAllAttribIndex
 ; Example .......: yes
 ; ===============================================================================================================================
 Func _XML_GetChildNodes(ByRef $oXmlDoc, $sXPath)
-	; Error handler, automatic cleanup at end of function
+	; Local Error handler declaration, it will be automatic CleanUp when returning from function
 	Local $oXML_COM_ErrorHandler = ObjEvent("AutoIt.Error", __XML_ComErrorHandler_InternalFunction)
 	#forceref $oXML_COM_ErrorHandler
 
@@ -2280,10 +2255,14 @@ Func _XML_GetChildNodes(ByRef $oXmlDoc, $sXPath)
 	If @error Then
 		Return SetError(@error, @extended, $XML_RET_FAILURE)
 	ElseIf $oNode_Selected.hasChildNodes() Then
-		Return SetError($XML_ERR_SUCCESS, $oNode_Selected.childNodes().length, $oNode_Selected.childNodes())
+		Return SetError($XML_ERR_OK, $oNode_Selected.childNodes().length, $oNode_Selected.childNodes())
+	Else
+		Return SetError($XML_ERR_NOCHILDMATCH, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
 	EndIf
 
-	Return SetError($XML_ERR_NOCHILDMATCH, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
+	; TODO Is it used ?
+	Return SetError($XML_ERR_GENERAL, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
+
 EndFunc   ;==>_XML_GetChildNodes
 
 ; #FUNCTION# ====================================================================================================================
@@ -2302,7 +2281,7 @@ EndFunc   ;==>_XML_GetChildNodes
 ; Example .......: No
 ; ===============================================================================================================================
 Func _XML_GetNodeAttributeValue(ByRef $oNode_Selected, $sAttribute_Name)
-	; Error handler, automatic cleanup at end of function
+	; Local Error handler declaration, it will be automatic CleanUp when returning from function
 	Local $oXML_COM_ErrorHandler = ObjEvent("AutoIt.Error", __XML_ComErrorHandler_InternalFunction)
 	#forceref $oXML_COM_ErrorHandler
 
@@ -2315,35 +2294,34 @@ Func _XML_GetNodeAttributeValue(ByRef $oNode_Selected, $sAttribute_Name)
 
 	Local $sAttribute_Value = $oNode_Selected.getAttribute($sAttribute_Name)
 	If IsString($sAttribute_Value) Then
-		Return SetError($XML_ERR_SUCCESS, $XML_EXT_DEFAULT, $sAttribute_Value)
+		Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $sAttribute_Value)
 	ElseIf $sAttribute_Value = Null Then
 		Return SetError($XML_ERR_NOATTRMATCH, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
 	EndIf
-
 	Return SetError($XML_ERR_GENERAL, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
+
 EndFunc   ;==>_XML_GetNodeAttributeValue
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _XML_Load
 ; Description ...: Load XML file to the existing object or declared empty variable.
-; Syntax ........: _XML_Load(Byref $oXmlDoc, $sXML_FileFullPath[, $sNameSpace = ""[, $bValidateOnParse = True[,
-;                  $bPreserveWhiteSpace = True]]])
+; Syntax ........: _XML_Load(ByRef $oXmlDoc, $sXML_FileFullPath[, $sNameSpace = ""[, $bValidateOnParse = True]])
 ; Parameters ....: $oXmlDoc 			- [in/out] an object. A valid DOMDocument object.
 ;                  $sXML_FileFullPath   - a string value. The XML file to open
 ;                  $sNameSpace          - [optional] a string value. Default is "". The namespace to specifiy if the file uses one.
 ;                  $bValidateOnParse    - [optional] a boolean value. Default is True. Validate the document as it is being parsed
-;                  $bPreserveWhiteSpace - [optional] a boolean value. Default is True.
 ; Return values .: Success        		- $oXmlDoc
 ;                  Failure             	- $XML_RET_FAILURE and sets the @error flag to non-zero (look in #Region XML.au3 - ERROR Enums)
 ; Author ........: Eltorro
-; Modified ......: Tom Hohmann, mLipok, GMK
+; Modified ......: Tom Hohmann, mLipok
+; Modified ......:
 ; Remarks .......:
 ; Related .......:
 ; Link ..........:
 ; Example .......; [yes/no]
 ; ===============================================================================================================================
-Func _XML_Load(ByRef $oXmlDoc, $sXML_FileFullPath, $sNameSpace = "", $bValidateOnParse = True, $bPreserveWhiteSpace = True)
-	; Error handler, automatic cleanup at end of function
+Func _XML_Load(ByRef $oXmlDoc, $sXML_FileFullPath, $sNameSpace = "", $bValidateOnParse = True)
+	; Local Error handler declaration, it will be automatic CleanUp when returning from function
 	Local $oXML_COM_ErrorHandler = ObjEvent("AutoIt.Error", __XML_ComErrorHandler_InternalFunction)
 	#forceref $oXML_COM_ErrorHandler
 
@@ -2354,7 +2332,7 @@ Func _XML_Load(ByRef $oXmlDoc, $sXML_FileFullPath, $sNameSpace = "", $bValidateO
 
 	If _XML_Misc_GetDomVersion() > 4 Then $oXmlDoc.setProperty("ProhibitDTD", False)
 	$oXmlDoc.async = False
-	$oXmlDoc.preserveWhiteSpace = $bPreserveWhiteSpace
+	$oXmlDoc.preserveWhiteSpace = True
 	$oXmlDoc.validateOnParse = $bValidateOnParse
 	$oXmlDoc.Load($sXML_FileFullPath)
 	If $oXmlDoc.parseError.errorCode Then
@@ -2364,21 +2342,20 @@ Func _XML_Load(ByRef $oXmlDoc, $sXML_FileFullPath, $sNameSpace = "", $bValidateO
 	; SelectionLanguage do not use this as this cause a problem
 	; $oXmlDoc.setProperty("SelectionLanguage", "XPath")
 
-	If $sNameSpace <> "" Then $oXmlDoc.setProperty("SelectionNamespaces", $sNameSpace)
+	$oXmlDoc.setProperty("SelectionNamespaces", $sNameSpace)
 
-	Return SetError($XML_ERR_SUCCESS, $XML_EXT_DEFAULT, $oXmlDoc)
+	Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $oXmlDoc)
+
 EndFunc   ;==>_XML_Load
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _XML_LoadXML
 ; Description ...: Load XML String to the DOMDocument object.
-; Syntax ........: _XML_LoadXML(Byref $oXmlDoc, $sXML_Content[, $sNameSpace = ""[, $bValidateOnParse = True[,
-;                  $bPreserveWhiteSpace = True]]])
+; Syntax ........: _XML_LoadXML(ByRef $oXmlDoc, $sXML_Content[, $sNameSpace = ""[, $bValidateOnParse = True]])
 ; Parameters ....: $oXmlDoc 			- [in/out] an object. A valid DOMDocument object.
 ;                  $sXML_Content        - a string value. The XML string to load into the document
 ;                  $sNameSpace          - [optional] a string value. Default is "". The namespace to specifiy if the file uses one.
 ;                  $bValidateOnParse    - [optional] a boolean value. Default is True. Set the MSXML ValidateOnParse property
-;                  $bPreserveWhiteSpace - [optional] a boolean value. Default is True.
 ; Return values .: Success				- $oXmlDoc
 ;                  Failure				- $XML_RET_FAILURE and sets the @error flag to non-zero (look in #Region XML.au3 - ERROR Enums)
 ; Author ........: Eltorro, Lukasz Suleja, Tom Hohmann
@@ -2388,8 +2365,8 @@ EndFunc   ;==>_XML_Load
 ; Link ..........;
 ; Example .......; [yes/no]
 ; ===============================================================================================================================
-Func _XML_LoadXML(ByRef $oXmlDoc, $sXML_Content, $sNameSpace = "", $bValidateOnParse = True, $bPreserveWhiteSpace = True)
-	; Error handler, automatic cleanup at end of function
+Func _XML_LoadXML(ByRef $oXmlDoc, $sXML_Content, $sNameSpace = "", $bValidateOnParse = True)
+	; Local Error handler declaration, it will be automatic CleanUp when returning from function
 	Local $oXML_COM_ErrorHandler = ObjEvent("AutoIt.Error", __XML_ComErrorHandler_InternalFunction)
 	#forceref $oXML_COM_ErrorHandler
 
@@ -2398,7 +2375,7 @@ Func _XML_LoadXML(ByRef $oXmlDoc, $sXML_Content, $sNameSpace = "", $bValidateOnP
 
 	If _XML_Misc_GetDomVersion() > 4 Then $oXmlDoc.setProperty("ProhibitDTD", False)
 	$oXmlDoc.async = False
-	$oXmlDoc.preserveWhiteSpace = $bPreserveWhiteSpace
+	$oXmlDoc.preserveWhiteSpace = True
 	$oXmlDoc.validateOnParse = $bValidateOnParse
 	$oXmlDoc.LoadXml($sXML_Content)
 	If $oXmlDoc.parseError.errorCode Then
@@ -2414,7 +2391,8 @@ Func _XML_LoadXML(ByRef $oXmlDoc, $sXML_Content, $sNameSpace = "", $bValidateOnP
 	; here I put some reference to look in
 	; https://msdn.microsoft.com/en-us/library/ms256186(v=vs.110).aspx
 
-	Return SetError($XML_ERR_SUCCESS, $XML_EXT_DEFAULT, $oXmlDoc)
+	Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $oXmlDoc)
+
 EndFunc   ;==>_XML_LoadXML
 
 ; #FUNCTION# ====================================================================================================================
@@ -2434,7 +2412,7 @@ EndFunc   ;==>_XML_LoadXML
 ; Example .......; [yes/no]
 ; ===============================================================================================================================
 Func _XML_NodeExists(ByRef $oXmlDoc, $sXPath)
-	; Error handler, automatic cleanup at end of function
+	; Local Error handler declaration, it will be automatic CleanUp when returning from function
 	Local $oXML_COM_ErrorHandler = ObjEvent("AutoIt.Error", __XML_ComErrorHandler_InternalFunction)
 	#forceref $oXML_COM_ErrorHandler
 
@@ -2442,9 +2420,10 @@ Func _XML_NodeExists(ByRef $oXmlDoc, $sXPath)
 	If @error Then
 		Return SetError(@error, @extended, $XML_RET_FAILURE)
 	EndIf
+	Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
+
 	#forceref $oNode_Selected
 
-	Return SetError($XML_ERR_SUCCESS, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
 EndFunc   ;==>_XML_NodeExists
 
 ; #FUNCTION# ====================================================================================================================
@@ -2463,7 +2442,7 @@ EndFunc   ;==>_XML_NodeExists
 ; Example .......; [yes/no]
 ; ===============================================================================================================================
 Func _XML_SaveToFile(ByRef $oXmlDoc, $sXML_FileFullPath)
-	; Error handler, automatic cleanup at end of function
+	; Local Error handler declaration, it will be automatic CleanUp when returning from function
 	Local $oXML_COM_ErrorHandler = ObjEvent("AutoIt.Error", __XML_ComErrorHandler_InternalFunction)
 	#forceref $oXML_COM_ErrorHandler
 
@@ -2480,8 +2459,8 @@ Func _XML_SaveToFile(ByRef $oXmlDoc, $sXML_FileFullPath)
 	If $oXmlDoc.parseError.errorCode Then
 		Return SetError($XML_ERR_PARSE, $oXmlDoc.parseError.errorCode, $XML_RET_FAILURE)
 	EndIf
+	Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
 
-	Return SetError($XML_ERR_SUCCESS, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
 EndFunc   ;==>_XML_SaveToFile
 
 ; #FUNCTION# ====================================================================================================================
@@ -2490,7 +2469,7 @@ EndFunc   ;==>_XML_SaveToFile
 ; Syntax ........: _XML_SelectNodes(ByRef $oXmlDoc, $sXPath)
 ; Parameters ....: $oXmlDoc 			- [in/out] an object. A valid DOMDocument or IXMLDOMElement object.
 ;                  $sXPath              - a string value. The XML tree path from root node (root/child/child..)
-; Return values .: Success        		- $oNodes_coll - Nodes collection, and set @extended = $oNodes_coll.length
+; Return values .: Success        		- $oNodesColl - Nodes collection, and set @extended = $oNodesColl.length
 ;                  Failure             	- $XML_RET_FAILURE and sets the @error flag to non-zero (look in #Region XML.au3 - ERROR Enums)
 ; Author ........: Eltorro
 ; Modified ......: mLipok
@@ -2500,21 +2479,21 @@ EndFunc   ;==>_XML_SaveToFile
 ; Example .......; [yes/no]
 ; ===============================================================================================================================
 Func _XML_SelectNodes(ByRef $oXmlDoc, $sXPath)
-	; Error handler, automatic cleanup at end of function
+	; Local Error handler declaration, it will be automatic CleanUp when returning from function
 	Local $oXML_COM_ErrorHandler = ObjEvent("AutoIt.Error", __XML_ComErrorHandler_InternalFunction)
 	#forceref $oXML_COM_ErrorHandler
 
 	__XML_IsValidObject_DOMDocumentOrElement($oXmlDoc)
 	If @error Then Return SetError(@error, @extended, $XML_RET_FAILURE)
 
-	Local $oNodes_coll = $oXmlDoc.selectNodes($sXPath)
+	Local $oNodesColl = $oXmlDoc.selectNodes($sXPath)
 	If @error Then
 		Return SetError($XML_ERR_XPATH, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
-	ElseIf (Not IsObj($oNodes_coll)) Or $oNodes_coll.length = 0 Then
+	ElseIf (Not IsObj($oNodesColl)) Or $oNodesColl.length = 0 Then
 		Return SetError($XML_ERR_EMPTYCOLLECTION, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
 	EndIf
+	Return SetError($XML_ERR_OK, $oNodesColl.length, $oNodesColl)
 
-	Return SetError($XML_ERR_SUCCESS, $oNodes_coll.length, $oNodes_coll)
 EndFunc   ;==>_XML_SelectNodes
 
 ; #FUNCTION# ====================================================================================================================
@@ -2533,7 +2512,7 @@ EndFunc   ;==>_XML_SelectNodes
 ; Example .......; [yes/no]
 ; ===============================================================================================================================
 Func _XML_SelectSingleNode(ByRef $oXmlDoc, $sXPath)
-	; Error handler, automatic cleanup at end of function
+	; Local Error handler declaration, it will be automatic CleanUp when returning from function
 	Local $oXML_COM_ErrorHandler = ObjEvent("AutoIt.Error", __XML_ComErrorHandler_InternalFunction)
 	#forceref $oXML_COM_ErrorHandler
 
@@ -2549,8 +2528,7 @@ Func _XML_SelectSingleNode(ByRef $oXmlDoc, $sXPath)
 		; $XML_ERR_EMPTYOBJECT
 		Return SetError($XML_ERR_NONODESMATCH, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
 	EndIf
-
-	Return SetError($XML_ERR_SUCCESS, $XML_EXT_DEFAULT, $oNode_Selected)
+	Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $oNode_Selected)
 EndFunc   ;==>_XML_SelectSingleNode
 
 ; #FUNCTION# ====================================================================================================================
@@ -2569,7 +2547,7 @@ EndFunc   ;==>_XML_SelectSingleNode
 ; Example .......: No
 ; ===============================================================================================================================
 Func _XML_Tidy(ByRef $oXmlDoc, $sEncoding = -1)
-	; Error handler, automatic cleanup at end of function
+	; Local Error handler declaration, it will be automatic CleanUp when returning from function
 	Local $oXML_COM_ErrorHandler = ObjEvent("AutoIt.Error", __XML_ComErrorHandler_InternalFunction)
 	#forceref $oXML_COM_ErrorHandler
 
@@ -2629,8 +2607,8 @@ Func _XML_Tidy(ByRef $oXmlDoc, $sEncoding = -1)
 	$oReader = Null
 	$oWriter = Null
 
-	; TODO Description for @error and @extended
-	Return SetError($XML_ERR_SUCCESS, $iSizeInBytes, $sXML_Return)
+	Return SetError($XML_ERR_OK, $iSizeInBytes, $sXML_Return) ; TODO Description for @error and @extended
+
 EndFunc   ;==>_XML_Tidy
 #EndRegion XML.au3 - Functions - COMPLETED
 
@@ -2653,18 +2631,18 @@ Func __XML_MiscProperty_DomVersion($sDomVersion = Default)
 
 	If $sDomVersion = Default Then
 		; just return stored static variable
-		Return SetError($XML_ERR_SUCCESS, $XML_EXT_DEFAULT, $sDomVersion_Static)
+		Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $sDomVersion_Static)
 	ElseIf IsNumber($sDomVersion) Then
 		; set and return static variable
 		$sDomVersion_Static = $sDomVersion
-		Return SetError($XML_ERR_SUCCESS, $XML_EXT_DEFAULT, $sDomVersion_Static)
+		Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $sDomVersion_Static)
 	EndIf
 
 	; reset static variable
 	$sDomVersion_Static = -1
-
 	; return error as incorrect parameter was passed to this function
 	Return SetError($XML_ERR_PARAMETER, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
+
 EndFunc   ;==>__XML_MiscProperty_DomVersion
 
 ; #FUNCTION# ===================================================================
@@ -2711,7 +2689,8 @@ Func _XML_Misc_Viewer(ByRef $oXmlDoc, $sXML_FileFullPath = Default)
 	If @error Then Return SetError(@error, @extended, $XML_RET_FAILURE)
 
 	ShellExecute($sXML_FileFullPath)
-	Return SetError($XML_ERR_SUCCESS, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
+	Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
+
 EndFunc   ;==>_XML_Misc_Viewer
 
 ; #FUNCTION# ====================================================================================================================
@@ -2739,14 +2718,14 @@ Func _XML_MiscProperty_Encoding($sEncoding = Default)
 					$sEncoding_Static = 'ISO-8859-1'
 			EndSwitch
 		EndIf
-		Return SetError($XML_ERR_SUCCESS, $XML_EXT_DEFAULT, $sEncoding_Static)
+		Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $sEncoding_Static)
 
 	ElseIf IsString($sEncoding) Then ; set and return current value
 		$sEncoding_Static = $sEncoding
-		Return SetError($XML_ERR_SUCCESS, $XML_EXT_DEFAULT, $sEncoding_Static)
+		Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $sEncoding_Static)
 	EndIf
-
 	Return SetError($XML_ERR_PARAMETER, $XML_EXT_PARAM1, $sEncoding_Static)
+
 EndFunc   ;==>_XML_MiscProperty_Encoding
 
 ; #FUNCTION# ===================================================================
@@ -2763,7 +2742,7 @@ EndFunc   ;==>_XML_MiscProperty_Encoding
 ; Example .......; [yes/no]
 ; ==============================================================================
 Func _XML_MiscProperty_UDFVersion()
-	Return "1.1.1.12"
+	Return "1.1.1.10"
 EndFunc   ;==>_XML_MiscProperty_UDFVersion
 #EndRegion XML.au3 - Functions - Misc
 
@@ -2786,21 +2765,22 @@ EndFunc   ;==>_XML_MiscProperty_UDFVersion
 ; ==============================================================================
 Func _XML_Array_AddName(ByRef $avArray, $sValue)
 	Local $iUBound = UBound($avArray)
-	If $iUBound Then
+	If $iUBound Then ; IsArray() only tells you if it's an array data structure and not if elements are in the array.
 		; Cache function call results, as function calls are expensive compared to variable lookups.
 		ReDim $avArray[$iUBound + 1]
 		$avArray[$iUBound - 1] = $sValue
-		Return SetError($XML_ERR_SUCCESS, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
+		Return SetError($XML_ERR_OK, $XML_EXT_DEFAULT, $XML_RET_SUCCESS)
 	EndIf
 
+	; Else is not required, as this was always happen as a last resort.
 	Return SetError($XML_ERR_GENERAL, $XML_EXT_DEFAULT, $XML_RET_FAILURE)
 EndFunc   ;==>_XML_Array_AddName
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _XML_Array_GetAttributesProperties
 ; Description ...: Get IXMLDOMAttribute Members - properties, and put the result to array
-; Syntax ........: _XML_Array_GetAttributesProperties(ByRef $oAttributes_coll)
-; Parameters ....: $oAttributes_coll           - [in/out] an object.
+; Syntax ........: _XML_Array_GetAttributesProperties(ByRef $oAttributesColl)
+; Parameters ....: $oAttributesColl           - [in/out] an object.
 ; Return values .: TODO
 ; Author ........: mLipok
 ; Modified ......:
@@ -2809,12 +2789,12 @@ EndFunc   ;==>_XML_Array_AddName
 ; Link ..........: https://msdn.microsoft.com/en-us/library/ms767677(v=vs.85).aspx
 ; Example .......: Yes
 ; ===============================================================================================================================
-Func _XML_Array_GetAttributesProperties(ByRef $oAttributes_coll)
-	; Error handler, automatic cleanup at end of function
+Func _XML_Array_GetAttributesProperties(ByRef $oAttributesColl)
+	; Local Error handler declaration, it will be automatic CleanUp when returning from function
 	Local $oXML_COM_ErrorHandler = ObjEvent("AutoIt.Error", __XML_ComErrorHandler_InternalFunction)
 	#forceref $oXML_COM_ErrorHandler
 
-	__XML_IsValidObject_Attributes($oAttributes_coll)
+	__XML_IsValidObject_Attributes($oAttributesColl)
 	If @error Then Return SetError(@error, @extended, $XML_RET_FAILURE)
 
 	Local $avArray[1][$__g_eARRAY_ATTR_ARRAYCOLCOUNT]
@@ -2826,7 +2806,7 @@ Func _XML_Array_GetAttributesProperties(ByRef $oAttributes_coll)
 	$avArray[0][$__g_eARRAY_ATTR_XML] = 'xml'
 	Local $iUBound = 0
 
-	For $oAttributeEnum In $oAttributes_coll
+	For $oAttributeEnum In $oAttributesColl
 		$iUBound = UBound($avArray)
 		ReDim $avArray[$iUBound + 1][$__g_eARRAY_ATTR_ARRAYCOLCOUNT]
 		$avArray[$iUBound][$__g_eARRAY_ATTR_NAME] = $oAttributeEnum.name
@@ -2836,8 +2816,8 @@ Func _XML_Array_GetAttributesProperties(ByRef $oAttributes_coll)
 		$avArray[$iUBound][$__g_eARRAY_ATTR_DATATYPE] = $oAttributeEnum.dataType
 		$avArray[$iUBound][$__g_eARRAY_ATTR_XML] = $oAttributeEnum.xml
 	Next
+	Return SetError($XML_ERR_OK, UBound($avArray), $avArray)
 
-	Return SetError($XML_ERR_SUCCESS, UBound($avArray), $avArray)
 EndFunc   ;==>_XML_Array_GetAttributesProperties
 
 ; #FUNCTION# ====================================================================================================================
@@ -2853,12 +2833,12 @@ EndFunc   ;==>_XML_Array_GetAttributesProperties
 ; Link ..........: https://msdn.microsoft.com/en-us/library/ms761386(v=vs.85).aspx
 ; Example .......: yes
 ; ===============================================================================================================================
-Func _XML_Array_GetNodesProperties(ByRef $oNodes_coll)
-	; Error handler, automatic cleanup at end of function
+Func _XML_Array_GetNodesProperties(ByRef $oNodesColl)
+	; Local Error handler declaration, it will be automatic CleanUp when returning from function
 	Local $oXML_COM_ErrorHandler = ObjEvent("AutoIt.Error", __XML_ComErrorHandler_InternalFunction)
 	#forceref $oXML_COM_ErrorHandler
 
-	__XML_IsValidObject_NodesColl($oNodes_coll)
+	__XML_IsValidObject_NodesColl($oNodesColl)
 	If @error Then Return SetError(@error, @extended, $XML_RET_FAILURE)
 
 	Local $avArray[1][$__g_eARRAY_NODE_ARRAYCOLCOUNT]
@@ -2871,7 +2851,7 @@ Func _XML_Array_GetNodesProperties(ByRef $oNodes_coll)
 	$avArray[0][$__g_eARRAY_NODE_ATTRIBUTES] = 'attributes'
 	Local $iUBound = 0
 
-	For $oNode_enum In $oNodes_coll
+	For $oNode_enum In $oNodesColl
 		$iUBound = UBound($avArray)
 		ReDim $avArray[$iUBound + 1][$__g_eARRAY_NODE_ARRAYCOLCOUNT]
 		$avArray[$iUBound][$__g_eARRAY_NODE_NAME] = $oNode_enum.nodeName
@@ -2892,8 +2872,8 @@ Func _XML_Array_GetNodesProperties(ByRef $oNodes_coll)
 			$avArray[$iUBound][$__g_eARRAY_NODE_ATTRIBUTES] = StringTrimRight($sAttributes, 1)
 		EndIf
 	Next
+	Return SetError($XML_ERR_OK, UBound($avArray), $avArray)
 
-	Return SetError($XML_ERR_SUCCESS, UBound($avArray), $avArray)
 EndFunc   ;==>_XML_Array_GetNodesProperties
 #EndRegion XML.au3 - Functions - Arrays
 
@@ -2944,9 +2924,9 @@ Func _XML_ComErrorHandler_UserFunction($fnUserFunction = Default)
 		Return $fnUserFunction_Static
 	EndIf
 	$fnUserFunction_Static = '' ; reset static variable
-
 	; return error as incorrect parameter was passed to this function
-	Return SetError($XML_ERR_PARAMETER, $XML_EXT_PARAM1, $fnUserFunction_Static)
+	Return SetError($XML_ERR_PARAMETER, $XML_EXT_DEFAULT, $fnUserFunction_Static)
+
 EndFunc   ;==>_XML_ComErrorHandler_UserFunction
 
 ; #FUNCTION# ====================================================================================================================
@@ -2973,7 +2953,6 @@ Func _XML_ErrorParser_GetDescription(ByRef $oXmlDoc)
 		$sParseError_FullDescription &= 'IXMLDOMParseError srcText = ' & $oXmlDoc.parseError.srcText & @CRLF ; Returns the full text of the line containing the error.
 		$sParseError_FullDescription &= 'IXMLDOMParseError url = ' & $oXmlDoc.parseError.url & @CRLF ; Contains the URL of the XML document containing the last error.
 	EndIf
-
 	Return $sParseError_FullDescription
 EndFunc   ;==>_XML_ErrorParser_GetDescription
 #EndRegion XML.au3 - Functions - Error Handling
@@ -2981,68 +2960,30 @@ EndFunc   ;==>_XML_ErrorParser_GetDescription
 #Region XML.au3 - NEW TODO
 
 #CS
-	DOM Concepts
-	https://msdn.microsoft.com/en-us/library/ms764620(v=vs.85).aspx
-
 	DOM Reference
 	https://msdn.microsoft.com/en-us/library/ms764730(v=vs.85).aspx
-
-	XML DOM Enumerated Constants
-	https://msdn.microsoft.com/en-us/library/ms766473(v=vs.85).aspx
-
-	XML DOM Objects/Interfaces
-	https://msdn.microsoft.com/en-us/library/ms760218(v=vs.85).aspx
-
-	XML DOM Methods
-	https://msdn.microsoft.com/en-us/library/ms757828(v=vs.85).aspx
-
-	XML DOM Properties
-	https://msdn.microsoft.com/en-us/library/ms763798(v=vs.85).aspx
-
-	XML DOM Events
-	https://msdn.microsoft.com/en-us/library/ms764697(v=vs.85).aspx
-
-
-	Working with XML Document Parts
-	https://msdn.microsoft.com/en-us/library/ms761381(v=vs.85).aspx
-
-
-	Understanding XML Namespaces
-	https://msdn.microsoft.com/en-us/library/aa468565.aspx
-
-	Managing Namespaces in an XML Document
-	https://msdn.microsoft.com/pl-pl/library/d6730bwt(v=vs.110).aspx
 
 	XPath Examples
 	https://msdn.microsoft.com/en-us/library/ms256086(v=vs.110).aspx
 
-	XPath Examples
-	https://msdn.microsoft.com/pl-pl/library/ms256086(v=vs.120).aspx
-
-	XPath Tutorial (multi lingual: English | cesky | Nederlands | Français | Español | ??-?????? | Deutsch | ?? | Italiano | Polski )
-	http://zvon.org/xxl/XPathTutorial/General/examples.html
-
-
-	https://social.msdn.microsoft.com/Forums/en-US/b141c07f-4b2c-403a-9a0d-f64b219d316f/prettyprinting-using-mxxmlwriter-encoding-issue?forum=xmlandnetfx
-
 #CE
 
 Func _EncodeXML($sFileToEncode)
-	; http://www.vb-helper.com/howto_encode_base64_hex.html
-	; https://www.autoitscript.com/forum/topic/138443-image-to-base64-code/?do=findComment&comment=970372
-	; http://stackoverflow.com/questions/496751/base64-encode-string-in-vbscript
-	; https://support.microsoft.com/en-us/kb/254388
-	; https://gist.github.com/wangye/1990522
-	; Xroot 2011
+;~ http://www.vb-helper.com/howto_encode_base64_hex.html
+;~ https://www.autoitscript.com/forum/topic/138443-image-to-base64-code/?do=findComment&comment=970372
+;~ http://stackoverflow.com/questions/496751/base64-encode-string-in-vbscript
+;~ https://support.microsoft.com/en-us/kb/254388
+;~ https://gist.github.com/wangye/1990522
+	;Xroot 2011
 
 	Local $hFile = FileOpen($sFileToEncode, $FO_BINARY)
-	Local $dFileContent = FileRead($hFile)
+	Local $dat = FileRead($hFile)
 	FileClose($hFile)
 	Local $oXML = ObjCreate("MSXML2.DOMDocument")
 	Local $oNode = $oXML.createElement("b64")
 	$oNode.dataType = "bin.base64"
-	$oNode.nodeTypedValue = $dFileContent
-
+	$oNode.nodeTypedValue = $dat
 	Return $oNode.Text
 EndFunc   ;==>_EncodeXML
 #EndRegion XML.au3 - NEW TODO
+
