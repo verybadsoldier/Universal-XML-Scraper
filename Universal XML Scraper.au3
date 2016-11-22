@@ -129,13 +129,15 @@ FileInstall(".\Mix\Arcade Zoomed (moon).zip", $iScriptPath & "\Mix\")
 FileInstall(".\Mix\Full Back.zip", $iScriptPath & "\Mix\")
 FileInstall(".\Mix\Standard (3img).zip", $iScriptPath & "\Mix\")
 FileInstall(".\Mix\Standard (4img).zip", $iScriptPath & "\Mix\")
-FileInstall(".\ProfilsFiles\Screenscraper(MIX)-RecalboxV4.xml", $iScriptPath & "\ProfilsFiles\", 0)
-FileInstall(".\ProfilsFiles\Screenscraper(MIX)-RecalboxV3.xml", $iScriptPath & "\ProfilsFiles\", 0)
-FileInstall(".\ProfilsFiles\Screenscraper(MIX)-Retropie.xml", $iScriptPath & "\ProfilsFiles\", 0)
-FileInstall(".\ProfilsFiles\Screenscraper-RecalboxV4.xml", $iScriptPath & "\ProfilsFiles\", 0)
-FileInstall(".\ProfilsFiles\Screenscraper-RecalboxV3.xml", $iScriptPath & "\ProfilsFiles\", 0)
-FileInstall(".\ProfilsFiles\Screenscraper-Retropie.xml", $iScriptPath & "\ProfilsFiles\", 0)
+FileInstall(".\ProfilsFiles\RecalboxV3 (MIX).xml", $iScriptPath & "\ProfilsFiles\", 0)
+FileInstall(".\ProfilsFiles\RecalboxV3.xml", $iScriptPath & "\ProfilsFiles\", 0)
+FileInstall(".\ProfilsFiles\RecalboxV4 (MIX).xml", $iScriptPath & "\ProfilsFiles\", 0)
+FileInstall(".\ProfilsFiles\RecalboxV4 [SCUMMVM] (MIX).xml", $iScriptPath & "\ProfilsFiles\", 0)
+FileInstall(".\ProfilsFiles\RecalboxV4.xml", $iScriptPath & "\ProfilsFiles\", 0)
+FileInstall(".\ProfilsFiles\Retropie (MIX).xml", $iScriptPath & "\ProfilsFiles\", 0)
+FileInstall(".\ProfilsFiles\Retropie.xml", $iScriptPath & "\ProfilsFiles\", 0)
 FileInstall(".\ProfilsFiles\Ressources\empty.jpg", $iScriptPath & "\ProfilsFiles\Ressources\", 0)
+FileInstall(".\ProfilsFiles\Ressources\Screenscraper(MIX)-SCUMMVM-RecalboxV4.jpg", $iScriptPath & "\ProfilsFiles\Ressources\", 0)
 FileInstall(".\ProfilsFiles\Ressources\Screenscraper(MIX)-RecalboxV4.jpg", $iScriptPath & "\ProfilsFiles\Ressources\", 0)
 FileInstall(".\ProfilsFiles\Ressources\Screenscraper(MIX)-RecalboxV3.jpg", $iScriptPath & "\ProfilsFiles\Ressources\", 0)
 FileInstall(".\ProfilsFiles\Ressources\Screenscraper(MIX)-Retropie.jpg", $iScriptPath & "\ProfilsFiles\Ressources\", 0)
@@ -479,7 +481,11 @@ While 1
 			$sMsg &= "MarbleMad for Screenscraper" & @CRLF
 			$sMsg &= "Kam3leon for Splashscreen" & @CRLF
 			$sMsg &= "Neogeronimo for the Jingle" & @CRLF
+			$sMsg &= "Madmeggo, Paradadf and Lackyluuk for German translation" & @CRLF
+			$sMsg &= "Paradadf for Spanish translation" & @CRLF
 			$sMsg &= "Digital Lumberjack for the Mirror" & @CRLF
+			$sMsg &= "Verybadsoldier for the 'In ZIP scrape'" & @CRLF
+
 			_ExtMsgBoxSet(1, 2, 0x34495c, 0xFFFF00, 10, "Arial")
 			_ExtMsgBox($EMB_ICONINFO, "OK", _MultiLang_GetText("win_About_Title"), $sMsg, 15)
 		Case $B_SCRAPE, $MS_Scrape ;Solo Scrape or Cancel
@@ -1358,14 +1364,23 @@ Func _Check_autoconf($oXMLProfil)
 			_ArrayColInsert($aDIRList, $vBoucle)
 		Next
 		For $vBoucle = 1 To UBound($aDIRList) - 1
+;~ 			$aDIRList[$vBoucle][1] = $vSource_RootPath & "\" & $aDIRList[$vBoucle][0]
+;~ 			$aDIRList[$vBoucle][2] = $vTarget_RomPath
+;~ 			$aDIRList[$vBoucle][3] = $aDIRList[$vBoucle][1] & "\" & $vTarget_XMLName
+;~ 			$aDIRList[$vBoucle][4] = $aDIRList[$vBoucle][1] & "\" & $vSource_ImagePath
+;~ 			$aDIRList[$vBoucle][5] = $vTarget_ImagePath
+
 			$aDIRList[$vBoucle][1] = $vSource_RootPath & "\" & $aDIRList[$vBoucle][0]
-			$aDIRList[$vBoucle][2] = $vTarget_RomPath
-			$aDIRList[$vBoucle][3] = $aDIRList[$vBoucle][1] & "\" & $vTarget_XMLName
-			$aDIRList[$vBoucle][4] = $aDIRList[$vBoucle][1] & "\" & $vSource_ImagePath
-			$aDIRList[$vBoucle][5] = $vTarget_ImagePath
+			$aDIRList[$vBoucle][2] = StringReplace(StringReplace(StringReplace($vTarget_RomPath, "%SystemDir%", $aDIRList[$vBoucle][1]), "%System%", $aDIRList[$vBoucle][0]), "%Source_RootPath%", $aDIRList[$vBoucle][1])
+			$aDIRList[$vBoucle][3] = StringReplace(StringReplace(StringReplace($vTarget_XMLName, "%SystemDir%", $aDIRList[$vBoucle][1]), "%System%", $aDIRList[$vBoucle][0]), "%Source_RootPath%", $aDIRList[$vBoucle][1])
+			$aDIRList[$vBoucle][4] = StringReplace(StringReplace(StringReplace($vSource_ImagePath, "%SystemDir%", $aDIRList[$vBoucle][1]), "%System%", $aDIRList[$vBoucle][0]), "%Source_RootPath%", $aDIRList[$vBoucle][1])
+			$aDIRList[$vBoucle][5] = StringReplace(StringReplace(StringReplace($vTarget_ImagePath, "%SystemDir%", $aDIRList[$vBoucle][1]), "%System%", $aDIRList[$vBoucle][0]), "%Source_RootPath%", $aDIRList[$vBoucle][1])
 			DirCreate($aDIRList[$vBoucle][4])
+			If Not FileExists($aDIRList[$vBoucle][3]) Then _FileCreate($aDIRList[$vBoucle][3])
+
 			$MS_AutoConfigItem[$vBoucle] = GUICtrlCreateMenuItem($aDIRList[$vBoucle][0], $MS_AutoConfig)
 		Next
+;~ 		_ArrayDisplay($aDIRList, "$aDIRList")
 		GUISetState(@SW_ENABLE, $F_UniversalScraper)
 		WinActivate($F_UniversalScraper)
 		SplashOff()
@@ -1702,7 +1717,7 @@ Func _ScrapeZipContent($aRomList, $vBoucle)
 	FileCopy($aRomList[$vBoucle][1], $vSrcPath)
 	_LOG("Unzipping file '" & $vSrcPath & "' to temp directory: " & $vZipDirEx, 1, $iLOGPath)
 	Local $vResult = _Zip_UnzipAll($vSrcPath, $vZipDirEx, 1)
-	if @error <> 0 Then
+	If @error <> 0 Then
 		_LOG("Error #" & @error & " unzipping file '" & $aRomList[$vBoucle][1] & "' to temp directory: " & $vZipDirEx, 1, $iLOGPath)
 		Return $aRomList
 	EndIf
@@ -1725,7 +1740,7 @@ Func _ScrapeZipContent($aRomList, $vBoucle)
 	; iterate over them and check if we can match one
 	For $vBoucleZip = 1 To UBound($aZipRomList) - 1
 		_LOG("Scraping ZIP content file: " & $aZipRomList[$vBoucleZip][0], 1, $iLOGPath)
-		if $aZipRomList[$vBoucleZip][3] < 2 Then
+		If $aZipRomList[$vBoucleZip][3] < 2 Then
 			$aZipRomList = _CalcHash($aZipRomList, $vBoucleZip)
 		EndIf
 		$aZipRomList = _DownloadROMXML($aZipRomList, $vBoucleZip, $aConfig[12], $aConfig[13], $aConfig[14])
@@ -1739,7 +1754,7 @@ Func _ScrapeZipContent($aRomList, $vBoucle)
 	Next
 	DirRemove($vZipDir, 1)
 	Return $aRomList
-EndFunc
+EndFunc   ;==>_ScrapeZipContent
 
 Func _SCRAPE($oXMLProfil, $vNbThread = 1, $vFullScrape = 0)
 	While ProcessExists($iScraper)
@@ -2143,3 +2158,9 @@ EndFunc   ;==>_WizardAutoconf
 ;~ 	$aRomList[][11]=Send to the scraper
 ;~ 	$aRomList[][12]=Return from the scraper
 
+;~ $aDIRList[][0] = Source System directory
+;~ $aDIRList[][1] = Source System full directory Local path
+;~ $aDIRList[][2] = Target System directory full Local path
+;~ $aDIRList[][3] = Target gamelist.xml full Local path
+;~ $aDIRList[][4] = Source Image directory full Local path
+;~ $aDIRList[][5] = Target Image directory full Local path
