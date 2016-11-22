@@ -1683,6 +1683,64 @@ Func _Results($aRomList, $vNbThread, $vFullTimer, $vFullScrape = 0)
 
 EndFunc   ;==>_Results
 
+Func _ScrapeZipContent($aRomList, $vBoucle)
+	Local $sDrive = "", $sDir = "", $sFileName = "", $sExtension = ""
+	Local $aPathSplit = _PathSplit($aRomList[$vBoucle][0], $sDrive, $sDir, $sFileName, $sExtension)
+
+	; check if it is a ZIP
+	If $sExtension <> ".zip" Then
+		Return $aRomList
+	EndIf
+
+	_LOG("File '" & $aRomList[$vBoucle][1] & "' is a ZIP. Scraping contents...", 1, $iLOGPath)
+
+	; now unzip it to a temp folder
+	Local $vZipDir = @TempDir & "\" & "UXS_ZIP_Temp_" & $aRomList[$vBoucle][2]
+	Local $vZipDirEx = $vZipDir & "\" & "_extract"
+	Local $vSrcPath = $vZipDir & "\" & $aRomList[$vBoucle][0]
+	DirCreate($vZipDir)
+	FileCopy($aRomList[$vBoucle][1], $vSrcPath)
+	_LOG("Unzipping file '" & $vSrcPath & "' to temp directory: " & $vZipDirEx, 1, $iLOGPath)
+	Local $vResult = _Zip_UnzipAll($vSrcPath, $vZipDirEx, 1)
+	if @error <> 0 Then
+		_LOG("Error #" & @error & " unzipping file '" & $aRomList[$vBoucle][1] & "' to temp directory: " & $vZipDirEx, 1, $iLOGPath)
+		Return $aRomList
+	EndIf
+
+	; get a list of all unzipped files
+	Local $aZipRomList = _FileListToArrayRec($vZipDirEx, "*", $FLTAR_FILES, $FLTAR_RECUR, $FLTAR_SORT)
+	_LOG("Read files from ZIP: " & _ArrayToString($aZipRomList), 1, $iLOGPath)
+
+	For $vIdx = 1 To 12
+		_ArrayColInsert($aZipRomList, $vIdx)
+	Next
+
+	For $vIdx = 1 To UBound($aZipRomList) - 1
+		$aZipRomList[$vIdx][1] = $vZipDirEx & "\" & $aZipRomList[$vIdx][0]
+		$aPathSplit = _PathSplit($aZipRomList[$vIdx][0], $sDrive, $sDir, $sFileName, $sExtension)
+		$aZipRomList[$vIdx][2] = $aPathSplit[3]
+		$aZipRomList[$vIdx][9] = -1
+	Next
+
+	; iterate over them and check if we can match one
+	For $vBoucleZip = 1 To UBound($aZipRomList) - 1
+		_LOG("Scraping ZIP content file: " & $aZipRomList[$vBoucleZip][0], 1, $iLOGPath)
+		if $aZipRomList[$vBoucleZip][3] < 2 Then
+			$aZipRomList = _CalcHash($aZipRomList, $vBoucleZip)
+		EndIf
+		$aZipRomList = _DownloadROMXML($aZipRomList, $vBoucleZip, $aConfig[12], $aConfig[13], $aConfig[14])
+		If ($aZipRomList[$vBoucleZip][9] = 1) Then
+			_LOG("Found match for ZIP content file: " & $aZipRomList[$vBoucleZip][0], 1, $iLOGPath)
+			; we found a match so copy the match result to the original ZIP and stop
+			$aRomList[$vBoucle][8] = $aZipRomList[$vBoucleZip][8]
+			$aRomList[$vBoucle][9] = $aZipRomList[$vBoucleZip][9]
+			ExitLoop
+		EndIf
+	Next
+	DirRemove($vZipDir, 1)
+	Return $aRomList
+EndFunc
+
 Func _SCRAPE($oXMLProfil, $vNbThread = 1, $vFullScrape = 0)
 	While ProcessExists($iScraper)
 		ProcessClose($iScraper)
@@ -1776,6 +1834,11 @@ Func _SCRAPE($oXMLProfil, $vNbThread = 1, $vFullScrape = 0)
 						$aRomList = _CalcHash($aRomList, $vBoucle)
 					EndIf
 					$aRomList = _DownloadROMXML($aRomList, $vBoucle, $aConfig[12], $aConfig[13], $aConfig[14])
+
+					; check if the ROM could be found otherwise try to scrape inside ZIP
+					If ($aRomList[$vBoucle][9] = 0) Then
+						$aRomList = _ScrapeZipContent($aRomList, $vBoucle)
+					EndIf
 
 					If ($aRomList[$vBoucle][9] = 1 Or $vEmpty_Rom = 1 Or $aRomList[$vBoucle][3] > 1) And _Check_Cancel() Then
 						_XML_Make($iTEMPPath & "\scraped\" & $vBoucle & ".xml", _XML_Read("Profil/Game/Target_Value", 0, "", $oXMLProfil))
