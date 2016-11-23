@@ -28,7 +28,7 @@
 	<mess_ssh_reboot>¿ Está seguro de que desea reiniciar la máquina remota?</mess_ssh_reboot>
 	<mess_ssh_poweroff>¿Está seguro de que desea detener la máquina remota?</mess_ssh_poweroff>
 	<mess_update_Title>Actualización disponible</mess_update_Title>
-	<mess_update_Question>¿ Desea descargar la última versión?</mess_update_Question>
+	<mess_update_Question>Poner al día</mess_update_Question>
 	<mess_ssregister_title>Cuenta registrada</mess_ssregister_title>
 	<mess_ssregister_OK>Su cuenta le da máximo </mess_ssregister_OK>
 	<mess_ssregister_GodMode>Eres: un dios, un semidiós (o al menos un 2/3 dios) o Chuck Norris. ¡¡¡ Ten cuidado !!!</mess_ssregister_GodMode>

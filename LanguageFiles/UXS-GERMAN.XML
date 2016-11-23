@@ -28,7 +28,7 @@
 	<mess_ssh_reboot>Bist du dir sicher dass du das System neustarten willst ?</mess_ssh_reboot>
 	<mess_ssh_poweroff>Bist du dir sicher, dass du das System ausschalten willst ?</mess_ssh_poweroff>
 	<mess_update_Title>Update nötig</mess_update_Title>
-	<mess_update_Question>Eine neuere Version ist verfügbar. Möchtest du sie herunterladen ?</mess_update_Question>
+	<mess_update_Question>Aktualisierung</mess_update_Question>
 	<mess_ssregister_title>Erfolgreich eingeloggt</mess_ssregister_title>
 	<mess_ssregister_OK>Durch deinen Account erhälst du ein Maximum </mess_ssregister_OK>
 	<mess_ssregister_GodMode>Du bist : ein Gott, ein Halbgott (oder zumindest ein 2/3 Gott) oder Chuck Norris. Sei vorsichtig !!!</mess_ssregister_GodMode>

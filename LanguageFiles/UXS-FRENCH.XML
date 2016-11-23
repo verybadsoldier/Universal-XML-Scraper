@@ -26,7 +26,7 @@
 	<mess_ssh_reboot>Etes-vous sur de vouloir Rebooter la machine distante ?</mess_ssh_reboot>
 	<mess_ssh_poweroff>Etes-vous sur de vouloir arrêter la machine distante ?</mess_ssh_poweroff>
 	<mess_update_Title>Mise à jour disponible</mess_update_Title>
-	<mess_update_Question>Une mise à jour est disponible, voulez-vous la télécharger ?</mess_update_Question>
+	<mess_update_Question>Mettre à jour</mess_update_Question>
 	<mess_ssregister_title>Compte reconnu</mess_ssregister_title>
 	<mess_ssregister_OK>Votre compte vous donne droit à un maximum de </mess_ssregister_OK>
 	<mess_ssregister_GodMode>Vous êtes : ou un dieu, ou un demi dieu (voir un 2/3 de dieu), ou Chuck Norris. Attention à pas tout casser !!!</mess_ssregister_GodMode>

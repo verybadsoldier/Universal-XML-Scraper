@@ -6,6 +6,7 @@
 		<Target_Image_Extension>jpg</Target_Image_Extension>
 		<Target_Image_Width>600</Target_Image_Width>
 		<Target_Image_Height>400</Target_Image_Height>
+		<Research>*.32x;*.a26;*.a78;*.bin;*.cbn;*.ccd;*.cdi;*.chd;*.col;*.cso;*.cue;*.d64;*.do;*.dos;*.dsk;*.exe;*.fba;*.fds;*.gb;*.gba;*.gbc;*.gc;*.gcz;*.gdi;*.gen;*.gg;*.img;*.iso;*.lnx;*.lua;*.lutro;*.md;*.mgd;*.mgw;*.moonlight;*.mx1;*.mx2;*.n64;*.nes;*.ngc;*.ngp;*.nib;*.p;*.pbp;*.pc;*.pce;*.po;*.rom;*.rzx;*.scl;*.scummvm;*.sfc;*.sg;*.sgx;*.smc;*.smd;*.sms;*.st;*.stx;*.t64;*.tap;*.trd;*.tzx;*.v64;*.vb;*.vec;*.wad;*.wbfs;*.ws;*.wsc;*.x64;*.z64;*.z80;*.zip;*.zx80||</Research>
 	</General>
 	<AutoConf>
 		<Source_RootPath>\\RECALBOX\share\roms</Source_RootPath>

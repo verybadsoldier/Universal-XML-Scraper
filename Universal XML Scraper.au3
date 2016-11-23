@@ -2,10 +2,11 @@
 #AutoIt3Wrapper_Icon=Ressources\Universal_Xml_Scraper.ico
 #AutoIt3Wrapper_Outfile=..\BIN\Universal_XML_Scraper.exe
 #AutoIt3Wrapper_Outfile_x64=..\BIN\Universal_XML_Scraper64.exe
+#AutoIt3Wrapper_UseUpx=n
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper XML Universel
-#AutoIt3Wrapper_Res_Fileversion=2.0.0.6
+#AutoIt3Wrapper_Res_Fileversion=2.0.0.1
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -199,6 +200,8 @@ Local $sMailSlotCancel = "\\.\mailslot\Cancel"
 Local $hMailSlotMother = _CreateMailslot($sMailSlotMother)
 Local $vNbThread = IniRead($iINIPath, "LAST_USE", "$vNbThread", 1)
 Local $vStart = 0, $vWizCancel = 0
+Local $sMailSlotCheckEngine = "\\.\mailslot\CheckEngine"
+Local $hMailSlotCheckEngine = _CreateMailslot($sMailSlotCheckEngine)
 
 ;---------;
 ;Principal;
@@ -227,13 +230,7 @@ Switch $Result
 		_LOG("Local : " & $iScriptVer & " - Github : " & $iChangelogVer, 0, $iLOGPath)
 		If $iChangelogVer <> $iScriptVer And @Compiled = 1 Then
 			_LOG("Asking to Update", 0, $iLOGPath)
-			If MsgBox($MB_YESNO, _MultiLang_GetText("mess_update_Title") & " ( Local : " & $iScriptVer & " - Github : " & $iChangelogVer & " )", _MultiLang_GetText("mess_update_Question")) = $IDYES Then
-				_LOG("Open GitHub Release Webpage and quit", 0, $iLOGPath)
-				ShellExecute("https://github.com/Universal-Rom-Tools/Universal-XML-Scraper/releases")
-				Exit
-			Else
-				_LOG("NOT UPDATED", 0, $iLOGPath)
-			EndIf
+			_GUI_Update($iChangelogPath)
 		EndIf
 EndSwitch
 
@@ -284,6 +281,7 @@ Local $MH_Link = GUICtrlCreateMenu(_MultiLang_GetText("mnu_help_link"), $MH)
 Local $MH_Link_Screenzone = GUICtrlCreateMenuItem("http://www.screenzone.fr/", $MH_Link, 1)
 Local $MH_Link_Recalbox = GUICtrlCreateMenuItem("https://www.recalbox.com/", $MH_Link, 2)
 Local $MH_Link_Retropie = GUICtrlCreateMenuItem("https://retropie.org.uk/", $MH_Link, 3)
+Local $MH_Changelog = GUICtrlCreateMenuItem('Changelog', $MH)
 Local $MH_About = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_help_about"), $MH)
 
 Local $P_BACKGROUND = GUICtrlCreatePic($iScriptPath & "\ProfilsFiles\Ressources\empty.jpg", -1, 0, 600, 293)
@@ -355,7 +353,7 @@ While 1
 								_LOG("Wizard - Profil selected : " & $vResult, 0, $iLOGPath)
 								$oXMLProfil = _XML_Open($vResult)
 								If $oXMLProfil = -1 Then Exit
-								;Catching SystemList.xml
+								IniWrite($iINIPath, "LAST_USE", "$vRechFiles", _Coalesce(_XML_Read("Profil/General/Research", 0, "", $oXMLProfil), "*.*|*.xml;*.txt;*.dv;*.fs;*.xor;*.drv;*.dat;*.cfg;*.nv;*.sav*|"))
 								$vBoucle = $vBoucle + 1
 						EndSwitch
 
@@ -380,7 +378,6 @@ While 1
 									IniWrite($iINIPath, "LAST_USE", "$vTarget_ImagePath", $aDIRList[1][5])
 									_LoadConfig($oXMLProfil)
 									_GUI_Refresh($oXMLProfil)
-									If IniRead($iINIPath, "LAST_USE", "$vRechFiles", 0) = 0 Then IniWrite($iINIPath, "LAST_USE", "$vRechFiles", "*.*|*.xml;*.txt;*.dv;*.fs;*.xor;*.drv;*.dat;*.cfg;*.nv;*.sav*|")
 									If IniRead($iINIPath, "LAST_USE", "$vAutoconf_Use", 0) <> 0 Then $vBoucle = $vBoucle + 1
 								EndIf
 
@@ -417,6 +414,7 @@ While 1
 			;Opening XML Profil file
 			$oXMLProfil = _XML_Open($vProfilsPath)
 			If $oXMLProfil = -1 Then Exit
+			IniWrite($iINIPath, "LAST_USE", "$vRechFiles", _Coalesce(_XML_Read("Profil/General/Research", 0, "", $oXMLProfil), "*.*||"))
 			$aDIRList = _Check_autoconf($oXMLProfil)
 			_GUI_Refresh($oXMLProfil)
 			$nMsg = ""
@@ -469,6 +467,8 @@ While 1
 			ShellExecute("https://www.recalbox.com/")
 		Case $MH_Link_Retropie
 			ShellExecute("https://retropie.org.uk/")
+		Case $MH_Changelog
+			_GUI_Update($iChangelogPath, $F_UniversalScraper)
 		Case $MH_About ;Help
 			SoundPlay($iScriptPath & "\Ressources\jingle_uxs.MP3")
 			$sMsg = "UNIVERSAL XML SCRAPER - " & $iScriptVer & @CRLF
@@ -1321,6 +1321,41 @@ Func _GUI_Refresh($oXMLProfil = -1, $ScrapIP = 0, $vScrapeOK = 0) ;Refresh GUI
 	Return
 EndFunc   ;==>_GUI_Refresh
 
+Func _GUI_Update($iChangelogPath, $F_UniversalScraper = "")
+	Local $fChangelog = StringReplace(FileRead($iChangelogPath), @LF, @CRLF)
+
+	#Region ### START Koda GUI section ### Form=
+	$F_Update = GUICreate(_MultiLang_GetText("mess_update_Title"), 605, 381, 192, 124)
+	$P_Update = GUICtrlCreatePic($iScriptPath & "\Ressources\UXS.jpg", 0, 0, 604, 380)
+	GUICtrlSetState(-1, $GUI_DISABLE)
+	$E_Changelog = GUICtrlCreateEdit($fChangelog, 8, 8, 585, 273, $ES_AUTOVSCROLL + $WS_VSCROLL + $ES_READONLY)
+	$B_UPDATE = GUICtrlCreateButton(_MultiLang_GetText("mess_update_Question"), 8, 296, 275, 25)
+	$B_CONFANNUL = GUICtrlCreateButton(_MultiLang_GetText("win_config_Cancel"), 320, 296, 275, 25)
+	GUISetState(@SW_SHOW)
+	#EndRegion ### END Koda GUI section ###
+
+	If IsHWnd($F_UniversalScraper) Then GUISetState(@SW_DISABLE, $F_UniversalScraper)
+
+	While 1
+		$nMsg = GUIGetMsg()
+		Switch $nMsg
+			Case $GUI_EVENT_CLOSE, $B_CONFANNUL
+				GUIDelete($F_Update)
+				GUISetState(@SW_ENABLE, $F_UniversalScraper)
+				WinActivate($F_UniversalScraper)
+				Return
+			Case $B_UPDATE
+				GUIDelete($F_Update)
+				_LOG("Open GitHub Release Webpage", 0, $iLOGPath)
+				GUISetState(@SW_ENABLE, $F_UniversalScraper)
+				WinActivate($F_UniversalScraper)
+				ShellExecute("https://github.com/Universal-Rom-Tools/Universal-XML-Scraper/releases")
+				Return
+		EndSwitch
+	WEnd
+
+EndFunc   ;==>_GUI_Update
+
 Func _Check_autoconf($oXMLProfil)
 
 	$vAutoconf_Use = IniRead($iINIPath, "LAST_USE", "$vAutoconf_Use", "-1")
@@ -1371,10 +1406,10 @@ Func _Check_autoconf($oXMLProfil)
 ;~ 			$aDIRList[$vBoucle][5] = $vTarget_ImagePath
 
 			$aDIRList[$vBoucle][1] = $vSource_RootPath & "\" & $aDIRList[$vBoucle][0]
-			$aDIRList[$vBoucle][2] = StringReplace(StringReplace(StringReplace($vTarget_RomPath, "%SystemDir%", $aDIRList[$vBoucle][1]), "%System%", $aDIRList[$vBoucle][0]), "%Source_RootPath%", $aDIRList[$vBoucle][1])
-			$aDIRList[$vBoucle][3] = StringReplace(StringReplace(StringReplace($vTarget_XMLName, "%SystemDir%", $aDIRList[$vBoucle][1]), "%System%", $aDIRList[$vBoucle][0]), "%Source_RootPath%", $aDIRList[$vBoucle][1])
-			$aDIRList[$vBoucle][4] = StringReplace(StringReplace(StringReplace($vSource_ImagePath, "%SystemDir%", $aDIRList[$vBoucle][1]), "%System%", $aDIRList[$vBoucle][0]), "%Source_RootPath%", $aDIRList[$vBoucle][1])
-			$aDIRList[$vBoucle][5] = StringReplace(StringReplace(StringReplace($vTarget_ImagePath, "%SystemDir%", $aDIRList[$vBoucle][1]), "%System%", $aDIRList[$vBoucle][0]), "%Source_RootPath%", $aDIRList[$vBoucle][1])
+			$aDIRList[$vBoucle][2] = StringReplace(StringReplace(StringReplace($vTarget_RomPath, "%SystemDir%", $aDIRList[$vBoucle][1]), "%System%", $aDIRList[$vBoucle][0]), "%Source_RootPath%", $vSource_RootPath)
+			$aDIRList[$vBoucle][3] = StringReplace(StringReplace(StringReplace($vTarget_XMLName, "%SystemDir%", $aDIRList[$vBoucle][1]), "%System%", $aDIRList[$vBoucle][0]), "%Source_RootPath%", $vSource_RootPath)
+			$aDIRList[$vBoucle][4] = StringReplace(StringReplace(StringReplace($vSource_ImagePath, "%SystemDir%", $aDIRList[$vBoucle][1]), "%System%", $aDIRList[$vBoucle][0]), "%Source_RootPath%", $vSource_RootPath)
+			$aDIRList[$vBoucle][5] = StringReplace(StringReplace(StringReplace($vTarget_ImagePath, "%SystemDir%", $aDIRList[$vBoucle][1]), "%System%", $aDIRList[$vBoucle][0]), "%Source_RootPath%", $vSource_RootPath)
 			DirCreate($aDIRList[$vBoucle][4])
 			If Not FileExists($aDIRList[$vBoucle][3]) Then _FileCreate($aDIRList[$vBoucle][3])
 
@@ -1414,11 +1449,6 @@ Func _RomList_Create($aConfig, $vFullScrape = 0, $oXMLProfil = "")
 	Local $vPicDir = StringSplit($aConfig[3], "\")
 	$vPipeCount = StringSplit($vRechFiles, "|")
 	If $vPipeCount[0] = 2 Then $vRechFiles = $vRechFiles & "|"
-
-	If $oXMLProfil <> "" Then
-		$vBypass_Research = _Coalesce(_XML_Read("Profil/General/Bypass_Research", 0, "", $oXMLProfil), -1)
-		If $vBypass_Research <> -1 Then $vRechFiles = $vBypass_Research
-	EndIf
 
 	If StringRight($vRechFiles, 1) = "|" Then
 		$vRechFiles = $vRechFiles & $vPicDir[UBound($vPicDir) - 1]
@@ -1544,7 +1574,8 @@ EndFunc   ;==>_XMLSystem_Create
 Func _DownloadROMXML($aRomList, $vBoucle, $vSystemID, $vSSLogin = "", $vSSPassword = "")
 	If Not _Check_Cancel() Then Return $aRomList
 	Local $vXMLRom = $iTEMPPath & "\" & StringRegExpReplace($aRomList[$vBoucle][2], '[\[\]/\|\:\?"\*\\<>]', "") & ".xml"
-	$vRomName = StringReplace(StringRegExpReplace($aRomList[$vBoucle][2], "[äëïöüÿ'àéèùâêîôû]", ""), " ", "%20")
+;~ 	$vRomName = StringReplace(StringRegExpReplace($aRomList[$vBoucle][2], "[äëïöüÿ'àéèùâêîôû]", ""), " ", "%20")
+	$vRomName = _URIEncode($aRomList[$vBoucle][2])
 	$aRomList[$vBoucle][8] = _DownloadWRetry($iURLScraper & "api/jeuInfos.php?devid=" & $iDevId & "&devpassword=" & $iDevPassword & "&softname=" & $iSoftname & "&output=xml&ssid=" & $vSSLogin & "&sspassword=" & $vSSPassword & "&crc=" & $aRomList[$vBoucle][5] & "&md5=" & $aRomList[$vBoucle][6] & "&sha1=" & $aRomList[$vBoucle][7] & "&systemeid=" & $vSystemID & "&romtype=rom&romnom=" & $vRomName & "&romtaille=" & $aRomList[$vBoucle][4], $vXMLRom)
 	If (StringInStr(FileReadLine($aRomList[$vBoucle][8]), "Erreur") Or Not FileExists($aRomList[$vBoucle][8])) Then
 		$aRomList[$vBoucle][8] = _DownloadWRetry($iURLScraper & "api/jeuInfos.php?devid=" & $iDevId & "&devpassword=" & $iDevPassword & "&softname=" & $iSoftname & "&output=xml&ssid=" & $vSSLogin & "&sspassword=" & $vSSPassword & "&crc=&md5=&sha1=&systemeid=" & $vSystemID & "&romtype=rom&romnom=" & $vRomName & "&romtaille=" & $aRomList[$vBoucle][4], $vXMLRom)
@@ -1577,7 +1608,7 @@ Func _SelectSystem($oXMLSystem, $vFullScrape = 0)
 	_ArraySort($aSystemListXML)
 ;~ 	_ArrayDisplay($aSystemListXML, "$aSystemListXML") ;Debug
 
-	If $vRechSYS = 1 Then
+	If $vRechSYS = 1 Or $vFullScrape = 1 Then
 		_FileReadToArray($iRessourcesPath & "\systemlist.txt", $aSystemListTXT, $FRTA_NOCOUNT, "|")
 ;~ 		_ArrayDisplay($aSystemListTXT, "$aSystemListTXT") ;Debug
 		$vSystem = StringSplit(IniRead($iINIPath, "LAST_USE", "$vSource_RomPath", ""), "\")
@@ -1757,6 +1788,7 @@ Func _ScrapeZipContent($aRomList, $vBoucle)
 EndFunc   ;==>_ScrapeZipContent
 
 Func _SCRAPE($oXMLProfil, $vNbThread = 1, $vFullScrape = 0)
+	Local $sMailSlotCheckEngine = "\\.\mailslot\CheckEngine"
 	While ProcessExists($iScraper)
 		ProcessClose($iScraper)
 	WEnd
@@ -1774,7 +1806,7 @@ Func _SCRAPE($oXMLProfil, $vNbThread = 1, $vFullScrape = 0)
 		Local $aExtToHide = StringSplit(_XML_Read('/Profil/Element[Source_Value="%AutoHide%"]/AutoHideEXT', 0, "", $oXMLProfil), "|")
 		Local $aValueToHide = StringSplit(_XML_Read('/Profil/Element[Source_Value="%AutoHide%"]/AutoHideValue', 0, "", $oXMLProfil), "|")
 		Local $vSendTimerLeft = 0, $vCreateTimerLeft = 0, $vSendTimerMoy = 0, $vCreateTimerMoy = 0, $vSendTimerTotal = 0, $vCreateTimerTotal = 0
-		Local $vEmpty_Rom = IniRead($iINIPath, "LAST_USE", "$vEmpty_Rom", 0)
+		Local $vMissingRom_Mode = $aConfig[6]
 		Local $vThreadUsed = 1
 		$aConfig[8] = "0000"
 
@@ -1816,11 +1848,22 @@ Func _SCRAPE($oXMLProfil, $vNbThread = 1, $vFullScrape = 0)
 			IniWrite($iINIPath, "LAST_USE", "$vNbThread", $vNbThread)
 		EndIf
 
-		$aConfig[12] = _SelectSystem($oXMLSystem)
-		$aRomList = _RomList_Create($aConfig, $vFullScrape, $oXMLProfil)
+		$aConfig[12] = _SelectSystem($oXMLSystem, $vFullScrape)
+		If $aConfig[12] = "" Then
+			$aRomList = -1
+		Else
+			$aRomList = _RomList_Create($aConfig, $vFullScrape, $oXMLProfil)
+		EndIf
+
 		If IsArray($aRomList) And _Check_Cancel() Then
 
+			For $vBoucle = 1 To $vNbThread
+				ShellExecute($iScriptPath & "\" & $iScraper, $vBoucle)
+			Next
+
 			If $aConfig[5] = 0 Or ($aConfig[5] > 0 And FileGetSize($aConfig[0]) < 100) Then
+				_FileCreate($aConfig[0])
+				FileDelete($aConfig[0])
 				_LOG("vScrape_Mode = " & $aConfig[5] & " And " & $aConfig[0] & " = " & FileGetSize($aConfig[0]) & " ---> _XML_Make", 1, $iLOGPath)
 				$oXMLTarget = _XML_Make($aConfig[0], _XML_Read("Profil/Root/Target_Value", 0, "", $oXMLProfil))
 			EndIf
@@ -1829,12 +1872,15 @@ Func _SCRAPE($oXMLProfil, $vNbThread = 1, $vFullScrape = 0)
 			If FileGetSize($aConfig[0]) > 100 And _Check_Cancel() Then $aXMLRomList = _XML_ListValue($vXpath2RomPath, $aConfig[0])
 ;~ 			_ArrayDisplay($aXMLRomList, "$aXMLRomList")
 
-			For $vBoucle = 1 To $vNbThread
-				ShellExecute($iScriptPath & "\" & $iScraper, $vBoucle)
-;~ 				Sleep(100)
-			Next
-
-			Sleep(1000)
+			Local $vEngineLaunched = 0
+			While 1
+				If _MailSlotGetMessageCount($hMailSlotCheckEngine) >= 1 Then
+					$vEngineLaunched += 1
+					_LOG("Engine Number " & _ReadMessage($hMailSlotCheckEngine) & " OK", 1, $iLOGPath)
+					If $vEngineLaunched >= $vNbThread Then ExitLoop
+				EndIf
+				If Not _Check_Cancel() Then Return $aRomList
+			WEnd
 
 			For $vBoucle = 1 To UBound($aRomList) - 1
 				$vSendTimer = TimerInit()
@@ -1855,7 +1901,7 @@ Func _SCRAPE($oXMLProfil, $vNbThread = 1, $vFullScrape = 0)
 						$aRomList = _ScrapeZipContent($aRomList, $vBoucle)
 					EndIf
 
-					If ($aRomList[$vBoucle][9] = 1 Or $vEmpty_Rom = 1 Or $aRomList[$vBoucle][3] > 1) And _Check_Cancel() Then
+					If ($aRomList[$vBoucle][9] = 1 Or $vMissingRom_Mode = 1 Or $aRomList[$vBoucle][3] > 1) And _Check_Cancel() Then
 						_XML_Make($iTEMPPath & "\scraped\" & $vBoucle & ".xml", _XML_Read("Profil/Game/Target_Value", 0, "", $oXMLProfil))
 						$sMailSlotName = "\\.\mailslot\Son" & $vThreadUsed
 						$vMessage = _ArrayToString($aRomList, '{Break}', $vBoucle, $vBoucle, '{Break}')

@@ -1,4 +1,18 @@
-2.0.0.6
+2.0.0.0
+First STABLE Version !!!!
+*Corrected :
+- no more system selection GUI in FullScrape
+- UriEncode for the ' problem corrected
+- Missing Rom option Corrected
+- Missing Rom generate a MIX if missing rom option is on
+- If Name Format = %Name+Country% and no country found, no more (Unknown)
+- Retropie path corrected
+* Added
+- showing Changelog in update windows
+- Check Engine start on scrape
+- Included extensions are now profil dependant (they are not the same between Retropie and Recalbox)
+
+2.0.0.6 BETA
 *Corrected :
 -French, German, spanish and english translation correction.
 -First rom sometime doesn't be scrapped corrected.
@@ -17,11 +31,11 @@
 *Merge with verybadsoldier fork :
 -Added a new function to scrape IN zip files when zip file rom isn't found. (THANKS A LOT verybadsoldier)
 
-2.0.0.5
+2.0.0.5 BETA
 *Corrected :
 -Issue with no image found and compression corrected.
 
-2.0.0.4
+2.0.0.4 BETA
 *Corrected :
 -Include/Exclude Label Size to small in generale config corrected.
 -PngQuant in MIX profil don't work corrected.
@@ -32,7 +46,7 @@
 -Uppercase option for some text info (in Option Menu)
 -Hide Scraper.exe and Scraper64.exe to not confuse...
 
-2.0.0.3
+2.0.0.3 BETA
 *Added :
 -German Translation (Thanks to Madmeggo, Paradadf and Lackyluuk)
 -Spanish Translation (Thanks to Paradadf)
@@ -42,21 +56,20 @@
 *Preparing :
 -Screenscraper Cache system
 
-2.0.0.2
+2.0.0.2 BETA
 *Preparing :
 -language file for translation
 *Corrected :
 -System selection corrected
 
-2.0.0.1
+2.0.0.1 BETA
 *Corrected :
 Option name corrected
 -Source always = 0 corrected
 *Added :
 -A "_" to the missing file name
 
-2.0.0.0
-BETA
+2.0.0.0 BETA
 Total rewrote of XML functions
 Total rewrote of GDI functions (the one who make the MIX ^^)
 Now all Scraping profil are in XML with tone of options
@@ -70,6 +83,8 @@ New function to handle timeout and network problem
 Changing standard things are easy now (2D Box instead of Screenshot, Game Name with region,...)
 Autohide function (Bios are auto hidden, and if you have a cue+bin, the bin will be hide too.. So are the "track" files) and it's configurable in the XML Scrape profil
 ... Lot's of more things I can't remember... 3 month on this ^^
+
+-----------------------------------------------------------
 
 1.5.0.11
 Minor bug correction On Profil

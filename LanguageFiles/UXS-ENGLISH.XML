@@ -26,7 +26,7 @@
 	<mess_ssh_reboot>Are you sure you want to reboot distant peripheral ?</mess_ssh_reboot>
 	<mess_ssh_poweroff>Are you sure you want to halt distant peripheral ?</mess_ssh_poweroff>
 	<mess_update_Title>Update needed</mess_update_Title>
-	<mess_update_Question>Do you want to download the updated version ?</mess_update_Question>
+	<mess_update_Question>Update</mess_update_Question>
 	<mess_ssregister_title>Account logged</mess_ssregister_title>
 	<mess_ssregister_OK>Your account give you maximum </mess_ssregister_OK>
 	<mess_ssregister_GodMode>You are : a god, an half god (or at least a 2/3 god) or Chuck Norris. Be carreful !!!</mess_ssregister_GodMode>

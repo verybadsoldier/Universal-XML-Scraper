@@ -6,7 +6,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper
-#AutoIt3Wrapper_Res_Fileversion=1.0.0.4
+#AutoIt3Wrapper_Res_Fileversion=1.0.0.1
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -71,12 +71,15 @@ Local $iSize, $aRomList, $vBoucle, $aConfig, $vProfilsPath, $oXMLProfil, $oXMLSy
 Local $sMailSlotMother = "\\.\mailslot\Mother"
 Local $sMailSlotName = "\\.\mailslot\Son" & $vThreadNumber
 Local $sMailSlotCancel = "\\.\mailslot\Cancel" & $vThreadNumber
+Local $sMailSlotCheckEngine = "\\.\mailslot\CheckEngine"
 Local $hMailSlot = _CreateMailslot($sMailSlotName)
 Local $hMailSlotCancel = _CreateMailslot($sMailSlotCancel)
 Local $iNumberOfMessagesOverall = 1
 
 $oXMLSystem = _XMLSystem_Create()
 If $oXMLSystem = -1 Then Exit
+
+_SendMail($sMailSlotCheckEngine, $vThreadNumber)
 
 While $iNumberOfMessagesOverall < 5
 	If _MailSlotGetMessageCount($hMailSlot) >= 1 Then
@@ -186,7 +189,7 @@ Func _Game_Make($aRomList, $vBoucle, $aConfig, $oXMLProfil)
 						If $vBracketPos > 0 Then $vValue = $vValue & " " & StringMid($aRomList[2], $vBracketPos)
 					Case '%Name+Country%'
 						$vCountry = _Coalesce(_XML_Read("/Data/jeu/region", 0, $aRomList[8]), "unknown")
-						$vValue = $vValue & " (" & $vCountry & ")"
+						If $vCountry <> "unknown" Then $vValue = $vValue & " (" & $vCountry & ")"
 				EndSwitch
 				$vNode = _XML_Read("/Profil/Element[" & $vWhile & "]/Target_Value", 0, "", $oXMLProfil)
 				Switch _Coalesce(StringLower(_XML_Read("/Profil/Element[" & $vWhile & "]/Target_CASE", 0, "", $oXMLProfil)), "default")
@@ -265,7 +268,7 @@ Func _XML_Read_Source($aRomList, $vBoucle, $aConfig, $oXMLProfil, $vWhile)
 					Return ""
 			EndSwitch
 		Case "MIX_Template"
-			If $aRomList[9] = 0 Then Return ""
+			If $aRomList[9] = 0 And $aConfig[6] = 0 Then Return ""
 			Local $vDownloadTag, $vDownloadExt, $vTargetPicturePath, $aPathSplit, $sDrive, $sDir, $sFileName, $sExtension
 			$vDownloadTag = _XML_Read("/Profil/Element[" & $vWhile & "]/Source_Download_Tag", 0, "", $oXMLProfil)
 			$vDownloadExt = _XML_Read("/Profil/Element[" & $vWhile & "]/Source_Download_Ext", 0, "", $oXMLProfil)

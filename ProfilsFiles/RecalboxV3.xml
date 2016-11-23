@@ -6,6 +6,7 @@
 		<Target_Image_Extension>jpg</Target_Image_Extension>
 		<Target_Image_Width>640</Target_Image_Width>
 		<Target_Image_Height>480</Target_Image_Height>
+		<Research>*.32x;*.a26;*.a52;*.a78;*.adf;*.adz;*.asc;*.atr;*.atr.gz;*.bas;*.bat;*.bin;*.bz2;*.cas;*.cbn;*.ccc;*.ccd;*.cdi;*.cdt;*.chd;*.col;*.com;*.cpc;*.crt;*.cso;*.ctr;*.cue;*.d64;*.dcm;*.dmk;*.dms;*.dsk;*.dump;*.exe;*.fba;*.fds;*.fig;*.g64;*.gam;*.gb;*.gba;*.gbc;*.gdi;*.gen;*.gg;*.gz;*.ima;*.img;*.int;*.ipf;*.iso;*.j64;*.jag;*.jvc;*.lnx;*.m3u;*.md;*.mdf;*.mgd;*.mgt;*.mx1;*.mx2;*.n64;*.nds;*.nes;*.ngc;*.ngp;*.nib;*.os9;*.pbp;*.pce;*.po;*.prg;*.raw;*.rom;*.sad;*.sbt;*.scl;*.sfc;*.sg;*.sh;*.smc;*.smd;*.sms;*.sna;*.st;*.stx;*.swc;*.szx;*.t64;*.tap;*.toc;*.trd;*.tzx;*.udi;*.v64;*.vb;*.vdk;*.vec;*.vsf;*.wav;*.ws;*.wsc;*.x64;*.xex;*.xfd;*.xfd.gz;*.z;*.z2;*.z64;*.z80;*.zip;*.znx||</Research>
 	</General>
 	<AutoConf>
 		<Source_RootPath>\\RECALBOX\roms</Source_RootPath>

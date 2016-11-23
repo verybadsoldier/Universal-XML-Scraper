@@ -4,13 +4,14 @@
 		<UpperCase>True</UpperCase>
 		<Mix>True</Mix>
 		<Image_Extension>.png</Image_Extension>
+		<Research>*.32x;*.a26;*.a52;*.a78;*.adf;*.adz;*.asc;*.atr;*.atr.gz;*.bas;*.bat;*.bin;*.bz2;*.cas;*.cbn;*.ccc;*.ccd;*.cdi;*.cdt;*.chd;*.col;*.com;*.cpc;*.crt;*.cso;*.ctr;*.cue;*.d64;*.dcm;*.dmk;*.dms;*.dsk;*.dump;*.exe;*.fba;*.fds;*.fig;*.g64;*.gam;*.gb;*.gba;*.gbc;*.gdi;*.gen;*.gg;*.gz;*.ima;*.img;*.int;*.ipf;*.iso;*.j64;*.jag;*.jvc;*.lnx;*.m3u;*.md;*.mdf;*.mgd;*.mgt;*.mx1;*.mx2;*.n64;*.nds;*.nes;*.ngc;*.ngp;*.nib;*.os9;*.pbp;*.pce;*.po;*.prg;*.raw;*.rom;*.sad;*.sbt;*.scl;*.sfc;*.sg;*.sh;*.smc;*.smd;*.sms;*.sna;*.st;*.stx;*.swc;*.szx;*.t64;*.tap;*.toc;*.trd;*.tzx;*.udi;*.v64;*.vb;*.vdk;*.vec;*.vsf;*.wav;*.ws;*.wsc;*.x64;*.xex;*.xfd;*.xfd.gz;*.z;*.z2;*.z64;*.z80;*.zip;*.znx||</Research>
 	</General>
 	<AutoConf>
 		<Source_RootPath>\\retropie\roms</Source_RootPath>
-		<Target_XMLName>%Source_RootPath%\..\..\configs\all\emulationstation\gamelists\%System%\gamelist.xml</Target_XMLName>
-		<Target_RomPath>~/RetroPie/roms/%system%/</Target_RomPath>
-		<Source_ImagePath>%Source_RootPath%\..\..\configs\all\emulationstation\downloaded_images\%System%</Source_ImagePath>
-		<Target_ImagePath>/opt/retropie/configs/all/emulationstation/downloaded_images/%system%/</Target_ImagePath>
+		<Target_XMLName>%Source_RootPath%\..\configs\all\emulationstation\gamelists\%System%\gamelist.xml</Target_XMLName>
+		<Target_RomPath>/home/pi/RetroPie/roms/%system%/</Target_RomPath>
+		<Source_ImagePath>%Source_RootPath%\..\configs\all\emulationstation\downloaded_images\%System%</Source_ImagePath>
+		<Target_ImagePath>/home/pi/.emulationstation/downloaded_images/%system%/</Target_ImagePath>
 	</AutoConf>
 	<Plink>
 		<Ip>RETROPIE</Ip>
