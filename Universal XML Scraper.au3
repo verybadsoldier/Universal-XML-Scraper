@@ -6,7 +6,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper XML Universel
-#AutoIt3Wrapper_Res_Fileversion=2.0.0.2
+#AutoIt3Wrapper_Res_Fileversion=2.0.0.3
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -282,6 +282,7 @@ Local $MH_Link_Screenzone = GUICtrlCreateMenuItem("http://www.screenzone.fr/", $
 Local $MH_Link_Recalbox = GUICtrlCreateMenuItem("https://www.recalbox.com/", $MH_Link, 2)
 Local $MH_Link_Retropie = GUICtrlCreateMenuItem("https://retropie.org.uk/", $MH_Link, 3)
 Local $MH_Changelog = GUICtrlCreateMenuItem('Changelog', $MH)
+Local $MH_Log = GUICtrlCreateMenuItem('Log', $MH)
 Local $MH_About = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_help_about"), $MH)
 
 Local $P_BACKGROUND = GUICtrlCreatePic($iScriptPath & "\ProfilsFiles\Ressources\empty.jpg", -1, 0, 600, 293)
@@ -469,6 +470,8 @@ While 1
 			ShellExecute("https://retropie.org.uk/")
 		Case $MH_Changelog
 			_GUI_Update($iChangelogPath, $F_UniversalScraper)
+		Case $MH_Log
+			_GUI_Log($F_UniversalScraper)
 		Case $MH_About ;Help
 			SoundPlay($iScriptPath & "\Ressources\jingle_uxs.MP3")
 			$sMsg = "UNIVERSAL XML SCRAPER - " & $iScriptVer & @CRLF
@@ -1356,6 +1359,51 @@ Func _GUI_Update($iChangelogPath, $F_UniversalScraper = "")
 
 EndFunc   ;==>_GUI_Update
 
+Func _GUI_Log($F_UniversalScraper = "")
+	_LOG("When you clic 'CANCEL' Log will be ready to be paste in http://pastebin.com/", 0, $iLOGPath)
+	Local $sDrive, $sDir, $sFileName, $sExtension, $vLogList = ""
+	Local $flog = StringReplace(FileRead($iLOGPath), @LF, @CRLF)
+	Local $aPathSplit = _PathSplit($iLOGPath, $sDrive, $sDir, $sFileName, $sExtension)
+	$aLogList = _FileListToArrayRec($sDrive & $sDir, "*", $FLTAR_FILES, $FLTAR_NORECUR, $FLTAR_SORT, $FLTAR_FULLPATH)
+	For $vBoucle = 1 To UBound($aLogList) - 1
+		$vLogList = $vLogList & $aLogList[$vBoucle] & "|"
+	Next
+
+	#Region ### START Koda GUI section ### Form=
+	$F_Log = GUICreate("Log", 605, 381, 192, 124)
+	$P_Log = GUICtrlCreatePic($iScriptPath & "\Ressources\UXS.jpg", 0, 0, 604, 380)
+	GUICtrlSetState(-1, $GUI_DISABLE)
+	$E_log = GUICtrlCreateEdit($flog, 8, 8, 585, 273, $ES_AUTOVSCROLL + $WS_VSCROLL + $ES_READONLY)
+	$C_Log = GUICtrlCreateCombo("", 8, 296, 275, 25)
+	GUICtrlSetData($C_Log, $vLogList, $iLOGPath)
+	$B_CONFANNUL = GUICtrlCreateButton(_MultiLang_GetText("win_config_Cancel"), 320, 296, 275, 25)
+	GUISetState(@SW_SHOW)
+	#EndRegion ### END Koda GUI section ###
+
+	If IsHWnd($F_UniversalScraper) Then GUISetState(@SW_DISABLE, $F_UniversalScraper)
+
+	While 1
+		$nMsg = GUIGetMsg()
+		Switch $nMsg
+			Case $GUI_EVENT_CLOSE
+				GUIDelete($F_Log)
+				GUISetState(@SW_ENABLE, $F_UniversalScraper)
+				WinActivate($F_UniversalScraper)
+				Return
+			Case $C_Log
+				Local $flog = StringReplace(FileRead(GUICtrlRead($C_Log)), @LF, @CRLF)
+				GUICtrlSetData($E_log, $flog)
+			Case $B_CONFANNUL
+				GUIDelete($F_Log)
+				GUISetState(@SW_ENABLE, $F_UniversalScraper)
+				WinActivate($F_UniversalScraper)
+				ClipPut($flog)
+				Return
+		EndSwitch
+	WEnd
+
+EndFunc   ;==>_GUI_Log
+
 Func _Check_autoconf($oXMLProfil)
 
 	$vAutoconf_Use = IniRead($iINIPath, "LAST_USE", "$vAutoconf_Use", "-1")
@@ -1859,6 +1907,7 @@ Func _SCRAPE($oXMLProfil, $vNbThread = 1, $vFullScrape = 0)
 
 			For $vBoucle = 1 To $vNbThread
 				ShellExecute($iScriptPath & "\" & $iScraper, $vBoucle)
+				_LOG("Start Scrape Engine Number " & $vBoucle, 1, $iLOGPath)
 			Next
 
 			If $aConfig[5] = 0 Or ($aConfig[5] > 0 And FileGetSize($aConfig[0]) < 100) Then
@@ -1873,6 +1922,7 @@ Func _SCRAPE($oXMLProfil, $vNbThread = 1, $vFullScrape = 0)
 ;~ 			_ArrayDisplay($aXMLRomList, "$aXMLRomList")
 
 			Local $vEngineLaunched = 0
+			Local $vEngineTimer = TimerInit()
 			While 1
 				If _MailSlotGetMessageCount($hMailSlotCheckEngine) >= 1 Then
 					$vEngineLaunched += 1
@@ -1880,6 +1930,12 @@ Func _SCRAPE($oXMLProfil, $vNbThread = 1, $vFullScrape = 0)
 					If $vEngineLaunched >= $vNbThread Then ExitLoop
 				EndIf
 				If Not _Check_Cancel() Then Return $aRomList
+				ConsoleWrite((TimerDiff($vEngineTimer) / 1000) & @CRLF)
+				If (TimerDiff($vEngineTimer) / 1000) > 5 Then
+					_LOG("Scrape Engine seems to not launch, check Antivirus and firewall", 2, $iLOGPath)
+					MsgBox($MB_ICONERROR, _MultiLang_GetText("err_title"), _MultiLang_GetText("err_UXSGlobal") & @CRLF & _MultiLang_GetText("err_TimeOut"))
+					Return -1
+				EndIf
 			WEnd
 
 			For $vBoucle = 1 To UBound($aRomList) - 1
