@@ -85,7 +85,11 @@ Func _LOG($iMessage = "", $iLOGType = 0, $iLOGPath = @ScriptDir & "\Log.txt")
 			If $iLOGType <= $iVerboseLVL Then FileWrite($iLOGPath, $iTimestamp & "> " & $iMessage & @CRLF)
 			ConsoleWrite("+" & $iMessage & @CRLF)
 		Case 2
-			If $iLOGType <= $iVerboseLVL Then FileWrite($iLOGPath, $iTimestamp & "/!\ " & $iMessage & @CRLF)
+			If $iLOGType <= $iVerboseLVL Then
+				FileWrite($iLOGPath, $iTimestamp & "--------------------------------------------------------------------------------" & @CRLF)
+				FileWrite($iLOGPath, $iTimestamp & "/!\ " & $iMessage & @CRLF)
+				FileWrite($iLOGPath, $iTimestamp & "--------------------------------------------------------------------------------" & @CRLF)
+			EndIf
 			ConsoleWrite("!" & $iMessage & @CRLF)
 		Case 3
 			If $iLOGType <= $iVerboseLVL Then

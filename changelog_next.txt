@@ -1,3 +1,11 @@
+2.0.0.2
+*Corrected :
+- Added a Timeout for Check Engine start (If TimedOut, check your Firewall and/or Antivirus)
+- Standard Name format will be only Game Name (No more country added)
+*Added :
+- Log gui to show log, with last log put in clipboard when the GUI is canceled
+- 2 Retropie Profil with Sselph's path
+
 2.0.0.1
 *Corrected :
 - Recalbox default path for autoconfig weren't good

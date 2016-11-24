@@ -60,7 +60,7 @@
 		<Source_Type>XML_Value</Source_Type>
 		<Source_Value>Data/jeu/noms/nom_%COUNTRY%</Source_Value>
 		<Target_Type>XML_Value_FORMAT</Target_Type>
-		<Target_FORMAT>%Name+Country%</Target_FORMAT>
+		<Target_FORMAT>%%</Target_FORMAT>
 		<Target_Value>game/name</Target_Value>
 		<Target_CASE>Default</Target_CASE>
 	</Element>
