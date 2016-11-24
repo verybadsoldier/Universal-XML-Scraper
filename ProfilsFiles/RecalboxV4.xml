@@ -10,9 +10,9 @@
 	</General>
 	<AutoConf>
 		<Source_RootPath>\\RECALBOX\share\roms</Source_RootPath>
-		<Target_XMLName>%Source_RootPath%\gamelist.xml</Target_XMLName>
+		<Target_XMLName>%Source_RootPath%\%system%\gamelist.xml</Target_XMLName>
 		<Target_RomPath>./</Target_RomPath>
-		<Source_ImagePath>%Source_RootPath%\downloaded_images</Source_ImagePath>
+		<Source_ImagePath>%Source_RootPath%\%system%\downloaded_images</Source_ImagePath>
 		<Target_ImagePath>./downloaded_images/</Target_ImagePath>
 	</AutoConf>
 	<Plink>

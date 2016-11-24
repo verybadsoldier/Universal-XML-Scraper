@@ -1,3 +1,9 @@
+2.0.0.1
+*Corrected :
+- Recalbox default path for autoconfig weren't good
+
+Really sorry about this :S
+
 2.0.0.0
 First STABLE Version !!!!
 *Corrected :
