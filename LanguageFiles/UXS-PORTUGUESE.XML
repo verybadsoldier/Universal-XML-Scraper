@@ -14,6 +14,7 @@
 	<err_Connection>(Problem connecting to the database)</err_Connection>
 	<err_TimeOut>(Time Out)</err_TimeOut>
 	<err_SystemList>(err_SystemList)</err_SystemList>
+	<err_ScrapeEngine>(Scrape Engine launch Failed. Thank you to check your Antivirus)</err_ScrapeEngine>
 	<err_PlinkGlobal>SSH Command had a problem</err_PlinkGlobal>
 	<err_PlinkConnection>(Connexion can't be established)</err_PlinkConnection>
 	<err_NotRegistered>Sorry, your account can't be found (Check your login and password)</err_NotRegistered>

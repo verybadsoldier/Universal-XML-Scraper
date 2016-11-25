@@ -1,12 +1,11 @@
 #Region ;**** Directives created by AutoIt3Wrapper_GUI ****
 #AutoIt3Wrapper_Icon=Ressources\Universal_Xml_Scraper.ico
-#AutoIt3Wrapper_Outfile=..\BIN\Universal_XML_Scraper.exe
-#AutoIt3Wrapper_Outfile_x64=..\BIN\Universal_XML_Scraper64.exe
-#AutoIt3Wrapper_UseUpx=n
+#AutoIt3Wrapper_Outfile=..\BIN2\Universal_XML_Scraper.exe
+#AutoIt3Wrapper_Outfile_x64=..\BIN2\Universal_XML_Scraper64.exe
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper XML Universel
-#AutoIt3Wrapper_Res_Fileversion=2.0.0.3
+#AutoIt3Wrapper_Res_Fileversion=2.0.0.4
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -70,14 +69,25 @@ Global $MS_AutoConfigItem
 #include "./Include/MailSlot.au3"
 #include "./Include/_GraphGDIPlus.au3"
 #include "./Include/_MyFunction.au3"
+#include "./Include/_ITaskBarList.au3"
 ;~ #include "./Include/_AutoItErrorTrap.au3"
 
 ;~ _AutoItErrorTrap("Main Module", "Hi!" & @CRLF & @CRLF & "An error was detected in the program, you can try again," & _
 ;~ 		" cancel to exit or continue to see more details of the error." & @CRLF & @CRLF & "Sorry for the inconvenience!")
 
+$oTaskbar = _ITaskBar_CreateTaskBarObj()
+
 ;Checking Version
 ;----------------
 _LOG_Ceation($iLOGPath) ; Starting Log
+
+If @OSArch = "X64" Then
+	_LOG("Scrape in x64", 0, $iLOGPath)
+	Local $iScraper = "Scraper64.exe"
+Else
+	_LOG("Scrape in x86", 0, $iLOGPath)
+	Local $iScraper = "Scraper.exe"
+EndIf
 
 If @Compiled Then
 	Local $iScriptVer = FileGetVersion(@ScriptFullPath)
@@ -90,6 +100,10 @@ If @Compiled Then
 		FileDelete($iScriptPath & "\Mix")
 		FileDelete($iScriptPath & "\ProfilsFiles")
 		_LOG("Update file needed from version " & $iINIVer & " to " & $iScriptVer, 1, $iLOGPath)
+		While ProcessExists($iScraper)
+			ProcessClose($iScraper)
+		WEnd
+		FileDelete($iScraper)
 	Else
 		_LOG("No updated files needed (Version : " & $iScriptVer & ")", 1, $iLOGPath)
 	EndIf
@@ -171,14 +185,6 @@ Global $iPathMixTmp = $iMIXPath & "\TEMP" ; Where we are storing the current MIX
 Global $iURLMirror = "http://uxs-screenscraper.recalbox.com/"
 Global $iURLSS = "http://www.screenscraper.fr/"
 Global $iURLScraper = $iURLMirror
-
-If @OSArch = "X64" Then
-	_LOG("Scrape in x64", 0, $iLOGPath)
-	Local $iScraper = "Scraper64.exe"
-Else
-	_LOG("Scrape in x86", 0, $iLOGPath)
-	Local $iScraper = "Scraper.exe"
-EndIf
 
 _LOG("Verbose LVL : " & $iVerboseLVL, 1, $iLOGPath)
 _LOG("Path to ini : " & $iINIPath, 1, $iLOGPath)
@@ -294,6 +300,8 @@ Dim $F_UniversalScraper_AccelTable[3][2] = [["!+{DOWN}", $MC_Config_LU], ["!+{F2
 GUISetAccelerators($F_UniversalScraper_AccelTable)
 GUISetState(@SW_SHOW)
 #EndRegion ### END Koda GUI section ###
+
+_ITaskBar_SetThumbNailToolTip($F_UniversalScraper)
 
 $vProfilDefault = IniRead($iINIPath, "LAST_USE", "$vProfilsPath", "")
 If $vProfilDefault = "" Then
@@ -1600,6 +1608,11 @@ EndFunc   ;==>_CalcHash
 Func _XMLSystem_Create($vSSLogin = "", $vSSPassword = "")
 	Local $oXMLSystem, $vXMLSystemPath = $iScriptPath & "\Ressources\systemlist.xml"
 	$vXMLSystemPath = _DownloadWRetry($iURLScraper & "api/systemesListe.php?devid=" & $iDevId & "&devpassword=" & $iDevPassword & "&softname=" & $iSoftname & "&output=XML&ssid=" & $vSSLogin & "&sspassword=" & $vSSPassword, $vXMLSystemPath)
+	If $vXMLSystemPath < 0 Then
+		$iURLScraper = $iURLSS
+		IniWrite($iINIPath, "LAST_USE", "$vMirror", 0)
+		$vXMLSystemPath = _DownloadWRetry($iURLScraper & "api/systemesListe.php?devid=" & $iDevId & "&devpassword=" & $iDevPassword & "&softname=" & $iSoftname & "&output=XML&ssid=" & $vSSLogin & "&sspassword=" & $vSSPassword, $vXMLSystemPath)
+	EndIf
 	Switch $vXMLSystemPath
 		Case -1
 			MsgBox($MB_ICONERROR, _MultiLang_GetText("err_title"), _MultiLang_GetText("err_UXSGlobal") & @CRLF & _MultiLang_GetText("err_Connection"))
@@ -1933,15 +1946,18 @@ Func _SCRAPE($oXMLProfil, $vNbThread = 1, $vFullScrape = 0)
 				ConsoleWrite((TimerDiff($vEngineTimer) / 1000) & @CRLF)
 				If (TimerDiff($vEngineTimer) / 1000) > 5 Then
 					_LOG("Scrape Engine seems to not launch, check Antivirus and firewall", 2, $iLOGPath)
-					MsgBox($MB_ICONERROR, _MultiLang_GetText("err_title"), _MultiLang_GetText("err_UXSGlobal") & @CRLF & _MultiLang_GetText("err_TimeOut"))
+					MsgBox($MB_ICONERROR, _MultiLang_GetText("err_title"), _MultiLang_GetText("err_UXSGlobal") & @CRLF & _MultiLang_GetText("err_ScrapeEngine"))
 					Return -1
 				EndIf
 			WEnd
+
+			_ITaskBar_SetProgressState($F_UniversalScraper, 2)
 
 			For $vBoucle = 1 To UBound($aRomList) - 1
 				$vSendTimer = TimerInit()
 				Local $PercentProgression = Round(($vBoucle * 100) / UBound($aRomList) - 1)
 				GUICtrlSetData($PB_SCRAPE, $PercentProgression)
+				_ITaskBar_SetProgressValue($F_UniversalScraper, $PercentProgression)
 				_GUICtrlStatusBar_SetText($L_SCRAPE, $aRomList[$vBoucle][2])
 				_GUICtrlStatusBar_SetText($L_SCRAPE, "Sending  : " & _FormatElapsedTime($vSendTimerLeft), 1)
 				_GUICtrlStatusBar_SetText($L_SCRAPE, @TAB & @TAB & $vBoucle & "/" & UBound($aRomList) - 1, 2)
@@ -2024,6 +2040,7 @@ Func _SCRAPE($oXMLProfil, $vNbThread = 1, $vFullScrape = 0)
 					$iNumberOfMessagesOverall += 1
 					Local $PercentProgression = Round(($iNumberOfMessagesOverall * 100) / $vTotalRomToScrap)
 					GUICtrlSetData($PB_SCRAPE, $PercentProgression)
+					_ITaskBar_SetProgressValue($F_UniversalScraper, $PercentProgression)
 					$vMessageFromChild = _ReadMessage($hMailSlotMother)
 					$aMessageFromChild = StringSplit($vMessageFromChild, '|', $STR_ENTIRESPLIT + $STR_NOCOUNT)
 					ReDim $aMessageFromChild[2]
@@ -2063,6 +2080,7 @@ Func _SCRAPE($oXMLProfil, $vNbThread = 1, $vFullScrape = 0)
 			_XML_SaveToFile($oXMLAfterTidy, $aConfig[0])
 
 			GUICtrlSetData($PB_SCRAPE, 0)
+			_ITaskBar_SetProgressState($F_UniversalScraper)
 			_GUICtrlStatusBar_SetText($L_SCRAPE, "", 0)
 			_GUICtrlStatusBar_SetText($L_SCRAPE, "", 1)
 			_GUICtrlStatusBar_SetText($L_SCRAPE, "", 2)

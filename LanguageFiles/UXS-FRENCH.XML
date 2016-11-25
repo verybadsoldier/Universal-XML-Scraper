@@ -12,6 +12,7 @@
 	<err_Connection>(Problème de connexion à la BDD)</err_Connection>
 	<err_TimeOut>(Time Out)</err_TimeOut>
 	<err_SystemList>(err_SystemList)</err_SystemList>
+	<err_ScrapeEngine>(Impossible de lancer les moteurs de scrape. Merci de verifier votre Antivirus)</err_ScrapeEngine>
 	<err_PlinkGlobal>La commande SSH a rencontré un problème</err_PlinkGlobal>
 	<err_PlinkConnection>(Impossible d'établir la connexion)</err_PlinkConnection>
 	<err_NotRegistered>Désolé, votre compte n'a pas été trouvé (vérifiez votre login et mot de passe)</err_NotRegistered>

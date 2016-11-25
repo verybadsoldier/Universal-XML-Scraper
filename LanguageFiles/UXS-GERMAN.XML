@@ -14,6 +14,7 @@
 	<err_Connection>(Problem beim Verbinden zur Datenbank)</err_Connection>
 	<err_TimeOut>(Time Out)</err_TimeOut>
 	<err_SystemList>(err_SystemList)</err_SystemList>
+	<err_ScrapeEngine>(Fehler beim Start der Scrape Engine. Vielen Dank, dass Sie Ihr Antivirus überprüfen)</err_ScrapeEngine>
 	<err_PlinkGlobal>SSH Befehl verursachte ein Problem</err_PlinkGlobal>
 	<err_PlinkConnection>(Verbindung konnte nicht hergestellt werden)</err_PlinkConnection>
 	<err_NotRegistered>Entschuldigung, dein Account konnte nicht gefunden werden (bitte überprüfe deine Logindaten)</err_NotRegistered>

@@ -1,6 +1,15 @@
+2.0.0.3
+*Corrected :
+- Fallback when Digimirror don't work
+- Scraper.exe and Scraper64.exe better update function
+- Error Message when Scrape engine doesn't start (google translated)
+* Added :
+- NO-Into and other matching folder name in systemlist.txt
+- Progress bar in UXS Icon
+
 2.0.0.2
 *Corrected :
-- Added a Timeout to Check Engine start (If TimedOut, check your Firewall and/or Antivirus)
+- Added a Timeout for Check Engine start (If TimedOut, check your Firewall and/or Antivirus)
 - Standard Name format will be only Game Name (No more country added)
 *Added :
 - Log gui to show log, with last log put in clipboard when the GUI is canceled
