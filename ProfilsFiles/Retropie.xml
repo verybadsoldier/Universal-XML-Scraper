@@ -10,9 +10,9 @@
 	</General>
 	<AutoConf>
 		<Source_RootPath>\\retropie\roms</Source_RootPath>
-		<Target_XMLName>%Source_RootPath%\..\configs\all\emulationstation\gamelists\%System%\gamelist.xml</Target_XMLName>
+		<Target_XMLName>%host%\configs\all\emulationstation\gamelists\%System%\gamelist.xml</Target_XMLName>
 		<Target_RomPath>/home/pi/RetroPie/roms/%system%/</Target_RomPath>
-		<Source_ImagePath>%Source_RootPath%\..\configs\all\emulationstation\downloaded_images\%System%</Source_ImagePath>
+		<Source_ImagePath>%host%\configs\all\emulationstation\downloaded_images\%System%</Source_ImagePath>
 		<Target_ImagePath>/home/pi/.emulationstation/downloaded_images/%system%/</Target_ImagePath>
 	</AutoConf>
 	<Plink>

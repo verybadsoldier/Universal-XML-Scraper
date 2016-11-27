@@ -17,7 +17,6 @@ Func _URIEncode($sData)
     Local $nChar
     $sData=""
     For $i = 1 To $aData[0]
-        ConsoleWrite($aData[$i] & @CRLF)
         $nChar = Asc($aData[$i])
         Switch $nChar
             Case 45, 46, 48-57, 65 To 90, 95, 97 To 122, 126

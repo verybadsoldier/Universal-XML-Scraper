@@ -58,6 +58,7 @@
 		<mnu_scrape_fullscrape>Scrape alle Systeme</mnu_scrape_fullscrape>
 		
 		<mnu_ssh>SSH Befehle</mnu_ssh>
+		<mnu_ssh_Parameter>SSH-Parameter</mnu_ssh_Parameter>
 		<mnu_ssh_killall>Emulationstation beenden</mnu_ssh_killall>
 		<mnu_ssh_start>Emulationstation starten</mnu_ssh_start>
 		<mnu_ssh_reboot>System neustarten</mnu_ssh_reboot>

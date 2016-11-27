@@ -1,3 +1,14 @@
+2.0.0.4
+*Corrected :
+- Alternative picture doesn't work all the time, now work every time.
+- Name in missing.tx aren't troncated any more when too longue...
+- Resluts windows now show correct number for "found" roms.
+* Added :
+- Message to kill ES when network path are detected
+- New Menu to configure SSH Parameter
+- adding a new tag for Path config : %host% = first part of the Source_RootPath (ex : \\Retropie\rom will give \\Retropie and E:\rom will give E:\)
+- Retropie path corrected (Again... Sorry)
+
 2.0.0.3
 *Corrected :
 - Fallback when Digimirror don't work

@@ -1,11 +1,11 @@
 #Region ;**** Directives created by AutoIt3Wrapper_GUI ****
 #AutoIt3Wrapper_Icon=Ressources\Universal_Xml_Scraper.ico
-#AutoIt3Wrapper_Outfile=..\BIN2\Universal_XML_Scraper.exe
-#AutoIt3Wrapper_Outfile_x64=..\BIN2\Universal_XML_Scraper64.exe
+#AutoIt3Wrapper_Outfile=..\BIN\Universal_XML_Scraper.exe
+#AutoIt3Wrapper_Outfile_x64=..\BIN\Universal_XML_Scraper64.exe
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper XML Universel
-#AutoIt3Wrapper_Res_Fileversion=2.0.0.4
+#AutoIt3Wrapper_Res_Fileversion=2.0.0.5
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -196,7 +196,7 @@ _LOG("Path to language : " & $iLangPath, 1, $iLOGPath)
 Global $vUserLang = IniRead($iINIPath, "LAST_USE", "$vUserLang", -1)
 Global $MP_, $aPlink_Command, $vScrapeCancelled
 Global $vProfilsPath = IniRead($iINIPath, "LAST_USE", "$vProfilsPath", -1)
-Local $vXpath2RomPath, $vFullTimer, $vRomTimer, $aPlink_Command, $vSelectedProfil = -1
+Local $vXpath2RomPath, $vFullTimer, $vRomTimer, $vSelectedProfil = -1
 Local $L_SCRAPE_Parts[3] = [300, 480, -1]
 Local $oXMLProfil, $oXMLSystem
 Local $aConfig, $aRomList, $aXMLRomList
@@ -275,6 +275,8 @@ Local $MS_Separation = GUICtrlCreateMenuItem("", $MS)
 Local $MS_FullScrape = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_scrape_fullscrape"), $MS)
 
 Local $MP = GUICtrlCreateMenu(_MultiLang_GetText("mnu_ssh"))
+Local $MP_Parameter = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_ssh_Parameter"), $MP)
+Local $MP_Separation = GUICtrlCreateMenuItem("", $MP)
 GUICtrlSetState($MP, $GUI_DISABLE)
 
 Local $MH = GUICtrlCreateMenu(_MultiLang_GetText("mnu_help"))
@@ -462,6 +464,25 @@ While 1
 			EndIf
 			$aDIRList = _Check_autoconf($oXMLProfil)
 			_GUI_Refresh($oXMLProfil)
+			Local $vSystem = StringSplit(IniRead($iINIPath, "LAST_USE", "$vSource_RomPath", ""), "\")
+			$vSystem = $vSystem[UBound($vSystem) - 1]
+
+			If $aDIRList <> -1 Then
+				For $vBoucle = 1 To UBound($MS_AutoConfigItem) - 1
+					If $aDIRList[$vBoucle][0] = $vSystem Then
+						_LOG("Checked system :" & $aDIRList[$vBoucle][0], 0, $iLOGPath)
+						IniWrite($iINIPath, "LAST_USE", "$vSource_RomPath", $aDIRList[$vBoucle][1])
+						IniWrite($iINIPath, "LAST_USE", "$vTarget_RomPath", $aDIRList[$vBoucle][2])
+						IniWrite($iINIPath, "LAST_USE", "$vTarget_XMLName", $aDIRList[$vBoucle][3])
+						IniWrite($iINIPath, "LAST_USE", "$vSource_ImagePath", $aDIRList[$vBoucle][4])
+						IniWrite($iINIPath, "LAST_USE", "$vTarget_ImagePath", $aDIRList[$vBoucle][5])
+						$nMsg = 0
+						_GUI_Refresh($oXMLProfil)
+					EndIf
+				Next
+			EndIf
+		Case $MP_Parameter
+			_GUI_Config_SSHParameter($oXMLProfil)
 		Case $MH_Help
 			ShellExecute("https://github.com/Universal-Rom-Tools/Universal-XML-Scraper/wiki")
 		Case $MH_Support_Screenscraper
@@ -1223,6 +1244,7 @@ Func _GUI_Config_autoconf($oXMLProfil)
 				Else
 					$vAutoconf_Use = 0
 				EndIf
+
 				IniWrite($iINIPath, "LAST_USE", "$vAutoconf_Use", $vAutoconf_Use)
 				_LOG("AutoConf Path Configuration Saved", 0, $iLOGPath)
 				_LOG("------------------------", 1, $iLOGPath)
@@ -1238,6 +1260,48 @@ Func _GUI_Config_autoconf($oXMLProfil)
 		EndSwitch
 	WEnd
 EndFunc   ;==>_GUI_Config_autoconf
+
+Func _GUI_Config_SSHParameter($oXMLProfil)
+	#Region ### START Koda GUI section ### Form=
+	$F_SSH = GUICreate("SSH", 234, 130, -1, -1, -1, BitOR($WS_EX_TOPMOST, $WS_EX_WINDOWEDGE))
+	$B_CONFENREG = GUICtrlCreateButton(_MultiLang_GetText("win_config_Enreg"), 8, 80, 105, 41)
+	$B_CONFANNUL = GUICtrlCreateButton(_MultiLang_GetText("win_config_Cancel"), 121, 80, 105, 41)
+	$L_Host = GUICtrlCreateLabel("Host", 16, 10)
+	$I_Host = GUICtrlCreateInput(_XML_Read('Profil/Plink/Ip', 0, "", $oXMLProfil), 96, 8, 129, 21)
+	$L_Login = GUICtrlCreateLabel("Login", 16, 34)
+	$I_Login = GUICtrlCreateInput(_XML_Read('Profil/Plink/Root', 0, "", $oXMLProfil), 96, 32, 129, 21)
+	$L_Pwd = GUICtrlCreateLabel("Password", 16, 58)
+	$I_Pwd = GUICtrlCreateInput(_XML_Read('Profil/Plink/Pswd', 0, "", $oXMLProfil), 96, 56, 129, 21)
+	GUISetState(@SW_SHOW)
+	GUISetState(@SW_DISABLE, $F_UniversalScraper)
+	#EndRegion ### END Koda GUI section ###
+
+	While 1
+		$nMsg = GUIGetMsg()
+		Switch $nMsg
+			Case $GUI_EVENT_CLOSE, $B_CONFANNUL
+				GUIDelete($F_SSH)
+				GUISetState(@SW_ENABLE, $F_UniversalScraper)
+				WinActivate($F_UniversalScraper)
+				_LOG("SSH Parameter Canceled", 0, $iLOGPath)
+				Return
+			Case $B_CONFENREG
+				_XML_Replace("Profil/Plink/Ip", GUICtrlRead($I_Host), 0, "", $oXMLProfil)
+				_XML_Replace("Profil/Plink/Root", GUICtrlRead($I_Login), 0, "", $oXMLProfil)
+				_XML_Replace("Profil/Plink/Pswd", GUICtrlRead($I_Pwd), 0, "", $oXMLProfil)
+
+				_LOG("SSH Parameter Saved", 0, $iLOGPath)
+				_LOG("------------------------", 1, $iLOGPath)
+				_LOG("Host = " & GUICtrlRead($I_Host), 1, $iLOGPath)
+				_LOG("Login = " & GUICtrlRead($I_Login), 1, $iLOGPath)
+				_LOG("Password = " & GUICtrlRead($I_Pwd), 1, $iLOGPath)
+				GUIDelete($F_SSH)
+				GUISetState(@SW_ENABLE, $F_UniversalScraper)
+				WinActivate($F_UniversalScraper)
+				Return
+		EndSwitch
+	WEnd
+EndFunc   ;==>_GUI_Config_SSHParameter
 
 Func _GUI_Refresh($oXMLProfil = -1, $ScrapIP = 0, $vScrapeOK = 0) ;Refresh GUI
 	If $oXMLProfil <> -1 Then
@@ -1455,20 +1519,13 @@ Func _Check_autoconf($oXMLProfil)
 			_ArrayColInsert($aDIRList, $vBoucle)
 		Next
 		For $vBoucle = 1 To UBound($aDIRList) - 1
-;~ 			$aDIRList[$vBoucle][1] = $vSource_RootPath & "\" & $aDIRList[$vBoucle][0]
-;~ 			$aDIRList[$vBoucle][2] = $vTarget_RomPath
-;~ 			$aDIRList[$vBoucle][3] = $aDIRList[$vBoucle][1] & "\" & $vTarget_XMLName
-;~ 			$aDIRList[$vBoucle][4] = $aDIRList[$vBoucle][1] & "\" & $vSource_ImagePath
-;~ 			$aDIRList[$vBoucle][5] = $vTarget_ImagePath
-
 			$aDIRList[$vBoucle][1] = $vSource_RootPath & "\" & $aDIRList[$vBoucle][0]
-			$aDIRList[$vBoucle][2] = StringReplace(StringReplace(StringReplace($vTarget_RomPath, "%SystemDir%", $aDIRList[$vBoucle][1]), "%System%", $aDIRList[$vBoucle][0]), "%Source_RootPath%", $vSource_RootPath)
-			$aDIRList[$vBoucle][3] = StringReplace(StringReplace(StringReplace($vTarget_XMLName, "%SystemDir%", $aDIRList[$vBoucle][1]), "%System%", $aDIRList[$vBoucle][0]), "%Source_RootPath%", $vSource_RootPath)
-			$aDIRList[$vBoucle][4] = StringReplace(StringReplace(StringReplace($vSource_ImagePath, "%SystemDir%", $aDIRList[$vBoucle][1]), "%System%", $aDIRList[$vBoucle][0]), "%Source_RootPath%", $vSource_RootPath)
-			$aDIRList[$vBoucle][5] = StringReplace(StringReplace(StringReplace($vTarget_ImagePath, "%SystemDir%", $aDIRList[$vBoucle][1]), "%System%", $aDIRList[$vBoucle][0]), "%Source_RootPath%", $vSource_RootPath)
+			$aDIRList[$vBoucle][2] = _ReplacePath($vTarget_RomPath, $aDIRList, $vBoucle, $vSource_RootPath)
+			$aDIRList[$vBoucle][3] = _ReplacePath($vTarget_XMLName, $aDIRList, $vBoucle, $vSource_RootPath)
+			$aDIRList[$vBoucle][4] = _ReplacePath($vSource_ImagePath, $aDIRList, $vBoucle, $vSource_RootPath)
+			$aDIRList[$vBoucle][5] = _ReplacePath($vTarget_ImagePath, $aDIRList, $vBoucle, $vSource_RootPath)
 			DirCreate($aDIRList[$vBoucle][4])
 			If Not FileExists($aDIRList[$vBoucle][3]) Then _FileCreate($aDIRList[$vBoucle][3])
-
 			$MS_AutoConfigItem[$vBoucle] = GUICtrlCreateMenuItem($aDIRList[$vBoucle][0], $MS_AutoConfig)
 		Next
 ;~ 		_ArrayDisplay($aDIRList, "$aDIRList")
@@ -1487,6 +1544,18 @@ Func _Check_autoconf($oXMLProfil)
 		Return -1
 	EndIf
 EndFunc   ;==>_Check_autoconf
+
+Func _ReplacePath($vPath, $aDIRList, $vBoucle, $vSource_RootPath)
+	Local $sDrive, $sDir, $sFileName, $sExtension
+	Local $aPathSplit = _PathSplit($aDIRList[$vBoucle][1], $sDrive, $sDir, $sFileName, $sExtension)
+	Local $vPathOld = $vPath
+	$vPath = StringReplace($vPath, "%host%", $sDrive)
+	$vPath = StringReplace($vPath, "%SystemDir%", $aDIRList[$vBoucle][1])
+	$vPath = StringReplace($vPath, "%System%", $aDIRList[$vBoucle][0])
+	$vPath = StringReplace($vPath, "%Source_RootPath%", $vSource_RootPath)
+	_LOG("ReplacePath : " & $vPathOld & " In : " & $vPath, 1, $iLOGPath)
+	Return $vPath
+EndFunc   ;==>_ReplacePath
 
 Func _Check_Cancel()
 	If GUIGetMsg() = $B_SCRAPE Or $vScrapeCancelled = 1 Then
@@ -1698,8 +1767,8 @@ Func _Results($aRomList, $vNbThread, $vFullTimer, $vFullScrape = 0)
 	Local $vTitle
 	For $vBoucle = 1 To UBound($aRomList) - 1
 		$vTimeMoy += $aRomList[$vBoucle][10]
-		If $aRomList[$vBoucle][12] = 1 Then $vNbRomOK += 1
-		If $aRomList[$vBoucle][11] = 1 Then $vNbRomScraped += 1
+		If $aRomList[$vBoucle][9] = 1 Then $vNbRomOK += 1
+		If $aRomList[$vBoucle][12] = 1 Then $vNbRomScraped += 1
 	Next
 	If $vNbRomScraped > 0 Then
 		$vTimeMoy = Round($vTimeMoy / $vNbRomScraped, 2) & " sec."
@@ -1713,7 +1782,7 @@ Func _Results($aRomList, $vNbThread, $vFullTimer, $vFullScrape = 0)
 	Else
 		$vNbRomOKRatio = 'N/A'
 	EndIf
-	$vNbRom = UBound($aRomList) - 1
+	If IsArray($aRomList) Then $vNbRom = UBound($aRomList) - 1
 
 	_LOG("Results", 0, $iLOGPath)
 	_LOG("Roms : = " & $vNbRom, 0, $iLOGPath)
@@ -1862,6 +1931,7 @@ Func _SCRAPE($oXMLProfil, $vNbThread = 1, $vFullScrape = 0)
 
 	If $aConfig <> 0 Then
 		_GUI_Refresh($oXMLProfil, 1)
+
 		Local $vScrapeCancelled = 0
 		Local $aConfig = _LoadConfig($oXMLProfil)
 		Local $aExtToHide = StringSplit(_XML_Read('/Profil/Element[Source_Value="%AutoHide%"]/AutoHideEXT', 0, "", $oXMLProfil), "|")
@@ -1870,6 +1940,8 @@ Func _SCRAPE($oXMLProfil, $vNbThread = 1, $vFullScrape = 0)
 		Local $vMissingRom_Mode = $aConfig[6]
 		Local $vThreadUsed = 1
 		$aConfig[8] = "0000"
+
+		If StringLeft($aConfig[0], 2) = "\\" Then _Plink($oXMLProfil, "killall")
 
 		$vTEMPPathSSCheck = _DownloadWRetry($iURLScraper & "api/ssuserInfos.php?devid=xxx&devpassword=yyy&softname=zzz&output=XML&ssid=" & $aConfig[13] & "&sspassword=" & $aConfig[14], $iScriptPath & "\Ressources\SSCheck.xml")
 		$vSSParticipation = Number(_XML_Read("/Data/ssuser/uploadsysteme", 0, $vTEMPPathSSCheck)) + Number(_XML_Read("/Data/ssuser/uploadinfos", 0, $vTEMPPathSSCheck)) + Number(_XML_Read("/Data/ssuser/romasso", 0, $vTEMPPathSSCheck)) + Number(_XML_Read("/Data/ssuser/uploadmedia", 0, $vTEMPPathSSCheck))
@@ -1943,7 +2015,6 @@ Func _SCRAPE($oXMLProfil, $vNbThread = 1, $vFullScrape = 0)
 					If $vEngineLaunched >= $vNbThread Then ExitLoop
 				EndIf
 				If Not _Check_Cancel() Then Return $aRomList
-				ConsoleWrite((TimerDiff($vEngineTimer) / 1000) & @CRLF)
 				If (TimerDiff($vEngineTimer) / 1000) > 5 Then
 					_LOG("Scrape Engine seems to not launch, check Antivirus and firewall", 2, $iLOGPath)
 					MsgBox($MB_ICONERROR, _MultiLang_GetText("err_title"), _MultiLang_GetText("err_UXSGlobal") & @CRLF & _MultiLang_GetText("err_ScrapeEngine"))
@@ -2048,7 +2119,7 @@ Func _SCRAPE($oXMLProfil, $vNbThread = 1, $vFullScrape = 0)
 					Dim $aXMLSource
 					_GUICtrlStatusBar_SetText($L_SCRAPE, $aRomList[$aMessageFromChild[0]][2])
 					_GUICtrlStatusBar_SetText($L_SCRAPE, "Creating  : " & _FormatElapsedTime($vCreateTimerLeft), 1)
-					_GUICtrlStatusBar_SetText($L_SCRAPE, @TAB & @TAB & $iNumberOfMessagesOverall & "/" & ($vTotalRomToScrap) - 1, 2)
+					_GUICtrlStatusBar_SetText($L_SCRAPE, @TAB & @TAB & $iNumberOfMessagesOverall & "/" & ($vTotalRomToScrap), 2)
 					_FileReadToArray($iTEMPPath & "\scraped\" & $aMessageFromChild[0] & ".xml", $aXMLSource)
 					For $vBoucle = 1 To UBound($aXMLSource) - 1
 						_ArrayAdd($aXMLTarget, $aXMLSource[$vBoucle])
@@ -2097,13 +2168,15 @@ Func _SCRAPE($oXMLProfil, $vNbThread = 1, $vFullScrape = 0)
 EndFunc   ;==>_SCRAPE
 
 Func _CreateMissing($aRomList, $aConfig)
+	Local $vMaxNameLen = 68
 	$vSysName = _XML_Read('/Data/systeme[id=' & $aConfig[12] & ']/noms/nom_eu', 0, $iScriptPath & "\Ressources\systemlist.xml")
 ;~ 	_ArrayDisplay($aConfig, "$aConfig")
 	If Not _FileCreate($aConfig[1] & '\_' & $vSysName & "_missing.txt") Then MsgBox(4096, "Error", " Erreur creation du Fichier missing      error:" & @error)
 	For $vBoucle = 1 To UBound($aRomList) - 1
 		If $aRomList[$vBoucle][9] = 0 Then
 			$tCur = _Date_Time_GetLocalTime()
-			$vMissing_Line1 = StringLeft($aRomList[$vBoucle][0] & "                                                                     ", 68)
+			If StringLen($aRomList[$vBoucle][0]) > 68 Then $vMaxNameLen = StringLen($aRomList[$vBoucle][0]) + 1
+			$vMissing_Line1 = StringLeft($aRomList[$vBoucle][0] & "                                                                     ", $vMaxNameLen)
 			$vMissing_Line2 = $aRomList[$vBoucle][5]
 			$vMissing_Line3 = StringRight("                  " & StringRegExpReplace($aRomList[$vBoucle][4], '\G(\d+?)(?=(\d{3})+(\D|$))', '$1 '), 17) & "    "
 			$hFile = _WinAPI_CreateFile($aRomList[$vBoucle][1], 2)

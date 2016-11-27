@@ -6,7 +6,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper
-#AutoIt3Wrapper_Res_Fileversion=1.0.0.1
+#AutoIt3Wrapper_Res_Fileversion=1.0.0.2
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -246,8 +246,10 @@ Func _XML_Read_Source($aRomList, $vBoucle, $aConfig, $oXMLProfil, $vWhile)
 				Select
 					Case Number($vValue) = -2
 						Return -1
-					Case $vValue <> -1
+					Case _Coalesce($vValue, -1) <> -1
 						Return $vValue
+					Case Else
+						Return -1
 				EndSelect
 			Next
 			Return ""
@@ -361,7 +363,7 @@ Func _Picture_Download($vCountryPref, $aRomList, $vBoucle, $vWhile, $oXMLProfil,
 	EndIf
 
 	$vValue = _DownloadWRetry($vDownloadURL, $vDownloadPath)
-	If $vValue <> -1 And $vValue <> "" Then
+	If $vValue <> -1 And $vValue <> "" And FileExists($vDownloadPath) Then
 		Return $vTargetPicturePath
 	Else
 		Return -1

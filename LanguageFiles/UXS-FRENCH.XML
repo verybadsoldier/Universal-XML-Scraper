@@ -56,6 +56,7 @@
 		<mnu_scrape_fullscrape>Scraper tous les systèmes</mnu_scrape_fullscrape>
 		
 		<mnu_ssh>Commande SSH</mnu_ssh>
+		<mnu_ssh_Parameter>Paramètres SSH</mnu_ssh_Parameter>
 		<mnu_ssh_killall>Arrêter Emulationstation</mnu_ssh_killall>
 		<mnu_ssh_start>Démarrer Emulationstation</mnu_ssh_start>
 		<mnu_ssh_reboot>Redémarrer Distant</mnu_ssh_reboot>
