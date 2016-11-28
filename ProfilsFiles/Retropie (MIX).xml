@@ -19,8 +19,8 @@
 		<Pswd>raspberry</Pswd>
 		<Command>
 			<killall>killall emulationstation</killall>
-			<reboot>/sbin/reboot</reboot>
-			<poweroff>/sbin/poweroff</poweroff>
+			<reboot>sudo /sbin/reboot</reboot>
+			<poweroff>sudo /sbin/poweroff</poweroff>
 		</Command>
 	</Plink>
 	<Root>
