@@ -1,121 +1,127 @@
+2.0.0.5
+* Corrected :
+ - Message to kill ES don't append when in fullscrape
+ - Better "Time left" feature
+* Merge with Shakz76 fork : 
+ - Correcting the Plink SSH Command
+
 2.0.0.4
-*Corrected :
-- Alternative picture doesn't work all the time, now work every time.
-- Name in missing.tx aren't troncated any more when too longue...
-- Resluts windows now show correct number for "found" roms.
+* Corrected :
+ - Alternative picture doesn't work all the time, now work every time.
+ - Name in missing.tx aren't troncated any more when too longue...
+ - Resluts windows now show correct number for "found" roms.
 * Added :
-- Message to kill ES when network path are detected
-- New Menu to configure SSH Parameter
-- adding a new tag for Path config : %host% = first part of the Source_RootPath (ex : \\Retropie\rom will give \\Retropie and E:\rom will give E:\)
-- Retropie path corrected (Again... Sorry)
+ - Message to kill ES when network path are detected
+ - New Menu to configure SSH Parameter
+ - adding a new tag for Path config : %host% = first part of the Source_RootPath (ex : \\Retropie\rom will give \\Retropie and E:\rom will give E:\)
+ - Retropie path corrected (Again... Sorry)
 
 2.0.0.3
-*Corrected :
-- Fallback when Digimirror don't work
-- Scraper.exe and Scraper64.exe better update function
-- Error Message when Scrape engine doesn't start (google translated)
+* Corrected :
+ - Fallback when Digimirror don't work
+ - Scraper.exe and Scraper64.exe better update function
+ - Error Message when Scrape engine doesn't start (google translated)
 * Added :
-- NO-Into and other matching folder name in systemlist.txt
-- Progress bar in UXS Icon
+ - NO-Into and other matching folder name in systemlist.txt
+ - Progress bar in UXS Icon
 
 2.0.0.2
-*Corrected :
-- Added a Timeout for Check Engine start (If TimedOut, check your Firewall and/or Antivirus)
-- Standard Name format will be only Game Name (No more country added)
-*Added :
-- Log gui to show log, with last log put in clipboard when the GUI is canceled
-- 2 Retropie Profil with Sselph's path
+* Corrected :
+ - Added a Timeout for Check Engine start (If TimedOut, check your Firewall and/or Antivirus)
+ - Standard Name format will be only Game Name (No more country added)
+* Added :
+ - Log gui to show log, with last log put in clipboard when the GUI is canceled
+ - 2 Retropie Profil with Sselph's path
 
 2.0.0.1
-*Corrected :
-- Recalbox default path for autoconfig weren't good
-
+* Corrected :
+ - Recalbox default path for autoconfig weren't good
 Really sorry about this :S
 
 2.0.0.0
 First STABLE Version !!!!
-*Corrected :
-- no more system selection GUI in FullScrape
-- UriEncode for the ' problem corrected
-- Missing Rom option Corrected
-- Missing Rom generate a MIX if missing rom option is on
-- If Name Format = %Name+Country% and no country found, no more (Unknown)
-- Retropie path corrected
+* Corrected :
+ - no more system selection GUI in FullScrape
+ - UriEncode for the ' problem corrected
+ - Missing Rom option Corrected
+ - Missing Rom generate a MIX if missing rom option is on
+ - If Name Format = %Name+Country% and no country found, no more (Unknown)
+ - Retropie path corrected
 * Added
-- showing Changelog in update windows
-- Check Engine start on scrape
-- Included extensions are now profil dependant (they are not the same between Retropie and Recalbox)
+ - showing Changelog in update windows
+ - Check Engine start on scrape
+ - Included extensions are now profil dependant (they are not the same between Retropie and Recalbox)
 
 2.0.0.6 BETA
-*Corrected :
--French, German, spanish and english translation correction.
--First rom sometime doesn't be scrapped corrected.
--Include/Exclude label size corrected
--Registering link with Digimirror corrected.
--Some roms don't be scraped because of "not allowed" characteres corrected.
-*Added :
--New XML Include
--Bypass research function (to make dedicated profil for some system like scummvm)
--New Mix Profil to Test SCUMMVM on Recalbox V4 (MIX)
--Rewrite of path option to add some tag : 
-  +%SystemDir% = Full path to the system directory
-  +%System% = Name of the System directory
-  +%Source_RootPath% = Path to the local Root
--Rewrite of Retropie Profil to match Retropie Path (to test)
-*Merge with verybadsoldier fork :
--Added a new function to scrape IN zip files when zip file rom isn't found. (THANKS A LOT verybadsoldier)
+* Corrected :
+ - French, German, spanish and english translation correction.
+ - First rom sometime doesn't be scrapped corrected.
+ - Include/Exclude label size corrected
+ - Registering link with Digimirror corrected.
+ - Some roms don't be scraped because of "not allowed" characteres corrected.
+* Added :
+ - New XML Include
+ - Bypass research function (to make dedicated profil for some system like scummvm)
+ - New Mix Profil to Test SCUMMVM on Recalbox V4 (MIX)
+ - Rewrite of path option to add some tag : 
+  + %SystemDir% = Full path to the system directory
+  + %System% = Name of the System directory
+  + %Source_RootPath% = Path to the local Root
+ - Rewrite of Retropie Profil to match Retropie Path (to test)
+* Merge with verybadsoldier fork :
+ - Added a new function to scrape IN zip files when zip file rom isn't found. (THANKS A LOT verybadsoldier)
 
 2.0.0.5 BETA
-*Corrected :
--Issue with no image found and compression corrected.
+* Corrected :
+ - Issue with no image found and compression corrected.
 
 2.0.0.4 BETA
-*Corrected :
--Include/Exclude Label Size to small in generale config corrected.
--PngQuant in MIX profil don't work corrected.
--Size and quality for MaxResize MIX profil doesn't work very well corrected.
-*Added :
--Help, Thanks, and support Menu
--Cache function (by default) It use the DigiMirror
--Uppercase option for some text info (in Option Menu)
--Hide Scraper.exe and Scraper64.exe to not confuse...
+* Corrected :
+ - Include/Exclude Label Size to small in generale config corrected.
+ - PngQuant in MIX profil don't work corrected.
+ - Size and quality for MaxResize MIX profil doesn't work very well corrected.
+* Added :
+ - Help, Thanks, and support Menu
+ - Cache function (by default) It use the DigiMirror
+ - Uppercase option for some text info (in Option Menu)
+ - Hide Scraper.exe and Scraper64.exe to not confuse...
 
 2.0.0.3 BETA
-*Added :
--German Translation (Thanks to Madmeggo, Paradadf and Lackyluuk)
--Spanish Translation (Thanks to Paradadf)
-*Corrected :
--Resizing (ratio problem in Fullback theme) corrected.
--Minor bug corrected.
-*Preparing :
--Screenscraper Cache system
+* Added :
+ - German Translation (Thanks to Madmeggo, Paradadf and Lackyluuk)
+ - Spanish Translation (Thanks to Paradadf)
+* Corrected :
+ - Resizing (ratio problem in Fullback theme) corrected.
+ - Minor bug corrected.
+* Preparing :
+ - Screenscraper Cache system
 
 2.0.0.2 BETA
-*Preparing :
--language file for translation
-*Corrected :
--System selection corrected
+* Preparing :
+ - language file for translation
+* Corrected :
+ - System selection corrected
 
 2.0.0.1 BETA
-*Corrected :
-Option name corrected
--Source always = 0 corrected
-*Added :
--A "_" to the missing file name
+* Corrected :
+ - Option name corrected
+ - Source always = 0 corrected
+* Added :
+ - "_" to the missing file name
 
 2.0.0.0 BETA
-Total rewrote of XML functions
-Total rewrote of GDI functions (the one who make the MIX ^^)
-Now all Scraping profil are in XML with tone of options
-Now all MIX profil are in XML with also tone of options
-Multithread, you can have several rom scraped at the same time. For this you need to register on Screenscraper (with a single registration you will have 2 threads, if you participate to the BDD you can have up to 10 threads.)
-Wizard at start to help the first configuration
-Scrape with recursivity (subfolder can now be scraped)
-lot's of configuration menu (but they are easy to understand... And I need to make tooltips :p )
-Autoconfiguration and Fullscrape work
-New function to handle timeout and network problem
-Changing standard things are easy now (2D Box instead of Screenshot, Game Name with region,...)
-Autohide function (Bios are auto hidden, and if you have a cue+bin, the bin will be hide too.. So are the "track" files) and it's configurable in the XML Scrape profil
+* Total rewrote of XML functions
+* Total rewrote of GDI functions (the one who make the MIX ^^)
+* Now all Scraping profil are in XML with tone of options
+* Now all MIX profil are in XML with also tone of options
+* Multithread, you can have several rom scraped at the same time. For this you need to register on Screenscraper (with a single registration you will have 2 threads, if you participate to the BDD you can have up to 10 threads.)
+* Wizard at start to help the first configuration
+* Scrape with recursivity (subfolder can now be scraped)
+* lot's of configuration menu (but they are easy to understand... And I need to make tooltips :p )
+* Autoconfiguration and Fullscrape work
+* New function to handle timeout and network problem
+* Changing standard things are easy now (2D Box instead of Screenshot, Game Name with region,...)
+* Autohide function (Bios are auto hidden, and if you have a cue+bin, the bin will be hide too.. So are the "track" files) and it's configurable in the XML Scrape profil
 ... Lot's of more things I can't remember... 3 month on this ^^
 
 -----------------------------------------------------------
