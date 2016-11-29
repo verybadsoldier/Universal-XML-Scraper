@@ -114,7 +114,7 @@
 			<win_config_MISC_GroupMISC_CountryPref>Country preferences</win_config_MISC_GroupMISC_CountryPref>
 			<win_config_MISC_GroupMISC_LangPref>Language preferences</win_config_MISC_GroupMISC_LangPref>
 			<win_config_MISC_GroupMISC_ScrapeMode>Scrape Mode</win_config_MISC_GroupMISC_ScrapeMode>
-			<win_config_MISC_GroupMISC_ScrapeModeChoice>0 - New File|1 - Update XML (Add New Rom)</win_config_MISC_GroupMISC_ScrapeModeChoice>
+			<win_config_MISC_GroupMISC_ScrapeModeChoice>0 - New XML File|1 - Update XML (Add New Rom)|2 - Create Picture only</win_config_MISC_GroupMISC_ScrapeModeChoice>
 			<win_config_MISC_GroupMISC_CountryPicMode>Picture Mode</win_config_MISC_GroupMISC_CountryPicMode>
 			<win_config_MISC_GroupMISC_CountryPicModeChoice>0 - Language Pic|1 - Rom Pic|2 - Language Pic Strict|3 - Rom Pic Strict</win_config_MISC_GroupMISC_CountryPicModeChoice>
 			<win_config_MISC_GroupMISC_Verbose>Log level</win_config_MISC_GroupMISC_Verbose>

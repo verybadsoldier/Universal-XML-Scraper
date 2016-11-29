@@ -1,3 +1,8 @@
+2.0.0.6
+* Added :
+ - New Scrape Mode : "Create Picture Only" (Re create picture without changing XML File)
+ - Italian Translation, Thank you Cricetomutante
+
 2.0.0.5
 * Corrected :
  - Message to kill ES don't append when in fullscrape

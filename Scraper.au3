@@ -6,7 +6,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper
-#AutoIt3Wrapper_Res_Fileversion=1.0.0.2
+#AutoIt3Wrapper_Res_Fileversion=1.0.0.3
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -147,8 +147,10 @@ Func _Game_Make($aRomList, $vBoucle, $aConfig, $oXMLProfil)
 					Case "false"
 						$vValue = StringLower($vValue)
 				EndSwitch
-				_LOG($vNode & " <-- " & $vValue, 1, $iLOGPath)
-				_XML_WriteValue($vNode, $vValue, "", $aConfig[8])
+				If $aConfig[5] <> 2 Then
+					_LOG($vNode & " <-- " & $vValue, 1, $iLOGPath)
+					_XML_WriteValue($vNode, $vValue, "", $aConfig[8])
+				EndIf
 			Case "XML_Attribute"
 				$vValue = _XML_Read_Source($aRomList, $vBoucle, $aConfig, $oXMLProfil, $vWhile)
 				$vAttributeName = _XML_Read("/Profil/Element[" & $vWhile & "]/Target_Attribute_Name", 0, "", $oXMLProfil)
@@ -159,13 +161,15 @@ Func _Game_Make($aRomList, $vBoucle, $aConfig, $oXMLProfil)
 					Case "false"
 						$vValue = StringLower($vValue)
 				EndSwitch
-				_LOG($vNode & " <-- " & $vValue, 1, $iLOGPath)
-				_XML_WriteAttributs($vNode, $vAttributeName, $vValue, "", $aConfig[8])
+				If $aConfig[5] <> 2 Then
+					_LOG($vNode & " <-- " & $vValue, 1, $iLOGPath)
+					_XML_WriteAttributs($vNode, $vAttributeName, $vValue, "", $aConfig[8])
+				EndIf
 			Case "XML_Path"
 				$vValue = _XML_Read_Source($aRomList, $vBoucle, $aConfig, $oXMLProfil, $vWhile)
 				$vNode = _XML_Read("/Profil/Element[" & $vWhile & "]/Target_Value", 0, "", $oXMLProfil)
 				_LOG($vNode & " <-- " & $vValue, 1, $iLOGPath)
-				If Number($vValue) < 0 Then
+				If Number($vValue) < 0 Or $aConfig[5] = 2 Then
 					_LOG($vNode & " <-- No value to write", 1, $iLOGPath)
 				Else
 					$vSystem = StringSplit(IniRead($iINIPath, "LAST_USE", "$vSource_RomPath", ""), "\")
@@ -198,8 +202,10 @@ Func _Game_Make($aRomList, $vBoucle, $aConfig, $oXMLProfil)
 					Case "false"
 						$vValue = StringLower($vValue)
 				EndSwitch
-				_LOG($vNode & " <-- " & $vValue, 1, $iLOGPath)
-				_XML_WriteValue($vNode, $vValue, "", $aConfig[8])
+				If $aConfig[5] <> 2 Then
+					_LOG($vNode & " <-- " & $vValue, 1, $iLOGPath)
+					_XML_WriteValue($vNode, $vValue, "", $aConfig[8])
+				EndIf
 			Case Else
 				_LOG("End Of Elements", 1, $iLOGPath)
 				ExitLoop
@@ -213,7 +219,7 @@ Func _XML_Read_Source($aRomList, $vBoucle, $aConfig, $oXMLProfil, $vWhile)
 	Local $vXpath, $vValue, $vXpathTemp, $aXpathCountry
 	Switch _XML_Read("/Profil/Element[" & $vWhile & "]/Source_Type", 0, "", $oXMLProfil)
 		Case "XML_Value"
-			If $aRomList[9] = 0 Then Return ""
+			If $aRomList[9] = 0 Or $aConfig[5] = 2 Then Return ""
 			$vXpath = _XML_Read("/Profil/Element[" & $vWhile & "]/Source_Value", 0, "", $oXMLProfil)
 
 			If StringInStr($vXpath, '%LANG%') Then
@@ -235,14 +241,14 @@ Func _XML_Read_Source($aRomList, $vBoucle, $aConfig, $oXMLProfil, $vWhile)
 			Return ""
 
 		Case "XML_Attribute"
-			If $aRomList[9] = 0 Then Return ""
+			If $aRomList[9] = 0 Or $aConfig[5] = 2 Then Return ""
 			Return _XML_Read(_XML_Read("/Profil/Element[" & $vWhile & "]/Source_Value", 1, "", $oXMLProfil), 0, $aRomList[8])
 		Case "XML_Download"
 			If $aRomList[9] = 0 Then Return ""
 			$vXpath = _XML_Read("/Profil/Element[" & $vWhile & "]/Source_Value", 0, "", $oXMLProfil)
 			$aXpathCountry = _CountryArray_Make($aConfig, $vXpath, $aRomList[8], $oXMLProfil)
 			For $vBoucle2 = 1 To UBound($aXpathCountry) - 1
-				$vValue = _Picture_Download($aXpathCountry[$vBoucle2], $aRomList, $vBoucle, $vWhile, $oXMLProfil, $aConfig[4], $aConfig[3])
+				$vValue = _Picture_Download($aXpathCountry[$vBoucle2], $aRomList, $vBoucle, $vWhile, $oXMLProfil, $aConfig)
 				Select
 					Case Number($vValue) = -2
 						Return -1
@@ -282,7 +288,7 @@ Func _XML_Read_Source($aRomList, $vBoucle, $aConfig, $oXMLProfil, $vWhile)
 				Case Else ; For the futur
 					$vDownloadPath = $aConfig[3] & "\" & $sFileName & $vDownloadTag & "." & $vDownloadExt
 			EndSwitch
-			If FileExists($vDownloadPath) Then Return $vTargetPicturePath
+			If FileExists($vDownloadPath) And $aConfig[5] <> 2 Then Return $vTargetPicturePath
 
 			$vValue = _MIX_Engine($aRomList, $vBoucle, $aConfig, $oXMLProfil)
 			If Not FileExists($vValue) Then Return -1
@@ -326,8 +332,11 @@ Func _CountryArray_Make($aConfig, $vXpath, $vSource_RomXMLPath, $oXMLProfil)
 	Return $aXpathCountry
 EndFunc   ;==>_CountryArray_Make
 
-Func _Picture_Download($vCountryPref, $aRomList, $vBoucle, $vWhile, $oXMLProfil, $vTarget_ImagePath, $vSource_ImagePath)
+Func _Picture_Download($vCountryPref, $aRomList, $vBoucle, $vWhile, $oXMLProfil, $aConfig)
 	Local $vDownloadURL, $vDownloadTag, $vDownloadExt, $vTargetPicturePath, $aPathSplit, $sDrive, $sDir, $sFileName, $sExtension, $vSystem
+
+	$vTarget_ImagePath = $aConfig[4]
+	$vSource_ImagePath = $aConfig[3]
 	$vDownloadURL = _XML_Read($vCountryPref, 0, $aRomList[8])
 	$vDownloadTag = _XML_Read("/Profil/Element[" & $vWhile & "]/Source_Download_Tag", 0, "", $oXMLProfil)
 	$vDownloadExt = _Coalesce(IniRead($iINIPath, "LAST_USE", "$vTarget_Image_Ext", ""), _XML_Read("/Profil/Element[" & $vWhile & "]/Source_Download_Ext", 0, "", $oXMLProfil))
@@ -335,9 +344,9 @@ Func _Picture_Download($vCountryPref, $aRomList, $vBoucle, $vWhile, $oXMLProfil,
 	$vDownloadMaxHeight = "&maxheight=" & _Coalesce(IniRead($iINIPath, "LAST_USE", "$vTarget_Image_Height", ""), _XML_Read("Profil/General/Target_Image_Height", 0, "", $oXMLProfil))
 	$vDownloadOutputFormat = "&outputformat=" & $vDownloadExt
 	$aPathSplit = _PathSplit(StringReplace($aRomList[0], "\", "_"), $sDrive, $sDir, $sFileName, $sExtension)
-	$vSystem = StringSplit(IniRead($iINIPath, "LAST_USE", "$vSource_RomPath", ""), "\")
-	$vSystem = $vSystem[UBound($vSystem) - 1]
-	$vTarget_ImagePath = StringReplace($vTarget_ImagePath, '%system%', $vSystem)
+;~ 	$vSystem = StringSplit(IniRead($iINIPath, "LAST_USE", "$vSource_RomPath", ""), "\")
+;~ 	$vSystem = $vSystem[UBound($vSystem) - 1]
+;~ 	$vTarget_ImagePath = StringReplace($vTarget_ImagePath, '%system%', $vSystem)
 	$vTargetPicturePath = $vTarget_ImagePath & $sFileName & $vDownloadTag & "." & $vDownloadExt
 	If $vDownloadExt = "%Source%" Then $vDownloadExt = StringRight($vDownloadURL, 3)
 	$vDownloadURL = $vDownloadURL & $vDownloadMaxWidth & $vDownloadMaxHeight & $vDownloadOutputFormat
@@ -357,7 +366,7 @@ Func _Picture_Download($vCountryPref, $aRomList, $vBoucle, $vWhile, $oXMLProfil,
 		Return -2
 	EndIf
 
-	If FileExists($vDownloadPath) Then
+	If FileExists($vDownloadPath) And $aConfig[5] <> 2 Then
 		_LOG($vDownloadPath & " File already exist", 1, $iLOGPath)
 		Return $vTargetPicturePath
 	EndIf

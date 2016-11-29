@@ -515,6 +515,7 @@ While 1
 			$sMsg &= "Neogeronimo for the Jingle" & @CRLF
 			$sMsg &= "Madmeggo, Paradadf and Lackyluuk for German translation" & @CRLF
 			$sMsg &= "Paradadf for Spanish translation" & @CRLF
+			$sMsg &= "Cricetomutante for Italian translation" & @CRLF
 			$sMsg &= "Digital Lumberjack for the Mirror" & @CRLF
 			$sMsg &= "Verybadsoldier for the 'In ZIP scrape'" & @CRLF
 
@@ -910,6 +911,7 @@ Func _GUI_Config_MISC()
 	$L_CountryPic_Mode = GUICtrlCreateLabel(_MultiLang_GetText("win_config_MISC_GroupMISC_CountryPicMode"), 16, 156)
 	$C_CountryPic_Mode = GUICtrlCreateCombo("", 16, 176, 209, 25, BitOR($GUI_SS_DEFAULT_COMBO, $CBS_SIMPLE))
 	GUICtrlSetData($C_CountryPic_Mode, _MultiLang_GetText("win_config_MISC_GroupMISC_CountryPicModeChoice"), $aCountryPic_Mode[IniRead($iINIPath, "LAST_USE", "$vCountryPic_Mode", 0)])
+	GUICtrlSetState($C_CountryPic_Mode, $GUI_DISABLE)
 	$L_Verbose = GUICtrlCreateLabel(_MultiLang_GetText("win_config_MISC_GroupMISC_Verbose"), 16, 204)
 	$C_Verbose = GUICtrlCreateCombo("", 16, 224, 209, 25, BitOR($GUI_SS_DEFAULT_COMBO, $CBS_SIMPLE))
 	GUICtrlSetData($C_Verbose, _MultiLang_GetText("win_config_MISC_GroupMISC_VerboseChoice"), $aVerbose[IniRead($iINIPath, "GENERAL", "$vVerbose", 0)])
@@ -1346,6 +1348,8 @@ Func _GUI_Refresh($oXMLProfil = -1, $ScrapIP = 0, $vScrapeOK = 0) ;Refresh GUI
 			GUICtrlSetData($MS_Scrape, _MultiLang_GetText("mnu_scrape_solo") & " - " & $vSystem)
 			GUICtrlSetData($MS_FullScrape, _MultiLang_GetText("mnu_scrape_fullscrape"))
 
+			GUICtrlSetData($MP_Parameter, _MultiLang_GetText("mnu_ssh_Parameter"))
+
 			;SSH Menu
 			If _XML_NodeExists($oXMLProfil, "Profil/Plink/Ip") = $XML_RET_FAILURE Then
 				_LOG("SSH Disable", 1, $iLOGPath)
@@ -1638,6 +1642,10 @@ Func _Check_Rom2Scrape($aRomList, $vNoRom, $aXMLRomList, $vTarget_RomPath, $vScr
 	Switch $vScrape_Mode
 		Case 0
 			_LOG($aRomList[$vNoRom][2] & " To Scrape ($vScrape_Mode=0)", 1, $iLOGPath)
+			If $aRomList[$vNoRom][3] < 2 Then $aRomList[$vNoRom][3] = 1
+			Return $aRomList
+		Case 2
+			_LOG($aRomList[$vNoRom][2] & " To Scrape ($vScrape_Mode=2)", 1, $iLOGPath)
 			If $aRomList[$vNoRom][3] < 2 Then $aRomList[$vNoRom][3] = 1
 			Return $aRomList
 		Case Else

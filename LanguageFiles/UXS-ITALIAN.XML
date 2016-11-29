@@ -52,6 +52,7 @@
   <mnu_scrape_fullscrape>Scansiona tutti i tuoi sistemi</mnu_scrape_fullscrape>
   
   <mnu_ssh>Comando SSH</mnu_ssh>
+  <mnu_ssh_Parameter>SSH Parametro</mnu_ssh_Parameter>
   <mnu_ssh_killall>Arresta EmulationStation</mnu_ssh_killall>
   <mnu_ssh_start>Avvia EmulationStation</mnu_ssh_start>
   <mnu_ssh_reboot>Riavvia Remoto</mnu_ssh_reboot>
@@ -107,7 +108,7 @@
    <win_config_MISC_GroupMISC_CountryPref>Preferenze regionali</win_config_MISC_GroupMISC_CountryPref>
    <win_config_MISC_GroupMISC_LangPref>Preferenze linguaggio</win_config_MISC_GroupMISC_LangPref>
    <win_config_MISC_GroupMISC_ScrapeMode>Modalità di scansione</win_config_MISC_GroupMISC_ScrapeMode>
-   <win_config_MISC_GroupMISC_ScrapeModeChoice>0 - Nuovo File|1 - Aggiorna XML (Aggiungi Nuova Rom)</win_config_MISC_GroupMISC_ScrapeModeChoice>
+   <win_config_MISC_GroupMISC_ScrapeModeChoice>0 - Nuovo File|1 - Aggiorna XML (Aggiungi Nuova Rom)|2 - solo creare questa immagine</win_config_MISC_GroupMISC_ScrapeModeChoice>
    <win_config_MISC_GroupMISC_CountryPicMode>Modo Immagine</win_config_MISC_GroupMISC_CountryPicMode>
    <win_config_MISC_GroupMISC_CountryPicModeChoice>0 - Img Lingua|1 - Img Rom|2 - Img Lingua Strict|3 - Img Rom Strict</win_config_MISC_GroupMISC_CountryPicModeChoice>
    <win_config_MISC_GroupMISC_Verbose>Livello di Log</win_config_MISC_GroupMISC_Verbose>

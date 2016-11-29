@@ -112,7 +112,7 @@
 			<win_config_MISC_GroupMISC_CountryPref>Préférence de région</win_config_MISC_GroupMISC_CountryPref>
 			<win_config_MISC_GroupMISC_LangPref>Préférence de langue</win_config_MISC_GroupMISC_LangPref>
 			<Win_config_MISC_GroupMISC_ScrapeMode>Mode de Scrape</win_config_MISC_GroupMISC_ScrapeMode>
-			<win_config_MISC_GroupMISC_ScrapeModeChoice>0 - Nouveau fichier|1 - Mise à jour (Ajout de nouvelle Rom)</win_config_MISC_GroupMISC_ScrapeModeChoice>
+			<win_config_MISC_GroupMISC_ScrapeModeChoice>0 - Nouveau Fichier XML|1 - Mise à jour (Ajout de nouvelle Rom)|2 - Uniquement les images</win_config_MISC_GroupMISC_ScrapeModeChoice>
 			<win_config_MISC_GroupMISC_CountryPicMode>Mode de gestion des images</win_config_MISC_GroupMISC_CountryPicMode>
 			<win_config_MISC_GroupMISC_CountryPicModeChoice>0 - Par langue|1 - Par region|2 - Par langue strict|3 - Par région strict</win_config_MISC_GroupMISC_CountryPicModeChoice>
 			<win_config_MISC_GroupMISC_Verbose>Niveau de Log</win_config_MISC_GroupMISC_Verbose>

@@ -114,7 +114,7 @@
 			<win_config_MISC_GroupMISC_CountryPref>Preferencias de región</win_config_MISC_GroupMISC_CountryPref>
 			<win_config_MISC_GroupMISC_LangPref>Preferencias de idioma</win_config_MISC_GroupMISC_LangPref>
 			<win_config_MISC_GroupMISC_ScrapeMode>Modo de scrapeado</win_config_MISC_GroupMISC_ScrapeMode>
-			<win_config_MISC_GroupMISC_ScrapeModeChoice>0 - Archivo nuevo|1 - Actualizar XML (Añadir Nuevo Rom)</win_config_MISC_GroupMISC_ScrapeModeChoice>
+			<win_config_MISC_GroupMISC_ScrapeModeChoice>0 - Archivo nuevo|1 - Actualizar XML (Añadir Nuevo Rom)|2 - Crear sólo una imagen</win_config_MISC_GroupMISC_ScrapeModeChoice>
 			<win_config_MISC_GroupMISC_CountryPicMode>Modo de imagen</win_config_MISC_GroupMISC_CountryPicMode>
 			<win_config_MISC_GroupMISC_CountryPicModeChoice>0 - Imagen Idioma|1 - Imagen Rom|2 - Imagen Idioma Estricto|3 - Imagen Rom Estricto</win_config_MISC_GroupMISC_CountryPicModeChoice>
 			<win_config_MISC_GroupMISC_Verbose>Nivel de registro</win_config_MISC_GroupMISC_Verbose>
