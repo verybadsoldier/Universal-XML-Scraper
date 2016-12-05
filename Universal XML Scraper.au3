@@ -1888,8 +1888,8 @@ Func _ScrapeZipContent($aRomList, $vBoucle)
 	Local $vZipDir = @TempDir & "\" & "UXS_ZIP_Temp_" & $aRomList[$vBoucle][2]
 	Local $vZipDirEx = $vZipDir & "\" & "_extract"
 	Local $vSrcPath = $vZipDir & "\" & $aRomList[$vBoucle][0]
-	DirCreate($vZipDir)
-	FileCopy($aRomList[$vBoucle][1], $vSrcPath)
+  	DirRemove($vZipDir, 1)
+	FileCopy($aRomList[$vBoucle][1], $vSrcPath, $FC_CREATEPATH)
 	_LOG("Unzipping file '" & $vSrcPath & "' to temp directory: " & $vZipDirEx, 1, $iLOGPath)
 	Local $vResult = _Zip_UnzipAll($vSrcPath, $vZipDirEx, 1)
 	If @error <> 0 Then
