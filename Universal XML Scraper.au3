@@ -185,6 +185,7 @@ Global $iPathMixTmp = $iMIXPath & "\TEMP" ; Where we are storing the current MIX
 Global $iURLMirror = "http://uxs-screenscraper.recalbox.com/"
 Global $iURLSS = "http://www.screenscraper.fr/"
 Global $iURLScraper = $iURLMirror
+;~ Global $iURLScraper = $iURLSS
 
 _LOG("Verbose LVL : " & $iVerboseLVL, 1, $iLOGPath)
 _LOG("Path to ini : " & $iINIPath, 1, $iLOGPath)
@@ -482,7 +483,13 @@ While 1
 				Next
 			EndIf
 		Case $MP_Parameter
-			_GUI_Config_SSHParameter($oXMLProfil)
+			$GUI_Config_SSHParameter = _GUI_Config_SSHParameter($oXMLProfil)
+			If $GUI_Config_SSHParameter = 1 Then
+				FileDelete($vProfilsPath)
+				_XML_SaveToFile($oXMLProfil, $vProfilsPath)
+			EndIf
+			$aDIRList = _Check_autoconf($oXMLProfil)
+			_GUI_Refresh($oXMLProfil)
 		Case $MH_Help
 			ShellExecute("https://github.com/Universal-Rom-Tools/Universal-XML-Scraper/wiki")
 		Case $MH_Support_Screenscraper
@@ -894,7 +901,7 @@ EndFunc   ;==>_GUI_Config_MIX
 Func _GUI_Config_MISC()
 	Local $aRechFiles = StringSplit(IniRead($iINIPath, "LAST_USE", "$vRechFiles", "*.*|*.xml;*.txt;*.dv;*.fs;*.xor;*.drv;*.dat;*.cfg;*.nv;*.sav*|"), '|', $STR_ENTIRESPLIT + $STR_NOCOUNT)
 	Local $aScrapeMode = StringSplit(_MultiLang_GetText("win_config_MISC_GroupMISC_ScrapeModeChoice"), '|', $STR_ENTIRESPLIT + $STR_NOCOUNT)
-	Local $aCountryPic_Mode = StringSplit(_MultiLang_GetText("win_config_MISC_GroupMISC_CountryPicModeChoice"), '|', $STR_ENTIRESPLIT + $STR_NOCOUNT)
+	Local $aScrapeSearchMode = StringSplit(_MultiLang_GetText("win_config_MISC_GroupMISC_ScrapeSearchModeChoice"), '|', $STR_ENTIRESPLIT + $STR_NOCOUNT)
 	Local $aVerbose = StringSplit(_MultiLang_GetText("win_config_MISC_GroupMISC_VerboseChoice"), '|', $STR_ENTIRESPLIT + $STR_NOCOUNT)
 	Local $vNbThreadDefault = 0
 
@@ -908,10 +915,9 @@ Func _GUI_Config_MISC()
 	$L_ScrapeMode = GUICtrlCreateLabel(_MultiLang_GetText("win_config_MISC_GroupMISC_ScrapeMode"), 16, 108)
 	$C_ScrapeMode = GUICtrlCreateCombo("", 16, 128, 209, 25, BitOR($GUI_SS_DEFAULT_COMBO, $CBS_SIMPLE))
 	GUICtrlSetData($C_ScrapeMode, _MultiLang_GetText("win_config_MISC_GroupMISC_ScrapeModeChoice"), $aScrapeMode[IniRead($iINIPath, "LAST_USE", "$vScrape_Mode", 0)])
-	$L_CountryPic_Mode = GUICtrlCreateLabel(_MultiLang_GetText("win_config_MISC_GroupMISC_CountryPicMode"), 16, 156)
-	$C_CountryPic_Mode = GUICtrlCreateCombo("", 16, 176, 209, 25, BitOR($GUI_SS_DEFAULT_COMBO, $CBS_SIMPLE))
-	GUICtrlSetData($C_CountryPic_Mode, _MultiLang_GetText("win_config_MISC_GroupMISC_CountryPicModeChoice"), $aCountryPic_Mode[IniRead($iINIPath, "LAST_USE", "$vCountryPic_Mode", 0)])
-	GUICtrlSetState($C_CountryPic_Mode, $GUI_DISABLE)
+	$L_ScrapeSearchMode = GUICtrlCreateLabel(_MultiLang_GetText("win_config_MISC_GroupMISC_ScrapeSearchMode"), 16, 156)
+	$C_ScrapeSearchMode = GUICtrlCreateCombo("", 16, 176, 209, 25, BitOR($GUI_SS_DEFAULT_COMBO, $CBS_SIMPLE))
+	GUICtrlSetData($C_ScrapeSearchMode, _MultiLang_GetText("win_config_MISC_GroupMISC_ScrapeSearchModeChoice"), $aScrapeSearchMode[IniRead($iINIPath, "LAST_USE", "$vScrapeSearchMode", 0)])
 	$L_Verbose = GUICtrlCreateLabel(_MultiLang_GetText("win_config_MISC_GroupMISC_Verbose"), 16, 204)
 	$C_Verbose = GUICtrlCreateCombo("", 16, 224, 209, 25, BitOR($GUI_SS_DEFAULT_COMBO, $CBS_SIMPLE))
 	GUICtrlSetData($C_Verbose, _MultiLang_GetText("win_config_MISC_GroupMISC_VerboseChoice"), $aVerbose[IniRead($iINIPath, "GENERAL", "$vVerbose", 0)])
@@ -1009,7 +1015,7 @@ Func _GUI_Config_MISC()
 				IniWrite($iINIPath, "LAST_USE", "$vNbThread", GUICtrlRead($C_Thread))
 				_LOG("SS lvl=" & $vSSParticipation & " Max Thread = " & $vNbThreadMax & " Thread selected = " & GUICtrlRead($C_Thread), 1, $iLOGPath)
 				IniWrite($iINIPath, "LAST_USE", "$vScrape_Mode", StringLeft(GUICtrlRead($C_ScrapeMode), 1))
-				IniWrite($iINIPath, "LAST_USE", "$vCountryPic_Mode", StringLeft(GUICtrlRead($C_CountryPic_Mode), 1))
+				IniWrite($iINIPath, "LAST_USE", "$vScrapeSearchMode", StringLeft(GUICtrlRead($C_ScrapeSearchMode), 1))
 				IniWrite($iINIPath, "GENERAL", "$vVerbose", StringLeft(GUICtrlRead($C_Verbose), 1))
 				$iVerboseLVL = StringLeft(GUICtrlRead($C_Verbose), 1)
 				IniWrite($iINIPath, "LAST_USE", "$vMissingRom_Mode", 0)
@@ -1286,7 +1292,7 @@ Func _GUI_Config_SSHParameter($oXMLProfil)
 				GUISetState(@SW_ENABLE, $F_UniversalScraper)
 				WinActivate($F_UniversalScraper)
 				_LOG("SSH Parameter Canceled", 0, $iLOGPath)
-				Return
+				Return 0
 			Case $B_CONFENREG
 				_XML_Replace("Profil/Plink/Ip", GUICtrlRead($I_Host), 0, "", $oXMLProfil)
 				_XML_Replace("Profil/Plink/Root", GUICtrlRead($I_Login), 0, "", $oXMLProfil)
@@ -1300,7 +1306,7 @@ Func _GUI_Config_SSHParameter($oXMLProfil)
 				GUIDelete($F_SSH)
 				GUISetState(@SW_ENABLE, $F_UniversalScraper)
 				WinActivate($F_UniversalScraper)
-				Return
+				Return 1
 		EndSwitch
 	WEnd
 EndFunc   ;==>_GUI_Config_SSHParameter
@@ -1709,14 +1715,14 @@ Func _XMLSystem_Create($vSSLogin = "", $vSSPassword = "")
 	EndSwitch
 EndFunc   ;==>_XMLSystem_Create
 
-Func _DownloadROMXML($aRomList, $vBoucle, $vSystemID, $vSSLogin = "", $vSSPassword = "")
+Func _DownloadROMXML($aRomList, $vBoucle, $vSystemID, $vSSLogin = "", $vSSPassword = "", $vScrapeSearchMode = 0)
 	If Not _Check_Cancel() Then Return $aRomList
 	Local $vXMLRom = $iTEMPPath & "\" & StringRegExpReplace($aRomList[$vBoucle][2], '[\[\]/\|\:\?"\*\\<>]', "") & ".xml"
 ;~ 	$vRomName = StringReplace(StringRegExpReplace($aRomList[$vBoucle][2], "[äëïöüÿ'àéèùâêîôû]", ""), " ", "%20")
 	$vRomName = _URIEncode($aRomList[$vBoucle][2])
 	$aRomList[$vBoucle][8] = _DownloadWRetry($iURLScraper & "api/jeuInfos.php?devid=" & $iDevId & "&devpassword=" & $iDevPassword & "&softname=" & $iSoftname & "&output=xml&ssid=" & $vSSLogin & "&sspassword=" & $vSSPassword & "&crc=" & $aRomList[$vBoucle][5] & "&md5=" & $aRomList[$vBoucle][6] & "&sha1=" & $aRomList[$vBoucle][7] & "&systemeid=" & $vSystemID & "&romtype=rom&romnom=" & $vRomName & "&romtaille=" & $aRomList[$vBoucle][4], $vXMLRom)
 	If (StringInStr(FileReadLine($aRomList[$vBoucle][8]), "Erreur") Or Not FileExists($aRomList[$vBoucle][8])) Then
-		$aRomList[$vBoucle][8] = _DownloadWRetry($iURLScraper & "api/jeuInfos.php?devid=" & $iDevId & "&devpassword=" & $iDevPassword & "&softname=" & $iSoftname & "&output=xml&ssid=" & $vSSLogin & "&sspassword=" & $vSSPassword & "&crc=&md5=&sha1=&systemeid=" & $vSystemID & "&romtype=rom&romnom=" & $vRomName & "&romtaille=" & $aRomList[$vBoucle][4], $vXMLRom)
+		If $vScrapeSearchMode = 0 Then $aRomList[$vBoucle][8] = _DownloadWRetry($iURLScraper & "api/jeuInfos.php?devid=" & $iDevId & "&devpassword=" & $iDevPassword & "&softname=" & $iSoftname & "&output=xml&ssid=" & $vSSLogin & "&sspassword=" & $vSSPassword & "&crc=&md5=&sha1=&systemeid=" & $vSystemID & "&romtype=rom&romnom=" & $vRomName & "&romtaille=" & $aRomList[$vBoucle][4], $vXMLRom)
 		If (StringInStr(FileReadLine($aRomList[$vBoucle][8]), "Erreur") Or Not FileExists($aRomList[$vBoucle][8])) Then
 			FileDelete($aRomList[$vBoucle][8])
 			$aRomList[$vBoucle][8] = ""
@@ -1947,6 +1953,7 @@ Func _SCRAPE($oXMLProfil, $vNbThread = 1, $vFullScrape = 0)
 		Local $vSendTimerLeft = 0, $vCreateTimerLeft = 0, $vSendTimerMoy = 0, $vCreateTimerMoy = 0, $vSendTimerTotal = 0, $vSendTimerTotalbyRom = 0, $vCreateTimerTotal = 0, $PercentProgression = 0
 		Local $vMissingRom_Mode = $aConfig[6]
 		Local $vThreadUsed = 1
+		Local $vScrapeSearchMode = IniRead($iINIPath, "LAST_USE", "$vScrapeSearchMode", 0)
 		$aConfig[8] = "0000"
 
 		If StringLeft($aConfig[0], 2) = "\\" And $vFullScrape = 0 Then _Plink($oXMLProfil, "killall") ; Ask to kill ES
@@ -2047,7 +2054,7 @@ Func _SCRAPE($oXMLProfil, $vNbThread = 1, $vFullScrape = 0)
 						If $aRomList[$vBoucle][3] < 2 Then
 							$aRomList = _CalcHash($aRomList, $vBoucle) ;Hash calculation
 						EndIf
-						$aRomList = _DownloadROMXML($aRomList, $vBoucle, $aConfig[12], $aConfig[13], $aConfig[14]) ; Download the XML file from API
+						$aRomList = _DownloadROMXML($aRomList, $vBoucle, $aConfig[12], $aConfig[13], $aConfig[14], $vScrapeSearchMode) ; Download the XML file from API
 
 						; check if the ROM could be found otherwise try to scrape inside ZIP
 						If ($aRomList[$vBoucle][9] = 0) Then
@@ -2084,6 +2091,7 @@ Func _SCRAPE($oXMLProfil, $vNbThread = 1, $vFullScrape = 0)
 						Next
 						$vBoucle = UBound($aRomList) - 1
 					EndIf
+					$aRomList[$vBoucle][10] = Round(TimerDiff($vSendTimer) / 1000, 2)
 				EndIf
 
 				If _MailSlotGetMessageCount($hMailSlotMother) >= 1 Then
@@ -2091,13 +2099,13 @@ Func _SCRAPE($oXMLProfil, $vNbThread = 1, $vFullScrape = 0)
 					$aMessageFromChild = StringSplit($vMessageFromChild, '|', $STR_ENTIRESPLIT + $STR_NOCOUNT)
 					ReDim $aMessageFromChild[2]
 					_LOG("Receveid Message Rom no " & $aMessageFromChild[0] & " in " & $aMessageFromChild[1] & "s", 1, $iLOGPath)
-					$aRomList[$aMessageFromChild[0]][10] = $aMessageFromChild[1]
+					$aRomList[$aMessageFromChild[0]][10] += $aMessageFromChild[1]
 					$aRomList[$aMessageFromChild[0]][12] = 1
 					$vRomReceived += 1
 
 					;Timers
 ;~ 					$vSendTimerTotal = Round(TimerDiff($vEngineTimer) / 1000, 2)
-					$vSendTimerTotal += $aMessageFromChild[1]
+					$vSendTimerTotal += $aRomList[$aMessageFromChild[0]][10]
 					$vSendTimerMoy = Round(Round($vSendTimerTotal / $vRomReceived, 2) / $vNbThread, 2)
 					$vSendTimerLeft = $vSendTimerMoy * (((UBound($aRomList) - 1 - $vBoucle) * ($vBoucle / $vRomSend)) + ($vRomSend - $vRomReceived))
 

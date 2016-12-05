@@ -115,6 +115,8 @@
 			<win_config_MISC_GroupMISC_LangPref>Sprach-Priorität</win_config_MISC_GroupMISC_LangPref>
 			<win_config_MISC_GroupMISC_ScrapeMode>Scrape-Modus</win_config_MISC_GroupMISC_ScrapeMode>
 			<win_config_MISC_GroupMISC_ScrapeModeChoice>0 - Neue XML-Datei|1 - XML-Datei aktualisieren (Roms hinzufügen)|2 - Nur Bild erstellen</win_config_MISC_GroupMISC_ScrapeModeChoice>
+			<win_config_MISC_GroupMISC_ScrapeSearchMode>Forschungsmodus</win_config_MISC_GroupMISC_ScrapeSearchMode>
+			<win_config_MISC_GroupMISC_ScrapeSearchModeChoice>0 - CRC+FileName|1 - CRC</win_config_MISC_GroupMISC_ScrapeSearchModeChoice>
 			<win_config_MISC_GroupMISC_CountryPicMode>Bild-Auswahl</win_config_MISC_GroupMISC_CountryPicMode>
 			<win_config_MISC_GroupMISC_CountryPicModeChoice>0 - nach Sprache|1 - nach Rom|2 - nach Sprache - strikt|3 - nach Rom - strikt</win_config_MISC_GroupMISC_CountryPicModeChoice>
 			<win_config_MISC_GroupMISC_Verbose>Log-Modus</win_config_MISC_GroupMISC_Verbose>

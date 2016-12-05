@@ -1,6 +1,9 @@
 2.0.0.6
+* Corrected :
+ - Better "Time Left" function
 * Added :
  - New Scrape Mode : "Create Picture Only" (Re create picture without changing XML File)
+ - New Option to scrape only by CRC
  - Italian Translation, Thank you Cricetomutante
 
 2.0.0.5
