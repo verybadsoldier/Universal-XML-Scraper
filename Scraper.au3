@@ -116,6 +116,9 @@ While $iNumberOfMessagesOverall < 5
 				$oXMLProfil = _XML_Open($vProfilsPath)
 				$iNumberOfMessagesOverall += 1
 		EndSwitch
+	Else
+		; no new message - just yield
+		Sleep(200)
 	EndIf
 	If $iNumberOfMessagesOverall = 5 Then
 		$vRomTimer = TimerInit()
