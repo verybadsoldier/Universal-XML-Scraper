@@ -1,10 +1,12 @@
 2.0.0.6
 * Corrected :
  - Better "Time Left" function
+ - Scraper Handle take too much CPU when waiting. (Thank you Verybadsoldier for the correction)
+ - Zipscrape function corrected. (Thank you Verybadsoldier for the correction)
 * Added :
  - New Scrape Mode : "Create Picture Only" (Re create picture without changing XML File)
  - New Option to scrape only by CRC
- - Italian Translation, Thank you Cricetomutante
+ - Italian Translation. (Thank you Cricetomutante for the translation)
 
 2.0.0.5
 * Corrected :
