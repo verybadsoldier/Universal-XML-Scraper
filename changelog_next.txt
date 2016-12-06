@@ -3,11 +3,14 @@
  - Better "Time Left" function
  - Scraper Handle take too much CPU when waiting. (Thank you Verybadsoldier for the correction)
  - Zipscrape function corrected. (Thank you Verybadsoldier for the correction)
+ - SSH paramater now are saved correctly
 * Added :
+ - New Menu to download New MIX Template from the Github repository
  - New Scrape Mode : "Create Picture Only" (Re create picture without changing XML File)
  - New Option to scrape only by CRC
+ - New Option to scrape only by Filename (usefull for very big roms, but less accurate)
  - Italian Translation. (Thank you Cricetomutante for the translation)
-
+ 
 2.0.0.5
 * Corrected :
  - Message to kill ES don't append when in fullscrape

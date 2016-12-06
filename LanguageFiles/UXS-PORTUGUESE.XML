@@ -156,6 +156,13 @@
 			<win_config_mix_Enreg>Save</win_config_mix_Enreg>
 			<win_config_mix_Cancel>Cancel</win_config_mix_Cancel>
 		</win_config_mix>
+		<win_config_mix_Download>
+			<win_config_mix_Download_Title>Download Mix Template</win_config_mix_Download_Title>
+			<win_config_mix_Download_empty>Empty Exemple</win_config_mix_Download_empty>
+			<win_config_mix_Download_exemple>Exemple</win_config_mix_Download_exemple>
+			<win_config_mix_Download_Download>Download</win_config_mix_Download_Download>
+			<win_config_mix_Download_Exit>Exit</win_config_mix_Download_Exit>
+		</win_config_mix_Download>
 		<win_About>
 			<win_About_Title>About</win_About_Title>
 			<win_About_By>Autor : Screech</win_About_By>

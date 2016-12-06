@@ -48,6 +48,7 @@
 		<mnu_cfg_config_autoconf>Autoconfiguration Path configuration</mnu_cfg_config_autoconf>
 		<mnu_cfg_profil>Change your profil</mnu_cfg_profil>
 		<mnu_cfg_miximage>Change your Mix Images profil</mnu_cfg_miximage>
+		<mnu_cfg_download_miximage>Download Mix Images profil</mnu_cfg_download_miximage>
 		<mnu_cfg_langue>Change your language</mnu_cfg_langue>
 		
 		<mnu_scrape>Scrape</mnu_scrape>
@@ -114,7 +115,7 @@
 			<win_config_MISC_GroupMISC_ScrapeMode>Scrape Mode</win_config_MISC_GroupMISC_ScrapeMode>
 			<win_config_MISC_GroupMISC_ScrapeModeChoice>0 - New XML File|1 - Update XML (Add New Rom)|2 - Create Picture only</win_config_MISC_GroupMISC_ScrapeModeChoice>
 			<win_config_MISC_GroupMISC_ScrapeSearchMode>Research Mode</win_config_MISC_GroupMISC_ScrapeSearchMode>
-			<win_config_MISC_GroupMISC_ScrapeSearchModeChoice>0 - CRC+FileName|1 - CRC</win_config_MISC_GroupMISC_ScrapeSearchModeChoice>
+			<win_config_MISC_GroupMISC_ScrapeSearchModeChoice>0 - CRC+FileName|1 - CRC|2 - FileName</win_config_MISC_GroupMISC_ScrapeSearchModeChoice>
 			<win_config_MISC_GroupMISC_CountryPicMode>Picture Mode</win_config_MISC_GroupMISC_CountryPicMode>
 			<win_config_MISC_GroupMISC_CountryPicModeChoice>0 - Language Pic|1 - Rom Pic|2 - Language Pic Strict|3 - Rom Pic Strict</win_config_MISC_GroupMISC_CountryPicModeChoice>
 			<win_config_MISC_GroupMISC_Verbose>Log level</win_config_MISC_GroupMISC_Verbose>
@@ -154,6 +155,13 @@
 			<win_config_mix_Enreg>Save</win_config_mix_Enreg>
 			<win_config_mix_Cancel>Cancel</win_config_mix_Cancel>
 		</win_config_mix>
+		<win_config_mix_Download>
+			<win_config_mix_Download_Title>Download Mix Template</win_config_mix_Download_Title>
+			<win_config_mix_Download_empty>Empty Exemple</win_config_mix_Download_empty>
+			<win_config_mix_Download_exemple>Exemple</win_config_mix_Download_exemple>
+			<win_config_mix_Download_Download>Download</win_config_mix_Download_Download>
+			<win_config_mix_Download_Exit>Exit</win_config_mix_Download_Exit>
+		</win_config_mix_Download>
 		<win_About>
 			<win_About_Title>About</win_About_Title>
 			<win_About_By>Autor : Screech</win_About_By>

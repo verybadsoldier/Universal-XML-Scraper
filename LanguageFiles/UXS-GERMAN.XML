@@ -50,6 +50,7 @@
 		<mnu_cfg_config_autoconf>Autokonfiguration</mnu_cfg_config_autoconf>
 		<mnu_cfg_profil>Profil wechseln</mnu_cfg_profil>
 		<mnu_cfg_miximage>Mix-Image Profil wechseln</mnu_cfg_miximage>
+		<mnu_cfg_download_miximage>Mix-Image Herunterladen</mnu_cfg_download_miximage>
 		<mnu_cfg_langue>Sprache wechseln</mnu_cfg_langue>
 		
 		<mnu_scrape>Scrape</mnu_scrape>
@@ -156,6 +157,13 @@
 			<win_config_mix_Enreg>Speichern</win_config_mix_Enreg>
 			<win_config_mix_Cancel>Abbrechen</win_config_mix_Cancel>
 		</win_config_mix>
+		<win_config_mix_Download>
+			<win_config_mix_Download_Title>Mix-Image Herunterladen</win_config_mix_Download_Title>
+			<win_config_mix_Download_empty>Leeres Beispiel</win_config_mix_Download_empty>
+			<win_config_mix_Download_exemple>Beispiel</win_config_mix_Download_exemple>
+			<win_config_mix_Download_Download>Herunterladen</win_config_mix_Download_Download>
+			<win_config_mix_Download_Exit>Ausschalten</win_config_mix_Download_Exit>
+		</win_config_mix_Download>
 		<win_About>
 			<win_About_Title>Über</win_About_Title>
 			<win_About_By>Autor : Screech</win_About_By>

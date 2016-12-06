@@ -70,10 +70,6 @@ Global $MS_AutoConfigItem
 #include "./Include/_GraphGDIPlus.au3"
 #include "./Include/_MyFunction.au3"
 #include "./Include/_ITaskBarList.au3"
-;~ #include "./Include/_AutoItErrorTrap.au3"
-
-;~ _AutoItErrorTrap("Main Module", "Hi!" & @CRLF & @CRLF & "An error was detected in the program, you can try again," & _
-;~ 		" cancel to exit or continue to see more details of the error." & @CRLF & @CRLF & "Sorry for the inconvenience!")
 
 $oTaskbar = _ITaskBar_CreateTaskBarObj()
 
@@ -140,10 +136,7 @@ FileInstall(".\Ressources\UXS.jpg", $iScriptPath & "\Ressources\UXS.jpg")
 FileInstall(".\Ressources\UXS Wizard.jpg", $iScriptPath & "\Ressources\UXS Wizard.jpg")
 FileInstall(".\Ressources\jingle_uxs.MP3", $iScriptPath & "\Ressources\jingle_uxs.MP3")
 FileInstall(".\Mix\Arcade (moon).zip", $iScriptPath & "\Mix\")
-FileInstall(".\Mix\Arcade Zoomed (moon).zip", $iScriptPath & "\Mix\")
-FileInstall(".\Mix\Full Back.zip", $iScriptPath & "\Mix\")
 FileInstall(".\Mix\Standard (3img).zip", $iScriptPath & "\Mix\")
-FileInstall(".\Mix\Standard (4img).zip", $iScriptPath & "\Mix\")
 FileInstall(".\ProfilsFiles\RecalboxV3 (MIX).xml", $iScriptPath & "\ProfilsFiles\", 0)
 FileInstall(".\ProfilsFiles\RecalboxV3.xml", $iScriptPath & "\ProfilsFiles\", 0)
 FileInstall(".\ProfilsFiles\RecalboxV4 (MIX).xml", $iScriptPath & "\ProfilsFiles\", 0)
@@ -260,12 +253,15 @@ Local $MC_Wizard = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_cfg_Wizard"), $
 Local $MC_Separation = GUICtrlCreateMenuItem("", $MC)
 Local $MC_Config_LU = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_cfg_config_LU"), $MC)
 Local $MC_config_autoconf = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_cfg_config_autoconf"), $MC)
+Local $MC_Separation = GUICtrlCreateMenuItem("", $MC)
 Local $MC_config_Option = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_cfg_config_Option"), $MC)
-Local $MC_config_PIC = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_cfg_config_PIC"), $MC)
 Local $MC_config_MISC = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_cfg_config_MISC"), $MC)
 Local $MC_Separation = GUICtrlCreateMenuItem("", $MC)
-Local $MC_Profil = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_cfg_profil"), $MC)
+Local $MC_config_PIC = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_cfg_config_PIC"), $MC)
 Local $MC_Miximage = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_cfg_miximage"), $MC)
+Local $MC_MixDownload = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_cfg_download_miximage"), $MC)
+Local $MC_Separation = GUICtrlCreateMenuItem("", $MC)
+Local $MC_Profil = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_cfg_profil"), $MC)
 Local $MC_Langue = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_cfg_langue"), $MC)
 ;~ Local $MC_TEST = GUICtrlCreateMenuItem("TEST", $MC) ; Debug
 
@@ -284,7 +280,7 @@ Local $MH = GUICtrlCreateMenu(_MultiLang_GetText("mnu_help"))
 Local $MH_Help = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_help_wiki"), $MH)
 Local $MH_Support = GUICtrlCreateMenu(_MultiLang_GetText("mnu_help_support"), $MH)
 Local $MH_Support_Screenscraper = GUICtrlCreateMenuItem("Screenscraper", $MH_Support, 1)
-Local $MH_Support_Tipee = GUICtrlCreateMenuItem("Tipee (€)", $MH_Support, 2)
+Local $MH_Support_Tipee = GUICtrlCreateMenuItem("Tipee (�)", $MH_Support, 2)
 Local $MH_Support_Patreon = GUICtrlCreateMenuItem("Patreon ($)", $MH_Support, 3)
 Local $MH_Link = GUICtrlCreateMenu(_MultiLang_GetText("mnu_help_link"), $MH)
 Local $MH_Link_Screenzone = GUICtrlCreateMenuItem("http://www.screenzone.fr/", $MH_Link, 1)
@@ -457,6 +453,8 @@ While 1
 			_GUI_Refresh($oXMLProfil)
 		Case $MC_Miximage ;Mix Image Selection
 			_GUI_Config_MIX($iMIXPath, $iPathMixTmp)
+		Case $MC_MixDownload
+			_GUI_Config_MIX_Download()
 		Case $MC_config_autoconf ;Autoconf Configuration
 			$GUI_Config_autoconf = _GUI_Config_autoconf($oXMLProfil)
 			If $GUI_Config_autoconf = 1 Then
@@ -843,15 +841,16 @@ Func _GUI_Config_MIX($iMIXPath, $iPathMixTmp)
 	$vMIXLast = _XML_Read("/Profil/Name", 1, $iPathMixTmp & "\config.xml")
 
 	#Region ### START Koda GUI section ### Form=
-	$F_MIXIMAGE = GUICreate(_MultiLang_GetText("win_config_mix_Title"), 825, 272, -1, -1, -1, BitOR($WS_EX_TOPMOST, $WS_EX_WINDOWEDGE))
-	$C_MIXIMAGE = GUICtrlCreateCombo("", 8, 242, 401, 25, BitOR($CBS_DROPDOWNLIST, $CBS_AUTOHSCROLL))
+	$F_MIXIMAGE = GUICreate(_MultiLang_GetText("win_config_mix_Title"), 825, 343, -1, -1, -1, BitOR($WS_EX_TOPMOST, $WS_EX_WINDOWEDGE))
+	$C_MIXIMAGE = GUICtrlCreateCombo("", 8, 314, 401, 25, BitOR($CBS_DROPDOWNLIST, $CBS_AUTOHSCROLL))
 	GUICtrlSetData($C_MIXIMAGE, $vMIXListC, $vMIXLast)
-	$B_OK = GUICtrlCreateButton(_MultiLang_GetText("win_config_mix_Enreg"), 416, 240, 200, 25)
-	$B_CANCEL = GUICtrlCreateButton(_MultiLang_GetText("win_config_mix_Cancel"), 616, 240, 200, 25)
+	$B_OK = GUICtrlCreateButton(_MultiLang_GetText("win_config_mix_Enreg"), 416, 312, 200, 25)
+	$B_CANCEL = GUICtrlCreateButton(_MultiLang_GetText("win_config_mix_Cancel"), 616, 312, 200, 25)
 	$P_Empty = GUICtrlCreatePic("", 8, 8, 400, 200)
 	$P_Full = GUICtrlCreatePic("", 417, 8, 400, 200)
 	$L_Empy = GUICtrlCreateLabel(_MultiLang_GetText("win_config_mix_empty"), 144, 216, 116, 17, $SS_CENTER)
 	$L_Exemple = GUICtrlCreateLabel(_MultiLang_GetText("win_config_mix_exemple"), 592, 216, 44, 17)
+	$E_Description = GUICtrlCreateEdit("", 8, 240, 809, 65, $ES_AUTOVSCROLL + $WS_VSCROLL + $ES_READONLY)
 	GUISetState(@SW_SHOW)
 	GUISetState(@SW_DISABLE, $F_UniversalScraper)
 	#EndRegion ### END Koda GUI section ###
@@ -860,6 +859,9 @@ Func _GUI_Config_MIX($iMIXPath, $iPathMixTmp)
 	$vMIXExempleFullPath = $iPathMixTmp & "\" & _XML_Read("/Profil/General/Full_Exemple", 0, $iPathMixTmp & "\config.xml")
 	GUICtrlSetImage($P_Empty, $vMIXExempleEmptyPath)
 	GUICtrlSetImage($P_Full, $vMIXExempleFullPath)
+	$vDescription = "Author : " & _XML_Read("/Profil/Infos/Author", 0, $iPathMixTmp & "\config.xml")
+	$vDescription = $vDescription & @CRLF & "Description :" & @CRLF & StringReplace(_XML_Read("/Profil/Infos/Description", 0, $iPathMixTmp & "\config.xml"), "@CRLF", @CRLF)
+	GUICtrlSetData($E_Description, $vDescription)
 
 	While 1
 		Local $nMsg = GUIGetMsg()
@@ -892,11 +894,85 @@ Func _GUI_Config_MIX($iMIXPath, $iPathMixTmp)
 					$vMIXExempleFullPath = $iPathMixTmp & "\" & _XML_Read("/Profil/General/Full_Exemple", 0, $iPathMixTmp & "\config.xml")
 					GUICtrlSetImage($P_Empty, $vMIXExempleEmptyPath)
 					GUICtrlSetImage($P_Full, $vMIXExempleFullPath)
+					$vDescription = "Author : " & _XML_Read("/Profil/Infos/Author", 0, $iPathMixTmp & "\config.xml")
+					$vDescription = $vDescription & @CRLF & "Description :" & @CRLF & StringReplace(_XML_Read("/Profil/Infos/Description", 0, $iPathMixTmp & "\config.xml"), "@CRLF", @CRLF)
+					GUICtrlSetData($E_Description, $vDescription)
 				EndIf
 		EndSwitch
 	WEnd
 
 EndFunc   ;==>_GUI_Config_MIX
+
+Func _GUI_Config_MIX_Download()
+	Local $vMIXListC = "", $vLastMIX = "", $aMIXList
+	Local $vMIXExempleEmptyPath = $iRessourcesPath & "\Empty_exemple.jpg"
+	Local $vMIXExempleFullPath = $iRessourcesPath & "\Full_exemple.jpg"
+	Local $vMIXDescriptionPath = $iRessourcesPath & "\Description.txt"
+
+	Local $Result = _DownloadWRetry("https://raw.githubusercontent.com/Universal-Rom-Tools/Universal-XML-Scraper/master/MIX%20Repository/_MIXList.txt", $iRessourcesPath & "\_MIXList.txt")
+	Switch $Result
+		Case -1
+			_LOG("Error downloading _MIXList", 2, $iLOGPath)
+			Return 0
+		Case -2
+			_LOG("Time Out downloading _MIXList", 2, $iLOGPath)
+			Return 0
+	EndSwitch
+	_FileReadToArray($Result, $aMIXList)
+	For $vBoucle = 1 To UBound($aMIXList) - 1
+		$vMIXListC = $vMIXListC & "|" & $aMIXList[$vBoucle]
+	Next
+
+	#Region ### START Koda GUI section ### Form=
+	$F_MIXIMAGE = GUICreate(_MultiLang_GetText("win_config_mix_Download_Title"), 825, 343, -1, -1, -1, BitOR($WS_EX_TOPMOST, $WS_EX_WINDOWEDGE))
+	$C_MIXIMAGE = GUICtrlCreateCombo("", 8, 314, 401, 25, BitOR($CBS_DROPDOWNLIST, $CBS_AUTOHSCROLL))
+	GUICtrlSetData($C_MIXIMAGE, $vMIXListC)
+	$B_OK = GUICtrlCreateButton(_MultiLang_GetText("win_config_mix_Download_Download"), 416, 312, 200, 25)
+	$B_CANCEL = GUICtrlCreateButton(_MultiLang_GetText("win_config_mix_Download_Exit"), 616, 312, 200, 25)
+	$P_Empty = GUICtrlCreatePic("", 8, 8, 400, 200)
+	$P_Full = GUICtrlCreatePic("", 417, 8, 400, 200)
+	$L_Empy = GUICtrlCreateLabel(_MultiLang_GetText("win_config_mix_empty"), 144, 216, 116, 17, $SS_CENTER)
+	$L_Exemple = GUICtrlCreateLabel(_MultiLang_GetText("win_config_mix_exemple"), 592, 216, 44, 17)
+	$E_Description = GUICtrlCreateEdit("", 8, 240, 809, 65, $ES_AUTOVSCROLL + $WS_VSCROLL + $ES_READONLY)
+	GUISetState(@SW_SHOW)
+	GUISetState(@SW_DISABLE, $F_UniversalScraper)
+	#EndRegion ### END Koda GUI section ###
+
+	While 1
+		Local $nMsg = GUIGetMsg()
+		Switch $nMsg
+			Case $GUI_EVENT_CLOSE, $B_CANCEL
+				GUIDelete($F_MIXIMAGE)
+				GUISetState(@SW_ENABLE, $F_UniversalScraper)
+				WinActivate($F_UniversalScraper)
+				_LOG("MIX Download Exit", 0, $iLOGPath)
+				Return
+			Case $B_OK
+				$vMIXURL = 'https://raw.githubusercontent.com/Universal-Rom-Tools/Universal-XML-Scraper/master/MIX Repository/' & GUICtrlRead($C_MIXIMAGE) & '.zip'
+				_DownloadWRetry($vMIXURL, $iMIXPath & "\" & GUICtrlRead($C_MIXIMAGE) & '.zip')
+				_LOG("MIX Download : " & GUICtrlRead($C_MIXIMAGE), 0, $iLOGPath)
+				GUIDelete($F_MIXIMAGE)
+				GUISetState(@SW_ENABLE, $F_UniversalScraper)
+				WinActivate($F_UniversalScraper)
+				Return
+			Case $C_MIXIMAGE
+				If GUICtrlRead($C_MIXIMAGE) <> $vLastMIX Then
+					$vMIXExempleURL = 'https://raw.githubusercontent.com/Universal-Rom-Tools/Universal-XML-Scraper/master/MIX Repository/Preview/' & GUICtrlRead($C_MIXIMAGE) & '/'
+					$vMIXExempleEmptyPath = _DownloadWRetry($vMIXExempleURL & "Empty_exemple.jpg", $vMIXExempleEmptyPath)
+					$vMIXExempleFullPath = _DownloadWRetry($vMIXExempleURL & "Full_exemple.jpg", $vMIXExempleFullPath)
+					GUICtrlSetImage($P_Empty, $vMIXExempleEmptyPath)
+					GUICtrlSetImage($P_Full, $vMIXExempleFullPath)
+					$vMIXDescriptionURL = 'https://raw.githubusercontent.com/Universal-Rom-Tools/Universal-XML-Scraper/master/MIX Repository/Preview/' & GUICtrlRead($C_MIXIMAGE) & '/'
+					ConsoleWrite($vMIXDescriptionURL & "Description.txt" & @CRLF)
+					$vMIXDescriptionPath = _DownloadWRetry($vMIXDescriptionURL & "Description.txt", $vMIXDescriptionPath)
+					$vDescription = StringReplace(FileRead($vMIXDescriptionPath), @LF, @CRLF)
+					GUICtrlSetData($E_Description, $vDescription)
+					$vLastMIX = GUICtrlRead($C_MIXIMAGE)
+				EndIf
+		EndSwitch
+	WEnd
+
+EndFunc   ;==>_GUI_Config_MIX_Download
 
 Func _GUI_Config_MISC()
 	Local $aRechFiles = StringSplit(IniRead($iINIPath, "LAST_USE", "$vRechFiles", "*.*|*.xml;*.txt;*.dv;*.fs;*.xor;*.drv;*.dat;*.cfg;*.nv;*.sav*|"), '|', $STR_ENTIRESPLIT + $STR_NOCOUNT)
@@ -1673,12 +1749,12 @@ Func _CalcHash($aRomList, $vNoRom)
 	If Not _Check_Cancel() Then Return $aRomList
 	$TimerHash = TimerInit()
 	$aRomList[$vNoRom][4] = FileGetSize($aRomList[$vNoRom][1])
-	$aRomList[$vNoRom][5] = StringRight(_CRC32ForFile($aRomList[$vNoRom][1]), 8)
-	$aRomList[$vNoRom][6] = _MD5ForFile($aRomList[$vNoRom][1])
-	If Int(($aRomList[$vNoRom][4] / 1048576)) > 50 Or IniRead($iINIPath, "GENERAL", "$vQuick", 0) = 1 And _Check_Cancel() Then
+	If IniRead($iINIPath, "LAST_USE", "$vScrapeSearchMode", 0) = 2 Then
 		_LOG("QUICK Mode ", 1, $iLOGPath)
 	Else
-		$aRomList[$vNoRom][7] = _SHA1ForFile($aRomList[$vNoRom][1])
+		$aRomList[$vNoRom][5] = StringRight(_CRC32ForFile($aRomList[$vNoRom][1]), 8)
+		If Int(($aRomList[$vNoRom][4] / 1048576)) < 750 Then $aRomList[$vNoRom][6] = _MD5ForFile($aRomList[$vNoRom][1])
+		If Int(($aRomList[$vNoRom][4] / 1048576)) < 50 Then $aRomList[$vNoRom][7] = _SHA1ForFile($aRomList[$vNoRom][1])
 	EndIf
 	_LOG("Rom Info (" & $aRomList[$vNoRom][0] & ") Hash in " & Round((TimerDiff($TimerHash) / 1000), 2) & "s", 0, $iLOGPath)
 	_LOG("Size : " & $aRomList[$vNoRom][4], 1, $iLOGPath)
@@ -1716,13 +1792,13 @@ Func _XMLSystem_Create($vSSLogin = "", $vSSPassword = "")
 EndFunc   ;==>_XMLSystem_Create
 
 Func _DownloadROMXML($aRomList, $vBoucle, $vSystemID, $vSSLogin = "", $vSSPassword = "", $vScrapeSearchMode = 0)
+	FileDelete($aRomList[$vBoucle][8])
 	If Not _Check_Cancel() Then Return $aRomList
 	Local $vXMLRom = $iTEMPPath & "\" & StringRegExpReplace($aRomList[$vBoucle][2], '[\[\]/\|\:\?"\*\\<>]', "") & ".xml"
-;~ 	$vRomName = StringReplace(StringRegExpReplace($aRomList[$vBoucle][2], "[äëïöüÿ'àéèùâêîôû]", ""), " ", "%20")
 	$vRomName = _URIEncode($aRomList[$vBoucle][2])
-	$aRomList[$vBoucle][8] = _DownloadWRetry($iURLScraper & "api/jeuInfos.php?devid=" & $iDevId & "&devpassword=" & $iDevPassword & "&softname=" & $iSoftname & "&output=xml&ssid=" & $vSSLogin & "&sspassword=" & $vSSPassword & "&crc=" & $aRomList[$vBoucle][5] & "&md5=" & $aRomList[$vBoucle][6] & "&sha1=" & $aRomList[$vBoucle][7] & "&systemeid=" & $vSystemID & "&romtype=rom&romnom=" & $vRomName & "&romtaille=" & $aRomList[$vBoucle][4], $vXMLRom)
+	If $vScrapeSearchMode = 0 Or $vScrapeSearchMode = 1 Then $aRomList[$vBoucle][8] = _DownloadWRetry($iURLScraper & "api/jeuInfos.php?devid=" & $iDevId & "&devpassword=" & $iDevPassword & "&softname=" & $iSoftname & "&output=xml&ssid=" & $vSSLogin & "&sspassword=" & $vSSPassword & "&crc=" & $aRomList[$vBoucle][5] & "&md5=" & $aRomList[$vBoucle][6] & "&sha1=" & $aRomList[$vBoucle][7] & "&systemeid=" & $vSystemID & "&romtype=rom&romnom=" & $vRomName & "&romtaille=" & $aRomList[$vBoucle][4], $vXMLRom)
 	If (StringInStr(FileReadLine($aRomList[$vBoucle][8]), "Erreur") Or Not FileExists($aRomList[$vBoucle][8])) Then
-		If $vScrapeSearchMode = 0 Then $aRomList[$vBoucle][8] = _DownloadWRetry($iURLScraper & "api/jeuInfos.php?devid=" & $iDevId & "&devpassword=" & $iDevPassword & "&softname=" & $iSoftname & "&output=xml&ssid=" & $vSSLogin & "&sspassword=" & $vSSPassword & "&crc=&md5=&sha1=&systemeid=" & $vSystemID & "&romtype=rom&romnom=" & $vRomName & "&romtaille=" & $aRomList[$vBoucle][4], $vXMLRom)
+		If $vScrapeSearchMode = 0 Or $vScrapeSearchMode = 2 Then $aRomList[$vBoucle][8] = _DownloadWRetry($iURLScraper & "api/jeuInfos.php?devid=" & $iDevId & "&devpassword=" & $iDevPassword & "&softname=" & $iSoftname & "&output=xml&ssid=" & $vSSLogin & "&sspassword=" & $vSSPassword & "&crc=&md5=&sha1=&systemeid=" & $vSystemID & "&romtype=rom&romnom=" & $vRomName & "&romtaille=" & $aRomList[$vBoucle][4], $vXMLRom)
 		If (StringInStr(FileReadLine($aRomList[$vBoucle][8]), "Erreur") Or Not FileExists($aRomList[$vBoucle][8])) Then
 			FileDelete($aRomList[$vBoucle][8])
 			$aRomList[$vBoucle][8] = ""
@@ -1888,7 +1964,7 @@ Func _ScrapeZipContent($aRomList, $vBoucle)
 	Local $vZipDir = @TempDir & "\" & "UXS_ZIP_Temp_" & $aRomList[$vBoucle][2]
 	Local $vZipDirEx = $vZipDir & "\" & "_extract"
 	Local $vSrcPath = $vZipDir & "\" & $aRomList[$vBoucle][0]
-  	DirRemove($vZipDir, 1)
+	DirRemove($vZipDir, 1)
 	FileCopy($aRomList[$vBoucle][1], $vSrcPath, $FC_CREATEPATH)
 	_LOG("Unzipping file '" & $vSrcPath & "' to temp directory: " & $vZipDirEx, 1, $iLOGPath)
 	Local $vResult = _Zip_UnzipAll($vSrcPath, $vZipDirEx, 1)
