@@ -125,6 +125,7 @@ FileInstall(".\LanguageFiles\UXS-PORTUGUESE.XML", $iScriptPath & "\LanguageFiles
 FileInstall(".\LanguageFiles\UXS-GERMAN.XML", $iScriptPath & "\LanguageFiles\UXS-GERMAN.XML")
 FileInstall(".\LanguageFiles\UXS-SPANISH.XML", $iScriptPath & "\LanguageFiles\UXS-SPANISH.XML")
 FileInstall(".\LanguageFiles\UXS-ITALIAN.XML", $iScriptPath & "\LanguageFiles\UXS-ITALIAN.XML")
+FileInstall(".\LanguageFiles\UXS-DUTCH.XML", $iScriptPath & "\LanguageFiles\UXS-DUTCH.XML")
 FileInstall(".\Ressources\plink.exe", $iScriptPath & "\Ressources\plink.exe")
 FileInstall(".\Ressources\optipng.exe", $iScriptPath & "\Ressources\optipng.exe")
 FileInstall(".\Ressources\pngquant.exe", $iScriptPath & "\Ressources\pngquant.exe")

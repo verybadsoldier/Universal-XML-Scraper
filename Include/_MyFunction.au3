@@ -274,6 +274,11 @@ Func _MultiLang_LoadLangDef($iLangPath, $vUserLang)
 	$aLangFiles[5][2] = "0410 " & _ ;Italian - Italy
 			"0810 " ;Italian - Switzerland
 
+	$aLangFiles[6][0] = "Dutch" ; Dutch
+	$aLangFiles[6][1] = $iLangPath & "\UXS-DUTCH.XML"
+	$aLangFiles[6][2] = "0413 " & _ ;Dutch - Netherlands
+			"0813 " ;Dutch - Belgium
+
 	;Set the available language files, names, and codes.
 	_MultiLang_SetFileInfo($aLangFiles)
 	If @error Then
