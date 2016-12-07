@@ -205,7 +205,7 @@ Func _MultiLang_LoadLangDef($iLangPath, $vUserLang)
 	; [n][0] = Display Name in Local Language (Used for Select Function)
 	; [n][1] = Language File (Full path.  In this case we used a $iLangPath
 	; [n][2] = [Space delimited] Character codes as used by @OS_LANG (used to select correct lang file)
-	Local $aLangFiles[6][3]
+	Local $aLangFiles[7][3]
 
 	$aLangFiles[0][0] = "English (US)" ;
 	$aLangFiles[0][1] = $iLangPath & "\UXS-ENGLISH.XML"

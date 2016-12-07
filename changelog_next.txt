@@ -1,6 +1,7 @@
 2.0.0.7
 * Corrected :
  - Language and Country paramater now are saved correctly
+ - Scummvm profil now work well (scraping the directory AND the file)
 * Added :
  - Dutch Translation. (Thank you Shampiken for the translation)
  

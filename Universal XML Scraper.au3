@@ -5,7 +5,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper XML Universel
-#AutoIt3Wrapper_Res_Fileversion=2.0.0.7
+#AutoIt3Wrapper_Res_Fileversion=2.0.0.8
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -282,7 +282,7 @@ Local $MH = GUICtrlCreateMenu(_MultiLang_GetText("mnu_help"))
 Local $MH_Help = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_help_wiki"), $MH)
 Local $MH_Support = GUICtrlCreateMenu(_MultiLang_GetText("mnu_help_support"), $MH)
 Local $MH_Support_Screenscraper = GUICtrlCreateMenuItem("Screenscraper", $MH_Support, 1)
-Local $MH_Support_Tipee = GUICtrlCreateMenuItem("Tipee (�)", $MH_Support, 2)
+Local $MH_Support_Tipee = GUICtrlCreateMenuItem("Tipee (€)", $MH_Support, 2)
 Local $MH_Support_Patreon = GUICtrlCreateMenuItem("Patreon ($)", $MH_Support, 3)
 Local $MH_Link = GUICtrlCreateMenu(_MultiLang_GetText("mnu_help_link"), $MH)
 Local $MH_Link_Screenzone = GUICtrlCreateMenuItem("http://www.screenzone.fr/", $MH_Link, 1)
@@ -608,8 +608,8 @@ Func _LoadConfig($oXMLProfil)
 	$aConfig[5] = IniRead($iINIPath, "LAST_USE", "$vScrape_Mode", 0)
 	$aConfig[6] = IniRead($iINIPath, "LAST_USE", "$vMissingRom_Mode", 0)
 	$aConfig[7] = IniRead($iINIPath, "LAST_USE", "$vCountryPic_Mode", 0)
-	If IniRead($iINIPath, "LAST_USE", "$vLangPref", 0) = 0 Then IniWrite($iINIPath, "LAST_USE", "$vLangPref", _MultiLang_GetText("langpref"))
-	If IniRead($iINIPath, "LAST_USE", "$vCountryPref", 0) = 0 Then IniWrite($iINIPath, "LAST_USE", "$vCountryPref", _MultiLang_GetText("countrypref"))
+	If IniRead($iINIPath, "LAST_USE", "$vLangPref", "0") = "0" Then IniWrite($iINIPath, "LAST_USE", "$vLangPref", _MultiLang_GetText("langpref"))
+	If IniRead($iINIPath, "LAST_USE", "$vCountryPref", "0") = "0" Then IniWrite($iINIPath, "LAST_USE", "$vCountryPref", _MultiLang_GetText("countrypref"))
 	$aConfig[9] = IniRead($iINIPath, "LAST_USE", "$vLangPref", "")
 	$aConfig[10] = IniRead($iINIPath, "LAST_USE", "$vCountryPref", "")
 	$aConfig[11] = $iRessourcesPath & "\regionlist.txt"
@@ -1689,16 +1689,31 @@ Func _RomList_Create($aConfig, $vFullScrape = 0, $oXMLProfil = "")
 	_LOG(UBound($aRomList) - 1 & " Rom(s) found", 0, $iLOGPath)
 
 	For $vBoucle = 1 To UBound($aRomList) - 1
-		$aRomList[$vBoucle][1] = $aConfig[1] & "\" & $aRomList[$vBoucle][0]
+		$aRomList[$vBoucle][1] = $aConfig[1] & "\" & $aRomList[$vBoucle][0] ; Full Path
 		$aPathSplit = _PathSplit($aRomList[$vBoucle][0], $sDrive, $sDir, $sFileName, $sExtension)
-		$aRomList[$vBoucle][2] = $aPathSplit[3]
-		$aRomList[$vBoucle][9] = -1
+		$aRomList[$vBoucle][2] = $aPathSplit[3] ; Filename (without extension)
+		$aRomList[$vBoucle][9] = -1 ;Rom Found
 	Next
+
+	$vSpecial = _XML_Read("Profil/General/Special", 0, "", $oXMLProfil)
+	Switch StringLower($vSpecial)
+		Case "folder"
+			ConsoleWrite("!" & $vSpecial & @CRLF)
+			For $vBoucle = 1 To UBound($aRomList) - 1
+				$aPathSplit = StringSplit($aRomList[$vBoucle][1], '\')
+				_ArrayAdd($aRomList, $aPathSplit[UBound($aPathSplit) - 2] & '|' & $aRomList[$vBoucle][1] & '|' & $aRomList[$vBoucle][2] & '|4||||||-1')
+			Next
+	EndSwitch
+
+;~ 	_ArrayDisplay($aRomList, "$aRomList")
+
 	Return $aRomList
 EndFunc   ;==>_RomList_Create
 
 Func _Check_Rom2Scrape($aRomList, $vNoRom, $aXMLRomList, $vTarget_RomPath, $vScrape_Mode, $aExtToHide = "", $aValueToHide = "")
 	Local $sDrive = "", $sDir = "", $sFileName = "", $sExtension = "", $aPathSplit
+
+	If $aRomList[$vNoRom][3] > 0 Then Return $aRomList
 
 	If IsArray($aExtToHide) Then
 		$aPathSplit = _PathSplit($aRomList[$vNoRom][0], $sDrive, $sDir, $sFileName, $sExtension)
@@ -1891,7 +1906,7 @@ Func _Results($aRomList, $vNbThread, $vFullTimer, $vFullScrape = 0)
 		$vTitle = $vTitle[UBound($vTitle) - 1]
 	EndIf
 
-	If $vScrapeCancelled = 1 Then $vTitle = $vTitle & " (Annulé)"
+	If $vScrapeCancelled = 1 Then $vTitle = $vTitle & " (AnnulÃ©)"
 
 	#Region ### START Koda GUI section ### Form=
 	$F_Results = GUICreate(_MultiLang_GetText("win_Results_Title"), 538, 403, -1, -1, BitOR($WS_EX_TOPMOST, $WS_EX_WINDOWEDGE))
@@ -2141,7 +2156,11 @@ Func _SCRAPE($oXMLProfil, $vNbThread = 1, $vFullScrape = 0)
 
 						;If found (or missingRom_Mode = 1 or Rom to Hide) Send it to the scrape Engine
 						If ($aRomList[$vBoucle][9] = 1 Or $vMissingRom_Mode = 1 Or $aRomList[$vBoucle][3] > 1) And _Check_Cancel() Then
-							_XML_Make($iTEMPPath & "\scraped\" & $vBoucle & ".xml", _XML_Read("Profil/Game/Target_Value", 0, "", $oXMLProfil))
+							If $aRomList[$vBoucle][3] = 4 Then
+								_XML_Make($iTEMPPath & "\scraped\" & $vBoucle & ".xml", _XML_Read("Profil/FolderRoot/Target_Value", 0, "", $oXMLProfil))
+							Else
+								_XML_Make($iTEMPPath & "\scraped\" & $vBoucle & ".xml", _XML_Read("Profil/Game/Target_Value", 0, "", $oXMLProfil))
+							EndIf
 							$sMailSlotName = "\\.\mailslot\Son" & $vThreadUsed
 							$vMessage = _ArrayToString($aRomList, '{Break}', $vBoucle, $vBoucle, '{Break}')
 							$vResultSM = _SendMail($sMailSlotName, $vMessage)
@@ -2432,7 +2451,7 @@ EndFunc   ;==>_WizardAutoconf
 ;~ 	$aRomList[][0]=Relative Path
 ;~ 	$aRomList[][1]=Full Path
 ;~ 	$aRomList[][2]=Filename (without extension)
-;~ 	$aRomList[][3]=XML to Scrape (0 = No, 1 = Yes, 2 = To hide, 3 = To hide)
+;~ 	$aRomList[][3]=XML to Scrape (0 = No, 1 = Yes, 2 = To hide, 3 = To hide, 4 = Folder)
 ;~ 	$aRomList[][4]=File Size
 ;~ 	$aRomList[][5]=File CRC32
 ;~ 	$aRomList[][6]=File MD5

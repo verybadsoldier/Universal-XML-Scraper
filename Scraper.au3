@@ -6,7 +6,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper
-#AutoIt3Wrapper_Res_Fileversion=1.0.0.5
+#AutoIt3Wrapper_Res_Fileversion=1.0.0.6
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -66,6 +66,7 @@ Global $iTEMPPathGlobal = $iScriptPath & "\TEMP"
 Global $iRessourcesPath = $iScriptPath & "\Ressources"
 Global $iLangPath = $iScriptPath & "\LanguageFiles" ; Where we are storing the language files.
 Global $iProfilsPath = $iScriptPath & "\ProfilsFiles" ; Where we are storing the profils files.
+Global $vNodeType = "Element"
 
 Local $iSize, $aRomList, $vBoucle, $aConfig, $vProfilsPath, $oXMLProfil, $oXMLSystem, $aMatchingCountry
 Local $sMailSlotMother = "\\.\mailslot\Mother"
@@ -122,6 +123,7 @@ While $iNumberOfMessagesOverall < 5
 	EndIf
 	If $iNumberOfMessagesOverall = 5 Then
 		$vRomTimer = TimerInit()
+		_LOG("-----Making " & $aRomList[2], 1, $iLOGPath)
 ;~ 		Sleep(1000)
 		$aRomList = _Game_Make($aRomList, $vBoucle, $aConfig, $oXMLProfil)
 		$oXMLAfterTidy = _XML_CreateDOMDocument(Default)
@@ -131,8 +133,8 @@ While $iNumberOfMessagesOverall < 5
 		_XML_SaveToFile($oXMLAfterTidy, $iTEMPPathGlobal & "\scraped\" & $vBoucle & ".xml")
 		$iNumberOfMessagesOverall = 1
 		$vScrapedTime = Round((TimerDiff($vRomTimer) / 1000), 2)
-;~ 		_LOG($aRomList[2] & " scraped in " & $vScrapedTime & "s", 3, $iLOGPath)
 		_SendMail($sMailSlotMother, $vBoucle & "|" & $vScrapedTime)
+		_LOG("-----" & $aRomList[2] & " scraped in " & $vScrapedTime & "s", 3, $iLOGPath)
 		If _CheckCount($hMailSlotCancel) >= 1 Then Exit
 	EndIf
 WEnd
@@ -140,11 +142,19 @@ WEnd
 Func _Game_Make($aRomList, $vBoucle, $aConfig, $oXMLProfil)
 	Local $vValue = "", $vAttributeName, $vWhile = 1, $vNode, $vBracketPos = 0, $vHookPos = 0, $vSystem
 	While 1
-		Switch _XML_Read("/Profil/Element[" & $vWhile & "]/Target_Type", 0, "", $oXMLProfil)
+		If $aRomList[3] = 4 Then
+			$vNodeType = "Folder"
+			_LOG("Creating Folder", 1, $iLOGPath)
+		Else
+			$vNodeType = "Element"
+			_LOG("Creating Element", 1, $iLOGPath)
+		EndIf
+		_LOG("/Profil/" & $vNodeType & "[" & $vWhile & "]/Target_Type = " & _XML_Read("/Profil/" & $vNodeType & "[" & $vWhile & "]/Target_Type", 0, "", $oXMLProfil), 1, $iLOGPath)
+		Switch _XML_Read("/Profil/" & $vNodeType & "[" & $vWhile & "]/Target_Type", 0, "", $oXMLProfil)
 			Case "XML_Value"
 				$vValue = _XML_Read_Source($aRomList, $vBoucle, $aConfig, $oXMLProfil, $vWhile)
-				$vNode = _XML_Read("/Profil/Element[" & $vWhile & "]/Target_Value", 0, "", $oXMLProfil)
-				Switch _Coalesce(StringLower(_XML_Read("/Profil/Element[" & $vWhile & "]/Target_CASE", 0, "", $oXMLProfil)), "default")
+				$vNode = _XML_Read("/Profil/" & $vNodeType & "[" & $vWhile & "]/Target_Value", 0, "", $oXMLProfil)
+				Switch _Coalesce(StringLower(_XML_Read("/Profil/" & $vNodeType & "[" & $vWhile & "]/Target_CASE", 0, "", $oXMLProfil)), "default")
 					Case "true"
 						$vValue = StringUpper($vValue)
 					Case "false"
@@ -156,9 +166,9 @@ Func _Game_Make($aRomList, $vBoucle, $aConfig, $oXMLProfil)
 				EndIf
 			Case "XML_Attribute"
 				$vValue = _XML_Read_Source($aRomList, $vBoucle, $aConfig, $oXMLProfil, $vWhile)
-				$vAttributeName = _XML_Read("/Profil/Element[" & $vWhile & "]/Target_Attribute_Name", 0, "", $oXMLProfil)
-				$vNode = _XML_Read("/Profil/Element[" & $vWhile & "]/Target_Value", 0, "", $oXMLProfil)
-				Switch _Coalesce(StringLower(_XML_Read("/Profil/Element[" & $vWhile & "]/Target_CASE", 0, "", $oXMLProfil)), "default")
+				$vAttributeName = _XML_Read("/Profil/" & $vNodeType & "[" & $vWhile & "]/Target_Attribute_Name", 0, "", $oXMLProfil)
+				$vNode = _XML_Read("/Profil/" & $vNodeType & "[" & $vWhile & "]/Target_Value", 0, "", $oXMLProfil)
+				Switch _Coalesce(StringLower(_XML_Read("/Profil/" & $vNodeType & "[" & $vWhile & "]/Target_CASE", 0, "", $oXMLProfil)), "default")
 					Case "true"
 						$vValue = StringUpper($vValue)
 					Case "false"
@@ -170,7 +180,7 @@ Func _Game_Make($aRomList, $vBoucle, $aConfig, $oXMLProfil)
 				EndIf
 			Case "XML_Path"
 				$vValue = _XML_Read_Source($aRomList, $vBoucle, $aConfig, $oXMLProfil, $vWhile)
-				$vNode = _XML_Read("/Profil/Element[" & $vWhile & "]/Target_Value", 0, "", $oXMLProfil)
+				$vNode = _XML_Read("/Profil/" & $vNodeType & "[" & $vWhile & "]/Target_Value", 0, "", $oXMLProfil)
 				_LOG($vNode & " <-- " & $vValue, 1, $iLOGPath)
 				If Number($vValue) < 0 Or $aConfig[5] = 2 Then
 					_LOG($vNode & " <-- No value to write", 1, $iLOGPath)
@@ -182,7 +192,7 @@ Func _Game_Make($aRomList, $vBoucle, $aConfig, $oXMLProfil)
 				EndIf
 			Case "XML_Value_FORMAT"
 				$vValue = _XML_Read_Source($aRomList, $vBoucle, $aConfig, $oXMLProfil, $vWhile)
-				Switch _XML_Read("/Profil/Element[" & $vWhile & "]/Target_FORMAT", 0, "", $oXMLProfil)
+				Switch _XML_Read("/Profil/" & $vNodeType & "[" & $vWhile & "]/Target_FORMAT", 0, "", $oXMLProfil)
 					Case '%20on1%'
 						$vValue = StringReplace(Round(($vValue * 100 / 20) / 100, 2), ",", ".")
 					Case '%ES_Date%'
@@ -198,8 +208,8 @@ Func _Game_Make($aRomList, $vBoucle, $aConfig, $oXMLProfil)
 						$vCountry = _Coalesce(_XML_Read("/Data/jeu/region", 0, $aRomList[8]), "unknown")
 						If $vCountry <> "unknown" Then $vValue = $vValue & " (" & $vCountry & ")"
 				EndSwitch
-				$vNode = _XML_Read("/Profil/Element[" & $vWhile & "]/Target_Value", 0, "", $oXMLProfil)
-				Switch _Coalesce(StringLower(_XML_Read("/Profil/Element[" & $vWhile & "]/Target_CASE", 0, "", $oXMLProfil)), "default")
+				$vNode = _XML_Read("/Profil/" & $vNodeType & "[" & $vWhile & "]/Target_Value", 0, "", $oXMLProfil)
+				Switch _Coalesce(StringLower(_XML_Read("/Profil/" & $vNodeType & "[" & $vWhile & "]/Target_CASE", 0, "", $oXMLProfil)), "default")
 					Case "true"
 						$vValue = StringUpper($vValue)
 					Case "false"
@@ -220,10 +230,10 @@ EndFunc   ;==>_Game_Make
 
 Func _XML_Read_Source($aRomList, $vBoucle, $aConfig, $oXMLProfil, $vWhile)
 	Local $vXpath, $vValue, $vXpathTemp, $aXpathCountry
-	Switch _XML_Read("/Profil/Element[" & $vWhile & "]/Source_Type", 0, "", $oXMLProfil)
+	Switch _XML_Read("/Profil/" & $vNodeType & "[" & $vWhile & "]/Source_Type", 0, "", $oXMLProfil)
 		Case "XML_Value"
 			If $aRomList[9] = 0 Or $aConfig[5] = 2 Then Return ""
-			$vXpath = _XML_Read("/Profil/Element[" & $vWhile & "]/Source_Value", 0, "", $oXMLProfil)
+			$vXpath = _XML_Read("/Profil/" & $vNodeType & "[" & $vWhile & "]/Source_Value", 0, "", $oXMLProfil)
 
 			If StringInStr($vXpath, '%LANG%') Then
 				Local $aLangPref = $aConfig[9]
@@ -245,10 +255,10 @@ Func _XML_Read_Source($aRomList, $vBoucle, $aConfig, $oXMLProfil, $vWhile)
 
 		Case "XML_Attribute"
 			If $aRomList[9] = 0 Or $aConfig[5] = 2 Then Return ""
-			Return _XML_Read(_XML_Read("/Profil/Element[" & $vWhile & "]/Source_Value", 1, "", $oXMLProfil), 0, $aRomList[8])
+			Return _XML_Read(_XML_Read("/Profil/" & $vNodeType & "[" & $vWhile & "]/Source_Value", 1, "", $oXMLProfil), 0, $aRomList[8])
 		Case "XML_Download"
 			If $aRomList[9] = 0 Then Return ""
-			$vXpath = _XML_Read("/Profil/Element[" & $vWhile & "]/Source_Value", 0, "", $oXMLProfil)
+			$vXpath = _XML_Read("/Profil/" & $vNodeType & "[" & $vWhile & "]/Source_Value", 0, "", $oXMLProfil)
 			$aXpathCountry = _CountryArray_Make($aConfig, $vXpath, $aRomList[8], $oXMLProfil)
 			For $vBoucle2 = 1 To UBound($aXpathCountry) - 1
 				$vValue = _Picture_Download($aXpathCountry[$vBoucle2], $aRomList, $vBoucle, $vWhile, $oXMLProfil, $aConfig)
@@ -263,9 +273,9 @@ Func _XML_Read_Source($aRomList, $vBoucle, $aConfig, $oXMLProfil, $vWhile)
 			Next
 			Return ""
 		Case "Fixe_Value"
-			Return _XML_Read("/Profil/Element[" & $vWhile & "]/Source_Value", 0, "", $oXMLProfil)
+			Return _XML_Read("/Profil/" & $vNodeType & "[" & $vWhile & "]/Source_Value", 0, "", $oXMLProfil)
 		Case "Variable_Value"
-			Switch _XML_Read("/Profil/Element[" & $vWhile & "]/Source_Value", 0, "", $oXMLProfil)
+			Switch _XML_Read("/Profil/" & $vNodeType & "[" & $vWhile & "]/Source_Value", 0, "", $oXMLProfil)
 				Case '%XML_Rom_Path%'
 					$vSystem = StringSplit(IniRead($iINIPath, "LAST_USE", "$vSource_RomPath", ""), "\")
 					$vSystem = $vSystem[UBound($vSystem) - 1]
@@ -273,7 +283,7 @@ Func _XML_Read_Source($aRomList, $vBoucle, $aConfig, $oXMLProfil, $vWhile)
 					$vXMLRomPath = StringReplace($vXMLRomPath, '%system%', $vSystem)
 					Return $vXMLRomPath
 				Case '%AutoHide%'
-					If $aRomList[3] > 1 Then Return "true"
+					If $aRomList[3] = 2 Or $aRomList[3] = 3 Then Return "true"
 				Case Else
 					_LOG("SOURCE Unknown", 1, $iLOGPath)
 					Return ""
@@ -281,11 +291,12 @@ Func _XML_Read_Source($aRomList, $vBoucle, $aConfig, $oXMLProfil, $vWhile)
 		Case "MIX_Template"
 			If $aRomList[9] = 0 And $aConfig[6] = 0 Then Return ""
 			Local $vDownloadTag, $vDownloadExt, $vTargetPicturePath, $aPathSplit, $sDrive, $sDir, $sFileName, $sExtension
-			$vDownloadTag = _XML_Read("/Profil/Element[" & $vWhile & "]/Source_Download_Tag", 0, "", $oXMLProfil)
-			$vDownloadExt = _XML_Read("/Profil/Element[" & $vWhile & "]/Source_Download_Ext", 0, "", $oXMLProfil)
+			$vDownloadTag = _XML_Read("/Profil/" & $vNodeType & "[" & $vWhile & "]/Source_Download_Tag", 0, "", $oXMLProfil)
+			If $vNodeType = "Folder" Then $vDownloadTag = $vDownloadTag & "-folder"
+			$vDownloadExt = _XML_Read("/Profil/" & $vNodeType & "[" & $vWhile & "]/Source_Download_Ext", 0, "", $oXMLProfil)
 			$aPathSplit = _PathSplit(StringReplace($aRomList[0], "\", "_"), $sDrive, $sDir, $sFileName, $sExtension)
 			$vTargetPicturePath = $aConfig[4] & $sFileName & $vDownloadTag & "." & $vDownloadExt
-			Switch _XML_Read("/Profil/Element[" & $vWhile & "]/Source_Download_Path", 0, "", $oXMLProfil)
+			Switch _XML_Read("/Profil/" & $vNodeType & "[" & $vWhile & "]/Source_Download_Path", 0, "", $oXMLProfil)
 				Case '%Local_Path_File%'
 					$vDownloadPath = $aConfig[3] & "\" & $sFileName & $vDownloadTag & "." & $vDownloadExt
 				Case Else ; For the futur
@@ -341,8 +352,9 @@ Func _Picture_Download($vCountryPref, $aRomList, $vBoucle, $vWhile, $oXMLProfil,
 	$vTarget_ImagePath = $aConfig[4]
 	$vSource_ImagePath = $aConfig[3]
 	$vDownloadURL = _XML_Read($vCountryPref, 0, $aRomList[8])
-	$vDownloadTag = _XML_Read("/Profil/Element[" & $vWhile & "]/Source_Download_Tag", 0, "", $oXMLProfil)
-	$vDownloadExt = _Coalesce(IniRead($iINIPath, "LAST_USE", "$vTarget_Image_Ext", ""), _XML_Read("/Profil/Element[" & $vWhile & "]/Source_Download_Ext", 0, "", $oXMLProfil))
+	$vDownloadTag = _XML_Read("/Profil/" & $vNodeType & "[" & $vWhile & "]/Source_Download_Tag", 0, "", $oXMLProfil)
+	If $vNodeType = "Folder" Then $vDownloadTag = $vDownloadTag & "-folder"
+	$vDownloadExt = _Coalesce(IniRead($iINIPath, "LAST_USE", "$vTarget_Image_Ext", ""), _XML_Read("/Profil/" & $vNodeType & "[" & $vWhile & "]/Source_Download_Ext", 0, "", $oXMLProfil))
 	$vDownloadMaxWidth = "&maxwidth=" & _Coalesce(IniRead($iINIPath, "LAST_USE", "$vTarget_Image_Width", ""), _XML_Read("Profil/General/Target_Image_Width", 0, "", $oXMLProfil))
 	$vDownloadMaxHeight = "&maxheight=" & _Coalesce(IniRead($iINIPath, "LAST_USE", "$vTarget_Image_Height", ""), _XML_Read("Profil/General/Target_Image_Height", 0, "", $oXMLProfil))
 	$vDownloadOutputFormat = "&outputformat=" & $vDownloadExt
@@ -353,7 +365,7 @@ Func _Picture_Download($vCountryPref, $aRomList, $vBoucle, $vWhile, $oXMLProfil,
 	$vTargetPicturePath = $vTarget_ImagePath & $sFileName & $vDownloadTag & "." & $vDownloadExt
 	If $vDownloadExt = "%Source%" Then $vDownloadExt = StringRight($vDownloadURL, 3)
 	$vDownloadURL = $vDownloadURL & $vDownloadMaxWidth & $vDownloadMaxHeight & $vDownloadOutputFormat
-	Switch _XML_Read("/Profil/Element[" & $vWhile & "]/Source_Download_Path", 0, "", $oXMLProfil)
+	Switch _XML_Read("/Profil/" & $vNodeType & "[" & $vWhile & "]/Source_Download_Path", 0, "", $oXMLProfil)
 		Case '%Local_Path_File%'
 			$vDownloadPath = $vSource_ImagePath & "\" & $sFileName & $vDownloadTag & "." & $vDownloadExt
 		Case Else
@@ -362,7 +374,12 @@ Func _Picture_Download($vCountryPref, $aRomList, $vBoucle, $vWhile, $oXMLProfil,
 
 ;~ 	$vCheckExist = _XML_Read(_XML_Read('/Profil/Game/Target_Value', 0, "", $oXMLProfil) & '[* = "' & $vTargetPicturePath & '"]', 0, "", $aConfig[8])
 
-	$vCheckExist = _XML_NodeExists($aConfig[8], _XML_Read('/Profil/Game/Target_Value', 0, "", $oXMLProfil) & '[* = "' & $vTargetPicturePath & '"]')
+	If $vNodeType = "Folder" Then
+		$vCheckExist = _XML_NodeExists($aConfig[8], _XML_Read('/Profil/Folder/Target_Value', 0, "", $oXMLProfil) & '[* = "' & $vTargetPicturePath & '"]')
+	Else
+		$vCheckExist = _XML_NodeExists($aConfig[8], _XML_Read('/Profil/Game/Target_Value', 0, "", $oXMLProfil) & '[* = "' & $vTargetPicturePath & '"]')
+	EndIf
+
 	If $vCheckExist = $XML_RET_SUCCESS Then
 ;~ 	If _Coalesce($vCheckExist, -1) = -1 Then
 		_LOG(_XML_Read('/Profil/Game/Target_Value', 0, "", $oXMLProfil) & '[* = "' & $vTargetPicturePath & '"]' & " Already exist in XML ( " & $vCheckExist & ")", 1, $iLOGPath)
@@ -375,6 +392,7 @@ Func _Picture_Download($vCountryPref, $aRomList, $vBoucle, $vWhile, $oXMLProfil,
 	EndIf
 
 	$vValue = _DownloadWRetry($vDownloadURL, $vDownloadPath)
+	_LOG($vValue & " $vValue returned by _DownloadWRetry", 1, $iLOGPath)
 	If $vValue <> -1 And $vValue <> "" And FileExists($vDownloadPath) Then
 		Return $vTargetPicturePath
 	Else
@@ -464,7 +482,7 @@ Func _MIX_Engine($aRomList, $vBoucle, $aConfig, $oXMLProfil)
 						_LOG("Unknown GDI_Function", 2, $iLOGPath)
 				EndSwitch
 			Case Else
-				_LOG("End Of Elements", 1, $iLOGPath)
+				_LOG("End Of MIX", 1, $iLOGPath)
 				ExitLoop
 		EndSwitch
 		$vWhile = $vWhile + 1
@@ -474,7 +492,10 @@ Func _MIX_Engine($aRomList, $vBoucle, $aConfig, $oXMLProfil)
 		If FileExists($aMiXPicTemp[$vBoucle2 - 1]) Then _GDIPlus_Merge($aMiXPicTemp[$vBoucle2 - 1], $aMiXPicTemp[$vBoucle2])
 	Next
 
-	If Not IsArray($aMiXPicTemp) Or UBound($aMiXPicTemp) - 1 = 0 Then Return -1
+	If Not IsArray($aMiXPicTemp) Or UBound($aMiXPicTemp) - 1 = 0 Then
+		_LOG("End Of Elements", 1, $iLOGPath)
+		Return -1
+	EndIf
 
 	$vCompression = _XML_Read("/Profil/Compression/use", 0, "", $oMixConfig)
 	$vCompressionSoft = _XML_Read("/Profil/Compression/soft", 0, "", $oMixConfig)

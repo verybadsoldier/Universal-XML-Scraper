@@ -1,3 +1,10 @@
+2.0.0.7
+* Corrected :
+ - Language and Country paramater now are saved correctly
+ - Scummvm profil now work well (scraping the directory AND the file)
+* Added :
+ - Dutch Translation. (Thank you Shampiken for the translation)
+ 
 2.0.0.6
 * Corrected :
  - Better "Time Left" function
@@ -15,8 +22,7 @@
 * Corrected :
  - Message to kill ES don't append when in fullscrape
  - Better "Time left" feature
-* Merge with Shakz76 fork : 
- - Correcting the Plink SSH Command
+ - Correcting the Plink SSH Command (Thank you Shakz76 for the correction)
 
 2.0.0.4
 * Corrected :
@@ -81,8 +87,7 @@ First STABLE Version !!!!
   + %System% = Name of the System directory
   + %Source_RootPath% = Path to the local Root
  - Rewrite of Retropie Profil to match Retropie Path (to test)
-* Merge with verybadsoldier fork :
- - Added a new function to scrape IN zip files when zip file rom isn't found. (THANKS A LOT verybadsoldier)
+ - New function to scrape IN zip files when zip file rom isn't found. (THANKS A LOT verybadsoldier)
 
 2.0.0.5 BETA
 * Corrected :

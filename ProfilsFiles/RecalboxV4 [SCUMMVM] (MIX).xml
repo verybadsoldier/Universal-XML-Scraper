@@ -5,6 +5,7 @@
 		<Mix>True</Mix>
 		<Image_Extension>png</Image_Extension>
 		<Research>*.scummvm;*.svm||</Research>
+		<Special>Folder</Special>
 	</General>
 	<AutoConf>
 		<Source_RootPath>\\RECALBOX\share\roms</Source_RootPath>
@@ -31,6 +32,10 @@
 		<Source_Value>game</Source_Value>
 		<Target_Value>game</Target_Value>
 	</Game>
+	<FolderRoot>
+		<Source_Value>game</Source_Value>
+		<Target_Value>folder</Target_Value>
+	</FolderRoot>
 	<Country>
 		<Source_Value>Data/jeu/region</Source_Value>
 	</Country>
@@ -133,6 +138,36 @@
 		<Target_Type>XML_Value</Target_Type>
 		<Target_Value>game/hidden</Target_Value>
 	</Element>
+	<Folder Type="RomPath">
+		<Source_Type>Variable_Value</Source_Type>
+		<Source_Value>%XML_Rom_Path%</Source_Value>
+		<Target_Type>XML_Value</Target_Type>
+		<Target_Value>folder/path</Target_Value>
+	</Folder>
+	<Folder Type="Name">
+		<Source_Type>XML_Value</Source_Type>
+		<Source_Value>Data/jeu/noms/nom_%COUNTRY%</Source_Value>
+		<Target_Type>XML_Value_FORMAT</Target_Type>
+		<Target_FORMAT>%%</Target_FORMAT>
+		<Target_Value>folder/name</Target_Value>
+		<Target_CASE>True</Target_CASE>
+	</Folder>
+	<Folder Type="Description">
+		<Source_Type>XML_Value</Source_Type>
+		<Source_Value>Data/jeu/synopsis/synopsis_%LANG%</Source_Value>
+		<Target_Type>XML_Value</Target_Type>
+		<Target_Value>folder/desc</Target_Value>
+		<Target_CASE>True</Target_CASE>
+	</Folder>
+	<Folder Type="Picture">
+		<Source_Type>MIX_Template</Source_Type>
+		<Source_Download_Path>%Local_Path_File%</Source_Download_Path>
+		<Source_Download_Tag>-image</Source_Download_Tag>
+		<Source_Download_Ext>png</Source_Download_Ext>
+		<Target_Type>XML_Path</Target_Type>
+		<Target_Path_Type>%XML_Path_File%</Target_Path_Type>
+		<Target_Value>folder/image</Target_Value>
+	</Folder>
 	<Options>
 		<Option>
 			<Option_Name>Name Format</Option_Name>
