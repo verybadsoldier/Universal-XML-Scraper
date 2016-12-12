@@ -111,7 +111,7 @@
 		<win_config_MISC_GroupMISC_ScrapeMode>Modalità di scansione</win_config_MISC_GroupMISC_ScrapeMode>
 		<win_config_MISC_GroupMISC_ScrapeModeChoice>0 - Nuovo File|1 - Aggiorna XML (Aggiungi Nuova Rom)|2 - solo creare questa immagine</win_config_MISC_GroupMISC_ScrapeModeChoice>
 		<win_config_MISC_GroupMISC_ScrapeSearchMode>Tipo di ricerca</win_config_MISC_GroupMISC_ScrapeSearchMode>
-		<win_config_MISC_GroupMISC_ScrapeSearchModeChoice>0 - CRC+FileName|1 - CRC</win_config_MISC_GroupMISC_ScrapeSearchModeChoice>
+		<win_config_MISC_GroupMISC_ScrapeSearchModeChoice>0 - CRC+FileName|1 - CRC|2 - FileName</win_config_MISC_GroupMISC_ScrapeSearchModeChoice>
 		<win_config_MISC_GroupMISC_CountryPicMode>Modo Immagine</win_config_MISC_GroupMISC_CountryPicMode>
 		<win_config_MISC_GroupMISC_CountryPicModeChoice>0 - Img Lingua|1 - Img Rom|2 - Img Lingua Strict|3 - Img Rom Strict</win_config_MISC_GroupMISC_CountryPicModeChoice>
 		<win_config_MISC_GroupMISC_Verbose>Livello di Log</win_config_MISC_GroupMISC_Verbose>

@@ -5,7 +5,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper XML Universel
-#AutoIt3Wrapper_Res_Fileversion=2.0.0.8
+#AutoIt3Wrapper_Res_Fileversion=2.0.0.9
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -146,6 +146,8 @@ FileInstall(".\ProfilsFiles\RecalboxV4 [SCUMMVM] (MIX).xml", $iScriptPath & "\Pr
 FileInstall(".\ProfilsFiles\RecalboxV4.xml", $iScriptPath & "\ProfilsFiles\", 0)
 FileInstall(".\ProfilsFiles\Retropie (MIX).xml", $iScriptPath & "\ProfilsFiles\", 0)
 FileInstall(".\ProfilsFiles\Retropie.xml", $iScriptPath & "\ProfilsFiles\", 0)
+FileInstall(".\ProfilsFiles\Retropie [Rom folder] (MIX).xml", $iScriptPath & "\ProfilsFiles\", 0)
+FileInstall(".\ProfilsFiles\Retropie [Rom folder].xml", $iScriptPath & "\ProfilsFiles\", 0)
 FileInstall(".\ProfilsFiles\Ressources\empty.jpg", $iScriptPath & "\ProfilsFiles\Ressources\", 0)
 FileInstall(".\ProfilsFiles\Ressources\Screenscraper(MIX)-SCUMMVM-RecalboxV4.jpg", $iScriptPath & "\ProfilsFiles\Ressources\", 0)
 FileInstall(".\ProfilsFiles\Ressources\Screenscraper(MIX)-RecalboxV4.jpg", $iScriptPath & "\ProfilsFiles\Ressources\", 0)
@@ -1763,21 +1765,32 @@ Func _Check_Rom2Scrape($aRomList, $vNoRom, $aXMLRomList, $vTarget_RomPath, $vScr
 EndFunc   ;==>_Check_Rom2Scrape
 
 Func _CalcHash($aRomList, $vNoRom)
+	Local $TimerHashCRC = "N/A", $TimerHashMD5 = "N/A", $TimerHashSHA1 = "N/A"
 	If Not _Check_Cancel() Then Return $aRomList
 	$TimerHash = TimerInit()
 	$aRomList[$vNoRom][4] = FileGetSize($aRomList[$vNoRom][1])
 	If IniRead($iINIPath, "LAST_USE", "$vScrapeSearchMode", 0) = 2 Then
 		_LOG("QUICK Mode ", 1, $iLOGPath)
 	Else
-		$aRomList[$vNoRom][5] = StringRight(_CRC32ForFile($aRomList[$vNoRom][1]), 8)
-		If Int(($aRomList[$vNoRom][4] / 1048576)) < 750 Then $aRomList[$vNoRom][6] = _MD5ForFile($aRomList[$vNoRom][1])
-		If Int(($aRomList[$vNoRom][4] / 1048576)) < 50 Then $aRomList[$vNoRom][7] = _SHA1ForFile($aRomList[$vNoRom][1])
+		$TimerHashMD5 = TimerInit()
+		$aRomList[$vNoRom][6] = _MD5ForFile($aRomList[$vNoRom][1])
+		$TimerHashMD5 = Round((TimerDiff($TimerHashMD5) / 1000), 2)
+		If Int(($aRomList[$vNoRom][4] / 1048576)) < 500 Then
+			$TimerHashSHA1 = TimerInit()
+			$aRomList[$vNoRom][7] = _SHA1ForFile($aRomList[$vNoRom][1])
+			$TimerHashSHA1 = Round((TimerDiff($TimerHashSHA1) / 1000), 2)
+		EndIf
+		If Int(($aRomList[$vNoRom][4] / 1048576)) < 50 Then
+			$TimerHashCRC = TimerInit()
+			$aRomList[$vNoRom][5] = StringRight(_CRC32ForFile($aRomList[$vNoRom][1]), 8)
+			$TimerHashCRC = Round((TimerDiff($TimerHashCRC) / 1000), 2)
+		EndIf
 	EndIf
 	_LOG("Rom Info (" & $aRomList[$vNoRom][0] & ") Hash in " & Round((TimerDiff($TimerHash) / 1000), 2) & "s", 0, $iLOGPath)
 	_LOG("Size : " & $aRomList[$vNoRom][4], 1, $iLOGPath)
-	_LOG("CRC32 : " & $aRomList[$vNoRom][5], 1, $iLOGPath)
-	_LOG("MD5 : " & $aRomList[$vNoRom][6], 1, $iLOGPath)
-	_LOG("SHA1 : " & $aRomList[$vNoRom][7], 1, $iLOGPath)
+	_LOG("CRC32 : " & $aRomList[$vNoRom][5] & "(" & $TimerHashCRC & "s)", 1, $iLOGPath)
+	_LOG("MD5 : " & $aRomList[$vNoRom][6] & "(" & $TimerHashMD5 & "s)", 1, $iLOGPath)
+	_LOG("SHA1 : " & $aRomList[$vNoRom][7] & "(" & $TimerHashSHA1 & "s)", 1, $iLOGPath)
 	Return $aRomList
 EndFunc   ;==>_CalcHash
 
@@ -2141,7 +2154,7 @@ Func _SCRAPE($oXMLProfil, $vNbThread = 1, $vFullScrape = 0)
 				If $vBoucle < UBound($aRomList) - 1 Then
 					$vSendTimer = TimerInit()
 					$vBoucle += 1
-
+					_GUICtrlStatusBar_SetText($L_SCRAPE, "Hashing Please Wait....")
 					$aRomList = _Check_Rom2Scrape($aRomList, $vBoucle, $aXMLRomList, $aConfig[2], $aConfig[5], $aExtToHide, $aValueToHide) ;Check if rom need to be scraped
 					If $aRomList[$vBoucle][3] >= 1 And _Check_Cancel() Then
 						If $aRomList[$vBoucle][3] < 2 Then

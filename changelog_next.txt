@@ -1,3 +1,11 @@
+2.0.0.8
+* Corrected :
+ - New Option to scrape only by Filename (for all language this time :S )
+ - Reorganize Hash Calculation on big file (Prio is MD5 all the time, SHA1 < 500Mo, CRC32 < 50Mo) MD5 is the fastest calculation.
+* Added :
+ - message "Hashing Please Wait..." when hashing big file (to not think UXS freeze one big file)
+ - iso and img will autohide (and not scraped) when cue, ccd,... exist.
+
 2.0.0.7
 * Corrected :
  - Language and Country paramater now are saved correctly

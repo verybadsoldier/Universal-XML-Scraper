@@ -141,7 +141,7 @@
 	<Element Type="RomHidden">
 		<Source_Type>Variable_Value</Source_Type>
 		<Source_Value>%AutoHide%</Source_Value>
-		<AutoHideEXT>bin</AutoHideEXT>
+		<AutoHideEXT>bin|img|iso</AutoHideEXT>
 		<AutoHideValue>(Track |[Bios]|(Bios)</AutoHideValue>
 		<Target_Type>XML_Value</Target_Type>
 		<Target_Value>game/hidden</Target_Value>
