@@ -196,7 +196,7 @@ Global $MP_, $aPlink_Command, $vScrapeCancelled
 Global $vProfilsPath = IniRead($iINIPath, "LAST_USE", "$vProfilsPath", -1)
 Local $vXpath2RomPath, $vFullTimer, $vRomTimer, $vSelectedProfil = -1
 Local $L_SCRAPE_Parts[3] = [300, 480, -1]
-Local $oXMLProfil, $oXMLSystem
+Local $oXMLProfil, $oXMLSystem, $oXMLCountry
 Local $aConfig, $aRomList, $aXMLRomList
 Local $nMsg
 Local $sMailSlotMother = "\\.\mailslot\Mother"
@@ -241,6 +241,10 @@ EndSwitch
 ;Catching SystemList.xml
 $oXMLSystem = _XMLSystem_Create()
 If $oXMLSystem = -1 Then Exit
+
+;Catching CountryList.xml
+$oXMLCountry = _XMLCountry_Create()
+If $oXMLCountry = -1 Then Exit
 
 ;Delete Splascreen
 GUIDelete($F_Splashcreen)
@@ -1820,6 +1824,33 @@ Func _XMLSystem_Create($vSSLogin = "", $vSSPassword = "")
 			EndIf
 	EndSwitch
 EndFunc   ;==>_XMLSystem_Create
+
+Func _XMLCountry_Create($vSSLogin = "", $vSSPassword = "")
+	Local $oXMLCountry, $vXMLCountryPath = $iScriptPath & "\Ressources\Countrylist.xml"
+	$vXMLCountryPath = _DownloadWRetry($iURLScraper & "api/regionsListe.php?devid=" & $iDevId & "&devpassword=" & $iDevPassword & "&softname=" & $iSoftname & "&output=XML&ssid=" & $vSSLogin & "&sspassword=" & $vSSPassword, $vXMLCountryPath)
+	If $vXMLCountryPath < 0 Then
+		$iURLScraper = $iURLSS
+		IniWrite($iINIPath, "LAST_USE", "$vMirror", 0)
+		$vXMLCountryPath = _DownloadWRetry($iURLScraper & "api/regionsListe.php?devid=" & $iDevId & "&devpassword=" & $iDevPassword & "&softname=" & $iSoftname & "&output=XML&ssid=" & $vSSLogin & "&sspassword=" & $vSSPassword, $vXMLCountryPath)
+	EndIf
+	Switch $vXMLCountryPath
+		Case -1
+			MsgBox($MB_ICONERROR, _MultiLang_GetText("err_title"), _MultiLang_GetText("err_UXSGlobal") & @CRLF & _MultiLang_GetText("err_Connection"))
+			Return -1
+		Case -2
+			MsgBox($MB_ICONERROR, _MultiLang_GetText("err_title"), _MultiLang_GetText("err_UXSGlobal") & @CRLF & _MultiLang_GetText("err_TimeOut"))
+			Return -1
+		Case Else
+			$oXMLCountry = _XML_Open($vXMLCountryPath)
+			If $oXMLCountry = -1 Then
+				MsgBox($MB_ICONERROR, _MultiLang_GetText("err_title"), _MultiLang_GetText("err_UXSGlobal") & @CRLF & _MultiLang_GetText("err_CountryList"))
+				Return -1
+			Else
+				_LOG("Countrylist.xml Opened", 1, $iLOGPath)
+				Return $oXMLCountry
+			EndIf
+	EndSwitch
+EndFunc   ;==>_XMLCountry_Create
 
 Func _DownloadROMXML($aRomList, $vBoucle, $vSystemID, $vSSLogin = "", $vSSPassword = "", $vScrapeSearchMode = 0)
 	FileDelete($aRomList[$vBoucle][8])
