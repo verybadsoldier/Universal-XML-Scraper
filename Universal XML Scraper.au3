@@ -5,7 +5,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper XML Universel
-#AutoIt3Wrapper_Res_Fileversion=2.0.0.9
+#AutoIt3Wrapper_Res_Fileversion=2.0.0.10
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -196,7 +196,7 @@ Global $MP_, $aPlink_Command, $vScrapeCancelled
 Global $vProfilsPath = IniRead($iINIPath, "LAST_USE", "$vProfilsPath", -1)
 Local $vXpath2RomPath, $vFullTimer, $vRomTimer, $vSelectedProfil = -1
 Local $L_SCRAPE_Parts[3] = [300, 480, -1]
-Local $oXMLProfil, $oXMLSystem
+Local $oXMLProfil, $oXMLSystem, $oXMLCountry
 Local $aConfig, $aRomList, $aXMLRomList
 Local $nMsg
 Local $sMailSlotMother = "\\.\mailslot\Mother"
@@ -241,6 +241,10 @@ EndSwitch
 ;Catching SystemList.xml
 $oXMLSystem = _XMLSystem_Create()
 If $oXMLSystem = -1 Then Exit
+
+;Catching CountryList.xml
+$oXMLCountry = _XMLCountry_Create()
+If $oXMLCountry = -1 Then Exit
 
 ;Delete Splascreen
 GUIDelete($F_Splashcreen)
@@ -666,28 +670,51 @@ Func _ProfilSelection($iProfilsPath, $vProfilsPath = -1) ;Profil Selection
 	Return $vProfilsPath
 EndFunc   ;==>_ProfilSelection
 
-Func _Plink($oXMLProfil, $vPlinkCommand) ;Send a Command via Plink
+Func _Plink($oXMLProfil, $vPlinkCommand, $vSilentPlink = 0) ;Send a Command via Plink
 	Local $vPlink_Ip = _XML_Read("Profil/Plink/Ip", 0, "", $oXMLProfil)
 	Local $vPlink_Root = _XML_Read("Profil/Plink/Root", 0, "", $oXMLProfil)
 	Local $vPlink_Pswd = _XML_Read("Profil/Plink/Pswd", 0, "", $oXMLProfil)
-	Local $aPlink_Command = _XML_Read("Profil/Plink/Command/" & $vPlinkCommand, 0, "", $oXMLProfil)
 
-	If MsgBox($MB_OKCANCEL, $vPlinkCommand, _MultiLang_GetText("mess_ssh_" & $vPlinkCommand)) = $IDOK Then
-		_LOG("SSH : " & $aPlink_Command, 0, $iLOGPath)
-		$sRun = $iScriptPath & "\Ressources\plink.exe " & $vPlink_Ip & " -l " & $vPlink_Root & " -pw " & $vPlink_Pswd & " " & $aPlink_Command
-		$iPid = Run($sRun, '', @SW_HIDE, $STDERR_CHILD + $STDOUT_CHILD)
+	If $vSilentPlink = 0 Then
+		Local $aPlink_Command = _XML_Read("Profil/Plink/Command/" & $vPlinkCommand, 0, "", $oXMLProfil)
+		If MsgBox($MB_OKCANCEL, $vPlinkCommand, _MultiLang_GetText("mess_ssh_" & $vPlinkCommand)) = $IDOK Then
+			_LOG("SSH : " & $aPlink_Command, 0, $iLOGPath)
+			$sRun = $iScriptPath & "\Ressources\plink.exe " & $vPlink_Ip & " -ssh -l " & $vPlink_Root & " -pw " & $vPlink_Pswd & " " & $aPlink_Command
+			$iPid = Run(@ComSpec & " /c " & $sRun, '', @SW_HIDE, $STDIN_CHILD + $STDERR_CHILD + $STDOUT_CHILD) ;@ComSpec & " /c " &
+			While ProcessExists($iPid)
+				$_StderrRead = StderrRead($iPid)
+				If Not @error And $_StderrRead <> '' Then
+					If StringInStr($_StderrRead, 'Unable to open connection') Then
+						MsgBox($MB_ICONERROR, _MultiLang_GetText("err_title"), _MultiLang_GetText("err_PlinkGlobal") & @CRLF & _MultiLang_GetText("err_PlinkConnection"))
+						_LOG("Unable to open connection with Plink (" & $vPlink_Root & ":" & $vPlink_Pswd & "@" & $vPlink_Ip & ")", 2, $iLOGPath)
+						StdioClose($iPid)
+						Return -1
+					EndIf
+				EndIf
+			WEnd
+		Else
+			_LOG("SSH canceled : " & $aPlink_Command, 1, $iLOGPath)
+		EndIf
+	Else
+		$sRun = $iScriptPath & "\Ressources\plink.exe " & $vPlink_Ip & " -ssh -l " & $vPlink_Root & " -pw " & $vPlink_Pswd & " " & $vPlinkCommand
+		_LOG("SSH : " & $sRun, 1, $iLOGPath)
+		$iPid = Run(@ComSpec & " /c " & $sRun, '', @SW_HIDE, $STDIN_CHILD + $STDERR_CHILD + $STDOUT_CHILD) ;@ComSpec & " /c " &
 		While ProcessExists($iPid)
 			$_StderrRead = StderrRead($iPid)
 			If Not @error And $_StderrRead <> '' Then
 				If StringInStr($_StderrRead, 'Unable to open connection') Then
-					MsgBox($MB_ICONERROR, _MultiLang_GetText("err_title"), _MultiLang_GetText("err_PlinkGlobal") & @CRLF & _MultiLang_GetText("err_PlinkConnection"))
 					_LOG("Unable to open connection with Plink (" & $vPlink_Root & ":" & $vPlink_Pswd & "@" & $vPlink_Ip & ")", 2, $iLOGPath)
+					StdioClose($iPid)
 					Return -1
 				EndIf
 			EndIf
+			$_StdoutRead = StdoutRead($iPid)
+			If $_StdoutRead <> '' Then
+				_LOG("SSH Return : " & $_StdoutRead, 1, $iLOGPath)
+				StdioClose($iPid)
+				Return $_StdoutRead
+			EndIf
 		WEnd
-	Else
-		_LOG("SSH canceled : " & $aPlink_Command, 1, $iLOGPath)
 	EndIf
 	Return
 EndFunc   ;==>_Plink
@@ -1764,12 +1791,28 @@ Func _Check_Rom2Scrape($aRomList, $vNoRom, $aXMLRomList, $vTarget_RomPath, $vScr
 	Return $aRomList
 EndFunc   ;==>_Check_Rom2Scrape
 
-Func _CalcHash($aRomList, $vNoRom)
+Func _CalcHash($aRomList, $vNoRom, $oXMLProfil)
+;~ 	_ArrayDisplay($aRomList, "$aRomList")
 	Local $TimerHashCRC = "N/A", $TimerHashMD5 = "N/A", $TimerHashSHA1 = "N/A"
 	If Not _Check_Cancel() Then Return $aRomList
 	$TimerHash = TimerInit()
+	_GUICtrlStatusBar_SetText($L_SCRAPE, "Hashing " & $aRomList[$vNoRom][2])
 	$aRomList[$vNoRom][4] = FileGetSize($aRomList[$vNoRom][1])
-	If IniRead($iINIPath, "LAST_USE", "$vScrapeSearchMode", 0) = 2 Then
+	If IniRead($iINIPath, "LAST_USE", "$vHashOnPI", "0") = "1" Then
+		$TimerHashMD5 = TimerInit()
+		$vSysName = StringSplit(IniRead($iINIPath, "LAST_USE", "$vSource_RomPath", ""), "\")
+		$vSysName = $vSysName[UBound($vSysName) - 1]
+		$vRootPathOnPI = IniRead($iINIPath, "LAST_USE", "$vRootPathOnPI", "/recalbox/share/roms")
+		$vPlinkCommand = '"' & "md5sum '" & $vRootPathOnPI & "/" & $vSysName & "/" & StringReplace($aRomList[$vNoRom][0], "\", "/") & "'" & '"'
+		$aPlinkReturn = StringSplit(_Plink($oXMLProfil, $vPlinkCommand, 1), " ", $STR_NOCOUNT)
+		$aRomList[$vNoRom][6] = $aPlinkReturn[0]
+		$TimerHashMD5 = Round((TimerDiff($TimerHashMD5) / 1000), 2)
+		_LOG("Rom Info (" & $aRomList[$vNoRom][0] & ") Hash in " & Round((TimerDiff($TimerHash) / 1000), 2) & "s", 0, $iLOGPath)
+		_LOG("MD5 : " & $aRomList[$vNoRom][6] & "(" & $TimerHashMD5 & "s)", 1, $iLOGPath)
+		Return $aRomList
+	EndIf
+
+	If IniRead($iINIPath, "LAST_USE", "$vScrapeSearchMode", "0") = "2" Then
 		_LOG("QUICK Mode ", 1, $iLOGPath)
 	Else
 		$TimerHashMD5 = TimerInit()
@@ -1797,7 +1840,7 @@ EndFunc   ;==>_CalcHash
 Func _XMLSystem_Create($vSSLogin = "", $vSSPassword = "")
 	Local $oXMLSystem, $vXMLSystemPath = $iScriptPath & "\Ressources\systemlist.xml"
 	$vXMLSystemPath = _DownloadWRetry($iURLScraper & "api/systemesListe.php?devid=" & $iDevId & "&devpassword=" & $iDevPassword & "&softname=" & $iSoftname & "&output=XML&ssid=" & $vSSLogin & "&sspassword=" & $vSSPassword, $vXMLSystemPath)
-	If $vXMLSystemPath < 0 Then
+	If FileGetSize($vXMLSystemPath) < 100 Then
 		$iURLScraper = $iURLSS
 		IniWrite($iINIPath, "LAST_USE", "$vMirror", 0)
 		$vXMLSystemPath = _DownloadWRetry($iURLScraper & "api/systemesListe.php?devid=" & $iDevId & "&devpassword=" & $iDevPassword & "&softname=" & $iSoftname & "&output=XML&ssid=" & $vSSLogin & "&sspassword=" & $vSSPassword, $vXMLSystemPath)
@@ -1820,6 +1863,33 @@ Func _XMLSystem_Create($vSSLogin = "", $vSSPassword = "")
 			EndIf
 	EndSwitch
 EndFunc   ;==>_XMLSystem_Create
+
+Func _XMLCountry_Create($vSSLogin = "", $vSSPassword = "")
+	Local $oXMLCountry, $vXMLCountryPath = $iScriptPath & "\Ressources\Countrylist.xml"
+	$vXMLCountryPath = _DownloadWRetry($iURLScraper & "api/regionsListe.php?devid=" & $iDevId & "&devpassword=" & $iDevPassword & "&softname=" & $iSoftname & "&output=XML&ssid=" & $vSSLogin & "&sspassword=" & $vSSPassword, $vXMLCountryPath)
+	If FileGetSize($vXMLCountryPath) < 100 Then
+		$iURLScraper = $iURLSS
+		IniWrite($iINIPath, "LAST_USE", "$vMirror", 0)
+		$vXMLCountryPath = _DownloadWRetry($iURLScraper & "api/regionsListe.php?devid=" & $iDevId & "&devpassword=" & $iDevPassword & "&softname=" & $iSoftname & "&output=XML&ssid=" & $vSSLogin & "&sspassword=" & $vSSPassword, $vXMLCountryPath)
+	EndIf
+	Switch $vXMLCountryPath
+		Case -1
+			MsgBox($MB_ICONERROR, _MultiLang_GetText("err_title"), _MultiLang_GetText("err_UXSGlobal") & @CRLF & _MultiLang_GetText("err_Connection"))
+			Return -1
+		Case -2
+			MsgBox($MB_ICONERROR, _MultiLang_GetText("err_title"), _MultiLang_GetText("err_UXSGlobal") & @CRLF & _MultiLang_GetText("err_TimeOut"))
+			Return -1
+		Case Else
+			$oXMLCountry = _XML_Open($vXMLCountryPath)
+			If $oXMLCountry = -1 Then
+				MsgBox($MB_ICONERROR, _MultiLang_GetText("err_title"), _MultiLang_GetText("err_UXSGlobal") & @CRLF & _MultiLang_GetText("err_SystemList"))
+				Return -1
+			Else
+				_LOG("Countrylist.xml Opened", 1, $iLOGPath)
+				Return $oXMLCountry
+			EndIf
+	EndSwitch
+EndFunc   ;==>_XMLCountry_Create
 
 Func _DownloadROMXML($aRomList, $vBoucle, $vSystemID, $vSSLogin = "", $vSSPassword = "", $vScrapeSearchMode = 0)
 	FileDelete($aRomList[$vBoucle][8])
@@ -2022,7 +2092,7 @@ Func _ScrapeZipContent($aRomList, $vBoucle)
 	For $vBoucleZip = 1 To UBound($aZipRomList) - 1
 		_LOG("Scraping ZIP content file: " & $aZipRomList[$vBoucleZip][0], 1, $iLOGPath)
 		If $aZipRomList[$vBoucleZip][3] < 2 Then
-			$aZipRomList = _CalcHash($aZipRomList, $vBoucleZip)
+			$aZipRomList = _CalcHash($aZipRomList, $vBoucleZip, 0)
 		EndIf
 		$aZipRomList = _DownloadROMXML($aZipRomList, $vBoucleZip, $aConfig[12], $aConfig[13], $aConfig[14])
 		If ($aZipRomList[$vBoucleZip][9] = 1) Then
@@ -2154,11 +2224,10 @@ Func _SCRAPE($oXMLProfil, $vNbThread = 1, $vFullScrape = 0)
 				If $vBoucle < UBound($aRomList) - 1 Then
 					$vSendTimer = TimerInit()
 					$vBoucle += 1
-					_GUICtrlStatusBar_SetText($L_SCRAPE, "Hashing Please Wait....")
 					$aRomList = _Check_Rom2Scrape($aRomList, $vBoucle, $aXMLRomList, $aConfig[2], $aConfig[5], $aExtToHide, $aValueToHide) ;Check if rom need to be scraped
 					If $aRomList[$vBoucle][3] >= 1 And _Check_Cancel() Then
 						If $aRomList[$vBoucle][3] < 2 Then
-							$aRomList = _CalcHash($aRomList, $vBoucle) ;Hash calculation
+							$aRomList = _CalcHash($aRomList, $vBoucle, $oXMLProfil) ;Hash calculation
 						EndIf
 						$aRomList = _DownloadROMXML($aRomList, $vBoucle, $aConfig[12], $aConfig[13], $aConfig[14], $vScrapeSearchMode) ; Download the XML file from API
 
