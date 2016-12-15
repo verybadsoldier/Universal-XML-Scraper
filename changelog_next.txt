@@ -1,3 +1,16 @@
+2.0.0.9
+* Corrected :
+ - message "Hashing Please Wait..." where buggy :S I add the rom name and now it works well ;)
+* Added :
+ - Experimental Function to HASH only MD5 directly on the PI (Thank you giventofly)
+	To use it, add this in the UXS-Config.ini :
+	$vHashOnPI=1
+	$vRootPathOnPI=/recalbox/share/roms
+	($vRootPathOnPI is the local path on the PI to the roms folders)
+	This function is faster for big file, but slower for small file ;) take care.
+* coming soon (Screenscraper V2):
+ - using regionsListe.php API to get the countrylist.xml in all language
+ 
 2.0.0.8
 * Corrected :
  - New Option to scrape only by Filename (for all language this time :S )
