@@ -1,3 +1,18 @@
+2.1.0.0
+* Corrected :
+ - SSH command will work now.
+ - 2 New Retropie Profil with Video.
+* Added :
+ - 2 New Retropie Profil with Video.
+ - Use of regionsListe.php API is OK now (Country will be translated in your language)
+ - Use <regionshortname> for data and media country (so now if you rom is spanish, you will have spanish media for exemple).
+* COMMENT :
+ - New server and new website for www.screenscraper.fr
+ - Lot's of new things (media for every country, new tools for admin,...)
+ - Sorry for these last days pertubation.
+ - The new website still in "test" so some pertubation can happen some time. We are debbuging as fast as we can.
+ - Thank you all for your support.
+
 2.0.0.9
 * Corrected :
  - message "Hashing Please Wait..." where buggy :S I add the rom name and now it works well ;)

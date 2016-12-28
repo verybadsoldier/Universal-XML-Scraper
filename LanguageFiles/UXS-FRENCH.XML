@@ -1,6 +1,6 @@
 <datapref>
-	<langpref>fr|us</langpref>
-	<countrypref>%COUNTRY%|fr|eu|us|jp|xx|origine</countrypref>
+	<langpref>fr|en</langpref>
+	<countrypref>%COUNTRY%|fr|eu|us|jp|wor|ss</countrypref>
 </datapref>
 
 <error>

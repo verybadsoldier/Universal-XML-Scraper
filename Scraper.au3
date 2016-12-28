@@ -2,19 +2,18 @@
 #AutoIt3Wrapper_Icon=Ressources\Scraper.ico
 #AutoIt3Wrapper_Outfile=.\Scraper.exe
 #AutoIt3Wrapper_Outfile_x64=.\Scraper64.exe
-#AutoIt3Wrapper_UseUpx=n
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper
-#AutoIt3Wrapper_Res_Fileversion=1.0.0.6
+#AutoIt3Wrapper_Res_Fileversion=1.1.0.1
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
 #AutoIt3Wrapper_AU3Check_Stop_OnWarning=y
-#AutoIt3Wrapper_Run_Tidy=y
-#Tidy_Parameters=/reel
 #AutoIt3Wrapper_Run_Before=ShowOriginalLine.exe %in%
 #AutoIt3Wrapper_Run_After=ShowOriginalLine.exe %in%
+#AutoIt3Wrapper_Run_Tidy=y
+#Tidy_Parameters=/reel
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
 TraySetState(2)
 
@@ -205,8 +204,18 @@ Func _Game_Make($aRomList, $vBoucle, $aConfig, $oXMLProfil)
 						If $vHookPos < $vBracketPos And $vHookPos > 0 Then $vBracketPos = $vHookPos
 						If $vBracketPos > 0 Then $vValue = $vValue & " " & StringMid($aRomList[2], $vBracketPos)
 					Case '%Name+Country%'
-						$vCountry = _Coalesce(_XML_Read("/Data/jeu/region", 0, $aRomList[8]), "unknown")
-						If $vCountry <> "unknown" Then $vValue = $vValue & " (" & $vCountry & ")"
+						$vCountryshort = _Coalesce(_XML_Read("/Data/jeu/regionshortname", 0, $aRomList[8]), "unknown")
+						If $vCountryshort <> "unknown" Then
+							Local $aLangPref = $aConfig[9]
+							For $vBoucle2 = 1 To UBound($aLangPref) - 1
+								$vXpathTemp = '/Data/regions/region[nomcourt="' & $vCountryshort & '"]/nom_' & $aLangPref[$vBoucle2]
+								$vCountry = _XML_Read($vXpathTemp, 0, $iRessourcesPath & "\Countrylist.xml")
+								If $vValue <> -1 And $vValue <> "" Then
+									$vValue = $vValue & " (" & $vCountry & ")"
+									$vBoucle2 = UBound($aLangPref) - 1
+								EndIf
+							Next
+						EndIf
 				EndSwitch
 				$vNode = _XML_Read("/Profil/" & $vNodeType & "[" & $vWhile & "]/Target_Value", 0, "", $oXMLProfil)
 				Switch _Coalesce(StringLower(_XML_Read("/Profil/" & $vNodeType & "[" & $vWhile & "]/Target_CASE", 0, "", $oXMLProfil)), "default")
@@ -328,17 +337,16 @@ Func _CountryArray_Make($aConfig, $vXpath, $vSource_RomXMLPath, $oXMLProfil)
 
 	Local $aMatchingCountry = $aConfig[11]
 	Local $aXpathCountry[UBound($aCountryPref)]
-	For $vBoucle = 1 To UBound($aCountryPref) - 1
+	$aCountryPrefSize = UBound($aCountryPref) - 1
+	For $vBoucle = 1 To $aCountryPrefSize
 		$vCountryPref = $aCountryPref[$vBoucle]
 		If $vCountryPref = '%COUNTRY%' Then
 			$vXpathCountry = _XML_Read("/Profil/Country/Source_Value", 0, "", $oXMLProfil)
 			$vCountryPref = _XML_Read($vXpathCountry, 0, $vSource_RomXMLPath)
-			$iCountryPref = _ArraySearch($aMatchingCountry, $vCountryPref)
-			If $iCountryPref > 0 Then
-				$vCountryPref = $aMatchingCountry[$iCountryPref][1]
-			Else
-				$vCountryPref = ""
-			EndIf
+;~ 			$vCountryPrefParentId = _XML_Read('/Data/regions/region[nomcourt="' & $vCountryPref & '"]/parent', 0, $iRessourcesPath & "\Countrylist.xml")
+;~ 			IF $vCountryPrefParentId <> '0' Then
+;~ 				$vCountryPrefParent = _XML_Read('/Data/regions/region[id="'&$vCountryPrefParentId&'"]/nomcourt',0,$iRessourcesPath&"\Countrylist.xml")
+;~ 			ENDIF
 		EndIf
 		$aXpathCountry[$vBoucle] = StringReplace($vXpath, '%COUNTRY%', $vCountryPref)
 	Next

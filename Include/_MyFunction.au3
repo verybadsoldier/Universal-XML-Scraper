@@ -1151,6 +1151,126 @@ Func _GDIPlus_Imaging($iPath, $aPicParameters, $vTarget_Width, $vTarget_Height)
 	EndIf
 	Return $iPath
 EndFunc   ;==>_GDIPlus_Imaging
+
+; #FUNCTION# ===================================================================================================
+; Name...........: _GDIPlus_GraphicsDrawImage_4Points
+; Description ...: Draw Pic with 4 points distortion
+; Syntax.........: _GDIPlus_GraphicsDrawImage_4Points($hGraphics, $hImage, $X1, $Y1, $X2, $Y2, $X3, $Y3, $X4, $Y4, $fPrecision = 0.25)
+; Parameters ....:
+; Return values .:
+; Author ........: eukalyptus
+; Modified.......:
+; Remarks .......:
+; Related .......:
+; Link ..........;
+; Example .......; https://www.autoitscript.com/forum/topic/123623-gdi-image-question/#comment-860805
+Func _GDIPlus_GraphicsDrawImage_4Points($hGraphics, $hImage, $X1, $Y1, $X2, $Y2, $X3, $Y3, $X4, $Y4, $fPrecision = 0.25)
+    ;by eukalyptus
+    Local $aResult = DllCall($__g_hGDIPDll, "uint", "GdipCreatePath", "int", 0, "int*", 0)
+    If @error Or Not IsArray($aResult) Then Return SetError(1, 1, False)
+    Local $hPath = $aResult[2]
+
+    Local $iW = _GDIPlus_ImageGetWidth($hImage)
+    Local $iH = _GDIPlus_ImageGetHeight($hImage)
+
+    If $fPrecision <= 0 Then $fPrecision = 0.01
+    If $fPrecision > 1 Then $fPrecision = 1
+
+    Local $iTX = Ceiling($iW * $fPrecision)
+    Local $iTY = Ceiling($iH * $fPrecision)
+    Local $iCnt = ($iTX + 1) * ($iTY + 1)
+    Local $X, $Y
+
+    Local $tPoints = DllStructCreate("float[" & $iCnt * 2 & "]")
+    Local $I
+    For $Y = 0 To $iTY
+        For $X = 0 To $iTX
+            $I = ($Y * ($iTX + 1) + $X) * 2
+            DllStructSetData($tPoints, 1, $X * $iW / $iTX, $I + 1)
+            DllStructSetData($tPoints, 1, $Y * $iH / $iTY, $I + 2)
+        Next
+    Next
+
+    $aResult = DllCall($__g_hGDIPDll, "uint", "GdipAddPathPolygon", "hwnd", $hPath, "ptr", DllStructGetPtr($tPoints), "int", $iCnt)
+    If @error Or Not IsArray($aResult) Then Return SetError(1, 2, False)
+
+    Local $tWarp = DllStructCreate("float[8]")
+    DllStructSetData($tWarp, 1, $X1, 1)
+    DllStructSetData($tWarp, 1, $Y1, 2)
+    DllStructSetData($tWarp, 1, $X2, 3)
+    DllStructSetData($tWarp, 1, $Y2, 4)
+    DllStructSetData($tWarp, 1, $X3, 5)
+    DllStructSetData($tWarp, 1, $Y3, 6)
+    DllStructSetData($tWarp, 1, $X4, 7)
+    DllStructSetData($tWarp, 1, $Y4, 8)
+
+    $aResult = DllCall($__g_hGDIPDll, "uint", "GdipWarpPath", "hwnd", $hPath, "hwnd", 0, "ptr", DllStructGetPtr($tWarp), "int", 4, "float", 0, "float", 0, "float", $iW, "float", $iH, "int", 0, "float", 0)
+    If @error Or Not IsArray($aResult) Then Return SetError(1, 3, False)
+
+    $aResult = DllCall($__g_hGDIPDll, "uint", "GdipGetPathPoints", "hwnd", $hPath, "ptr", DllStructGetPtr($tPoints), "int", $iCnt)
+    If @error Or Not IsArray($aResult) Then Return SetError(1, 4, False)
+
+    Local $tRectF = DllStructCreate("float X;float Y;float Width;float Height")
+    $aResult = DllCall($__g_hGDIPDll, "uint", "GdipGetPathWorldBounds", "hwnd", $hPath, "ptr", DllStructGetPtr($tRectF), "hwnd", 0, "hwnd", 0)
+    If @error Or Not IsArray($aResult) Then Return SetError(1, 5, False)
+
+    DllCall($__g_hGDIPDll, "uint", "GdipDeletePath", "hwnd", $hPath)
+
+    Local $hBitmap = _GDIPlus_BitmapCreateFromGraphics(DllStructGetData($tRectF, 1) + DllStructGetData($tRectF, 3), DllStructGetData($tRectF, 2) + DllStructGetData($tRectF, 4), $hGraphics)
+    Local $hContext = _GDIPlus_ImageGetGraphicsContext($hBitmap)
+
+    Local $tDraw = DllStructCreate("float[6]")
+    Local $pDraw = DllStructGetPtr($tDraw)
+    Local $W = $iW / $iTX
+    Local $H = $iH / $iTY
+    Local $iO = ($iTX + 1) * 2
+    Local $fX1, $fY1, $fX2, $fY2, $fX3, $fY3, $fSX, $fSY
+
+    For $Y = 0 To $iTY - 1
+        For $X = 0 To $iTX - 1
+            $I = ($Y * ($iTX + 1) + $X) * 2
+            $fX1 = DllStructGetData($tPoints, 1, $I + 1)
+            $fY1 = DllStructGetData($tPoints, 1, $I + 2)
+
+            Switch $X
+                Case $iTX - 1
+                    $fX2 = DllStructGetData($tPoints, 1, $I + 3)
+                    $fY2 = DllStructGetData($tPoints, 1, $I + 4)
+                    $fSX = 1
+                Case Else
+                    $fX2 = DllStructGetData($tPoints, 1, $I + 5)
+                    $fY2 = DllStructGetData($tPoints, 1, $I + 6)
+                    $fSX = 2
+            EndSwitch
+
+            Switch $Y
+                Case $iTY - 1
+                    $fX3 = DllStructGetData($tPoints, 1, $I + 1 + $iO)
+                    $fY3 = DllStructGetData($tPoints, 1, $I + 2 + $iO)
+                    $fSY = 1
+                Case Else
+                    $fX3 = DllStructGetData($tPoints, 1, $I + 1 + $iO * 2)
+                    $fY3 = DllStructGetData($tPoints, 1, $I + 2 + $iO * 2)
+                    $fSY = 2
+            EndSwitch
+
+            DllStructSetData($tDraw, 1, $fX1, 1)
+            DllStructSetData($tDraw, 1, $fY1, 2)
+            DllStructSetData($tDraw, 1, $fX2, 3)
+            DllStructSetData($tDraw, 1, $fY2, 4)
+            DllStructSetData($tDraw, 1, $fX3, 5)
+            DllStructSetData($tDraw, 1, $fY3, 6)
+
+            DllCall($__g_hGDIPDll, "uint", "GdipDrawImagePointsRect", "hwnd", $hContext, "hwnd", $hImage, "ptr", $pDraw, "int", 3, "float", $X * $W, "float", $Y * $H, "float", $W * $fSX, "float", $H * $fSY, "int", 2, "hwnd", 0, "ptr", 0, "ptr", 0)
+        Next
+    Next
+
+    _GDIPlus_GraphicsDispose($hContext)
+    _GDIPlus_GraphicsDrawImage($hGraphics, $hBitmap, 0, 0)
+    _GDIPlus_BitmapDispose($hBitmap)
+EndFunc   ;==>_GDIPlus_GraphicsDrawImage_4Points
+
+
 #EndRegion GDI Function
 
 #Region XML Function

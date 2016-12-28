@@ -1,8 +1,8 @@
 </NEED_TO_BE_TRANSLATED>
 
 <datapref>
-	<langpref>us</langpref>
-	<countrypref>%COUNTRY%|us|eu|jp|xx|origine|fr</countrypref>
+	<langpref>en</langpref>
+	<countrypref>%COUNTRY%|jp|us|eu|wor|ss</countrypref>
 </datapref>
 
 <error>

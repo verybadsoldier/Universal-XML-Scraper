@@ -5,7 +5,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper XML Universel
-#AutoIt3Wrapper_Res_Fileversion=2.0.0.10
+#AutoIt3Wrapper_Res_Fileversion=2.1.0.1
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -145,7 +145,9 @@ FileInstall(".\ProfilsFiles\RecalboxV4 (MIX).xml", $iScriptPath & "\ProfilsFiles
 FileInstall(".\ProfilsFiles\RecalboxV4 [SCUMMVM] (MIX).xml", $iScriptPath & "\ProfilsFiles\", 0)
 FileInstall(".\ProfilsFiles\RecalboxV4.xml", $iScriptPath & "\ProfilsFiles\", 0)
 FileInstall(".\ProfilsFiles\Retropie (MIX).xml", $iScriptPath & "\ProfilsFiles\", 0)
+FileInstall(".\ProfilsFiles\Retropie (MIX)(Video).xml", $iScriptPath & "\ProfilsFiles\", 0)
 FileInstall(".\ProfilsFiles\Retropie.xml", $iScriptPath & "\ProfilsFiles\", 0)
+FileInstall(".\ProfilsFiles\Retropie (Video).xml", $iScriptPath & "\ProfilsFiles\", 0)
 FileInstall(".\ProfilsFiles\Retropie [Rom folder] (MIX).xml", $iScriptPath & "\ProfilsFiles\", 0)
 FileInstall(".\ProfilsFiles\Retropie [Rom folder].xml", $iScriptPath & "\ProfilsFiles\", 0)
 FileInstall(".\ProfilsFiles\Ressources\empty.jpg", $iScriptPath & "\ProfilsFiles\Ressources\", 0)
@@ -153,9 +155,11 @@ FileInstall(".\ProfilsFiles\Ressources\Screenscraper(MIX)-SCUMMVM-RecalboxV4.jpg
 FileInstall(".\ProfilsFiles\Ressources\Screenscraper(MIX)-RecalboxV4.jpg", $iScriptPath & "\ProfilsFiles\Ressources\", 0)
 FileInstall(".\ProfilsFiles\Ressources\Screenscraper(MIX)-RecalboxV3.jpg", $iScriptPath & "\ProfilsFiles\Ressources\", 0)
 FileInstall(".\ProfilsFiles\Ressources\Screenscraper(MIX)-Retropie.jpg", $iScriptPath & "\ProfilsFiles\Ressources\", 0)
+FileInstall(".\ProfilsFiles\Ressources\Screenscraper(MIX)-Retropie(Video).jpg", $iScriptPath & "\ProfilsFiles\Ressources\", 0)
 FileInstall(".\ProfilsFiles\Ressources\Screenscraper-RecalboxV4.jpg", $iScriptPath & "\ProfilsFiles\Ressources\", 0)
 FileInstall(".\ProfilsFiles\Ressources\Screenscraper-RecalboxV3.jpg", $iScriptPath & "\ProfilsFiles\Ressources\", 0)
 FileInstall(".\ProfilsFiles\Ressources\Screenscraper-Retropie.jpg", $iScriptPath & "\ProfilsFiles\Ressources\", 0)
+FileInstall(".\ProfilsFiles\Ressources\Screenscraper-Retropie(Video).jpg", $iScriptPath & "\ProfilsFiles\Ressources\", 0)
 FileInstall(".\Scraper.exe", $iScriptPath & "\Scraper.exe", 0)
 FileInstall(".\Scraper64.exe", $iScriptPath & "\Scraper64.exe", 0)
 FileSetAttrib($iScriptPath & "\Scraper.exe", "+H")
@@ -181,8 +185,7 @@ Global $iMIXPath = $iScriptPath & "\Mix" ; Where we are storing the MIX files.
 Global $iPathMixTmp = $iMIXPath & "\TEMP" ; Where we are storing the current MIX files.
 Global $iURLMirror = "http://uxs-screenscraper.recalbox.com/"
 Global $iURLSS = "http://www.screenscraper.fr/"
-Global $iURLScraper = $iURLMirror
-;~ Global $iURLScraper = $iURLSS
+Global $iURLScraper = $iURLSS
 
 _LOG("Verbose LVL : " & $iVerboseLVL, 1, $iLOGPath)
 _LOG("Path to ini : " & $iINIPath, 1, $iLOGPath)
@@ -680,7 +683,7 @@ Func _Plink($oXMLProfil, $vPlinkCommand, $vSilentPlink = 0) ;Send a Command via 
 		If MsgBox($MB_OKCANCEL, $vPlinkCommand, _MultiLang_GetText("mess_ssh_" & $vPlinkCommand)) = $IDOK Then
 			_LOG("SSH : " & $aPlink_Command, 0, $iLOGPath)
 			$sRun = $iScriptPath & "\Ressources\plink.exe " & $vPlink_Ip & " -ssh -l " & $vPlink_Root & " -pw " & $vPlink_Pswd & " " & $aPlink_Command
-			$iPid = Run(@ComSpec & " /c " & $sRun, '', @SW_HIDE, $STDIN_CHILD + $STDERR_CHILD + $STDOUT_CHILD) ;@ComSpec & " /c " &
+			$iPid = Run($sRun, '', @SW_HIDE, $STDIN_CHILD + $STDERR_CHILD + $STDOUT_CHILD) ;@ComSpec & " /c " &
 			While ProcessExists($iPid)
 				$_StderrRead = StderrRead($iPid)
 				If Not @error And $_StderrRead <> '' Then
@@ -2235,6 +2238,8 @@ Func _SCRAPE($oXMLProfil, $vNbThread = 1, $vFullScrape = 0)
 						If ($aRomList[$vBoucle][9] = 0) Then
 							$aRomList = _ScrapeZipContent($aRomList, $vBoucle)
 						EndIf
+
+;~ 						MsgBox(0, "PAUSE", "PAUSE")
 
 						;If found (or missingRom_Mode = 1 or Rom to Hide) Send it to the scrape Engine
 						If ($aRomList[$vBoucle][9] = 1 Or $vMissingRom_Mode = 1 Or $aRomList[$vBoucle][3] > 1) And _Check_Cancel() Then
