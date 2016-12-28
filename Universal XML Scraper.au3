@@ -316,7 +316,7 @@ _ITaskBar_SetThumbNailToolTip($F_UniversalScraper)
 $vProfilDefault = IniRead($iINIPath, "LAST_USE", "$vProfilsPath", "")
 If $vProfilDefault = "" Then
 	$vStart = 1
-	IniWrite($iINIPath, "LAST_USE", "$vMirror", 1)
+	IniWrite($iINIPath, "LAST_USE", "$vMirror", 0)
 Else
 	;Opening XML Profil file
 	$oXMLProfil = _XML_Open($vProfilsPath)
@@ -1992,7 +1992,7 @@ Func _Results($aRomList, $vNbThread, $vFullTimer, $vFullScrape = 0)
 		$vTitle = $vTitle[UBound($vTitle) - 1]
 	EndIf
 
-	If $vScrapeCancelled = 1 Then $vTitle = $vTitle & " (AnnulÃ©)"
+	If $vScrapeCancelled = 1 Then $vTitle = $vTitle & " ("&_MultiLang_GetText("scrap_cancel_button")&")"
 
 	#Region ### START Koda GUI section ### Form=
 	$F_Results = GUICreate(_MultiLang_GetText("win_Results_Title"), 538, 403, -1, -1, BitOR($WS_EX_TOPMOST, $WS_EX_WINDOWEDGE))
