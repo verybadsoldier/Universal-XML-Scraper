@@ -33,7 +33,7 @@
 		<Target_Value>game</Target_Value>
 	</Game>
 	<Country>
-		<Source_Value>Data/jeu/regionshortname</Source_Value>
+		<Source_Value>Data/jeu/regionshortnames/regionshortname</Source_Value>
 	</Country>
 	<Element Type="Id">
 		<Source_Type>XML_Value</Source_Type>

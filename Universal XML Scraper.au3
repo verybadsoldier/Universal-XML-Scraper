@@ -5,7 +5,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper XML Universel
-#AutoIt3Wrapper_Res_Fileversion=2.1.0.1
+#AutoIt3Wrapper_Res_Fileversion=2.1.0.2
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -683,8 +683,15 @@ Func _Plink($oXMLProfil, $vPlinkCommand, $vSilentPlink = 0) ;Send a Command via 
 		If MsgBox($MB_OKCANCEL, $vPlinkCommand, _MultiLang_GetText("mess_ssh_" & $vPlinkCommand)) = $IDOK Then
 			_LOG("SSH : " & $aPlink_Command, 0, $iLOGPath)
 			$sRun = $iScriptPath & "\Ressources\plink.exe " & $vPlink_Ip & " -ssh -l " & $vPlink_Root & " -pw " & $vPlink_Pswd & " " & $aPlink_Command
-			$iPid = Run($sRun, '', @SW_HIDE, $STDIN_CHILD + $STDERR_CHILD + $STDOUT_CHILD) ;@ComSpec & " /c " &
+			$iPid = Run($sRun, '', @SW_HIDE, $STDERR_CHILD + $STDOUT_CHILD) ;@ComSpec & " /c " &
+			$PlinkTimeout = TimerInit()
 			While ProcessExists($iPid)
+				If TimerDiff($PlinkTimeout) > 5000 Then
+					MsgBox($MB_ICONERROR, _MultiLang_GetText("err_title"), _MultiLang_GetText("err_PlinkGlobal") & @CRLF & "(Timeout)")
+					_LOG("TimeOut with Plink (" & $vPlink_Root & ":" & $vPlink_Pswd & "@" & $vPlink_Ip & ")", 2, $iLOGPath)
+					StdioClose($iPid)
+					Return -1
+				EndIf
 				$_StderrRead = StderrRead($iPid)
 				If Not @error And $_StderrRead <> '' Then
 					If StringInStr($_StderrRead, 'Unable to open connection') Then
@@ -702,7 +709,14 @@ Func _Plink($oXMLProfil, $vPlinkCommand, $vSilentPlink = 0) ;Send a Command via 
 		$sRun = $iScriptPath & "\Ressources\plink.exe " & $vPlink_Ip & " -ssh -l " & $vPlink_Root & " -pw " & $vPlink_Pswd & " " & $vPlinkCommand
 		_LOG("SSH : " & $sRun, 1, $iLOGPath)
 		$iPid = Run(@ComSpec & " /c " & $sRun, '', @SW_HIDE, $STDIN_CHILD + $STDERR_CHILD + $STDOUT_CHILD) ;@ComSpec & " /c " &
+		$PlinkTimeout = TimerInit()
 		While ProcessExists($iPid)
+			If TimerDiff($PlinkTimeout) > 5000 Then
+				MsgBox($MB_ICONERROR, _MultiLang_GetText("err_title"), _MultiLang_GetText("err_PlinkGlobal") & @CRLF & "(Timeout)")
+				_LOG("TimeOut with Plink (" & $vPlink_Root & ":" & $vPlink_Pswd & "@" & $vPlink_Ip & ")", 2, $iLOGPath)
+				StdioClose($iPid)
+				Return -1
+			EndIf
 			$_StderrRead = StderrRead($iPid)
 			If Not @error And $_StderrRead <> '' Then
 				If StringInStr($_StderrRead, 'Unable to open connection') Then
@@ -1453,6 +1467,7 @@ Func _GUI_Refresh($oXMLProfil = -1, $ScrapIP = 0, $vScrapeOK = 0) ;Refresh GUI
 			GUICtrlSetData($MC_config_Option, _MultiLang_GetText("mnu_cfg_config_Option"))
 			GUICtrlSetData($MC_config_PIC, _MultiLang_GetText("mnu_cfg_config_PIC"))
 			GUICtrlSetData($MC_config_MISC, _MultiLang_GetText("mnu_cfg_config_MISC"))
+			GUICtrlSetData($MC_MixDownload, _MultiLang_GetText("mnu_cfg_download_miximage"))
 
 			GUICtrlSetData($MC_Profil, _MultiLang_GetText("mnu_cfg_profil"))
 			GUICtrlSetData($MC_Miximage, _MultiLang_GetText("mnu_cfg_miximage"))
@@ -1497,6 +1512,9 @@ Func _GUI_Refresh($oXMLProfil = -1, $ScrapIP = 0, $vScrapeOK = 0) ;Refresh GUI
 			GUICtrlSetState($MH, $GUI_ENABLE)
 			GUICtrlSetData($MH, _MultiLang_GetText("mnu_help"))
 			GUICtrlSetData($MH_About, _MultiLang_GetText("mnu_help_about"))
+			GUICtrlSetData($MH_Help, _MultiLang_GetText("mnu_help_wiki"))
+			GUICtrlSetData($MH_Support, _MultiLang_GetText("mnu_help_support"))
+			GUICtrlSetData($MH_Link, _MultiLang_GetText("mnu_help_link"))
 
 			GUICtrlSetData($B_SCRAPE, _MultiLang_GetText("scrap_button"))
 			_GUICtrlStatusBar_SetText($L_SCRAPE, "")
@@ -1992,7 +2010,7 @@ Func _Results($aRomList, $vNbThread, $vFullTimer, $vFullScrape = 0)
 		$vTitle = $vTitle[UBound($vTitle) - 1]
 	EndIf
 
-	If $vScrapeCancelled = 1 Then $vTitle = $vTitle & " ("&_MultiLang_GetText("scrap_cancel_button")&")"
+	If $vScrapeCancelled = 1 Then $vTitle = $vTitle & " (" & _MultiLang_GetText("scrap_cancel_button") & ")"
 
 	#Region ### START Koda GUI section ### Form=
 	$F_Results = GUICreate(_MultiLang_GetText("win_Results_Title"), 538, 403, -1, -1, BitOR($WS_EX_TOPMOST, $WS_EX_WINDOWEDGE))

@@ -205,7 +205,7 @@ Func _MultiLang_LoadLangDef($iLangPath, $vUserLang)
 	; [n][0] = Display Name in Local Language (Used for Select Function)
 	; [n][1] = Language File (Full path.  In this case we used a $iLangPath
 	; [n][2] = [Space delimited] Character codes as used by @OS_LANG (used to select correct lang file)
-	Local $aLangFiles[7][3]
+	Local $aLangFiles[8][3]
 
 	$aLangFiles[0][0] = "English (US)" ;
 	$aLangFiles[0][1] = $iLangPath & "\UXS-ENGLISH.XML"
@@ -278,6 +278,10 @@ Func _MultiLang_LoadLangDef($iLangPath, $vUserLang)
 	$aLangFiles[6][1] = $iLangPath & "\UXS-DUTCH.XML"
 	$aLangFiles[6][2] = "0413 " & _ ;Dutch - Netherlands
 			"0813 " ;Dutch - Belgium
+
+	$aLangFiles[7][0] = "Japanese" ; Japanese
+	$aLangFiles[7][1] = $iLangPath & "\UXS-JAPANESE.XML"
+	$aLangFiles[7][2] = "0411 " ;Japanese - Japan
 
 	;Set the available language files, names, and codes.
 	_MultiLang_SetFileInfo($aLangFiles)
@@ -1341,6 +1345,7 @@ Func _XML_Read($iXpath, $iXMLType = 0, $iXMLPath = "", $oXMLDoc = "")
 				Return -1
 			EndIf
 			If IsArray($iXMLValue) And UBound($iXMLValue) - 1 > 0 Then
+;~ 				_LOG('_XML_GetValue (' & $iXpath & ') = ' &$iXMLValue[1], 1, $iLOGPath)
 				Return $iXMLValue[1]
 			Else
 				_LOG('_XML_GetValue (' & $iXpath & ') is not an Array', 2, $iLOGPath)
