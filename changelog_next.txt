@@ -1,3 +1,12 @@
+2.1.0.2
+* Corrected :
+ - Time out on the new experimental function (Hash with SSH command directly on the PI)
+ - Add a \ before space and ' when Hash from the PI
+* Added :
+ - 7za.exe instead of standard windows dll.
+ - Experimental Option to Hash from the PI in General option.
+ - New MIX Template in repository (thank you Brandoskey)
+
 2.1.0.1
 * Corrected :
  - SSH command will work now (I hope :S).

@@ -5,7 +5,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper XML Universel
-#AutoIt3Wrapper_Res_Fileversion=2.1.0.2
+#AutoIt3Wrapper_Res_Fileversion=2.1.0.3
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -64,7 +64,7 @@ Global $MS_AutoConfigItem
 #include "./Include/_ExtMsgBox.au3"
 #include "./Include/_Trim.au3"
 #include "./Include/_Hash.au3"
-#include "./Include/_zip.au3"
+;~ #include "./Include/_zip.au3"
 #include "./Include/_XML.au3"
 #include "./Include/MailSlot.au3"
 #include "./Include/_GraphGDIPlus.au3"
@@ -114,6 +114,7 @@ EndIf
 _LOG("Starting files installation", 0, $iLOGPath)
 DirCreate($iScriptPath & "\LanguageFiles")
 DirCreate($iScriptPath & "\Ressources")
+DirCreate($iScriptPath & "\Ressources\Licences")
 DirCreate($iScriptPath & "\Mix")
 DirCreate($iScriptPath & "\Mix\TEMP")
 DirCreate($iScriptPath & "\ProfilsFiles")
@@ -127,11 +128,13 @@ FileInstall(".\LanguageFiles\UXS-SPANISH.XML", $iScriptPath & "\LanguageFiles\UX
 FileInstall(".\LanguageFiles\UXS-ITALIAN.XML", $iScriptPath & "\LanguageFiles\UXS-ITALIAN.XML")
 FileInstall(".\LanguageFiles\UXS-DUTCH.XML", $iScriptPath & "\LanguageFiles\UXS-DUTCH.XML")
 FileInstall(".\Ressources\plink.exe", $iScriptPath & "\Ressources\plink.exe")
-FileInstall(".\Ressources\optipng.exe", $iScriptPath & "\Ressources\optipng.exe")
 FileInstall(".\Ressources\pngquant.exe", $iScriptPath & "\Ressources\pngquant.exe")
-FileInstall(".\Ressources\LICENSE optipng.txt", $iScriptPath & "\Ressources\LICENSE optipng.txt")
-FileInstall(".\Ressources\LICENSE pngquant.txt", $iScriptPath & "\Ressources\LICENSE pngquant.txt")
-FileInstall(".\Ressources\LICENSE plink.txt", $iScriptPath & "\Ressources\LICENSE plink.txt")
+FileInstall(".\Ressources\7za.exe", $iScriptPath & "\Ressources\7za.exe")
+;~ FileInstall(".\Ressources\optipng.exe", $iScriptPath & "\Ressources\optipng.exe")
+;~ FileInstall(".\Ressources\Licences\LICENSE optipng.txt", $iScriptPath & "\Ressources\Licences\LICENSE optipng.txt")
+FileInstall(".\Ressources\Licences\LICENSE pngquant.txt", $iScriptPath & "\Ressources\Licences\LICENSE pngquant.txt")
+FileInstall(".\Ressources\Licences\LICENSE plink.txt", $iScriptPath & "\Ressources\Licences\LICENSE plink.txt")
+FileInstall(".\Ressources\Licences\LICENSE 7za.txt", $iScriptPath & "\Ressources\Licences\LICENSE 7za.txt")
 FileInstall(".\Ressources\systemlist.txt", $iScriptPath & "\Ressources\systemlist.txt")
 FileInstall(".\Ressources\regionlist.txt", $iScriptPath & "\Ressources\regionlist.txt")
 FileInstall(".\Ressources\UXS.jpg", $iScriptPath & "\Ressources\UXS.jpg")
@@ -327,15 +330,14 @@ Else
 	$vLastMIX = $iMIXPath & "\" & IniRead($iINIPath, "LAST_USE", "$vMixImage", "Standard (3img)") & ".zip"
 	DirRemove($iPathMixTmp, 1)
 	DirCreate($iPathMixTmp)
-	$vResult = _Zip_UnzipAll($vLastMIX, $iPathMixTmp, 0)
-	If @error Then
-		Switch @error
+;~ 	$vResult = _Zip_UnzipAll($vLastMIX, $iPathMixTmp, 0)
+	$vResult = _Unzip($vLastMIX, $iPathMixTmp)
+	If $vResult < 0 Then
+		Switch $vResult
 			Case 1
-				_LOG("no Zip file", 2, $iLOGPath)
+				_LOG("not a Zip file", 2, $iLOGPath)
 			Case 2
-				_LOG("no Zip dll found : " & @SystemDir & "\zipfldr.dll", 2, $iLOGPath)
-			Case 3
-				_LOG("Zip dll (zipfldr.dll) isn't registered", 2, $iLOGPath)
+				_LOG("Impossible to unzip", 2, $iLOGPath)
 			Case Else
 				_LOG("Unknown Zip Error (" & @error & ")", 2, $iLOGPath)
 		EndSwitch
@@ -711,7 +713,7 @@ Func _Plink($oXMLProfil, $vPlinkCommand, $vSilentPlink = 0) ;Send a Command via 
 		$iPid = Run(@ComSpec & " /c " & $sRun, '', @SW_HIDE, $STDIN_CHILD + $STDERR_CHILD + $STDOUT_CHILD) ;@ComSpec & " /c " &
 		$PlinkTimeout = TimerInit()
 		While ProcessExists($iPid)
-			If TimerDiff($PlinkTimeout) > 5000 Then
+			If TimerDiff($PlinkTimeout) > 300000 Then
 				MsgBox($MB_ICONERROR, _MultiLang_GetText("err_title"), _MultiLang_GetText("err_PlinkGlobal") & @CRLF & "(Timeout)")
 				_LOG("TimeOut with Plink (" & $vPlink_Root & ":" & $vPlink_Pswd & "@" & $vPlink_Ip & ")", 2, $iLOGPath)
 				StdioClose($iPid)
@@ -917,7 +919,18 @@ Func _GUI_Config_MIX($iMIXPath, $iPathMixTmp)
 			Case $GUI_EVENT_CLOSE, $B_CANCEL
 				DirRemove($iPathMixTmp, 1)
 				DirCreate($iPathMixTmp)
-				_Zip_UnzipAll($iMIXPath & "\" & $vMIXLast & ".zip", $iPathMixTmp, 1)
+;~ 				_Zip_UnzipAll($iMIXPath & "\" & $vMIXLast & ".zip", $iPathMixTmp, 1)
+				$vResult = _Unzip($iMIXPath & "\" & $vMIXLast & ".zip", $iPathMixTmp)
+				If $vResult < 0 Then
+					Switch $vResult
+						Case 1
+							_LOG("not a Zip file", 2, $iLOGPath)
+						Case 2
+							_LOG("Impossible to unzip", 2, $iLOGPath)
+						Case Else
+							_LOG("Unknown Zip Error (" & @error & ")", 2, $iLOGPath)
+					EndSwitch
+				EndIf
 				IniWrite($iINIPath, "LAST_USE", "$vMixImage", $vMIXLast)
 				GUIDelete($F_MIXIMAGE)
 				GUISetState(@SW_ENABLE, $F_UniversalScraper)
@@ -937,7 +950,18 @@ Func _GUI_Config_MIX($iMIXPath, $iPathMixTmp)
 				If GUICtrlRead($C_MIXIMAGE) <> _XML_Read("/Profil/Name", 1, $iPathMixTmp & "\config.xml") Then
 					DirRemove($iPathMixTmp, 1)
 					DirCreate($iPathMixTmp)
-					_Zip_UnzipAll($iMIXPath & "\" & GUICtrlRead($C_MIXIMAGE) & ".zip", $iPathMixTmp, 1)
+;~ 					_Zip_UnzipAll($iMIXPath & "\" & GUICtrlRead($C_MIXIMAGE) & ".zip", $iPathMixTmp, 1)
+					$vResult = _Unzip($iMIXPath & "\" & GUICtrlRead($C_MIXIMAGE) & ".zip", $iPathMixTmp)
+					If $vResult < 0 Then
+						Switch $vResult
+							Case 1
+								_LOG("not a Zip file", 2, $iLOGPath)
+							Case 2
+								_LOG("Impossible to unzip", 2, $iLOGPath)
+							Case Else
+								_LOG("Unknown Zip Error (" & @error & ")", 2, $iLOGPath)
+						EndSwitch
+					EndIf
 					$vMIXExempleEmptyPath = $iPathMixTmp & "\" & _XML_Read("/Profil/General/Empty_Exemple", 0, $iPathMixTmp & "\config.xml")
 					$vMIXExempleFullPath = $iPathMixTmp & "\" & _XML_Read("/Profil/General/Full_Exemple", 0, $iPathMixTmp & "\config.xml")
 					GUICtrlSetImage($P_Empty, $vMIXExempleEmptyPath)
@@ -1027,11 +1051,11 @@ Func _GUI_Config_MISC()
 	Local $aScrapeMode = StringSplit(_MultiLang_GetText("win_config_MISC_GroupMISC_ScrapeModeChoice"), '|', $STR_ENTIRESPLIT + $STR_NOCOUNT)
 	Local $aScrapeSearchMode = StringSplit(_MultiLang_GetText("win_config_MISC_GroupMISC_ScrapeSearchModeChoice"), '|', $STR_ENTIRESPLIT + $STR_NOCOUNT)
 	Local $aVerbose = StringSplit(_MultiLang_GetText("win_config_MISC_GroupMISC_VerboseChoice"), '|', $STR_ENTIRESPLIT + $STR_NOCOUNT)
-	Local $vNbThreadDefault = 0
+	Local $vNbThreadDefault = 0, $vRootPathOnPI = ""
 
 	#Region ### START Koda GUI section ### Form=
 	$F_CONFIG = GUICreate(_MultiLang_GetText("win_config_MISC_Title"), 475, 372, -1, -1, -1, BitOR($WS_EX_TOPMOST, $WS_EX_WINDOWEDGE))
-	$G_Misc = GUICtrlCreateGroup(_MultiLang_GetText("win_config_MISC_GroupMISC"), 8, 0, 225, 361)
+	$G_Misc = GUICtrlCreateGroup(_MultiLang_GetText("win_config_MISC_GroupMISC"), 8, 0, 225, 321)
 	$L_CountryPref = GUICtrlCreateLabel(_MultiLang_GetText("win_config_MISC_GroupMISC_CountryPref"), 16, 15)
 	$I_CountryPref = GUICtrlCreateInput(IniRead($iINIPath, "LAST_USE", "$vCountryPref", ""), 16, 34, 209, 21)
 	$L_LangPref = GUICtrlCreateLabel(_MultiLang_GetText("win_config_MISC_GroupMISC_LangPref"), 16, 60)
@@ -1045,9 +1069,9 @@ Func _GUI_Config_MISC()
 	$L_Verbose = GUICtrlCreateLabel(_MultiLang_GetText("win_config_MISC_GroupMISC_Verbose"), 16, 204)
 	$C_Verbose = GUICtrlCreateCombo("", 16, 224, 209, 25, BitOR($GUI_SS_DEFAULT_COMBO, $CBS_SIMPLE))
 	GUICtrlSetData($C_Verbose, _MultiLang_GetText("win_config_MISC_GroupMISC_VerboseChoice"), $aVerbose[IniRead($iINIPath, "GENERAL", "$vVerbose", 0)])
-	$CB_MissingRom_Mode = GUICtrlCreateCheckbox(_MultiLang_GetText("win_config_MISC_GroupMISC_MissingMode"), 16, 254)
-	$CB_RechSys = GUICtrlCreateCheckbox(_MultiLang_GetText("win_config_MISC_GroupMISC_RechSys"), 16, 278)
-	$CB_Mirror = GUICtrlCreateCheckbox(_MultiLang_GetText("win_config_MISC_GroupMISC_Mirror"), 16, 302)
+	$CB_MissingRom_Mode = GUICtrlCreateCheckbox(_MultiLang_GetText("win_config_MISC_GroupMISC_MissingMode"), 16, 252)
+	$CB_RechSys = GUICtrlCreateCheckbox(_MultiLang_GetText("win_config_MISC_GroupMISC_RechSys"), 16, 274)
+	$CB_Mirror = GUICtrlCreateCheckbox(_MultiLang_GetText("win_config_MISC_GroupMISC_Mirror"), 16, 296)
 	GUICtrlCreateGroup("", -99, -99, 1, 1)
 	$G_ScreenScraper = GUICtrlCreateGroup(_MultiLang_GetText("win_config_MISC_GroupScreenScraper"), 240, 0, 225, 153)
 	$L_SSLogin = GUICtrlCreateLabel(_MultiLang_GetText("win_config_MISC_GroupScreenScraper_Login"), 248, 15)
@@ -1068,6 +1092,10 @@ Func _GUI_Config_MISC()
 	$L_ExcludeFolder = GUICtrlCreateLabel(_MultiLang_GetText("win_config_MISC_GroupRechFiles_ExcludeFolder"), 248, 268)
 	$I_ExcludeFolder = GUICtrlCreateInput($aRechFiles[2], 248, 288, 209, 21)
 	GUICtrlCreateGroup("", -99, -99, 1, 1)
+	$G_Experimental = GUICtrlCreateGroup("Experimental", 8, 320, 225, 49)
+	$CB_SSHHash = GUICtrlCreateCheckbox("SSH HASH", 16, 340, 89, 17)
+	$B_Local_RomPath = GUICtrlCreateButton("Rom Path", 112, 336, 115, 25)
+	GUICtrlCreateGroup("", -99, -99, 1, 1)
 	$B_CONFENREG = GUICtrlCreateButton(_MultiLang_GetText("win_config_Enreg"), 240, 328, 105, 33)
 	$B_CONFANNUL = GUICtrlCreateButton(_MultiLang_GetText("win_config_Cancel"), 358, 328, 105, 33)
 	GUISetState(@SW_SHOW)
@@ -1075,13 +1103,19 @@ Func _GUI_Config_MISC()
 	#EndRegion ### END Koda GUI section ###
 
 	GUICtrlSetState($CB_MissingRom_Mode, $GUI_UNCHECKED)
-	If IniRead($iINIPath, "LAST_USE", "$vMissingRom_Mode", 0) = 1 Then GUICtrlSetState($CB_MissingRom_Mode, $GUI_CHECKED)
+	If IniRead($iINIPath, "LAST_USE", "$vMissingRom_Mode", "0") = "1" Then GUICtrlSetState($CB_MissingRom_Mode, $GUI_CHECKED)
 	GUICtrlSetState($CB_RechSys, $GUI_UNCHECKED)
-	If IniRead($iINIPath, "LAST_USE", "$vRechSYS", 1) = 1 Then GUICtrlSetState($CB_RechSys, $GUI_CHECKED)
+	If IniRead($iINIPath, "LAST_USE", "$vRechSYS", "1") = "1" Then GUICtrlSetState($CB_RechSys, $GUI_CHECKED)
 	GUICtrlSetState($CB_Mirror, $GUI_UNCHECKED)
-	If IniRead($iINIPath, "LAST_USE", "$vMirror", 1) = 1 Then GUICtrlSetState($CB_Mirror, $GUI_CHECKED)
+	If IniRead($iINIPath, "LAST_USE", "$vMirror", "0") = "1" Then GUICtrlSetState($CB_Mirror, $GUI_CHECKED)
+	GUICtrlSetState($CB_SSHHash, $GUI_UNCHECKED)
+	GUICtrlSetState($B_Local_RomPath, $GUI_DISABLE)
+	If IniRead($iINIPath, "LAST_USE", "$vHashOnPI", "0") = "1" Then
+		GUICtrlSetState($CB_SSHHash, $GUI_CHECKED)
+		GUICtrlSetState($B_Local_RomPath, $GUI_ENABLE)
+	EndIf
 
-	$vNbThread = IniRead($iINIPath, "LAST_USE", "$vNbThread", 1)
+	$vNbThread = IniRead($iINIPath, "LAST_USE", "$vNbThread", "1")
 	$vTEMPPathSSCheck = $iScriptPath & "\Ressources\SSCheck.xml"
 	$vSSLogin = GUICtrlRead($I_SSLogin) ;$vSSLogin
 	$vSSPassword = GUICtrlRead($I_SSPassword) ;$vSSPassword
@@ -1135,6 +1169,14 @@ Func _GUI_Config_MISC()
 				WinActivate($F_UniversalScraper)
 				_LOG("MISC Configuration Canceled", 0, $iLOGPath)
 				Return
+			Case $B_Local_RomPath
+				$vRootPathOnPI = InputBox("Local Path to the Rom folder", "Enter the local path to the general rom folder from the root (ex : /recalbox/share/roms)", "", "", -1, -1, Default, Default, 0, $F_CONFIG)
+			Case $CB_SSHHash
+				If _IsChecked($CB_SSHHash) Then
+					GUICtrlSetState($B_Local_RomPath, $GUI_ENABLE)
+				Else
+					GUICtrlSetState($B_Local_RomPath, $GUI_DISABLE)
+				EndIf
 			Case $B_CONFENREG
 				IniWrite($iINIPath, "LAST_USE", "$vNbThread", GUICtrlRead($C_Thread))
 				_LOG("SS lvl=" & $vSSParticipation & " Max Thread = " & $vNbThreadMax & " Thread selected = " & GUICtrlRead($C_Thread), 1, $iLOGPath)
@@ -1153,6 +1195,13 @@ Func _GUI_Config_MISC()
 				Else
 					IniWrite($iINIPath, "LAST_USE", "$vMirror", 0)
 					$iURLScraper = $iURLSS
+				EndIf
+
+				If _IsChecked($CB_SSHHash) Then
+					IniWrite($iINIPath, "LAST_USE", "$vHashOnPI", 1)
+					IniWrite($iINIPath, "LAST_USE", "$vRootPathOnPI", $vRootPathOnPI)
+				Else
+					IniWrite($iINIPath, "LAST_USE", "$vHashOnPI", 0)
 				EndIf
 
 				IniWrite($iINIPath, "LAST_USE", "$vRechFiles", GUICtrlRead($I_Include) & "|" & GUICtrlRead($I_Exclude) & "|" & GUICtrlRead($I_ExcludeFolder))
@@ -1824,7 +1873,9 @@ Func _CalcHash($aRomList, $vNoRom, $oXMLProfil)
 		$vSysName = StringSplit(IniRead($iINIPath, "LAST_USE", "$vSource_RomPath", ""), "\")
 		$vSysName = $vSysName[UBound($vSysName) - 1]
 		$vRootPathOnPI = IniRead($iINIPath, "LAST_USE", "$vRootPathOnPI", "/recalbox/share/roms")
-		$vPlinkCommand = '"' & "md5sum '" & $vRootPathOnPI & "/" & $vSysName & "/" & StringReplace($aRomList[$vNoRom][0], "\", "/") & "'" & '"'
+		$vPathtoHash = $vRootPathOnPI & "/" & $vSysName & "/" & StringReplace($aRomList[$vNoRom][0], "\", "/")
+		$vPlinkCommand = '"' & "md5sum " & StringReplace(StringReplace($vPathtoHash, " ", "\ "), "'", "\'") & '"'
+		_LOG("$vPlinkCommand : " & $vPlinkCommand, 1, $iLOGPath)
 		$aPlinkReturn = StringSplit(_Plink($oXMLProfil, $vPlinkCommand, 1), " ", $STR_NOCOUNT)
 		$aRomList[$vNoRom][6] = $aPlinkReturn[0]
 		$TimerHashMD5 = Round((TimerDiff($TimerHashMD5) / 1000), 2)
@@ -2087,11 +2138,26 @@ Func _ScrapeZipContent($aRomList, $vBoucle)
 	Local $vSrcPath = $vZipDir & "\" & $aRomList[$vBoucle][0]
 	DirRemove($vZipDir, 1)
 	FileCopy($aRomList[$vBoucle][1], $vSrcPath, $FC_CREATEPATH)
-	_LOG("Unzipping file '" & $vSrcPath & "' to temp directory: " & $vZipDirEx, 1, $iLOGPath)
-	Local $vResult = _Zip_UnzipAll($vSrcPath, $vZipDirEx, 1)
-	If @error <> 0 Then
-		_LOG("Error #" & @error & " unzipping file '" & $aRomList[$vBoucle][1] & "' to temp directory: " & $vZipDirEx, 1, $iLOGPath)
-		Return $aRomList
+;~ 	_LOG("Unzipping file '" & $vSrcPath & "' to temp directory: " & $vZipDirEx, 1, $iLOGPath)
+;~ 	Local $vResult = _Zip_UnzipAll($vSrcPath, $vZipDirEx, 1)
+;~ 	If @error <> 0 Then
+;~ 		_LOG("Error #" & @error & " unzipping file '" & $aRomList[$vBoucle][1] & "' to temp directory: " & $vZipDirEx, 1, $iLOGPath)
+;~ 		Return $aRomList
+;~ 	EndIf
+
+	$vResult = _Unzip($vSrcPath, $vZipDirEx)
+	If $vResult < 0 Then
+		Switch $vResult
+			Case 1
+				_LOG("not a Zip file", 2, $iLOGPath)
+				Return $aRomList
+			Case 2
+				_LOG("Impossible to unzip", 2, $iLOGPath)
+				Return $aRomList
+			Case Else
+				_LOG("Unknown Zip Error (" & @error & ")", 2, $iLOGPath)
+				Return $aRomList
+		EndSwitch
 	EndIf
 
 	; get a list of all unzipped files
@@ -2536,6 +2602,10 @@ EndFunc   ;==>_WizardAutoconf
 ;~ 	$aPicParameters[6] = Target_BottomLeftX
 ;~ 	$aPicParameters[7] = Target_BottomLeftY
 ;~ 	$aPicParameters[8] = Target_Maximize
+;~ 	$aPicParameters[9] = Target_OriginX
+;~ 	$aPicParameters[10] = Target_OriginY
+;~ 	$aPicParameters[11] = Target_BottomRightX
+;~ 	$aPicParameters[12] = Target_BottomRightY
 
 ;~ 	$aConfig[0]=$vTarget_XMLName
 ;~ 	$aConfig[1]=$vSource_RomPath

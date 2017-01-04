@@ -5,7 +5,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper
-#AutoIt3Wrapper_Res_Fileversion=1.1.0.1
+#AutoIt3Wrapper_Res_Fileversion=1.1.0.2
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -515,7 +515,7 @@ Func _MIX_Engine($aRomList, $vBoucle, $aConfig, $oXMLProfil)
 EndFunc   ;==>_MIX_Engine
 
 Func _MIX_Engine_Dim($vWhile, $oMixConfig)
-	Dim $aPicParameters[11]
+	Dim $aPicParameters[13]
 	$aPicParameters[0] = _XML_Read("/Profil/Element[" & $vWhile & "]/Target_Width", 0, "", $oMixConfig)
 	$aPicParameters[1] = _XML_Read("/Profil/Element[" & $vWhile & "]/Target_Height", 0, "", $oMixConfig)
 	$aPicParameters[2] = _XML_Read("/Profil/Element[" & $vWhile & "]/Target_TopLeftX", 0, "", $oMixConfig)
@@ -527,6 +527,8 @@ Func _MIX_Engine_Dim($vWhile, $oMixConfig)
 	$aPicParameters[8] = _XML_Read("/Profil/Element[" & $vWhile & "]/Target_Maximize", 0, "", $oMixConfig)
 	$aPicParameters[9] = _XML_Read("/Profil/Element[" & $vWhile & "]/Target_OriginX", 0, "", $oMixConfig)
 	$aPicParameters[10] = _XML_Read("/Profil/Element[" & $vWhile & "]/Target_OriginY", 0, "", $oMixConfig)
+	$aPicParameters[11] = _XML_Read("/Profil/Element[" & $vWhile & "]/Target_BottomRightX", 0, "", $oMixConfig)
+	$aPicParameters[12] = _XML_Read("/Profil/Element[" & $vWhile & "]/Target_BottomRightY", 0, "", $oMixConfig)
 	Return $aPicParameters
 EndFunc   ;==>_MIX_Engine_Dim
 

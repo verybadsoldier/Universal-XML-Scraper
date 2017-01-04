@@ -1,6 +1,45 @@
 #Region MISC Function
 
 ; #FUNCTION# ===================================================================================================
+; Name...........: _Unzip
+; Description ...: Unzip with 7za
+; Syntax.........: _Unzip($iPathZip , $iPathTarget)
+; Parameters ....: $iPathZip	- Zip Path
+;~ 				   $iPathTarget	- Target folder path
+; Return values .: Success      - Return the target folder path
+;                  Failure      - -1
+; Author ........: Screech inspiration : wakillon
+; Modified.......:
+; Remarks .......:
+; Related .......:
+; Link ..........;
+; Example .......; https://www.autoitscript.com/forum/topic/122168-tinypicsharer-v-1034-new-version-08-june-2013/
+Func _Unzip($iPathZip, $iPathTarget)
+	Local $sRun, $iPid, $_StderrRead
+	Local $sDrive, $sDir, $sFileName, $iExtension, $iPath_Temp
+	_PathSplit($iPathZip, $sDrive, $sDir, $sFileName, $iExtension)
+	If StringLower($iExtension) <> ".zip" Then
+		_LOG("Not a ZIP file : " & $iPathZip, 2, $iLOGPath)
+		Return -1
+	EndIf
+	$sRun = '"' & $iScriptPath & '\Ressources\7za.exe" e "' & $iPathZip & '" -o"' & $iPathTarget & '"'
+	_LOG("7za command: " & $sRun, 1, $iLOGPath)
+	$iPid = Run($sRun, '', @SW_HIDE, $STDERR_CHILD + $STDOUT_CHILD)
+	While ProcessExists($iPid)
+		$_StderrRead = StderrRead($iPid)
+		If Not @error And $_StderrRead <> '' Then
+			If StringInStr($_StderrRead, 'ERRORS') And Not StringInStr($_StderrRead, 'Everything is Ok') Then
+				_LOG("Error while unziping " & $iPathZip, 2, $iLOGPath)
+				Return -2
+			EndIf
+		EndIf
+	WEnd
+	_LOG("Unziped : " & $iPathZip & " to " & $iPathTarget, 0, $iLOGPath)
+	Return $iPathTarget
+EndFunc   ;==>_Unzip
+
+
+; #FUNCTION# ===================================================================================================
 ; Name...........: _URIEncode
 ; Description ...: Create a valid URL
 ; Syntax.........: _URIEncode($sData)
@@ -13,22 +52,22 @@
 ; Link ..........; https://www.autoitscript.com/forum/topic/95850-url-encoding/
 ; Example .......; No
 Func _URIEncode($sData)
-    Local $aData = StringSplit(BinaryToString(StringToBinary($sData,4),1),"")
-    Local $nChar
-    $sData=""
-    For $i = 1 To $aData[0]
-        $nChar = Asc($aData[$i])
-        Switch $nChar
-            Case 45, 46, 48-57, 65 To 90, 95, 97 To 122, 126
-                $sData &= $aData[$i]
-            Case 32
-                $sData &= "+"
-            Case Else
-                $sData &= "%" & Hex($nChar,2)
-        EndSwitch
-    Next
-    Return $sData
-EndFunc
+	Local $aData = StringSplit(BinaryToString(StringToBinary($sData, 4), 1), "")
+	Local $nChar
+	$sData = ""
+	For $I = 1 To $aData[0]
+		$nChar = Asc($aData[$I])
+		Switch $nChar
+			Case 45, 46, 48 - 57, 65 To 90, 95, 97 To 122, 126
+				$sData &= $aData[$I]
+			Case 32
+				$sData &= "+"
+			Case Else
+				$sData &= "%" & Hex($nChar, 2)
+		EndSwitch
+	Next
+	Return $sData
+EndFunc   ;==>_URIEncode
 
 ; #FUNCTION# ===================================================================================================
 ; Name...........: _LOG_Ceation
@@ -351,8 +390,8 @@ Func _SelectGUI($aSelectionItem, $default = -1, $vText = "standard", $vLanguageS
 	Local $_Selector_gui_Label = GUICtrlCreateLabel(_MultiLang_GetText("win_sel_" & $vText & "_text"), 8, 8, 212, 33)
 
 	;Create List of available Items
-	For $i = 0 To UBound($aSelectionItem) - 1
-		GUICtrlSetData($_Selector_gui_Combo, $aSelectionItem[$i][0], "(" & _MultiLang_GetText("win_sel_" & $vText & "_Title") & ")")
+	For $I = 0 To UBound($aSelectionItem) - 1
+		GUICtrlSetData($_Selector_gui_Combo, $aSelectionItem[$I][0], "(" & _MultiLang_GetText("win_sel_" & $vText & "_Title") & ")")
 	Next
 
 	GUISetState(@SW_SHOW)
@@ -369,14 +408,14 @@ Func _SelectGUI($aSelectionItem, $default = -1, $vText = "standard", $vLanguageS
 ;~ 	MsgBox(0,"$_selected",$_selected)
 ;~ 	_ArrayDisplay($aSelectionItem,"$aSelectionItem")
 
-	For $i = 0 To UBound($aSelectionItem) - 1
-		If $aSelectionItem[$i][0] = $_selected Then
+	For $I = 0 To UBound($aSelectionItem) - 1
+		If $aSelectionItem[$I][0] = $_selected Then
 			If $vLanguageSelector = 1 Then
-				_LOG("Value selected : " & StringLeft($aSelectionItem[$i][2], 4), 1, $iLOGPath)
-				Return StringLeft($aSelectionItem[$i][2], 4)
+				_LOG("Value selected : " & StringLeft($aSelectionItem[$I][2], 4), 1, $iLOGPath)
+				Return StringLeft($aSelectionItem[$I][2], 4)
 			Else
-				_LOG("Value selected : " & $aSelectionItem[$i][2], 1, $iLOGPath)
-				Return $aSelectionItem[$i][2]
+				_LOG("Value selected : " & $aSelectionItem[$I][2], 1, $iLOGPath)
+				Return $aSelectionItem[$I][2]
 			EndIf
 		EndIf
 	Next
@@ -529,7 +568,7 @@ Func _Compression($iPath, $isoft = 'pngquant.exe', $iParamater = '--force --verb
 		Return -1
 	EndIf
 	$vPathSize = _ByteSuffix(FileGetSize($iPath))
-	$sRun = '"' & $iScriptPath & '\Ressources\pngquant.exe" ' & $iParamater & ' "' & $iPath &'"'
+	$sRun = '"' & $iScriptPath & '\Ressources\pngquant.exe" ' & $iParamater & ' "' & $iPath & '"'
 	_LOG("PNGQuant command: " & $sRun, 1, $iLOGPath)
 	$iPid = Run($sRun, '', @SW_HIDE, $STDERR_CHILD + $STDOUT_CHILD)
 	While ProcessExists($iPid)
@@ -598,7 +637,7 @@ Func _GDIPlus_ResizeMax($iPath, $iMAX_Width, $iMAX_Height)
 	If $iWidth_New > $iMAX_Width Then
 		$iWidth_New = $iMAX_Width
 		$iHeight_New = $iWidth_New * $iRatio
-		_LOG("$iWidth_New too BIG $iSize_New " & $iWidth_New  & " x " & $iHeight_New  &"("&$iHeight_New/$iWidth_New&")", 2, $iLOGPath)
+		_LOG("$iWidth_New too BIG $iSize_New " & $iWidth_New & " x " & $iHeight_New & "(" & $iHeight_New / $iWidth_New & ")", 2, $iLOGPath)
 	EndIf
 	$iWidth_New = Int($iWidth_New)
 	$iHeight_New = Int($iHeight_New)
@@ -1092,6 +1131,8 @@ Func _GDIPlus_Imaging($iPath, $aPicParameters, $vTarget_Width, $vTarget_Height)
 	Local $Image_C2Y = _GDIPlus_RelativePos($aPicParameters[5], $vTarget_Height)
 	Local $Image_C3X = _GDIPlus_RelativePos($aPicParameters[6], $vTarget_Width)
 	Local $Image_C3Y = _GDIPlus_RelativePos($aPicParameters[7], $vTarget_Height)
+	Local $Image_C4X = _GDIPlus_RelativePos($aPicParameters[11], $vTarget_Width)
+	Local $Image_C4Y = _GDIPlus_RelativePos($aPicParameters[12], $vTarget_Height)
 	Switch $Image_C2X
 		Case 'CENTER'
 			$Image_C2X = Int(($vTarget_Width / 2) + ($iWidth / 2))
@@ -1132,15 +1173,43 @@ Func _GDIPlus_Imaging($iPath, $aPicParameters, $vTarget_Width, $vTarget_Height)
 		Case ''
 			$Image_C3Y = $Image_C1Y + $iHeight
 	EndSwitch
+		Switch $Image_C4X
+		Case 'CENTER'
+			$Image_C4X = Int(($vTarget_Width / 2) + ($iWidth / 2))
+		Case 'LEFT'
+			$Image_C4X = $iWidth
+		Case 'RIGHT'
+			$Image_C4X = $vTarget_Width
+		Case ''
+			$vNo4thPoint = 1
+			$Image_C4X = $Image_C1X + $iWidth
+	EndSwitch
+	Switch $Image_C4Y
+		Case 'CENTER'
+			$Image_C4Y = Int(($vTarget_Height / 2) + ($iHeight / 2))
+		Case 'UP'
+			$Image_C4Y = 0 + $iHeight
+		Case 'DOWN'
+			$Image_C4Y = $vTarget_Height
+		Case ''
+			$vNo4thPoint = 1
+			$Image_C4Y = $Image_C1Y + $iHeight
+	EndSwitch
 
 	$Image_C1X = $Image_C1X + _GDIPlus_RelativePos($aPicParameters[9], $vTarget_Width)
-	$Image_C1Y = $Image_C1Y + _GDIPlus_RelativePos($aPicParameters[10], $vTarget_Width)
+	$Image_C1Y = $Image_C1Y + _GDIPlus_RelativePos($aPicParameters[10], $vTarget_Height)
 	$Image_C2X = $Image_C2X + _GDIPlus_RelativePos($aPicParameters[9], $vTarget_Width)
-	$Image_C2Y = $Image_C2Y + _GDIPlus_RelativePos($aPicParameters[10], $vTarget_Width)
+	$Image_C2Y = $Image_C2Y + _GDIPlus_RelativePos($aPicParameters[10], $vTarget_Height)
 	$Image_C3X = $Image_C3X + _GDIPlus_RelativePos($aPicParameters[9], $vTarget_Width)
-	$Image_C3Y = $Image_C3Y + _GDIPlus_RelativePos($aPicParameters[10], $vTarget_Width)
+	$Image_C3Y = $Image_C3Y + _GDIPlus_RelativePos($aPicParameters[10], $vTarget_Height)
+	$Image_C4X = $Image_C4X + _GDIPlus_RelativePos($aPicParameters[9], $vTarget_Width)
+	$Image_C4Y = $Image_C4Y + _GDIPlus_RelativePos($aPicParameters[10], $vTarget_Height)
 
-	_GDIPlus_DrawImagePoints($hGraphic, $hImage, $Image_C1X, $Image_C1Y, $Image_C2X, $Image_C2Y, $Image_C3X, $Image_C3Y)
+	If $vNo4thPoint = 1 Then
+		_GDIPlus_DrawImagePoints($hGraphic, $hImage, $Image_C1X, $Image_C1Y, $Image_C2X, $Image_C2Y, $Image_C3X, $Image_C3Y)
+	Else
+		_GDIPlus_GraphicsDrawImage_4Points($hGraphic, $hImage, $Image_C1X, $Image_C1Y, $Image_C2X, $Image_C2Y, $Image_C3X, $Image_C3Y, $Image_C4X, $Image_C4Y)
+	EndIf
 	_GDIPlus_ImageSaveToFile($hBMPBuff, $iPath)
 	_GDIPlus_GraphicsDispose($hGraphic)
 	_GDIPlus_BitmapDispose($hBMPBuff)
@@ -1273,8 +1342,6 @@ Func _GDIPlus_GraphicsDrawImage_4Points($hGraphics, $hImage, $X1, $Y1, $X2, $Y2,
     _GDIPlus_GraphicsDrawImage($hGraphics, $hBitmap, 0, 0)
     _GDIPlus_BitmapDispose($hBitmap)
 EndFunc   ;==>_GDIPlus_GraphicsDrawImage_4Points
-
-
 #EndRegion GDI Function
 
 #Region XML Function
