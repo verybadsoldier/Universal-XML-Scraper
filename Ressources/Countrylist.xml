@@ -8,6 +8,7 @@
 			<nom_fr>Allemagne</nom_fr>
 			<nom_de>Deutschland</nom_de>
 			<nom_en>Germany</nom_en>
+			<nom_es>Alemania</nom_es>
 			<nom_pt>Alemanha</nom_pt>
 			<parent>48</parent>
 		</region>
@@ -15,6 +16,7 @@
 			<id>3257</id>
 			<nomcourt>ame</nomcourt>
 			<nom_fr>Amérique</nom_fr>
+			<nom_es>América</nom_es>
 			<parent>0</parent>
 		</region>
 		<region>
@@ -23,6 +25,7 @@
 			<nom_fr>Asie</nom_fr>
 			<nom_de>Asien</nom_de>
 			<nom_en>Asia</nom_en>
+			<nom_es>Asia</nom_es>
 			<nom_pt>Ásia</nom_pt>
 			<parent>0</parent>
 		</region>
@@ -32,6 +35,7 @@
 			<nom_fr>Australie</nom_fr>
 			<nom_de>Australien</nom_de>
 			<nom_en>Australia</nom_en>
+			<nom_es>Australia</nom_es>
 			<nom_pt>Austrália</nom_pt>
 			<parent>0</parent>
 		</region>
@@ -41,6 +45,7 @@
 			<nom_fr>Brésil</nom_fr>
 			<nom_de>Brasilien</nom_de>
 			<nom_en>Brazil</nom_en>
+			<nom_es>Basil</nom_es>
 			<nom_pt>Brasil</nom_pt>
 			<parent>3257</parent>
 		</region>
@@ -50,6 +55,7 @@
 			<nom_fr>Canada</nom_fr>
 			<nom_de>Kanada</nom_de>
 			<nom_en>Canada</nom_en>
+			<nom_es>Canadá</nom_es>
 			<nom_pt>Canadá</nom_pt>
 			<parent>3257</parent>
 		</region>
@@ -59,6 +65,7 @@
 			<nom_fr>Chine</nom_fr>
 			<nom_de>China</nom_de>
 			<nom_en>China</nom_en>
+			<nom_es>China</nom_es>
 			<nom_pt>China</nom_pt>
 			<parent>114</parent>
 		</region>
@@ -68,6 +75,7 @@
 			<nom_fr>Corée</nom_fr>
 			<nom_de>Korea</nom_de>
 			<nom_en>Korea</nom_en>
+			<nom_es>Corea</nom_es>
 			<nom_pt>Coreia</nom_pt>
 			<parent>114</parent>
 		</region>
@@ -75,6 +83,7 @@
 			<id>3603</id>
 			<nomcourt>cus</nomcourt>
 			<nom_fr>Custom</nom_fr>
+			<nom_es>Custom</nom_es>
 			<parent>0</parent>
 		</region>
 		<region>
@@ -83,6 +92,7 @@
 			<nom_fr>Danemark</nom_fr>
 			<nom_de>Dänemark</nom_de>
 			<nom_en>Denmark</nom_en>
+			<nom_es>Dinamarca</nom_es>
 			<nom_pt>Dinamarca</nom_pt>
 			<parent>48</parent>
 		</region>
@@ -92,6 +102,7 @@
 			<nom_fr>Espagne</nom_fr>
 			<nom_de>Spanien</nom_de>
 			<nom_en>Spain</nom_en>
+			<nom_es>España</nom_es>
 			<nom_pt>Espanha</nom_pt>
 			<parent>48</parent>
 		</region>
@@ -101,6 +112,7 @@
 			<nom_fr>Europe</nom_fr>
 			<nom_de>Europa</nom_de>
 			<nom_en>Europe</nom_en>
+			<nom_es>Europa</nom_es>
 			<nom_pt>Europa</nom_pt>
 			<parent>0</parent>
 		</region>
@@ -110,6 +122,7 @@
 			<nom_fr>Finlande</nom_fr>
 			<nom_de>Finnland</nom_de>
 			<nom_en>Finland</nom_en>
+			<nom_es>Finlandia</nom_es>
 			<nom_pt>Finlândia</nom_pt>
 			<parent>48</parent>
 		</region>
@@ -119,6 +132,7 @@
 			<nom_fr>France</nom_fr>
 			<nom_de>Frankreich</nom_de>
 			<nom_en>France</nom_en>
+			<nom_es>Francia</nom_es>
 			<nom_pt>França</nom_pt>
 			<parent>48</parent>
 		</region>
@@ -128,6 +142,7 @@
 			<nom_fr>Italie</nom_fr>
 			<nom_de>Italien</nom_de>
 			<nom_en>Italy</nom_en>
+			<nom_es>Italia</nom_es>
 			<nom_pt>Itália</nom_pt>
 			<parent>48</parent>
 		</region>
@@ -137,6 +152,7 @@
 			<nom_fr>Japon</nom_fr>
 			<nom_de>Japan</nom_de>
 			<nom_en>Japan</nom_en>
+			<nom_es>Japón</nom_es>
 			<nom_pt>Japão</nom_pt>
 			<parent>114</parent>
 		</region>
@@ -146,6 +162,7 @@
 			<nom_fr>Monde</nom_fr>
 			<nom_de>World</nom_de>
 			<nom_en>World</nom_en>
+			<nom_es>World</nom_es>
 			<nom_pt>Mundo</nom_pt>
 			<parent>0</parent>
 		</region>
@@ -155,6 +172,7 @@
 			<nom_fr>Pays-Bas</nom_fr>
 			<nom_de>Niederlande</nom_de>
 			<nom_en>Netherlands</nom_en>
+			<nom_es>Holanda</nom_es>
 			<nom_pt>Holanda</nom_pt>
 			<parent>48</parent>
 		</region>
@@ -163,6 +181,7 @@
 			<nomcourt>pl</nomcourt>
 			<nom_fr>Pologne</nom_fr>
 			<nom_en>Poland</nom_en>
+			<nom_es>Polonia</nom_es>
 			<parent>48</parent>
 		</region>
 		<region>
@@ -170,6 +189,7 @@
 			<nomcourt>uk</nomcourt>
 			<nom_fr>Royaume-Uni</nom_fr>
 			<nom_en>United Kingdom</nom_en>
+			<nom_es>Reino Unido</nom_es>
 			<parent>48</parent>
 		</region>
 		<region>
@@ -178,6 +198,7 @@
 			<nom_fr>Russie</nom_fr>
 			<nom_de>Russland</nom_de>
 			<nom_en>Russia</nom_en>
+			<nom_es>Rusia</nom_es>
 			<nom_pt>Rússia</nom_pt>
 			<parent>0</parent>
 		</region>
@@ -187,6 +208,7 @@
 			<nom_fr>Suede</nom_fr>
 			<nom_de>Schweden</nom_de>
 			<nom_en>Sweden</nom_en>
+			<nom_es>Suecia</nom_es>
 			<nom_pt>Suécia</nom_pt>
 			<parent>48</parent>
 		</region>
@@ -196,6 +218,7 @@
 			<nom_fr>Taiwan</nom_fr>
 			<nom_de>Taiwan</nom_de>
 			<nom_en>Taiwan</nom_en>
+			<nom_es>Taiwan</nom_es>
 			<nom_pt>Taiwan</nom_pt>
 			<parent>114</parent>
 		</region>
@@ -205,6 +228,7 @@
 			<nom_fr>USA</nom_fr>
 			<nom_de>USA</nom_de>
 			<nom_en>USA</nom_en>
+			<nom_es>USA</nom_es>
 			<nom_pt>EUA</nom_pt>
 			<parent>3257</parent>
 		</region>

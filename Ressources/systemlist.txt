@@ -1,5 +1,5 @@
 Adventure Vision|Adventure Vision
-Aes|Neo-Geo AES
+Aes|Mame
 Amiga|Amiga
 Amstrad - CPC|CPC
 Amstrad CPC|CPC
@@ -119,17 +119,17 @@ Microsoft - MSX2|MSX
 Msx|MSX
 Msx1|MSX
 Msx2|MSX
-Mvs|Neo-Geo MVS
+Mvs|Mame
 N64|Nintendo 64
 NEC - PC Engine - TurboGrafx 16|PC Engine
 NEC - PC Engine SuperGrafx|PC Engine SuperGrafx
 NEC - Super Grafx|PC Engine SuperGrafx
-Neogeo|Neo-Geo AES
-Neo-Geo|Neo-Geo AES
-NeoGeo AES|Neo-Geo AES
-Neo-Geo AES|Neo-Geo AES
-Neogeo MVS|Neo-Geo MVS
-Neo-Geo MVS|Neo-Geo MVS
+Neogeo|Mame
+Neo-Geo|Mame
+NeoGeo AES|Mame
+Neo-Geo AES|Mame
+Neogeo MVS|Mame
+Neo-Geo MVS|Mame
 Neo-Geo Pocket|Neo-Geo Pocket
 Neo-Geo Pocket Color|Neo-Geo Pocket Color
 Nes|NES

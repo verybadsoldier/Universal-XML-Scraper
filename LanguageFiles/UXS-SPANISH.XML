@@ -1,8 +1,6 @@
-</NEED_TO_BE_TRANSLATED>
-
 <datapref>
 	<langpref>es|en</langpref>
-	<countrypref>%COUNTRY%|eu|us|jp|wor|ss</countrypref>
+	<countrypref>%COUNTRY%|sp|eu|us|jp|wor|ss</countrypref>
 </datapref>
 
 <error>

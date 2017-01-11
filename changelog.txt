@@ -1,3 +1,10 @@
+2.1.0.3
+* Corrected :
+ - Filename check is with extension now...
+ - Neo-Geo scrape now return correct info.
+* Added :
+ - Some security on Target XML file selection.
+ 
 2.1.0.2
 * Corrected :
  - Time out on the new experimental function (Hash with SSH command directly on the PI)

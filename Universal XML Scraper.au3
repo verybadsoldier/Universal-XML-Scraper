@@ -5,7 +5,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper XML Universel
-#AutoIt3Wrapper_Res_Fileversion=2.1.0.3
+#AutoIt3Wrapper_Res_Fileversion=2.1.0.4
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -1341,6 +1341,11 @@ Func _GUI_Config_LU()
 				If (StringRight($vSource_RomPath, 1) = '\') Then StringTrimRight($vSource_RomPath, 1)
 				IniWrite($iINIPath, "LAST_USE", "$vSource_RomPath", $vSource_RomPath)
 				$vTarget_XMLName = GUICtrlRead($I_Target_XMLName) ;$vTarget_XMLName
+				If StringInStr(FileGetAttrib($vTarget_XMLName), "D") > 0 Then
+					MsgBox($MB_ICONERROR, _MultiLang_GetText("err_title"), "XMLName must be a file, not a folder", 0, $F_CONFIG)
+					_LOG("$vTarget_XMLName is a FOLDER = " & $vTarget_XMLName, 2, $iLOGPath)
+					ContinueCase
+				EndIf
 				IniWrite($iINIPath, "LAST_USE", "$vTarget_XMLName", $vTarget_XMLName)
 				$vTarget_RomPath = GUICtrlRead($I_Target_RomPath) ;$vTarget_RomPath
 				IniWrite($iINIPath, "LAST_USE", "$vTarget_RomPath", $vTarget_RomPath)
@@ -1413,6 +1418,11 @@ Func _GUI_Config_autoconf($oXMLProfil)
 				If (StringRight($vSource_RootPath, 1) = '\') Then StringTrimRight($vSource_RootPath, 1)
 				_XML_Replace("Profil/AutoConf/Source_RootPath", $vSource_RootPath, 0, "", $oXMLProfil)
 				$vTarget_XMLName = GUICtrlRead($I_Target_XMLName) ;$vTarget_XMLName
+				If StringInStr(FileGetAttrib($vTarget_XMLName), "D") > 0 Then
+					MsgBox($MB_ICONERROR, _MultiLang_GetText("err_title"), "XMLName must be a file, not a folder", 0, $F_CONFIG)
+					_LOG("$vTarget_XMLName is a FOLDER = " & $vTarget_XMLName, 2, $iLOGPath)
+					ContinueCase
+				EndIf
 				_XML_Replace("Profil/AutoConf/Target_XMLName", $vTarget_XMLName, 0, "", $oXMLProfil)
 				$vTarget_RomPath = GUICtrlRead($I_Target_RomPath) ;$vTarget_RomPath
 				_XML_Replace("Profil/AutoConf/Target_RomPath", $vTarget_RomPath, 0, "", $oXMLProfil)
@@ -1964,12 +1974,15 @@ Func _XMLCountry_Create($vSSLogin = "", $vSSPassword = "")
 EndFunc   ;==>_XMLCountry_Create
 
 Func _DownloadROMXML($aRomList, $vBoucle, $vSystemID, $vSSLogin = "", $vSSPassword = "", $vScrapeSearchMode = 0)
+	Local $sDrive = "", $sDir = "", $sFileName = "", $sExtension = "", $aPathSplit
 	FileDelete($aRomList[$vBoucle][8])
 	If Not _Check_Cancel() Then Return $aRomList
 	Local $vXMLRom = $iTEMPPath & "\" & StringRegExpReplace($aRomList[$vBoucle][2], '[\[\]/\|\:\?"\*\\<>]', "") & ".xml"
-	$vRomName = _URIEncode($aRomList[$vBoucle][2])
+	$aPathSplit = _PathSplit($aRomList[$vBoucle][0], $sDrive, $sDir, $sFileName, $sExtension)
+	$vRomName = _URIEncode($sFileName & $sExtension)
 	If $vScrapeSearchMode = 0 Or $vScrapeSearchMode = 1 Then $aRomList[$vBoucle][8] = _DownloadWRetry($iURLScraper & "api/jeuInfos.php?devid=" & $iDevId & "&devpassword=" & $iDevPassword & "&softname=" & $iSoftname & "&output=xml&ssid=" & $vSSLogin & "&sspassword=" & $vSSPassword & "&crc=" & $aRomList[$vBoucle][5] & "&md5=" & $aRomList[$vBoucle][6] & "&sha1=" & $aRomList[$vBoucle][7] & "&systemeid=" & $vSystemID & "&romtype=rom&romnom=" & $vRomName & "&romtaille=" & $aRomList[$vBoucle][4], $vXMLRom)
 	If (StringInStr(FileReadLine($aRomList[$vBoucle][8]), "Erreur") Or Not FileExists($aRomList[$vBoucle][8])) Then
+		$vRomName = _URIEncode($sFileName)
 		If $vScrapeSearchMode = 0 Or $vScrapeSearchMode = 2 Then $aRomList[$vBoucle][8] = _DownloadWRetry($iURLScraper & "api/jeuInfos.php?devid=" & $iDevId & "&devpassword=" & $iDevPassword & "&softname=" & $iSoftname & "&output=xml&ssid=" & $vSSLogin & "&sspassword=" & $vSSPassword & "&crc=&md5=&sha1=&systemeid=" & $vSystemID & "&romtype=rom&romnom=" & $vRomName & "&romtaille=" & $aRomList[$vBoucle][4], $vXMLRom)
 		If (StringInStr(FileReadLine($aRomList[$vBoucle][8]), "Erreur") Or Not FileExists($aRomList[$vBoucle][8])) Then
 			FileDelete($aRomList[$vBoucle][8])
