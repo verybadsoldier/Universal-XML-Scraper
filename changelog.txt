@@ -1,3 +1,15 @@
+2.1.0.4
+* Corrected :
+ - Some fallback in language xml
+ - Fallback function (problem with standard mix not founding some picture)
+* Added :
+ - Possibity to "Fixe" a Size by media in Standard profil with : <Target_Image_Width> and <Target_Image_Height>
+ - Running on 2 servers now : Mirror and main server
+ - New MIX Possibilty : "Text" 
+ - rotation GDI Function with <Target_Rotation> directly in the Element.
+ - <source_Origin> can be put to "genre"
+Don't forget to see the Wiki : https://github.com/Universal-Rom-Tools/Universal-XML-Scraper/wiki/%5BTUTO%5D-Making-a-MIX-Template
+ 
 2.1.0.3
 * Corrected :
  - Filename check is with extension now...

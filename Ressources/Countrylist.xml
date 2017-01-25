@@ -45,7 +45,7 @@
 			<nom_fr>Brésil</nom_fr>
 			<nom_de>Brasilien</nom_de>
 			<nom_en>Brazil</nom_en>
-			<nom_es>Basil</nom_es>
+			<nom_es>Brasil</nom_es>
 			<nom_pt>Brasil</nom_pt>
 			<parent>3257</parent>
 		</region>
@@ -162,7 +162,7 @@
 			<nom_fr>Monde</nom_fr>
 			<nom_de>World</nom_de>
 			<nom_en>World</nom_en>
-			<nom_es>World</nom_es>
+			<nom_es>Mundo</nom_es>
 			<nom_pt>Mundo</nom_pt>
 			<parent>0</parent>
 		</region>
@@ -182,6 +182,16 @@
 			<nom_fr>Pologne</nom_fr>
 			<nom_en>Poland</nom_en>
 			<nom_es>Polonia</nom_es>
+			<parent>48</parent>
+		</region>
+		<region>
+			<id>3780</id>
+			<nomcourt>pt</nomcourt>
+			<nom_fr>Portugal</nom_fr>
+			<nom_de>Portugal</nom_de>
+			<nom_en>Portugal</nom_en>
+			<nom_es>Portugal</nom_es>
+			<nom_pt>Portugal</nom_pt>
 			<parent>48</parent>
 		</region>
 		<region>
@@ -228,7 +238,7 @@
 			<nom_fr>USA</nom_fr>
 			<nom_de>USA</nom_de>
 			<nom_en>USA</nom_en>
-			<nom_es>USA</nom_es>
+			<nom_es>EUA</nom_es>
 			<nom_pt>EUA</nom_pt>
 			<parent>3257</parent>
 		</region>

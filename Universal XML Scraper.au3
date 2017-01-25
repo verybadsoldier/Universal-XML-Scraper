@@ -5,7 +5,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper XML Universel
-#AutoIt3Wrapper_Res_Fileversion=2.1.0.4
+#AutoIt3Wrapper_Res_Fileversion=2.1.0.5
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -188,7 +188,9 @@ Global $iMIXPath = $iScriptPath & "\Mix" ; Where we are storing the MIX files.
 Global $iPathMixTmp = $iMIXPath & "\TEMP" ; Where we are storing the current MIX files.
 Global $iURLMirror = "http://uxs-screenscraper.recalbox.com/"
 Global $iURLSS = "http://www.screenscraper.fr/"
-Global $iURLScraper = $iURLSS
+Global $iURLSSMirror = "http://mirror.screenscraper.fr/"
+;~ Global $iURLScraper = _TestServer($iURLSS, $iURLSSMirror)
+Global $iURLScraper = _TestServer($iURLSSMirror, $iURLSS)
 
 _LOG("Verbose LVL : " & $iVerboseLVL, 1, $iLOGPath)
 _LOG("Path to ini : " & $iINIPath, 1, $iLOGPath)
@@ -202,7 +204,7 @@ Global $MP_, $aPlink_Command, $vScrapeCancelled
 Global $vProfilsPath = IniRead($iINIPath, "LAST_USE", "$vProfilsPath", -1)
 Local $vXpath2RomPath, $vFullTimer, $vRomTimer, $vSelectedProfil = -1
 Local $L_SCRAPE_Parts[3] = [300, 480, -1]
-Local $oXMLProfil, $oXMLSystem, $oXMLCountry
+Local $oXMLProfil, $oXMLSystem, $oXMLCountry, $oXMLGenre
 Local $aConfig, $aRomList, $aXMLRomList
 Local $nMsg
 Local $sMailSlotMother = "\\.\mailslot\Mother"
@@ -244,13 +246,18 @@ Switch $Result
 		EndIf
 EndSwitch
 
+$aConfig = _LoadConfig()
+
 ;Catching SystemList.xml
-$oXMLSystem = _XMLSystem_Create()
+$oXMLSystem = _XMLSystem_Create($aConfig[13], $aConfig[14])
 If $oXMLSystem = -1 Then Exit
 
 ;Catching CountryList.xml
-$oXMLCountry = _XMLCountry_Create()
+$oXMLCountry = _XMLCountry_Create($aConfig[13], $aConfig[14])
 If $oXMLCountry = -1 Then Exit
+
+;Catching GenreList.xml
+$oXMLGenre = _XMLGenre_Create($aConfig[13], $aConfig[14])
 
 ;Delete Splascreen
 GUIDelete($F_Splashcreen)
@@ -343,10 +350,10 @@ Else
 		EndSwitch
 	EndIf
 
-	If IniRead($iINIPath, "LAST_USE", "$vMirror", 1) = 0 Then $iURLScraper = $iURLSS
+;~ 	If IniRead($iINIPath, "LAST_USE", "$vMirror", 1) = 0 Then $iURLScraper = $iURLSS
 
 	$aDIRList = _Check_autoconf($oXMLProfil)
-	_LoadConfig($oXMLProfil)
+	_LoadConfig()
 	_GUI_Refresh($oXMLProfil)
 EndIf
 _LOG("GUI Constructed", 1, $iLOGPath)
@@ -397,7 +404,7 @@ While 1
 									IniWrite($iINIPath, "LAST_USE", "$vTarget_XMLName", $aDIRList[1][3])
 									IniWrite($iINIPath, "LAST_USE", "$vSource_ImagePath", $aDIRList[1][4])
 									IniWrite($iINIPath, "LAST_USE", "$vTarget_ImagePath", $aDIRList[1][5])
-									_LoadConfig($oXMLProfil)
+									_LoadConfig()
 									_GUI_Refresh($oXMLProfil)
 									If IniRead($iINIPath, "LAST_USE", "$vAutoconf_Use", 0) <> 0 Then $vBoucle = $vBoucle + 1
 								EndIf
@@ -445,7 +452,7 @@ While 1
 				_LOG("Impossible to load language", 2, $iLOGPath)
 				Exit
 			EndIf
-			_LoadConfig($oXMLProfil)
+			_LoadConfig()
 			_GUI_Refresh($oXMLProfil)
 		Case $MC_Config_LU ;Manual Path Configuration
 			_GUI_Config_LU()
@@ -608,7 +615,7 @@ WEnd
 ;Fonctions;
 ;---------;
 
-Func _LoadConfig($oXMLProfil)
+Func _LoadConfig()
 	Local $aMatchingCountry
 	Dim $aConfig[15]
 	$aConfig[0] = IniRead($iINIPath, "LAST_USE", "$vTarget_XMLName", " ")
@@ -1071,7 +1078,7 @@ Func _GUI_Config_MISC()
 	GUICtrlSetData($C_Verbose, _MultiLang_GetText("win_config_MISC_GroupMISC_VerboseChoice"), $aVerbose[IniRead($iINIPath, "GENERAL", "$vVerbose", 0)])
 	$CB_MissingRom_Mode = GUICtrlCreateCheckbox(_MultiLang_GetText("win_config_MISC_GroupMISC_MissingMode"), 16, 252)
 	$CB_RechSys = GUICtrlCreateCheckbox(_MultiLang_GetText("win_config_MISC_GroupMISC_RechSys"), 16, 274)
-	$CB_Mirror = GUICtrlCreateCheckbox(_MultiLang_GetText("win_config_MISC_GroupMISC_Mirror"), 16, 296)
+;~ 	$CB_Mirror = GUICtrlCreateCheckbox(_MultiLang_GetText("win_config_MISC_GroupMISC_Mirror"), 16, 296)
 	GUICtrlCreateGroup("", -99, -99, 1, 1)
 	$G_ScreenScraper = GUICtrlCreateGroup(_MultiLang_GetText("win_config_MISC_GroupScreenScraper"), 240, 0, 225, 153)
 	$L_SSLogin = GUICtrlCreateLabel(_MultiLang_GetText("win_config_MISC_GroupScreenScraper_Login"), 248, 15)
@@ -1106,8 +1113,8 @@ Func _GUI_Config_MISC()
 	If IniRead($iINIPath, "LAST_USE", "$vMissingRom_Mode", "0") = "1" Then GUICtrlSetState($CB_MissingRom_Mode, $GUI_CHECKED)
 	GUICtrlSetState($CB_RechSys, $GUI_UNCHECKED)
 	If IniRead($iINIPath, "LAST_USE", "$vRechSYS", "1") = "1" Then GUICtrlSetState($CB_RechSys, $GUI_CHECKED)
-	GUICtrlSetState($CB_Mirror, $GUI_UNCHECKED)
-	If IniRead($iINIPath, "LAST_USE", "$vMirror", "0") = "1" Then GUICtrlSetState($CB_Mirror, $GUI_CHECKED)
+;~ 	GUICtrlSetState($CB_Mirror, $GUI_UNCHECKED)
+;~ 	If IniRead($iINIPath, "LAST_USE", "$vMirror", "0") = "1" Then GUICtrlSetState($CB_Mirror, $GUI_CHECKED)
 	GUICtrlSetState($CB_SSHHash, $GUI_UNCHECKED)
 	GUICtrlSetState($B_Local_RomPath, $GUI_DISABLE)
 	If IniRead($iINIPath, "LAST_USE", "$vHashOnPI", "0") = "1" Then
@@ -1120,7 +1127,7 @@ Func _GUI_Config_MISC()
 	$vSSLogin = GUICtrlRead($I_SSLogin) ;$vSSLogin
 	$vSSPassword = GUICtrlRead($I_SSPassword) ;$vSSPassword
 
-	$vTEMPPathSSCheck = _DownloadWRetry($iURLScraper & "api/ssuserInfos.php?devid=xxx&devpassword=yyy&softname=zzz&output=XML&ssid=" & $vSSLogin & "&sspassword=" & $vSSPassword, $vTEMPPathSSCheck)
+	$vTEMPPathSSCheck = _DownloadWRetry($iURLSS & "api/ssuserInfos.php?devid=" & $iDevId & "&devpassword=" & $iDevPassword & "&softname=" & $iSoftname & "output=XML&ssid=" & $vSSLogin & "&sspassword=" & $vSSPassword, $vTEMPPathSSCheck)
 	$vSSParticipation = Number(_XML_Read("/Data/ssuser/uploadsysteme", 0, $vTEMPPathSSCheck)) + Number(_XML_Read("/Data/ssuser/uploadinfos", 0, $vTEMPPathSSCheck)) + Number(_XML_Read("/Data/ssuser/romasso", 0, $vTEMPPathSSCheck)) + Number(_XML_Read("/Data/ssuser/uploadmedia", 0, $vTEMPPathSSCheck))
 	$vSSContrib = Number(_XML_Read("/Data/ssuser/contribution", 0, $vTEMPPathSSCheck))
 	_LOG("SS Check ssid=" & $vSSLogin & " participation = " & $vSSParticipation & " contribution = " & $vSSContrib, 1, $iLOGPath)
@@ -1189,13 +1196,13 @@ Func _GUI_Config_MISC()
 				IniWrite($iINIPath, "LAST_USE", "$vRechSYS", 0)
 				If _IsChecked($CB_RechSys) Then IniWrite($iINIPath, "LAST_USE", "$vRechSYS", 1)
 
-				If _IsChecked($CB_Mirror) Then
-					IniWrite($iINIPath, "LAST_USE", "$vMirror", 1)
-					$iURLScraper = $iURLMirror
-				Else
-					IniWrite($iINIPath, "LAST_USE", "$vMirror", 0)
-					$iURLScraper = $iURLSS
-				EndIf
+;~ 				If _IsChecked($CB_Mirror) Then
+;~ 					IniWrite($iINIPath, "LAST_USE", "$vMirror", 1)
+;~ 					$iURLScraper = $iURLMirror
+;~ 				Else
+;~ 					IniWrite($iINIPath, "LAST_USE", "$vMirror", 0)
+;~ 					$iURLScraper = $iURLSS
+;~ 				EndIf
 
 				If _IsChecked($CB_SSHHash) Then
 					IniWrite($iINIPath, "LAST_USE", "$vHashOnPI", 1)
@@ -1219,14 +1226,14 @@ Func _GUI_Config_MISC()
 				Return GUICtrlRead($C_Thread)
 			Case $B_SSRegister
 				_LOG("Launch Internet Browser to Register", 0, $iLOGPath)
-				ShellExecute($iURLSS & "membreinscription.php")
+				ShellExecute("http://www.screenscraper.fr/membreinscription.php")
 			Case $B_SSCheck
 				GUICtrlSetData($C_Thread, "", "")
 				$vTEMPPathSSCheck = $iScriptPath & "\Ressources\SSCheck.xml"
 				$vSSLogin = GUICtrlRead($I_SSLogin) ;$vSSLogin
 				$vSSPassword = GUICtrlRead($I_SSPassword) ;$vSSPassword
 				_LOG("SS Check ssid=" & $vSSLogin, 3, $iLOGPath)
-				$vTEMPPathSSCheck = _DownloadWRetry($iURLScraper & "api/ssuserInfos.php?devid=xxx&devpassword=yyy&softname=zzz&output=XML&ssid=" & $vSSLogin & "&sspassword=" & $vSSPassword, $vTEMPPathSSCheck)
+				$vTEMPPathSSCheck = _DownloadWRetry($iURLSS & "api/ssuserInfos.php?devid=" & $iDevId & "&devpassword=" & $iDevPassword & "&softname=" & $iSoftname & "output=XML&ssid=" & $vSSLogin & "&sspassword=" & $vSSPassword, $vTEMPPathSSCheck)
 				$vSSParticipation = Number(_XML_Read("/Data/ssuser/uploadsysteme", 0, $vTEMPPathSSCheck)) + Number(_XML_Read("/Data/ssuser/uploadinfos", 0, $vTEMPPathSSCheck)) + Number(_XML_Read("/Data/ssuser/romasso", 0, $vTEMPPathSSCheck)) + Number(_XML_Read("/Data/ssuser/uploadmedia", 0, $vTEMPPathSSCheck))
 				$vSSContrib = Number(_XML_Read("/Data/ssuser/contribution", 0, $vTEMPPathSSCheck))
 				$vSSLevel = Number(_XML_Read("/Data/ssuser/niveau", 0, $vTEMPPathSSCheck))
@@ -1261,13 +1268,16 @@ Func _GUI_Config_MISC()
 				Switch $vSSLevel
 					Case 0
 						$vNbThreadMax = 1
+						$iURLScraper = _TestServer($iURLSSMirror, $iURLSS)
 						_LOG("Not Registered", 0, $iLOGPath)
 						MsgBox($MB_ICONERROR, _MultiLang_GetText("err_title"), _MultiLang_GetText("err_NotRegistered"), 10, $F_CONFIG)
 					Case 499 To 9999999
 						$vNbThreadMax = 99
+						$iURLScraper = _TestServer($iURLSS, $iURLSSMirror)
 						_LOG("God Mode", 0, $iLOGPath)
 						MsgBox($MB_ICONWARNING, _MultiLang_GetText("mess_ssregister_title"), _MultiLang_GetText("mess_ssregister_GodMode"), 10, $F_CONFIG)
 					Case Else
+						$iURLScraper = _TestServer($iURLSS, $iURLSSMirror)
 						_LOG("Nb Thread Available : " & $vNbThreadMax, 0, $iLOGPath)
 						MsgBox($MB_ICONINFORMATION, _MultiLang_GetText("mess_ssregister_title"), _MultiLang_GetText("mess_ssregister_OK") & " " & $vNbThreadMax & " Threads", 10, $F_CONFIG)
 				EndSwitch
@@ -1919,14 +1929,9 @@ Func _CalcHash($aRomList, $vNoRom, $oXMLProfil)
 	Return $aRomList
 EndFunc   ;==>_CalcHash
 
-Func _XMLSystem_Create($vSSLogin = "", $vSSPassword = "")
+Func _XMLSystem_Create($vSSLogin = "test", $vSSPassword = "test")
 	Local $oXMLSystem, $vXMLSystemPath = $iScriptPath & "\Ressources\systemlist.xml"
 	$vXMLSystemPath = _DownloadWRetry($iURLScraper & "api/systemesListe.php?devid=" & $iDevId & "&devpassword=" & $iDevPassword & "&softname=" & $iSoftname & "&output=XML&ssid=" & $vSSLogin & "&sspassword=" & $vSSPassword, $vXMLSystemPath)
-	If FileGetSize($vXMLSystemPath) < 100 Then
-		$iURLScraper = $iURLSS
-		IniWrite($iINIPath, "LAST_USE", "$vMirror", 0)
-		$vXMLSystemPath = _DownloadWRetry($iURLScraper & "api/systemesListe.php?devid=" & $iDevId & "&devpassword=" & $iDevPassword & "&softname=" & $iSoftname & "&output=XML&ssid=" & $vSSLogin & "&sspassword=" & $vSSPassword, $vXMLSystemPath)
-	EndIf
 	Switch $vXMLSystemPath
 		Case -1
 			MsgBox($MB_ICONERROR, _MultiLang_GetText("err_title"), _MultiLang_GetText("err_UXSGlobal") & @CRLF & _MultiLang_GetText("err_Connection"))
@@ -1946,14 +1951,9 @@ Func _XMLSystem_Create($vSSLogin = "", $vSSPassword = "")
 	EndSwitch
 EndFunc   ;==>_XMLSystem_Create
 
-Func _XMLCountry_Create($vSSLogin = "", $vSSPassword = "")
+Func _XMLCountry_Create($vSSLogin = "test", $vSSPassword = "test")
 	Local $oXMLCountry, $vXMLCountryPath = $iScriptPath & "\Ressources\Countrylist.xml"
 	$vXMLCountryPath = _DownloadWRetry($iURLScraper & "api/regionsListe.php?devid=" & $iDevId & "&devpassword=" & $iDevPassword & "&softname=" & $iSoftname & "&output=XML&ssid=" & $vSSLogin & "&sspassword=" & $vSSPassword, $vXMLCountryPath)
-	If FileGetSize($vXMLCountryPath) < 100 Then
-		$iURLScraper = $iURLSS
-		IniWrite($iINIPath, "LAST_USE", "$vMirror", 0)
-		$vXMLCountryPath = _DownloadWRetry($iURLScraper & "api/regionsListe.php?devid=" & $iDevId & "&devpassword=" & $iDevPassword & "&softname=" & $iSoftname & "&output=XML&ssid=" & $vSSLogin & "&sspassword=" & $vSSPassword, $vXMLCountryPath)
-	EndIf
 	Switch $vXMLCountryPath
 		Case -1
 			MsgBox($MB_ICONERROR, _MultiLang_GetText("err_title"), _MultiLang_GetText("err_UXSGlobal") & @CRLF & _MultiLang_GetText("err_Connection"))
@@ -1972,6 +1972,28 @@ Func _XMLCountry_Create($vSSLogin = "", $vSSPassword = "")
 			EndIf
 	EndSwitch
 EndFunc   ;==>_XMLCountry_Create
+
+Func _XMLGenre_Create($vSSLogin = "test", $vSSPassword = "test")
+	Local $oXMLGenre, $vXMLGenrePath = $iScriptPath & "\Ressources\Genresliste.xml"
+	$vXMLGenrePath = _DownloadWRetry($iURLScraper & "api/genresListe.php?devid=" & $iDevId & "&devpassword=" & $iDevPassword & "&softname=" & $iSoftname & "&output=XML&ssid=" & $vSSLogin & "&sspassword=" & $vSSPassword, $vXMLGenrePath)
+	Switch $vXMLGenrePath
+		Case -1
+			MsgBox($MB_ICONERROR, _MultiLang_GetText("err_title"), _MultiLang_GetText("err_UXSGlobal") & @CRLF & _MultiLang_GetText("err_Connection"))
+			Return -1
+		Case -2
+			MsgBox($MB_ICONERROR, _MultiLang_GetText("err_title"), _MultiLang_GetText("err_UXSGlobal") & @CRLF & _MultiLang_GetText("err_TimeOut"))
+			Return -1
+		Case Else
+			$oXMLGenre = _XML_Open($vXMLGenrePath)
+			If $oXMLGenre = -1 Then
+				MsgBox($MB_ICONERROR, _MultiLang_GetText("err_title"), _MultiLang_GetText("err_UXSGlobal") & @CRLF & _MultiLang_GetText("err_SystemList"))
+				Return -1
+			Else
+				_LOG("Genrelist.xml Opened", 1, $iLOGPath)
+				Return $oXMLGenre
+			EndIf
+	EndSwitch
+EndFunc   ;==>_XMLGenre_Create
 
 Func _DownloadROMXML($aRomList, $vBoucle, $vSystemID, $vSSLogin = "", $vSSPassword = "", $vScrapeSearchMode = 0)
 	Local $sDrive = "", $sDir = "", $sFileName = "", $sExtension = "", $aPathSplit
@@ -2223,7 +2245,7 @@ Func _SCRAPE($oXMLProfil, $vNbThread = 1, $vFullScrape = 0)
 		_GUI_Refresh($oXMLProfil, 1)
 
 		Local $vScrapeCancelled = 0
-		Local $aConfig = _LoadConfig($oXMLProfil)
+		Local $aConfig = _LoadConfig()
 		Local $aExtToHide = StringSplit(_XML_Read('/Profil/Element[Source_Value="%AutoHide%"]/AutoHideEXT', 0, "", $oXMLProfil), "|")
 		Local $aValueToHide = StringSplit(_XML_Read('/Profil/Element[Source_Value="%AutoHide%"]/AutoHideValue', 0, "", $oXMLProfil), "|")
 		Local $vSendTimerLeft = 0, $vCreateTimerLeft = 0, $vSendTimerMoy = 0, $vCreateTimerMoy = 0, $vSendTimerTotal = 0, $vSendTimerTotalbyRom = 0, $vCreateTimerTotal = 0, $PercentProgression = 0
@@ -2235,7 +2257,7 @@ Func _SCRAPE($oXMLProfil, $vNbThread = 1, $vFullScrape = 0)
 		If StringLeft($aConfig[0], 2) = "\\" And $vFullScrape = 0 Then _Plink($oXMLProfil, "killall") ; Ask to kill ES
 
 		;Checking NbThread
-		$vTEMPPathSSCheck = _DownloadWRetry($iURLScraper & "api/ssuserInfos.php?devid=xxx&devpassword=yyy&softname=zzz&output=XML&ssid=" & $aConfig[13] & "&sspassword=" & $aConfig[14], $iScriptPath & "\Ressources\SSCheck.xml")
+		$vTEMPPathSSCheck = _DownloadWRetry($iURLSS & "api/ssuserInfos.php?devid=" & $iDevId & "&devpassword=" & $iDevPassword & "&softname=" & $iSoftname & "output=XML&ssid=" & $aConfig[13] & "&sspassword=" & $aConfig[14], $iScriptPath & "\Ressources\SSCheck.xml")
 		$vSSParticipation = Number(_XML_Read("/Data/ssuser/uploadsysteme", 0, $vTEMPPathSSCheck)) + Number(_XML_Read("/Data/ssuser/uploadinfos", 0, $vTEMPPathSSCheck)) + Number(_XML_Read("/Data/ssuser/romasso", 0, $vTEMPPathSSCheck)) + Number(_XML_Read("/Data/ssuser/uploadmedia", 0, $vTEMPPathSSCheck))
 		$vSSContrib = Number(_XML_Read("/Data/ssuser/contribution", 0, $vTEMPPathSSCheck))
 		$vSSLevel = Number(_XML_Read("/Data/ssuser/niveau", 0, $vTEMPPathSSCheck))
@@ -2270,6 +2292,12 @@ Func _SCRAPE($oXMLProfil, $vNbThread = 1, $vFullScrape = 0)
 			_LOG("Are you a cheater ? BAD NbThread in INI : " & $vNbThread & "(MAX = " & $vNbThreadMax & ")", 0, $iLOGPath)
 			$vNbThread = 1
 			IniWrite($iINIPath, "LAST_USE", "$vNbThread", $vNbThread)
+		EndIf
+
+		If $vNbThread = 1 Then
+			$iURLScraper = _TestServer($iURLSSMirror, $iURLSS)
+		Else
+			$iURLScraper = _TestServer($iURLSS, $iURLSSMirror)
 		EndIf
 
 		;Creating the romlist
@@ -2605,6 +2633,20 @@ Func _WizardAutoconf($vWizCancel)
 	If (StringRight($vResultWZ, 1) = '\') Then StringTrimRight($vResultWZ, 1)
 	Return $vResultWZ
 EndFunc   ;==>_WizardAutoconf
+
+Func _TestServer($vURL, $vURLBackup)
+	Local $vTestPath
+	$vTestPath = _Download($vURL & "api/ssuserInfos.php?devid=" & $iDevId & "&devpassword=" & $iDevPassword & "&softname=" & $iSoftname & "output=xml&ssid=test&sspassword=test", @ScriptDir & "\test.xml", 5)
+	If FileExists($vTestPath) And FileGetSize($vTestPath) > 100 Then
+		FileDelete($vTestPath)
+		_LOG("--URL = " & $vURL)
+		Return $vURL
+	Else
+		FileDelete($vTestPath)
+		_LOG("--URL = " & $vURLBackup)
+		Return $vURLBackup
+	EndIf
+EndFunc   ;==>_TestServer
 
 ;~ 	$aPicParameters[0] = Target_Width
 ;~ 	$aPicParameters[1] = Target_Height

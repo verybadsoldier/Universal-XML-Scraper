@@ -124,20 +124,71 @@ Func _LOG($iMessage = "", $iLOGType = 0, $iLOGPath = @ScriptDir & "\Log.txt")
 			ConsoleWrite("+" & $iMessage & @CRLF)
 		Case 2
 			If $iLOGType <= $iVerboseLVL Then
-				FileWrite($iLOGPath, $iTimestamp & "--------------------------------------------------------------------------------" & @CRLF)
 				FileWrite($iLOGPath, $iTimestamp & "/!\ " & $iMessage & @CRLF)
-				FileWrite($iLOGPath, $iTimestamp & "--------------------------------------------------------------------------------" & @CRLF)
 			EndIf
 			ConsoleWrite("!" & $iMessage & @CRLF)
 		Case 3
-			If $iLOGType <= $iVerboseLVL Then
-				FileWrite($iLOGPath, $iTimestamp & "--------------------------------------------------------------------------------" & @CRLF)
-				FileWrite($iLOGPath, $iTimestamp & $iMessage & @CRLF)
-				FileWrite($iLOGPath, $iTimestamp & "--------------------------------------------------------------------------------" & @CRLF)
-			EndIf
+;~ 			FileWrite($iLOGPath, $iTimestamp & $iMessage & @CRLF)
 			ConsoleWrite(">----" & $iMessage & @CRLF)
 	EndSwitch
 EndFunc   ;==>_LOG
+
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _LOG_Array
+; Description ...: Print an array to the console.
+; Syntax ........: _LOG_Array(Const Byref $aArray[, $iBase = Default[, $iUBound = Default[, $sDelimeter = "|"]]])
+; Parameters ....: $aArray              - [in/out and const] The array to be written to the file.
+;                  $iBase               - [optional] Start array index to read, normally set to 0 or 1. Default is 0.
+;                  $iUBound             - [optional] Set to the last record you want to write to the File. Default is whole array.
+;                  $sDelimeter          - [optional] Delimiter character(s) for 2-dimension arrays. Default is "|".
+; Return values .: Success - 1
+;                  Failure - 0 and sets @error to non-zero
+;                   |@error:
+;                   |1 - Input is not an array.
+;                   |2 - Array dimension is greater than 2.
+;                   |3 - Start index is greater than the size of the array.
+; Author ........: guinness
+; Modified ......:
+; Remarks .......:
+; Related .......: _FileWriteFromArray
+; Link ..........:
+; Example .......: Yes
+; ===============================================================================================================================
+Func _LOG_Array($aArray, $iBase = Default, $iUBound = Default, $sDelimeter = "|", $iLOGPath = @ScriptDir & "\Log.txt")
+	; Check if we have a valid array as input
+	If Not IsArray($aArray) Then Return SetError(1, 0, 0)
+
+	; Check the number of dimensions
+	Local $iDims = UBound($aArray, 0)
+	If $iDims > 2 Then Return SetError(2, 0, 0)
+
+	; Determine last entry of the array
+	Local $iLast = UBound($aArray) - 1
+	If $iUBound = Default Or $iUBound > $iLast Then $iUBound = $iLast
+	If $iBase < 0 Or $iBase = Default Then $iBase = 0
+	If $iBase > $iUBound Then Return SetError(3, 0, 0)
+
+	If $sDelimeter = Default Then $sDelimeter = "|"
+
+	; Write array data to the console
+	Switch $iDims
+		Case 1
+			For $I = $iBase To $iUBound
+				_LOG("[" & $I - $iBase & "] " & $aArray[$I], 1, $iLOGPath)
+			Next
+		Case 2
+			Local $sTemp = ""
+			Local $iCols = UBound($aArray, 2)
+			For $I = $iBase To $iUBound
+				$sTemp = $aArray[$I][0]
+				For $j = 1 To $iCols - 1
+					$sTemp &= $sDelimeter & $aArray[$I][$j]
+				Next
+				_LOG("[" & $I - $iBase & "] " & $sTemp, 1, $iLOGPath)
+			Next
+	EndSwitch
+	Return 1
+EndFunc   ;==>_LOG_Array
 
 ; #FUNCTION# ===================================================================================================
 ; Name...........: _Download
@@ -155,15 +206,15 @@ EndFunc   ;==>_LOG
 ; Related .......:
 ; Link ..........;
 ; Example .......; No
-Func _Download($iURL, $iPath, $iTimeOut = "")
+Func _Download($iURL, $iPath, $iTimeOut = 20)
 	Local $inetgettime = 0, $aData, $hDownload
-	If $iTimeOut = "" Then $iTimeOut = 20
 	$hDownload = InetGet($iURL, $iPath, $INET_FORCERELOAD, $INET_DOWNLOADBACKGROUND)
 	Do
 		Sleep(250)
 		$inetgettime = $inetgettime + 0.25
 		If $inetgettime > $iTimeOut Then
 			InetClose($hDownload)
+			_LOG("File Downloading URL : " & $iURL, 3, $iLOGPath)
 			_LOG("Timed out (" & $inetgettime & "s) for downloading file : " & $iPath, 1, $iLOGPath)
 			Return -2
 		EndIf
@@ -180,12 +231,12 @@ Func _Download($iURL, $iPath, $iTimeOut = "")
 	InetClose($hDownload)
 
 	If $aData[$INET_DOWNLOADSUCCESS] Then
-		_LOG("File Downloaded Path : " & $iPath, 1, $iLOGPath)
-;~ 		_LOG("File Downloading URL : " & $iURL, 2, $iLOGPath)
-		Return $iPath
+			_LOG("File Downloaded Path : " & $iPath, 1, $iLOGPath)
+			_LOG("File Downloading URL : " & $iURL, 3, $iLOGPath)
+			Return $iPath
 	Else
 		_LOG("Error Downloading File : " & $iPath, 2, $iLOGPath)
-;~ 		_LOG("Error Downloading URL : " & $iURL, 2, $iLOGPath)
+		_LOG("Error Downloading URL : " & $iURL, 3, $iLOGPath)
 		_LOG("Bytes read: " & $aData[$INET_DOWNLOADREAD], 2, $iLOGPath)
 		_LOG("Size: " & $aData[$INET_DOWNLOADSIZE], 2, $iLOGPath)
 		_LOG("Complete: " & $aData[$INET_DOWNLOADCOMPLETE], 2, $iLOGPath)
@@ -212,10 +263,8 @@ EndFunc   ;==>_Download
 ; Related .......:
 ; Link ..........;
 ; Example .......; No
-Func _DownloadWRetry($iURL, $iPath, $iRetry = "", $iTimeOut = "")
+Func _DownloadWRetry($iURL, $iPath, $iRetry = 3, $iTimeOut = 20)
 	Local $iCount = 0, $iResult = -1, $vTimer = TimerInit()
-	If $iRetry = "" Then $iRetry = 3
-	If $iTimeOut = "" Then $iTimeOut = 20
 	While $iResult < 0 And $iCount < $iRetry
 		$iCount = $iCount + 1
 		$iResult = _Download($iURL, $iPath, $iTimeOut)
@@ -763,6 +812,85 @@ Func _GDIPlus_Transparency($iPath, $iTransLvl)
 EndFunc   ;==>_GDIPlus_Transparency
 
 ; #FUNCTION# ===================================================================================================
+; Name...........: _GDIPlus_Text
+; Description ...: Draw Text on picture
+; Syntax.........: _GDIPlus_Text($iPath, $iString = '', $iX = 0, $iY = 0, $iFont = 'Arial', $iFontSize = 10, $iFontColor = 0xFFFFFFFF)
+; Parameters ....: $iPath		- Path to the picture
+;                  $iString		- String to draw
+;                  $iX			- X position of the text
+;                  $iY			- Y position of the text
+;                  $iFont		- Font name
+;                  $iFontSize	- Font size
+;                  $iFontStyle	- Font Style
+;~ 										0 - Normal weight or thickness of the typeface
+;~ 										1 - Bold typeface
+;~ 										2 - Italic typeface
+;~ 										4 - Underline
+;~ 										8 - Strikethrough
+;                  $iFontColor	- Font Color
+; Return values .: Success      - Return the Path of the Picture
+;                  Failure      - -1
+; Author ........: Screech
+; Modified.......:
+;; Related .......:
+; Link ..........;
+; Example .......; No
+Func _GDIPlus_Text($iPath, $iString = '', $iX = 0, $iY = 0, $iFont = 'Arial', $iFontSize = 10, $iFontStyle = 0, $iFontColor = 0xFFFFFFFF)
+;~ 	MsgBox(0,"DEBUG","_GDIPlus_Text");Debug
+	Local $hImage, $ImageWidth, $ImageHeight, $hGui, $hGraphicGUI, $hBMPBuff, $hGraphic
+	Local $hFamily, $hFont, $tLayout, $hFormat, $hBrush, $hPen, $aInfo
+	Local $MergedImageBackgroundColor = 0x00000000
+	Local $sDrive, $sDir, $sFileName, $iExtension, $iPath_Temp
+	_PathSplit($iPath, $sDrive, $sDir, $sFileName, $iExtension)
+	$iPath_Temp = $sDrive & $sDir & $sFileName & "-TEXT_Temp.PNG"
+	If _MakeTEMPFile($iPath, $iPath_Temp) = -1 Then Return -1
+	$iPath = $sDrive & $sDir & $sFileName & ".png"
+	_GDIPlus_Startup()
+	$hImage = _GDIPlus_ImageLoadFromFile($iPath_Temp)
+	$ImageWidth = _GDIPlus_ImageGetWidth($hImage)
+	If $ImageWidth = 4294967295 Then $ImageWidth = 0 ;4294967295 en cas d'erreur.
+	$ImageHeight = _GDIPlus_ImageGetHeight($hImage)
+	$hGui = GUICreate("", $ImageWidth, $ImageHeight)
+	$hGraphicGUI = _GDIPlus_GraphicsCreateFromHWND($hGui) ;Draw to this graphics, $hGraphicGUI, to display on GUI
+	$hBMPBuff = _GDIPlus_BitmapCreateFromGraphics($ImageWidth, $ImageHeight, $hGraphicGUI) ; $hBMPBuff is a bitmap in memory
+	$hGraphic = _GDIPlus_ImageGetGraphicsContext($hBMPBuff) ; Draw to this graphics, $hGraphic, being the graphics of $hBMPBuff
+	_GDIPlus_GraphicsClear($hGraphic, $MergedImageBackgroundColor) ;Fill the Graphic Background (0x00000000 for transparent background in .png files)
+	_GDIPlus_GraphicsDrawImage($hGraphic, $hImage, 0, 0)
+
+;~ 	_GDIPlus_SetSmoothingMode($hGraphic)
+
+	$hFamily = _GDIPlus_FontFamilyCreate($iFont)
+	$hFont = _GDIPlus_FontCreate($hFamily, $iFontSize, $iFontStyle)
+	$tLayout = _GDIPlus_RectFCreate($iX, $iY, $ImageWidth - $iX, $ImageHeight - $iY)
+;~     $tLayout = _GDIPlus_RectFCreate(140, 110, 0, 0)
+	$hFormat = _GDIPlus_StringFormatCreate() ; (2 - text are drawn vertically)
+	$hBrush = _GDIPlus_BrushCreateSolid($iFontColor) ;0xFFFFFFFF) ; (0x00FFFFFF - fully transparent. Alpha channel zero)
+;~ 	$hPen = _GDIPlus_PenCreate($iFontColor)
+	$aInfo = _GDIPlus_GraphicsMeasureString($hGraphic, $iString, $hFont, $tLayout, $hFormat)
+	_GDIPlus_GraphicsDrawStringEx($hGraphic, $iString, $hFont, $aInfo[0], $hFormat, $hBrush)
+
+	_GDIPlus_ImageSaveToFile($hBMPBuff, $iPath)
+
+;~ 	_GDIPlus_PenDispose($hPen)
+	_GDIPlus_FontDispose($hFont)
+	_GDIPlus_FontFamilyDispose($hFamily)
+	_GDIPlus_StringFormatDispose($hFormat)
+	_GDIPlus_BrushDispose($hBrush)
+	_GDIPlus_GraphicsDispose($hGraphic)
+	_GDIPlus_BitmapDispose($hBMPBuff)
+	_WinAPI_DeleteObject($hBMPBuff)
+	_GDIPlus_GraphicsDispose($hGraphicGUI)
+	GUIDelete($hGui)
+	_GDIPlus_ImageDispose($hImage)
+	_GDIPlus_Shutdown()
+	If Not FileDelete($iPath_Temp) Then
+		_LOG("Error deleting " & $iPath_Temp, 2, $iLOGPath)
+		Return -1
+	EndIf
+	Return $iPath
+EndFunc   ;==>_GDIPlus_Text
+
+; #FUNCTION# ===================================================================================================
 ; Name...........: _GDIPlus_TransparencyZone
 ; Description ...: Apply transparency on a picture
 ; Syntax.........: _GDIPlus_TransparencyZone($iPath, $vTarget_Width, $vTarget_Height, $iTransLvl = 1, $iX = 0, $iY = 0, $iWidth = "", $iHeight = "")
@@ -1173,7 +1301,7 @@ Func _GDIPlus_Imaging($iPath, $aPicParameters, $vTarget_Width, $vTarget_Height)
 		Case ''
 			$Image_C3Y = $Image_C1Y + $iHeight
 	EndSwitch
-		Switch $Image_C4X
+	Switch $Image_C4X
 		Case 'CENTER'
 			$Image_C4X = Int(($vTarget_Width / 2) + ($iWidth / 2))
 		Case 'LEFT'
@@ -1238,109 +1366,109 @@ EndFunc   ;==>_GDIPlus_Imaging
 ; Link ..........;
 ; Example .......; https://www.autoitscript.com/forum/topic/123623-gdi-image-question/#comment-860805
 Func _GDIPlus_GraphicsDrawImage_4Points($hGraphics, $hImage, $X1, $Y1, $X2, $Y2, $X3, $Y3, $X4, $Y4, $fPrecision = 0.25)
-    ;by eukalyptus
-    Local $aResult = DllCall($__g_hGDIPDll, "uint", "GdipCreatePath", "int", 0, "int*", 0)
-    If @error Or Not IsArray($aResult) Then Return SetError(1, 1, False)
-    Local $hPath = $aResult[2]
+	;by eukalyptus
+	Local $aResult = DllCall($__g_hGDIPDll, "uint", "GdipCreatePath", "int", 0, "int*", 0)
+	If @error Or Not IsArray($aResult) Then Return SetError(1, 1, False)
+	Local $hPath = $aResult[2]
 
-    Local $iW = _GDIPlus_ImageGetWidth($hImage)
-    Local $iH = _GDIPlus_ImageGetHeight($hImage)
+	Local $iW = _GDIPlus_ImageGetWidth($hImage)
+	Local $iH = _GDIPlus_ImageGetHeight($hImage)
 
-    If $fPrecision <= 0 Then $fPrecision = 0.01
-    If $fPrecision > 1 Then $fPrecision = 1
+	If $fPrecision <= 0 Then $fPrecision = 0.01
+	If $fPrecision > 1 Then $fPrecision = 1
 
-    Local $iTX = Ceiling($iW * $fPrecision)
-    Local $iTY = Ceiling($iH * $fPrecision)
-    Local $iCnt = ($iTX + 1) * ($iTY + 1)
-    Local $X, $Y
+	Local $iTX = Ceiling($iW * $fPrecision)
+	Local $iTY = Ceiling($iH * $fPrecision)
+	Local $iCnt = ($iTX + 1) * ($iTY + 1)
+	Local $x, $Y
 
-    Local $tPoints = DllStructCreate("float[" & $iCnt * 2 & "]")
-    Local $I
-    For $Y = 0 To $iTY
-        For $X = 0 To $iTX
-            $I = ($Y * ($iTX + 1) + $X) * 2
-            DllStructSetData($tPoints, 1, $X * $iW / $iTX, $I + 1)
-            DllStructSetData($tPoints, 1, $Y * $iH / $iTY, $I + 2)
-        Next
-    Next
+	Local $tPoints = DllStructCreate("float[" & $iCnt * 2 & "]")
+	Local $I
+	For $Y = 0 To $iTY
+		For $x = 0 To $iTX
+			$I = ($Y * ($iTX + 1) + $x) * 2
+			DllStructSetData($tPoints, 1, $x * $iW / $iTX, $I + 1)
+			DllStructSetData($tPoints, 1, $Y * $iH / $iTY, $I + 2)
+		Next
+	Next
 
-    $aResult = DllCall($__g_hGDIPDll, "uint", "GdipAddPathPolygon", "hwnd", $hPath, "ptr", DllStructGetPtr($tPoints), "int", $iCnt)
-    If @error Or Not IsArray($aResult) Then Return SetError(1, 2, False)
+	$aResult = DllCall($__g_hGDIPDll, "uint", "GdipAddPathPolygon", "hwnd", $hPath, "ptr", DllStructGetPtr($tPoints), "int", $iCnt)
+	If @error Or Not IsArray($aResult) Then Return SetError(1, 2, False)
 
-    Local $tWarp = DllStructCreate("float[8]")
-    DllStructSetData($tWarp, 1, $X1, 1)
-    DllStructSetData($tWarp, 1, $Y1, 2)
-    DllStructSetData($tWarp, 1, $X2, 3)
-    DllStructSetData($tWarp, 1, $Y2, 4)
-    DllStructSetData($tWarp, 1, $X3, 5)
-    DllStructSetData($tWarp, 1, $Y3, 6)
-    DllStructSetData($tWarp, 1, $X4, 7)
-    DllStructSetData($tWarp, 1, $Y4, 8)
+	Local $tWarp = DllStructCreate("float[8]")
+	DllStructSetData($tWarp, 1, $X1, 1)
+	DllStructSetData($tWarp, 1, $Y1, 2)
+	DllStructSetData($tWarp, 1, $X2, 3)
+	DllStructSetData($tWarp, 1, $Y2, 4)
+	DllStructSetData($tWarp, 1, $X3, 5)
+	DllStructSetData($tWarp, 1, $Y3, 6)
+	DllStructSetData($tWarp, 1, $X4, 7)
+	DllStructSetData($tWarp, 1, $Y4, 8)
 
-    $aResult = DllCall($__g_hGDIPDll, "uint", "GdipWarpPath", "hwnd", $hPath, "hwnd", 0, "ptr", DllStructGetPtr($tWarp), "int", 4, "float", 0, "float", 0, "float", $iW, "float", $iH, "int", 0, "float", 0)
-    If @error Or Not IsArray($aResult) Then Return SetError(1, 3, False)
+	$aResult = DllCall($__g_hGDIPDll, "uint", "GdipWarpPath", "hwnd", $hPath, "hwnd", 0, "ptr", DllStructGetPtr($tWarp), "int", 4, "float", 0, "float", 0, "float", $iW, "float", $iH, "int", 0, "float", 0)
+	If @error Or Not IsArray($aResult) Then Return SetError(1, 3, False)
 
-    $aResult = DllCall($__g_hGDIPDll, "uint", "GdipGetPathPoints", "hwnd", $hPath, "ptr", DllStructGetPtr($tPoints), "int", $iCnt)
-    If @error Or Not IsArray($aResult) Then Return SetError(1, 4, False)
+	$aResult = DllCall($__g_hGDIPDll, "uint", "GdipGetPathPoints", "hwnd", $hPath, "ptr", DllStructGetPtr($tPoints), "int", $iCnt)
+	If @error Or Not IsArray($aResult) Then Return SetError(1, 4, False)
 
-    Local $tRectF = DllStructCreate("float X;float Y;float Width;float Height")
-    $aResult = DllCall($__g_hGDIPDll, "uint", "GdipGetPathWorldBounds", "hwnd", $hPath, "ptr", DllStructGetPtr($tRectF), "hwnd", 0, "hwnd", 0)
-    If @error Or Not IsArray($aResult) Then Return SetError(1, 5, False)
+	Local $tRectF = DllStructCreate("float X;float Y;float Width;float Height")
+	$aResult = DllCall($__g_hGDIPDll, "uint", "GdipGetPathWorldBounds", "hwnd", $hPath, "ptr", DllStructGetPtr($tRectF), "hwnd", 0, "hwnd", 0)
+	If @error Or Not IsArray($aResult) Then Return SetError(1, 5, False)
 
-    DllCall($__g_hGDIPDll, "uint", "GdipDeletePath", "hwnd", $hPath)
+	DllCall($__g_hGDIPDll, "uint", "GdipDeletePath", "hwnd", $hPath)
 
-    Local $hBitmap = _GDIPlus_BitmapCreateFromGraphics(DllStructGetData($tRectF, 1) + DllStructGetData($tRectF, 3), DllStructGetData($tRectF, 2) + DllStructGetData($tRectF, 4), $hGraphics)
-    Local $hContext = _GDIPlus_ImageGetGraphicsContext($hBitmap)
+	Local $hBitmap = _GDIPlus_BitmapCreateFromGraphics(DllStructGetData($tRectF, 1) + DllStructGetData($tRectF, 3), DllStructGetData($tRectF, 2) + DllStructGetData($tRectF, 4), $hGraphics)
+	Local $hContext = _GDIPlus_ImageGetGraphicsContext($hBitmap)
 
-    Local $tDraw = DllStructCreate("float[6]")
-    Local $pDraw = DllStructGetPtr($tDraw)
-    Local $W = $iW / $iTX
-    Local $H = $iH / $iTY
-    Local $iO = ($iTX + 1) * 2
-    Local $fX1, $fY1, $fX2, $fY2, $fX3, $fY3, $fSX, $fSY
+	Local $tDraw = DllStructCreate("float[6]")
+	Local $pDraw = DllStructGetPtr($tDraw)
+	Local $W = $iW / $iTX
+	Local $H = $iH / $iTY
+	Local $iO = ($iTX + 1) * 2
+	Local $fX1, $fY1, $fX2, $fY2, $fX3, $fY3, $fSX, $fSY
 
-    For $Y = 0 To $iTY - 1
-        For $X = 0 To $iTX - 1
-            $I = ($Y * ($iTX + 1) + $X) * 2
-            $fX1 = DllStructGetData($tPoints, 1, $I + 1)
-            $fY1 = DllStructGetData($tPoints, 1, $I + 2)
+	For $Y = 0 To $iTY - 1
+		For $x = 0 To $iTX - 1
+			$I = ($Y * ($iTX + 1) + $x) * 2
+			$fX1 = DllStructGetData($tPoints, 1, $I + 1)
+			$fY1 = DllStructGetData($tPoints, 1, $I + 2)
 
-            Switch $X
-                Case $iTX - 1
-                    $fX2 = DllStructGetData($tPoints, 1, $I + 3)
-                    $fY2 = DllStructGetData($tPoints, 1, $I + 4)
-                    $fSX = 1
-                Case Else
-                    $fX2 = DllStructGetData($tPoints, 1, $I + 5)
-                    $fY2 = DllStructGetData($tPoints, 1, $I + 6)
-                    $fSX = 2
-            EndSwitch
+			Switch $x
+				Case $iTX - 1
+					$fX2 = DllStructGetData($tPoints, 1, $I + 3)
+					$fY2 = DllStructGetData($tPoints, 1, $I + 4)
+					$fSX = 1
+				Case Else
+					$fX2 = DllStructGetData($tPoints, 1, $I + 5)
+					$fY2 = DllStructGetData($tPoints, 1, $I + 6)
+					$fSX = 2
+			EndSwitch
 
-            Switch $Y
-                Case $iTY - 1
-                    $fX3 = DllStructGetData($tPoints, 1, $I + 1 + $iO)
-                    $fY3 = DllStructGetData($tPoints, 1, $I + 2 + $iO)
-                    $fSY = 1
-                Case Else
-                    $fX3 = DllStructGetData($tPoints, 1, $I + 1 + $iO * 2)
-                    $fY3 = DllStructGetData($tPoints, 1, $I + 2 + $iO * 2)
-                    $fSY = 2
-            EndSwitch
+			Switch $Y
+				Case $iTY - 1
+					$fX3 = DllStructGetData($tPoints, 1, $I + 1 + $iO)
+					$fY3 = DllStructGetData($tPoints, 1, $I + 2 + $iO)
+					$fSY = 1
+				Case Else
+					$fX3 = DllStructGetData($tPoints, 1, $I + 1 + $iO * 2)
+					$fY3 = DllStructGetData($tPoints, 1, $I + 2 + $iO * 2)
+					$fSY = 2
+			EndSwitch
 
-            DllStructSetData($tDraw, 1, $fX1, 1)
-            DllStructSetData($tDraw, 1, $fY1, 2)
-            DllStructSetData($tDraw, 1, $fX2, 3)
-            DllStructSetData($tDraw, 1, $fY2, 4)
-            DllStructSetData($tDraw, 1, $fX3, 5)
-            DllStructSetData($tDraw, 1, $fY3, 6)
+			DllStructSetData($tDraw, 1, $fX1, 1)
+			DllStructSetData($tDraw, 1, $fY1, 2)
+			DllStructSetData($tDraw, 1, $fX2, 3)
+			DllStructSetData($tDraw, 1, $fY2, 4)
+			DllStructSetData($tDraw, 1, $fX3, 5)
+			DllStructSetData($tDraw, 1, $fY3, 6)
 
-            DllCall($__g_hGDIPDll, "uint", "GdipDrawImagePointsRect", "hwnd", $hContext, "hwnd", $hImage, "ptr", $pDraw, "int", 3, "float", $X * $W, "float", $Y * $H, "float", $W * $fSX, "float", $H * $fSY, "int", 2, "hwnd", 0, "ptr", 0, "ptr", 0)
-        Next
-    Next
+			DllCall($__g_hGDIPDll, "uint", "GdipDrawImagePointsRect", "hwnd", $hContext, "hwnd", $hImage, "ptr", $pDraw, "int", 3, "float", $x * $W, "float", $Y * $H, "float", $W * $fSX, "float", $H * $fSY, "int", 2, "hwnd", 0, "ptr", 0, "ptr", 0)
+		Next
+	Next
 
-    _GDIPlus_GraphicsDispose($hContext)
-    _GDIPlus_GraphicsDrawImage($hGraphics, $hBitmap, 0, 0)
-    _GDIPlus_BitmapDispose($hBitmap)
+	_GDIPlus_GraphicsDispose($hContext)
+	_GDIPlus_GraphicsDrawImage($hGraphics, $hBitmap, 0, 0)
+	_GDIPlus_BitmapDispose($hBitmap)
 EndFunc   ;==>_GDIPlus_GraphicsDrawImage_4Points
 #EndRegion GDI Function
 
@@ -1404,6 +1532,10 @@ Func _XML_Read($iXpath, $iXMLType = 0, $iXMLPath = "", $oXMLDoc = "")
 
 	Switch $iXMLType
 		Case 0
+			If _XML_NodeExists($oXMLDoc, $iXpath) <> $XML_RET_SUCCESS Then
+				_LOG('_XML_NodeExists ERROR (' & $iXpath & " doesn't exist)", 2, $iLOGPath)
+				Return ""
+			EndIf
 			$iXMLValue = _XML_GetValue($oXMLDoc, $iXpath)
 			If @error Then
 				If @error = 21 Then Return ""
@@ -1412,7 +1544,7 @@ Func _XML_Read($iXpath, $iXMLType = 0, $iXMLPath = "", $oXMLDoc = "")
 				Return -1
 			EndIf
 			If IsArray($iXMLValue) And UBound($iXMLValue) - 1 > 0 Then
-;~ 				_LOG('_XML_GetValue (' & $iXpath & ') = ' &$iXMLValue[1], 1, $iLOGPath)
+				_LOG('...Value..._XML_GetValue (' & $iXpath & ') = ' & $iXMLValue[1], 1, $iLOGPath)
 				Return $iXMLValue[1]
 			Else
 				_LOG('_XML_GetValue (' & $iXpath & ') is not an Array', 2, $iLOGPath)
@@ -1434,6 +1566,7 @@ Func _XML_Read($iXpath, $iXMLType = 0, $iXMLPath = "", $oXMLDoc = "")
 				_LOG('_XML_GetNodeAttributeValue @error:' & @CRLF & XML_My_ErrorParser(@error), 3, $iLOGPath)
 				Return -1
 			EndIf
+			_LOG('...Attribut..._XML_GetValue (' & $iXpath & ') = ' & $iXMLValue, 1, $iLOGPath)
 			Return $iXMLValue
 		Case Else
 			Return -2
