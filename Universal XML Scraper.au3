@@ -246,18 +246,19 @@ Switch $Result
 		EndIf
 EndSwitch
 
-$aConfig = _LoadConfig()
+$vSSLogin = IniRead($iINIPath, "LAST_USE", "$vSSLogin", "")
+$vSSPassword = BinaryToString(_Crypt_DecryptData(IniRead($iINIPath, "LAST_USE", "$vSSPassword", ""), "1gdf1g1gf", $CALG_RC4))
 
 ;Catching SystemList.xml
-$oXMLSystem = _XMLSystem_Create($aConfig[13], $aConfig[14])
+$oXMLSystem = _XMLSystem_Create($vSSLogin, $vSSPassword)
 If $oXMLSystem = -1 Then Exit
 
 ;Catching CountryList.xml
-$oXMLCountry = _XMLCountry_Create($aConfig[13], $aConfig[14])
+$oXMLCountry = _XMLCountry_Create($vSSLogin, $vSSPassword)
 If $oXMLCountry = -1 Then Exit
 
 ;Catching GenreList.xml
-$oXMLGenre = _XMLGenre_Create($aConfig[13], $aConfig[14])
+$oXMLGenre = _XMLGenre_Create($vSSLogin, $vSSPassword)
 
 ;Delete Splascreen
 GUIDelete($F_Splashcreen)
