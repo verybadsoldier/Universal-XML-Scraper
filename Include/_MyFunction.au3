@@ -81,9 +81,8 @@ EndFunc   ;==>_URIEncode
 ; Related .......:
 ; Link ..........;
 ; Example .......; No
-Func _LOG_Ceation($iLOGPath = "")
+Func _LOG_Ceation($iLOGPath = @ScriptDir & "\Log.txt")
 	Local $iVersion
-	If $iLOGPath = "" Then $iLOGPath = @ScriptDir & "\Log.txt"
 	If @Compiled Then
 		$iVersion = FileGetVersion(@ScriptFullPath)
 	Else
@@ -835,10 +834,10 @@ EndFunc   ;==>_GDIPlus_Transparency
 ;; Related .......:
 ; Link ..........;
 ; Example .......; No
-Func _GDIPlus_Text($iPath, $iString = '', $iX = 0, $iY = 0, $iFont = 'Arial', $iFontSize = 10, $iFontStyle = 0, $iFontColor = 0xFFFFFFFF)
+Func _GDIPlus_Text($iPath, $iString = '', $iX = 0, $iY = 0, $iFont = 'Arial', $iFontSize = 10, $iFontStyle = 0, $iFontColor = 0xFFFFFFFF, $iXOrigin=Default, $iYOrigin=Default)
 ;~ 	MsgBox(0,"DEBUG","_GDIPlus_Text");Debug
 	Local $hImage, $ImageWidth, $ImageHeight, $hGui, $hGraphicGUI, $hBMPBuff, $hGraphic
-	Local $hFamily, $hFont, $tLayout, $hFormat, $hBrush, $hPen, $aInfo
+	Local $hFamily, $hFont, $tLayout, $hFormat, $hBrush, $hPen, $aInfo, $aStringSize
 	Local $MergedImageBackgroundColor = 0x00000000
 	Local $sDrive, $sDir, $sFileName, $iExtension, $iPath_Temp
 	_PathSplit($iPath, $sDrive, $sDir, $sFileName, $iExtension)
@@ -857,21 +856,58 @@ Func _GDIPlus_Text($iPath, $iString = '', $iX = 0, $iY = 0, $iFont = 'Arial', $i
 	_GDIPlus_GraphicsClear($hGraphic, $MergedImageBackgroundColor) ;Fill the Graphic Background (0x00000000 for transparent background in .png files)
 	_GDIPlus_GraphicsDrawImage($hGraphic, $hImage, 0, 0)
 
-;~ 	_GDIPlus_SetSmoothingMode($hGraphic)
+	$iX = _GDIPlus_RelativePos($iX, $ImageWidth)
+	$iY = _GDIPlus_RelativePos($iY, $ImageHeight)
+	Switch $iX
+		Case 'CENTER'
+			$iX =  Int($ImageWidth / 2)
+		Case 'LEFT'
+			$iX = 0
+		Case 'RIGHT'
+			$iX = $ImageWidth
+	EndSwitch
+	Switch $iY
+		Case 'CENTER'
+			$iY = Int($ImageHeight / 2)
+		Case 'UP'
+			$iY = 0
+		Case 'DOWN'
+			$iY = $ImageHeight
+	EndSwitch
+	$aStringSize = _GDIPlus_MeasureString($iString, $iFont, $iFontSize, $iFontStyle)
+	$iXOrigin = _GDIPlus_RelativePos($iXOrigin, $ImageWidth)
+	$iYOrigin = _GDIPlus_RelativePos($iYOrigin, $ImageWidth)
+	Switch $iXOrigin
+		Case 'CENTER'
+			$iXOrigin = $aStringSize[0] / 2
+		Case 'LEFT'
+			$iXOrigin = 0
+		Case 'RIGHT'
+			$iXOrigin = $aStringSize[0]
+		Case ''
+			$iXOrigin = 0
+	EndSwitch
+	Switch $iYOrigin
+		Case 'CENTER'
+			$iYOrigin = $aStringSize[1] / 2
+		Case 'UP'
+			$iYOrigin = 0
+		Case 'DOWN'
+			$iYOrigin = $aStringSize[1]
+		Case ''
+			$iYOrigin = 0
+	EndSwitch
 
 	$hFamily = _GDIPlus_FontFamilyCreate($iFont)
 	$hFont = _GDIPlus_FontCreate($hFamily, $iFontSize, $iFontStyle)
-	$tLayout = _GDIPlus_RectFCreate($iX, $iY, $ImageWidth - $iX, $ImageHeight - $iY)
-;~     $tLayout = _GDIPlus_RectFCreate(140, 110, 0, 0)
+	$tLayout = _GDIPlus_RectFCreate($iX - $iXOrigin, $iY - $iYOrigin, $aStringSize[0], $aStringSize[1])
 	$hFormat = _GDIPlus_StringFormatCreate() ; (2 - text are drawn vertically)
 	$hBrush = _GDIPlus_BrushCreateSolid($iFontColor) ;0xFFFFFFFF) ; (0x00FFFFFF - fully transparent. Alpha channel zero)
-;~ 	$hPen = _GDIPlus_PenCreate($iFontColor)
 	$aInfo = _GDIPlus_GraphicsMeasureString($hGraphic, $iString, $hFont, $tLayout, $hFormat)
 	_GDIPlus_GraphicsDrawStringEx($hGraphic, $iString, $hFont, $aInfo[0], $hFormat, $hBrush)
 
 	_GDIPlus_ImageSaveToFile($hBMPBuff, $iPath)
 
-;~ 	_GDIPlus_PenDispose($hPen)
 	_GDIPlus_FontDispose($hFont)
 	_GDIPlus_FontFamilyDispose($hFamily)
 	_GDIPlus_StringFormatDispose($hFormat)
@@ -889,6 +925,24 @@ Func _GDIPlus_Text($iPath, $iString = '', $iX = 0, $iY = 0, $iFont = 'Arial', $i
 	EndIf
 	Return $iPath
 EndFunc   ;==>_GDIPlus_Text
+
+Func _GDIPlus_MeasureString($sString, $sFont = "Arial", $fSize = 10, $iStyle = 0, $bRound = True)
+    Local $aSize[2]
+    Local Const $hFamily = _GDIPlus_FontFamilyCreate($sFont)
+    If Not $hFamily Then Return SetError(1, 0, $aSize)
+    Local Const $hFormat = _GDIPlus_StringFormatCreate()
+    Local Const $hFont = _GDIPlus_FontCreate($hFamily, $fSize, $iStyle)
+    Local Const $tLayout = _GDIPlus_RectFCreate(0, 0, 0, 0)
+    Local Const $hGraphic = _GDIPlus_GraphicsCreateFromHWND(0)
+    Local $aInfo = _GDIPlus_GraphicsMeasureString($hGraphic, $sString, $hFont, $tLayout, $hFormat)
+    $aSize[0] = $bRound ? Round($aInfo[0].Width, 0) : $aInfo[0].Width
+    $aSize[1] = $bRound ? Round($aInfo[0].Height, 0) : $aInfo[0].Height
+    _GDIPlus_FontDispose($hFont)
+    _GDIPlus_FontFamilyDispose($hFamily)
+    _GDIPlus_StringFormatDispose($hFormat)
+    _GDIPlus_GraphicsDispose($hGraphic)
+    Return $aSize
+EndFunc   ;==>_GDIPlus_MeasureString
 
 ; #FUNCTION# ===================================================================================================
 ; Name...........: _GDIPlus_TransparencyZone
@@ -1234,7 +1288,7 @@ EndFunc   ;==>_GDIPlus_GraphicsDrawImageRectRectTrans
 ; Link ..........;
 ; Example .......; No
 Func _GDIPlus_Imaging($iPath, $aPicParameters, $vTarget_Width, $vTarget_Height)
-	Local $sDrive, $sDir, $sFileName, $iExtension, $iPath_Temp
+	Local $sDrive, $sDir, $sFileName, $iExtension, $iPath_Temp, $vNo4thPoint = 0
 	_PathSplit($iPath, $sDrive, $sDir, $sFileName, $iExtension)
 	$aPicParameters[8] = StringUpper($aPicParameters[8])
 	$iPath_Temp = $sDrive & $sDir & $sFileName & "-IMAGING_Temp" & $iExtension
@@ -1253,85 +1307,124 @@ Func _GDIPlus_Imaging($iPath, $aPicParameters, $vTarget_Width, $vTarget_Height)
 	$hBMPBuff = _GDIPlus_BitmapCreateFromGraphics($vTarget_Width, $vTarget_Height, $hGraphicGUI) ; $hBMPBuff is a bitmap in memory
 	$hGraphic = _GDIPlus_ImageGetGraphicsContext($hBMPBuff) ; Draw to this graphics, $hGraphic, being the graphics of $hBMPBuff
 	_GDIPlus_GraphicsClear($hGraphic, $MergedImageBackgroundColor) ; Fill the Graphic Background (0x00000000 for transparent background in .png files)
-	Local $Image_C1X = _GDIPlus_CalcPosX($aPicParameters[2], $iWidth, $vTarget_Width)
-	Local $Image_C1Y = _GDIPlus_CalcPosY($aPicParameters[3], $iHeight, $vTarget_Height)
+	Local $Image_C1X = _GDIPlus_RelativePos($aPicParameters[2], $vTarget_Width)
+	Local $Image_C1Y = _GDIPlus_RelativePos($aPicParameters[3], $vTarget_Height)
 	Local $Image_C2X = _GDIPlus_RelativePos($aPicParameters[4], $vTarget_Width)
 	Local $Image_C2Y = _GDIPlus_RelativePos($aPicParameters[5], $vTarget_Height)
 	Local $Image_C3X = _GDIPlus_RelativePos($aPicParameters[6], $vTarget_Width)
 	Local $Image_C3Y = _GDIPlus_RelativePos($aPicParameters[7], $vTarget_Height)
 	Local $Image_C4X = _GDIPlus_RelativePos($aPicParameters[11], $vTarget_Width)
 	Local $Image_C4Y = _GDIPlus_RelativePos($aPicParameters[12], $vTarget_Height)
+	Local $Image_OriginX = _GDIPlus_RelativePos($aPicParameters[13], $iWidth)
+	Local $Image_OriginY = _GDIPlus_RelativePos($aPicParameters[14], $iHeight)
+	Switch $Image_OriginX
+		Case 'CENTER'
+			$Image_OriginX = $iWidth / 2
+		Case 'LEFT'
+			$Image_OriginX = 0
+		Case 'RIGHT'
+			$Image_OriginX = $iWidth
+		Case ''
+			$Image_OriginX = 0
+	EndSwitch
+	Switch $Image_OriginY
+		Case 'CENTER'
+			$Image_OriginY = $iHeight / 2
+		Case 'UP'
+			$Image_OriginY = 0
+		Case 'DOWN'
+			$Image_OriginY = $iHeight
+		Case ''
+			$Image_OriginY = 0
+	EndSwitch
+	Switch $Image_C1X
+		Case 'CENTER'
+			$Image_C1X =  Int($vTarget_Width / 2)
+		Case 'LEFT'
+			$Image_C1X = 0
+		Case 'RIGHT'
+			$Image_C1X = $vTarget_Width
+	EndSwitch
+	Switch $Image_C1Y
+		Case 'CENTER'
+			$Image_C1Y = Int($vTarget_Height / 2)
+		Case 'UP'
+			$Image_C1Y = 0
+		Case 'DOWN'
+			$Image_C1Y = $vTarget_Height
+	EndSwitch
 	Switch $Image_C2X
 		Case 'CENTER'
-			$Image_C2X = Int(($vTarget_Width / 2) + ($iWidth / 2))
+			$Image_C2X = Int($vTarget_Width / 2) + $iWidth
 		Case 'LEFT'
 			$Image_C2X = $iWidth
 		Case 'RIGHT'
-			$Image_C2X = $vTarget_Width
+			$Image_C2X = $vTarget_Width + $iWidth
 		Case ''
 			$Image_C2X = $Image_C1X + $iWidth
 	EndSwitch
 	Switch $Image_C2Y
 		Case 'CENTER'
-			$Image_C2Y = Int(($vTarget_Height / 2) - ($iHeight / 2))
+			$Image_C2Y = Int($vTarget_Height / 2)
 		Case 'UP'
 			$Image_C2Y = 0
 		Case 'DOWN'
-			$Image_C2Y = $vTarget_Height - $iHeight
+			$Image_C2Y = $vTarget_Height
 		Case ''
 			$Image_C2Y = $Image_C1Y
 	EndSwitch
 	Switch $Image_C3X
 		Case 'CENTER'
-			$Image_C3X = Int(($vTarget_Width / 2) - ($iWidth / 2))
+			$Image_C3X = Int($vTarget_Width / 2)
 		Case 'LEFT'
 			$Image_C3X = 0
 		Case 'RIGHT'
-			$Image_C3X = $vTarget_Width - $iWidth
+			$Image_C3X = $vTarget_Width
 		Case ''
 			$Image_C3X = $Image_C1X
 	EndSwitch
 	Switch $Image_C3Y
 		Case 'CENTER'
-			$Image_C3Y = Int(($vTarget_Height / 2) + ($iHeight / 2))
+			$Image_C3Y = Int($vTarget_Height / 2) + $iHeight
 		Case 'UP'
 			$Image_C3Y = 0 + $iHeight
 		Case 'DOWN'
-			$Image_C3Y = $vTarget_Height
+			$Image_C3Y = $vTarget_Height + $iHeight
 		Case ''
 			$Image_C3Y = $Image_C1Y + $iHeight
 	EndSwitch
 	Switch $Image_C4X
 		Case 'CENTER'
-			$Image_C4X = Int(($vTarget_Width / 2) + ($iWidth / 2))
+			$Image_C4X = Int($vTarget_Width / 2) + $iWidth
 		Case 'LEFT'
 			$Image_C4X = $iWidth
 		Case 'RIGHT'
-			$Image_C4X = $vTarget_Width
+			$Image_C4X = $vTarget_Width + $iWidth
 		Case ''
 			$vNo4thPoint = 1
 			$Image_C4X = $Image_C1X + $iWidth
 	EndSwitch
 	Switch $Image_C4Y
 		Case 'CENTER'
-			$Image_C4Y = Int(($vTarget_Height / 2) + ($iHeight / 2))
+			$Image_C4Y = Int($vTarget_Height / 2) + $iHeight
 		Case 'UP'
 			$Image_C4Y = 0 + $iHeight
 		Case 'DOWN'
-			$Image_C4Y = $vTarget_Height
+			$Image_C4Y = $vTarget_Height + $iHeight
 		Case ''
 			$vNo4thPoint = 1
 			$Image_C4Y = $Image_C1Y + $iHeight
 	EndSwitch
 
-	$Image_C1X = $Image_C1X + _GDIPlus_RelativePos($aPicParameters[9], $vTarget_Width)
-	$Image_C1Y = $Image_C1Y + _GDIPlus_RelativePos($aPicParameters[10], $vTarget_Height)
-	$Image_C2X = $Image_C2X + _GDIPlus_RelativePos($aPicParameters[9], $vTarget_Width)
-	$Image_C2Y = $Image_C2Y + _GDIPlus_RelativePos($aPicParameters[10], $vTarget_Height)
-	$Image_C3X = $Image_C3X + _GDIPlus_RelativePos($aPicParameters[9], $vTarget_Width)
-	$Image_C3Y = $Image_C3Y + _GDIPlus_RelativePos($aPicParameters[10], $vTarget_Height)
-	$Image_C4X = $Image_C4X + _GDIPlus_RelativePos($aPicParameters[9], $vTarget_Width)
-	$Image_C4Y = $Image_C4Y + _GDIPlus_RelativePos($aPicParameters[10], $vTarget_Height)
+
+	$Image_C1X = $Image_C1X + _GDIPlus_RelativePos($aPicParameters[9], $vTarget_Width) - $Image_OriginX
+	$Image_C1Y = $Image_C1Y + _GDIPlus_RelativePos($aPicParameters[10], $vTarget_Height) - $Image_OriginY
+	$Image_C2X = $Image_C2X + _GDIPlus_RelativePos($aPicParameters[9], $vTarget_Width) - $Image_OriginX
+	$Image_C2Y = $Image_C2Y + _GDIPlus_RelativePos($aPicParameters[10], $vTarget_Height) - $Image_OriginY
+	$Image_C3X = $Image_C3X + _GDIPlus_RelativePos($aPicParameters[9], $vTarget_Width) - $Image_OriginX
+	$Image_C3Y = $Image_C3Y + _GDIPlus_RelativePos($aPicParameters[10], $vTarget_Height) - $Image_OriginY
+	$Image_C4X = $Image_C4X + _GDIPlus_RelativePos($aPicParameters[9], $vTarget_Width) - $Image_OriginX
+	$Image_C4Y = $Image_C4Y + _GDIPlus_RelativePos($aPicParameters[10], $vTarget_Height) - $Image_OriginY
 
 	If $vNo4thPoint = 1 Then
 		_GDIPlus_DrawImagePoints($hGraphic, $hImage, $Image_C1X, $Image_C1Y, $Image_C2X, $Image_C2Y, $Image_C3X, $Image_C3Y)
@@ -2011,7 +2104,7 @@ Func _SendMail($hHandle, $sDataToSend)
 		_MailSlotWrite($hHandle, $sDataToSend, 2)
 		Switch @error
 			Case 1
-				_LOG("MailSlot error : Account that you try to send to likely doesn't exist!", 2, $iLOGPath)
+				_LOG("MailSlot error : Account that you try to send to doesn't exist!", 2, $iLOGPath)
 				Return -1
 			Case 2
 				_LOG("MailSlot error : Message is blocked!", 2, $iLOGPath)

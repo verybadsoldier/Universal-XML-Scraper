@@ -17,8 +17,8 @@
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
 TraySetState(2)
 
-If $CmdLine[0] = 0 Then Exit
-$vThreadNumber = $CmdLine[1]
+;~ If $CmdLine[0] = 0 Then Exit
+$vThreadNumber = 1 ;$CmdLine[1]
 
 #include <Date.au3>
 #include <array.au3>
@@ -364,8 +364,6 @@ Func _XML_Read_Source($aRomList, $vBoucle, $aConfig, $oXMLProfil, $vWhile)
 EndFunc   ;==>_XML_Read_Source
 
 Func _Fallback($aConfig, $vXpath, $vSource_RomXMLPath)
-;~ 	_LOG("FallBack $vXpath : " & $vXpath, 2, $iLOGPath)
-;~ 	_LOG("FallBack $vSource_RomXMLPath : " & $vSource_RomXMLPath, 2, $iLOGPath)
 	Local $vCountryPref = '', $vIdGenre = ''
 	If StringInStr($vXpath, '%COUNTRY%') Then
 		Local $aCountryPref = $aConfig[10]
@@ -375,20 +373,11 @@ Func _Fallback($aConfig, $vXpath, $vSource_RomXMLPath)
 	Local $aXpathCountry[UBound($aCountryPref)]
 	For $vBoucle = 1 To UBound($aCountryPref) - 1
 		$vCountryPref = $aCountryPref[$vBoucle]
-;~ 		_LOG("---$vCountryPref = " & $vCountryPref, 1, $iLOGPath)
 		If $vCountryPref = '%COUNTRY%' Then $vCountryPref = _XML_Read("Data/jeu/regionshortnames/regionshortname", 0, $vSource_RomXMLPath)
-;~ 		_LOG("----->$vCountryPref = " & $vCountryPref, 1, $iLOGPath)
 		If StringInStr($aXpathCountry[$vBoucle], '%IDGENRE%') Then $vIdGenre = _XML_Read("Data/jeu/genres/genres_id/genre_id", 0, $vSource_RomXMLPath)
 		$aXpathCountry[$vBoucle] = StringReplace($vXpath, '%COUNTRY%', $vCountryPref)
-;~ 		_LOG("---$aXpathCountry[" & $vBoucle & "] = " & $aXpathCountry[$vBoucle], 1, $iLOGPath)
 		$aXpathCountry[$vBoucle] = StringReplace($aXpathCountry[$vBoucle], '%IDGENRE%', $vIdGenre)
 	Next
-
-;~ 	_LOG("START OF $aXpathCountry ARRAY", 1, $iLOGPath)
-;~ 	For $vBoucle = 1 To UBound($aCountryPref) - 1
-;~ 		_LOG($vBoucle & " - " & $aXpathCountry[$vBoucle], 1, $iLOGPath)
-;~ 	Next
-;~ 	_LOG("END OF $aXpathCountry ARRAY", 1, $iLOGPath)
 	Return $aXpathCountry
 EndFunc   ;==>_Fallback
 
@@ -505,15 +494,14 @@ Func _MIX_Engine($aRomList, $vBoucle, $aConfig, $oXMLProfil)
 						_LOG("Text = " & $vFinalValue, 1, $iLOGPath)
 
 						$iString = $vFinalValue
-						$iX = _XML_Read("/Profil/Element[" & $vWhile & "]/Target_TopLeftX", 0, "", $oMixConfig)
-						$iY = _XML_Read("/Profil/Element[" & $vWhile & "]/Target_TopLeftY", 0, "", $oMixConfig)
+						$aPicParameters = _MIX_Engine_Dim($vWhile, $oMixConfig)
 						$iFont = _XML_Read("/Profil/Element[" & $vWhile & "]/Target_Font", 0, "", $oMixConfig)
 						$iFontSize = _XML_Read("/Profil/Element[" & $vWhile & "]/Target_FontSize", 0, "", $oMixConfig)
 						$iFontStyle = _XML_Read("/Profil/Element[" & $vWhile & "]/Target_FontStyle", 0, "", $oMixConfig)
 						$iFontColor = _XML_Read("/Profil/Element[" & $vWhile & "]/Target_FontColor", 0, "", $oMixConfig)
 						$vPath = $aMiXPicTemp[UBound($aMiXPicTemp) - 1]
 
-						_GDIPlus_Text($vPath, $iString, $iX, $iY, $iFont, $iFontSize, $iFontStyle, $iFontColor)
+						_GDIPlus_Text($vPath, $iString, $aPicParameters[2], $aPicParameters[3], $iFont, $iFontSize, $iFontStyle, $iFontColor, $aPicParameters[13], $aPicParameters[14])
 
 				EndSwitch
 
@@ -561,7 +549,7 @@ Func _MIX_Engine($aRomList, $vBoucle, $aConfig, $oXMLProfil)
 EndFunc   ;==>_MIX_Engine
 
 Func _MIX_Engine_Dim($vWhile, $oMixConfig)
-	Dim $aPicParameters[13]
+	Dim $aPicParameters[15]
 	$aPicParameters[0] = _XML_Read("/Profil/Element[" & $vWhile & "]/Target_Width", 0, "", $oMixConfig)
 	$aPicParameters[1] = _XML_Read("/Profil/Element[" & $vWhile & "]/Target_Height", 0, "", $oMixConfig)
 	$aPicParameters[2] = _XML_Read("/Profil/Element[" & $vWhile & "]/Target_TopLeftX", 0, "", $oMixConfig)
@@ -575,6 +563,8 @@ Func _MIX_Engine_Dim($vWhile, $oMixConfig)
 	$aPicParameters[10] = _XML_Read("/Profil/Element[" & $vWhile & "]/Target_OriginY", 0, "", $oMixConfig)
 	$aPicParameters[11] = _XML_Read("/Profil/Element[" & $vWhile & "]/Target_BottomRightX", 0, "", $oMixConfig)
 	$aPicParameters[12] = _XML_Read("/Profil/Element[" & $vWhile & "]/Target_BottomRightY", 0, "", $oMixConfig)
+	$aPicParameters[13] = _Coalesce(_XML_Read("/Profil/Element[" & $vWhile & "]/Target_OriginPicX", 0, "", $oMixConfig), Default)
+	$aPicParameters[14] = _Coalesce(_XML_Read("/Profil/Element[" & $vWhile & "]/Target_OriginPicY", 0, "", $oMixConfig), Default)
 	Return $aPicParameters
 EndFunc   ;==>_MIX_Engine_Dim
 

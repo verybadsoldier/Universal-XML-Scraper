@@ -2640,11 +2640,11 @@ Func _TestServer($vURL, $vURLBackup)
 	$vTestPath = _Download($vURL & "api/ssuserInfos.php?devid=" & $iDevId & "&devpassword=" & $iDevPassword & "&softname=" & $iSoftname & "output=xml&ssid=test&sspassword=test", @ScriptDir & "\test.xml", 5)
 	If FileExists($vTestPath) And FileGetSize($vTestPath) > 100 Then
 		FileDelete($vTestPath)
-		_LOG("--URL = " & $vURL)
+		_LOG("--URL = " & $vURL, 1, $iLOGPath)
 		Return $vURL
 	Else
 		FileDelete($vTestPath)
-		_LOG("--URL = " & $vURLBackup)
+		_LOG("--URL = " & $vURLBackup, 1, $iLOGPath)
 		Return $vURLBackup
 	EndIf
 EndFunc   ;==>_TestServer
