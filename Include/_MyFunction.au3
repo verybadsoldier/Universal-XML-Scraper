@@ -133,13 +133,10 @@ Func _LOG($iMessage = "", $iLOGType = 0, $iLOGPath = @ScriptDir & "\Log.txt")
 EndFunc   ;==>_LOG
 
 ; #FUNCTION# ====================================================================================================================
-; Name ..........: _LOG_Array
-; Description ...: Print an array to the console.
-; Syntax ........: _LOG_Array(Const Byref $aArray[, $iBase = Default[, $iUBound = Default[, $sDelimeter = "|"]]])
-; Parameters ....: $aArray              - [in/out and const] The array to be written to the file.
-;                  $iBase               - [optional] Start array index to read, normally set to 0 or 1. Default is 0.
-;                  $iUBound             - [optional] Set to the last record you want to write to the File. Default is whole array.
-;                  $sDelimeter          - [optional] Delimiter character(s) for 2-dimension arrays. Default is "|".
+; Name ..........: _CheckURL
+; Description ...: Check if an URL Exist
+; Syntax ........: _CheckURL($sTestUrl)
+; Parameters ....: $sTestUrl            - URL to test
 ; Return values .: Success - 1
 ;                  Failure - 0 and sets @error to non-zero
 ;                   |@error:
@@ -153,41 +150,28 @@ EndFunc   ;==>_LOG
 ; Link ..........:
 ; Example .......: Yes
 ; ===============================================================================================================================
-Func _LOG_Array($aArray, $iBase = Default, $iUBound = Default, $sDelimeter = "|", $iLOGPath = @ScriptDir & "\Log.txt")
-	; Check if we have a valid array as input
-	If Not IsArray($aArray) Then Return SetError(1, 0, 0)
-
-	; Check the number of dimensions
-	Local $iDims = UBound($aArray, 0)
-	If $iDims > 2 Then Return SetError(2, 0, 0)
-
-	; Determine last entry of the array
-	Local $iLast = UBound($aArray) - 1
-	If $iUBound = Default Or $iUBound > $iLast Then $iUBound = $iLast
-	If $iBase < 0 Or $iBase = Default Then $iBase = 0
-	If $iBase > $iUBound Then Return SetError(3, 0, 0)
-
-	If $sDelimeter = Default Then $sDelimeter = "|"
-
-	; Write array data to the console
-	Switch $iDims
-		Case 1
-			For $I = $iBase To $iUBound
-				_LOG("[" & $I - $iBase & "] " & $aArray[$I], 1, $iLOGPath)
-			Next
-		Case 2
-			Local $sTemp = ""
-			Local $iCols = UBound($aArray, 2)
-			For $I = $iBase To $iUBound
-				$sTemp = $aArray[$I][0]
-				For $j = 1 To $iCols - 1
-					$sTemp &= $sDelimeter & $aArray[$I][$j]
-				Next
-				_LOG("[" & $I - $iBase & "] " & $sTemp, 1, $iLOGPath)
-			Next
-	EndSwitch
-	Return 1
-EndFunc   ;==>_LOG_Array
+Func _CheckURL($sTestUrl = "https://www.screenscraper.fr/api/ssuserInfos.php")
+	$ResolveTimeout = 500
+	$ConnectTimeout = 500
+	$SendTimeout = 500
+	$ReceiveTimeout = 500
+	$oHttpRequest = ObjCreate("MSXML2.ServerXMLHTTP")
+	With $oHttpRequest
+		.SetTimeouts($ResolveTimeout, $ConnectTimeout, $SendTimeout, $ReceiveTimeout)
+		.Open("GET", $sTestUrl)
+		.Send
+		Select
+			Case .Status = 200 ;No problem!
+				Return 1
+			Case .Status = 404 ;Not found
+				Return -1
+				_LOG($sTestUrl & " could not be found (404 Error)", 2, $iLOGPath)
+			Case Else ;Some other problem
+				Return -2
+				_LOG($sTestUrl & "had unexpected HTTP Status value was returned: " & .Status, 2, $iLOGPath)
+		EndSelect
+	EndWith
+EndFunc   ;==>_CheckURL
 
 ; #FUNCTION# ===================================================================================================
 ; Name...........: _Download
@@ -230,9 +214,9 @@ Func _Download($iURL, $iPath, $iTimeOut = 20)
 	InetClose($hDownload)
 
 	If $aData[$INET_DOWNLOADSUCCESS] Then
-			_LOG("File Downloaded Path : " & $iPath, 1, $iLOGPath)
-			_LOG("File Downloading URL : " & $iURL, 3, $iLOGPath)
-			Return $iPath
+		_LOG("File Downloaded Path : " & $iPath, 1, $iLOGPath)
+		_LOG("File Downloading URL : " & $iURL, 3, $iLOGPath)
+		Return $iPath
 	Else
 		_LOG("Error Downloading File : " & $iPath, 2, $iLOGPath)
 		_LOG("Error Downloading URL : " & $iURL, 3, $iLOGPath)
@@ -573,13 +557,19 @@ EndFunc   ;==>GetSeconds
 Func _MakeTEMPFile($iPath, $iPath_Temp)
 	;Working on temporary picture
 	FileDelete($iPath_Temp)
-	If Not FileCopy($iPath, $iPath_Temp, 9) Then
-		_LOG("Error copying " & $iPath & " to " & $iPath_Temp, 2, $iLOGPath)
-		Return -1
+	If Not FileCopy($iPath, $iPath_Temp, $FC_OVERWRITE + $FC_CREATEPATH) Then
+		Sleep(250)
+		If Not FileCopy($iPath, $iPath_Temp, $FC_OVERWRITE + $FC_CREATEPATH) Then
+			_LOG("Error copying " & $iPath & " to " & $iPath_Temp, 2, $iLOGPath)
+			Return -1
+		EndIf
 	EndIf
 	If Not FileDelete($iPath) Then
-		_LOG("Error deleting " & $iPath, 2, $iLOGPath)
-		Return -1
+		Sleep(250)
+		If Not FileDelete($iPath) Then
+			_LOG("Error deleting " & $iPath, 2, $iLOGPath)
+			Return -1
+		EndIf
 	EndIf
 	Return $iPath_Temp
 EndFunc   ;==>_MakeTEMPFile
@@ -685,7 +675,7 @@ Func _GDIPlus_ResizeMax($iPath, $iMAX_Width, $iMAX_Height)
 	If $iWidth_New > $iMAX_Width Then
 		$iWidth_New = $iMAX_Width
 		$iHeight_New = $iWidth_New * $iRatio
-		_LOG("$iWidth_New too BIG $iSize_New " & $iWidth_New & " x " & $iHeight_New & "(" & $iHeight_New / $iWidth_New & ")", 2, $iLOGPath)
+;~ 		_LOG("$iWidth_New too BIG $iSize_New " & $iWidth_New & " x " & $iHeight_New & "(" & $iHeight_New / $iWidth_New & ")", 2, $iLOGPath)
 	EndIf
 	$iWidth_New = Int($iWidth_New)
 	$iHeight_New = Int($iHeight_New)
@@ -703,11 +693,13 @@ Func _GDIPlus_ResizeMax($iPath, $iMAX_Width, $iMAX_Height)
 	$hImageResized = _GDIPlus_ImageResize($hImage, $iWidth_New, $iHeight_New)
 	_GDIPlus_ImageSaveToFile($hImageResized, $iPath)
 	_GDIPlus_ImageDispose($hImageResized)
+	_WinAPI_DeleteObject($hImageResized)
 	_GDIPlus_ImageDispose($hImage)
+	_WinAPI_DeleteObject($hImageResized)
 	_GDIPlus_Shutdown()
 	If Not FileDelete($iPath_Temp) Then
 		_LOG("Error deleting " & $iPath_Temp, 2, $iLOGPath)
-		Return -1
+;~ 		Return -1
 	EndIf
 	Return $iResized
 EndFunc   ;==>_GDIPlus_ResizeMax
@@ -753,10 +745,11 @@ Func _GDIPlus_Rotation($iPath, $iRotation = 0)
 	_LOG("ROTATION (" & $iRotation & ") : " & $iPath, 0, $iLOGPath) ; Debug
 	_GDIPlus_ImageSaveToFile($hImage, $iPath)
 	_GDIPlus_ImageDispose($hImage)
+	_WinAPI_DeleteObject($hImage)
 	_GDIPlus_Shutdown()
 	If Not FileDelete($iPath_Temp) Then
 		_LOG("Error deleting " & $iPath_Temp, 2, $iLOGPath)
-		Return -1
+;~ 		Return -1
 	EndIf
 	Return $iPath
 EndFunc   ;==>_GDIPlus_Rotation
@@ -797,15 +790,18 @@ Func _GDIPlus_Transparency($iPath, $iTransLvl)
 	_LOG("Transparency (" & $iTransLvl & ") : " & $iPath, 0, $iLOGPath) ; Debug
 	_GDIPlus_ImageSaveToFile($hBMPBuff, $iPath)
 	_GDIPlus_GraphicsDispose($hGraphic)
+	_WinAPI_DeleteObject($hGraphic)
 	_GDIPlus_BitmapDispose($hBMPBuff)
 	_WinAPI_DeleteObject($hBMPBuff)
 	_GDIPlus_GraphicsDispose($hGraphicGUI)
+	_WinAPI_DeleteObject($hGraphicGUI)
 	GUIDelete($hGui)
 	_GDIPlus_ImageDispose($hImage)
+	_WinAPI_DeleteObject($hImage)
 	_GDIPlus_Shutdown()
 	If Not FileDelete($iPath_Temp) Then
 		_LOG("Error deleting " & $iPath_Temp, 2, $iLOGPath)
-		Return -1
+;~ 		Return -1
 	EndIf
 	Return $iPath
 EndFunc   ;==>_GDIPlus_Transparency
@@ -834,7 +830,7 @@ EndFunc   ;==>_GDIPlus_Transparency
 ;; Related .......:
 ; Link ..........;
 ; Example .......; No
-Func _GDIPlus_Text($iPath, $iString = '', $iX = 0, $iY = 0, $iFont = 'Arial', $iFontSize = 10, $iFontStyle = 0, $iFontColor = 0xFFFFFFFF, $iXOrigin=Default, $iYOrigin=Default)
+Func _GDIPlus_Text($iPath, $iString = '', $iX = 0, $iY = 0, $iFont = 'Arial', $iFontSize = 10, $iFontStyle = 0, $iFontColor = 0xFFFFFFFF, $iXOrigin = Default, $iYOrigin = Default)
 ;~ 	MsgBox(0,"DEBUG","_GDIPlus_Text");Debug
 	Local $hImage, $ImageWidth, $ImageHeight, $hGui, $hGraphicGUI, $hBMPBuff, $hGraphic
 	Local $hFamily, $hFont, $tLayout, $hFormat, $hBrush, $hPen, $aInfo, $aStringSize
@@ -860,7 +856,7 @@ Func _GDIPlus_Text($iPath, $iString = '', $iX = 0, $iY = 0, $iFont = 'Arial', $i
 	$iY = _GDIPlus_RelativePos($iY, $ImageHeight)
 	Switch $iX
 		Case 'CENTER'
-			$iX =  Int($ImageWidth / 2)
+			$iX = Int($ImageWidth / 2)
 		Case 'LEFT'
 			$iX = 0
 		Case 'RIGHT'
@@ -909,39 +905,49 @@ Func _GDIPlus_Text($iPath, $iString = '', $iX = 0, $iY = 0, $iFont = 'Arial', $i
 	_GDIPlus_ImageSaveToFile($hBMPBuff, $iPath)
 
 	_GDIPlus_FontDispose($hFont)
+	_WinAPI_DeleteObject($hFont)
 	_GDIPlus_FontFamilyDispose($hFamily)
+	_WinAPI_DeleteObject($hFamily)
 	_GDIPlus_StringFormatDispose($hFormat)
+	_WinAPI_DeleteObject($hFormat)
 	_GDIPlus_BrushDispose($hBrush)
+	_WinAPI_DeleteObject($hBrush)
 	_GDIPlus_GraphicsDispose($hGraphic)
+	_WinAPI_DeleteObject($hGraphic)
 	_GDIPlus_BitmapDispose($hBMPBuff)
 	_WinAPI_DeleteObject($hBMPBuff)
 	_GDIPlus_GraphicsDispose($hGraphicGUI)
+	_WinAPI_DeleteObject($hGraphicGUI)
 	GUIDelete($hGui)
 	_GDIPlus_ImageDispose($hImage)
+	_WinAPI_DeleteObject($hImage)
 	_GDIPlus_Shutdown()
 	If Not FileDelete($iPath_Temp) Then
 		_LOG("Error deleting " & $iPath_Temp, 2, $iLOGPath)
-		Return -1
+;~ 		Return -1
 	EndIf
 	Return $iPath
 EndFunc   ;==>_GDIPlus_Text
 
 Func _GDIPlus_MeasureString($sString, $sFont = "Arial", $fSize = 10, $iStyle = 0, $bRound = True)
-    Local $aSize[2]
-    Local Const $hFamily = _GDIPlus_FontFamilyCreate($sFont)
-    If Not $hFamily Then Return SetError(1, 0, $aSize)
-    Local Const $hFormat = _GDIPlus_StringFormatCreate()
-    Local Const $hFont = _GDIPlus_FontCreate($hFamily, $fSize, $iStyle)
-    Local Const $tLayout = _GDIPlus_RectFCreate(0, 0, 0, 0)
-    Local Const $hGraphic = _GDIPlus_GraphicsCreateFromHWND(0)
-    Local $aInfo = _GDIPlus_GraphicsMeasureString($hGraphic, $sString, $hFont, $tLayout, $hFormat)
-    $aSize[0] = $bRound ? Round($aInfo[0].Width, 0) : $aInfo[0].Width
-    $aSize[1] = $bRound ? Round($aInfo[0].Height, 0) : $aInfo[0].Height
-    _GDIPlus_FontDispose($hFont)
-    _GDIPlus_FontFamilyDispose($hFamily)
-    _GDIPlus_StringFormatDispose($hFormat)
-    _GDIPlus_GraphicsDispose($hGraphic)
-    Return $aSize
+	Local $aSize[2]
+	Local Const $hFamily = _GDIPlus_FontFamilyCreate($sFont)
+	If Not $hFamily Then Return SetError(1, 0, $aSize)
+	Local Const $hFormat = _GDIPlus_StringFormatCreate()
+	Local Const $hFont = _GDIPlus_FontCreate($hFamily, $fSize, $iStyle)
+	Local Const $tLayout = _GDIPlus_RectFCreate(0, 0, 0, 0)
+	Local Const $hGraphic = _GDIPlus_GraphicsCreateFromHWND(0)
+	Local $aInfo = _GDIPlus_GraphicsMeasureString($hGraphic, $sString, $hFont, $tLayout, $hFormat)
+	$aSize[0] = $bRound ? Round($aInfo[0].Width, 0) : $aInfo[0].Width
+	$aSize[1] = $bRound ? Round($aInfo[0].Height, 0) : $aInfo[0].Height
+	_GDIPlus_FontDispose($hFont)
+	_WinAPI_DeleteObject($hFont)
+	_GDIPlus_FontFamilyDispose($hFamily)
+	_WinAPI_DeleteObject($hFamily)
+	_GDIPlus_StringFormatDispose($hFormat)
+	_WinAPI_DeleteObject($hFormat)
+	_GDIPlus_GraphicsDispose($hGraphic)
+	Return $aSize
 EndFunc   ;==>_GDIPlus_MeasureString
 
 ; #FUNCTION# ===================================================================================================
@@ -991,8 +997,11 @@ Func _GDIPlus_TransparencyZone($iPath, $vTarget_Width, $vTarget_Height, $iTransL
 	_GDIPlus_ImageSaveToFile($hNew_CutHole, $iPath_CutHole_Temp)
 	_GDIPlus_ImageSaveToFile($hNew_Crop, $iPath_Crop_Temp)
 	_GDIPlus_ImageDispose($hImage)
+	_WinAPI_DeleteObject($hImage)
 	_GDIPlus_BitmapDispose($hNew_CutHole)
+	_WinAPI_DeleteObject($hNew_CutHole)
 	_GDIPlus_BitmapDispose($hNew_Crop)
+	_WinAPI_DeleteObject($hNew_Crop)
 	_GDIPlus_Shutdown()
 	_GDIPlus_Transparency($iPath_Crop_Temp, $iTransLvl)
 	_GDIPlus_Merge($iPath_CutHole_Temp, $iPath_Crop_Temp)
@@ -1000,7 +1009,7 @@ Func _GDIPlus_TransparencyZone($iPath, $vTarget_Width, $vTarget_Height, $iTransL
 	FileDelete($iPath_CutHole_Temp)
 	If Not FileDelete($iPath_Temp) Then
 		_LOG("Error deleting " & $iPath_Temp, 2, $iLOGPath)
-		Return -1
+;~ 		Return -1
 	EndIf
 	Return $iPath
 EndFunc   ;==>_GDIPlus_TransparencyZone
@@ -1035,7 +1044,9 @@ Func _GDIPlus_ImageCutRectHole($hImage, $iX, $iY, $iWidthCut, $iHeightCut, $vTar
 	_GDIPlus_GraphicsFillRect($hGfxCtxt, $iX, 0, $iWidthCut, $iY, $hTexture)
 	_GDIPlus_GraphicsFillRect($hGfxCtxt, $iX, $iY + $iHeightCut, $iWidthCut, $vTarget_Height - ($iY + $iHeightCut), $hTexture)
 	_GDIPlus_BrushDispose($hTexture)
+	_WinAPI_DeleteObject($hTexture)
 	_GDIPlus_GraphicsDispose($hGfxCtxt)
+	_WinAPI_DeleteObject($hGfxCtxt)
 	Return $hImage
 EndFunc   ;==>_GDIPlus_ImageCutRectHole
 
@@ -1066,7 +1077,9 @@ Func _GDIPlus_ImageCrop($hImage, $iX, $iY, $iWidthCut, $iHeightCut, $vTarget_Wid
 	_GDIPlus_GraphicsSetPixelOffsetMode($hGfxCtxt, 2)
 	_GDIPlus_GraphicsFillRect($hGfxCtxt, $iX, $iY, $iWidthCut, $iHeightCut, $hTexture)
 	_GDIPlus_BrushDispose($hTexture)
+	_WinAPI_DeleteObject($hTexture)
 	_GDIPlus_GraphicsDispose($hGfxCtxt)
+	_WinAPI_DeleteObject($hGfxCtxt)
 	Return $hImage
 EndFunc   ;==>_GDIPlus_ImageCrop
 
@@ -1194,20 +1207,24 @@ Func _GDIPlus_Merge($iPath1, $iPath2)
 	_GDIPlus_ImageSaveToFile($hBMPBuff, $iPath1)
 
 	_GDIPlus_GraphicsDispose($hGraphic)
+	_WinAPI_DeleteObject($hGraphic)
 	_GDIPlus_BitmapDispose($hBMPBuff)
 	_WinAPI_DeleteObject($hBMPBuff)
 	_GDIPlus_GraphicsDispose($hGraphicGUI)
+	_WinAPI_DeleteObject($hGraphicGUI)
 	GUIDelete($hGui)
 	_GDIPlus_ImageDispose($hImage2)
+	_WinAPI_DeleteObject($hImage2)
 	_GDIPlus_ImageDispose($hImage1)
+	_WinAPI_DeleteObject($hImage1)
 	_GDIPlus_Shutdown()
 	If Not FileDelete($iPath_Temp) Then
 		_LOG("Error deleting " & $iPath_Temp, 2, $iLOGPath)
-		Return -1
+;~ 		Return -1
 	EndIf
 	If Not FileDelete($iPath2) Then
 		_LOG("Error deleting " & $iPath2, 2, $iLOGPath)
-		Return -1
+;~ 		Return -1
 	EndIf
 	Return $iPath1
 EndFunc   ;==>_GDIPlus_Merge
@@ -1259,6 +1276,7 @@ Func _GDIPlus_GraphicsDrawImageRectRectTrans($hGraphics, $hImage, $iSrcX, $iSrcY
 	_GDIPlus_GraphicsDrawImageRectRect($hGraphics, $hImage, $iSrcX, $iSrcY, $iSrcWidth, $iSrcHeight, $iDstX, $iDstY, $iDstWidth, $iDstHeight, $hImgAttrib, $iUnit)
 	;;clean up
 	_GDIPlus_ImageAttributesDispose($hImgAttrib)
+	_WinAPI_DeleteObject($hImgAttrib)
 	Return
 EndFunc   ;==>_GDIPlus_GraphicsDrawImageRectRectTrans
 
@@ -1339,7 +1357,7 @@ Func _GDIPlus_Imaging($iPath, $aPicParameters, $vTarget_Width, $vTarget_Height)
 	EndSwitch
 	Switch $Image_C1X
 		Case 'CENTER'
-			$Image_C1X =  Int($vTarget_Width / 2)
+			$Image_C1X = Int($vTarget_Width / 2)
 		Case 'LEFT'
 			$Image_C1X = 0
 		Case 'RIGHT'
@@ -1433,15 +1451,18 @@ Func _GDIPlus_Imaging($iPath, $aPicParameters, $vTarget_Width, $vTarget_Height)
 	EndIf
 	_GDIPlus_ImageSaveToFile($hBMPBuff, $iPath)
 	_GDIPlus_GraphicsDispose($hGraphic)
+	_WinAPI_DeleteObject($hGraphic)
 	_GDIPlus_BitmapDispose($hBMPBuff)
 	_WinAPI_DeleteObject($hBMPBuff)
 	_GDIPlus_GraphicsDispose($hGraphicGUI)
+	_WinAPI_DeleteObject($hGraphicGUI)
 	GUIDelete($hGui)
 	_GDIPlus_ImageDispose($hImage)
+	_WinAPI_DeleteObject($hImage)
 	_GDIPlus_Shutdown()
 	If Not FileDelete($iPath_Temp) Then
 		_LOG("Error deleting " & $iPath_Temp, 2, $iLOGPath)
-		Return -1
+;~ 		Return -1
 	EndIf
 	Return $iPath
 EndFunc   ;==>_GDIPlus_Imaging
@@ -1626,7 +1647,7 @@ Func _XML_Read($iXpath, $iXMLType = 0, $iXMLPath = "", $oXMLDoc = "")
 	Switch $iXMLType
 		Case 0
 			If _XML_NodeExists($oXMLDoc, $iXpath) <> $XML_RET_SUCCESS Then
-				_LOG('_XML_NodeExists ERROR (' & $iXpath & " doesn't exist)", 2, $iLOGPath)
+				_LOG('_XML_NodeExists ERROR (' & $iXpath & " doesn't exist)", 3, $iLOGPath)
 				Return ""
 			EndIf
 			$iXMLValue = _XML_GetValue($oXMLDoc, $iXpath)

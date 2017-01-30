@@ -5,7 +5,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper
-#AutoIt3Wrapper_Res_Fileversion=1.2.0.1
+#AutoIt3Wrapper_Res_Fileversion=1.2.0.2
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -17,8 +17,8 @@
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
 TraySetState(2)
 
-;~ If $CmdLine[0] = 0 Then Exit
-$vThreadNumber = 1 ;$CmdLine[1]
+If $CmdLine[0] = 0 Then Exit
+$vThreadNumber = $CmdLine[1]
 
 #include <Date.au3>
 #include <array.au3>
@@ -374,9 +374,7 @@ Func _Fallback($aConfig, $vXpath, $vSource_RomXMLPath)
 	For $vBoucle = 1 To UBound($aCountryPref) - 1
 		$vCountryPref = $aCountryPref[$vBoucle]
 		If $vCountryPref = '%COUNTRY%' Then $vCountryPref = _XML_Read("Data/jeu/regionshortnames/regionshortname", 0, $vSource_RomXMLPath)
-		If StringInStr($aXpathCountry[$vBoucle], '%IDGENRE%') Then $vIdGenre = _XML_Read("Data/jeu/genres/genres_id/genre_id", 0, $vSource_RomXMLPath)
 		$aXpathCountry[$vBoucle] = StringReplace($vXpath, '%COUNTRY%', $vCountryPref)
-		$aXpathCountry[$vBoucle] = StringReplace($aXpathCountry[$vBoucle], '%IDGENRE%', $vIdGenre)
 	Next
 	Return $aXpathCountry
 EndFunc   ;==>_Fallback
@@ -419,15 +417,17 @@ Func _MIX_Engine($aRomList, $vBoucle, $aConfig, $oXMLProfil)
 	Local $vRoot_System = _XML_Read("/Profil/Root/Root_System", 0, "", $oMixConfig) & "[id=" & $aConfig[12] & "]/"
 	Local $vPicTarget = -1, $vWhile = 1, $vFinalValue = ""
 	Dim $aMiXPicTemp[1]
+	Sleep(250)
 	FileDelete($iTEMPPath & "\MIX")
+	Sleep(250)
 	DirCreate($iTEMPPath & "\MIX")
 	FileSetAttrib($iTEMPPath, "+H")
 	While 1
-		$vFinalValue = ""
+		$iString = ""
 		Switch StringLower(_XML_Read("/Profil/Element[" & $vWhile & "]/Source_Type", 0, "", $oMixConfig))
 			Case "fixe_value"
 				$vPicTarget = $iTEMPPath & "\MIX\" & _XML_Read("/Profil/Element[" & $vWhile & "]/Name", 0, "", $oMixConfig) & ".png"
-				FileCopy($vMIXTemplatePath & _XML_Read("/Profil/Element[" & $vWhile & "]/Source_Value", 0, "", $oMixConfig), $vPicTarget, $FC_OVERWRITE + $FC_CREATEPATH)
+				If Not FileCopy($vMIXTemplatePath & _XML_Read("/Profil/Element[" & $vWhile & "]/Source_Value", 0, "", $oMixConfig), $vPicTarget, $FC_OVERWRITE + $FC_CREATEPATH) Then _LOG("Error copying " & $vMIXTemplatePath & _XML_Read("/Profil/Element[" & $vWhile & "]/Source_Value", 0, "", $oMixConfig) & " to " & $vPicTarget, 2, $iLOGPath)
 				$aPicParameters = _MIX_Engine_Dim($vWhile, $oMixConfig)
 				_GDIPlus_Imaging($vPicTarget, $aPicParameters, $vTarget_Width, $vTarget_Height)
 				_LOG("fixe_value : " & $vPicTarget & " Created", 1, $iLOGPath)
@@ -440,23 +440,25 @@ Func _MIX_Engine($aRomList, $vBoucle, $aConfig, $oXMLProfil)
 				$aPicParameters = _MIX_Engine_Dim($vWhile, $oMixConfig)
 				$aXpathCountry = _Fallback($aConfig, $vXpath, $aRomList[8])
 				For $vBoucle2 = 1 To UBound($aXpathCountry) - 1
+					If StringInStr($aXpathCountry[$vBoucle2], '%IDGENRE%') Then
+						$vIdGenre = _XML_Read("Data/jeu/genres/genres_id/genre_id", 0, $aRomList[8])
+						$aXpathCountry[$vBoucle2] = StringReplace($aXpathCountry[$vBoucle2], '%IDGENRE%', $vIdGenre)
+					EndIf
 					Switch $vOrigin
 						Case 'game'
 							$vDownloadURL = StringTrimRight(_XML_Read($vRoot_Game & $aXpathCountry[$vBoucle2], 0, $aRomList[8]), 3) & "png"
 						Case 'system'
 							$vDownloadURL = StringTrimRight(_XML_Read($vRoot_System & $aXpathCountry[$vBoucle2], 0, "", $oXMLSystem), 3) & "png"
-						Case 'genre'
-							$vDownloadURL = StringTrimRight(_XML_Read($aXpathCountry[$vBoucle2], 0, "", $oXMLGenre), 3) & "png"
 					EndSwitch
 					If $vDownloadURL <> "png" And Not FileExists($vPicTarget) Then
 						$vDownloadMaxWidth = "&maxwidth=" & _GDIPlus_RelativePos($aPicParameters[0], $vTarget_Width)
 						$vDownloadMaxHeight = "&maxheight=" & _GDIPlus_RelativePos($aPicParameters[1], $vTarget_Width)
-						$vDownloadOutputFormat = "&outputformat=png"
+						$vDownloadOutputFormat = "&outputformat=png" & "&forceupdate=1"
 						$vValue = _DownloadWRetry($vDownloadURL & $vDownloadMaxWidth & $vDownloadMaxHeight & $vDownloadOutputFormat, $vPicTarget)
 						If $vValue < 0 Then
 							_LOG("xml_value : " & $vPicTarget & " Not Added", 2, $iLOGPath)
 						Else
-							$vRotationLvl = _XML_Read("/Profil/Element[" & $vWhile & "]/Target_Rotation", 0, "", $oMixConfig)
+							$vRotationLvl = _Coalesce(_XML_Read("/Profil/Element[" & $vWhile & "]/Target_Rotation", 0, "", $oMixConfig), -1)
 							If $vRotationLvl >= 0 Then
 								If _GDIPlus_Rotation($vPicTarget, $vRotationLvl) = -1 Then _LOG("Rotation Failed", 2, $iLOGPath)
 							EndIf
@@ -477,33 +479,32 @@ Func _MIX_Engine($aRomList, $vBoucle, $aConfig, $oXMLProfil)
 								$vValue = _XML_Read($vXpathTemp, 0, $aRomList[8])
 								If $vValue <> -1 And $vValue <> "" Then
 									$vBoucle2 = UBound($aLangPref) - 1
-									$vFinalValue = $vValue
+									$iString = $vValue
 								EndIf
 							Next
 						EndIf
-
 						$aXpathCountry = _Fallback($aConfig, $vXpath, $aRomList[8])
 						For $vBoucle2 = 1 To UBound($aXpathCountry) - 1
 							$vValue = _XML_Read($aXpathCountry[$vBoucle2], 0, $aRomList[8])
 							_LOG("COUNTRY " & $aXpathCountry[$vBoucle2] & "=" & $vValue, 1, $iLOGPath)
-							If $vValue <> -1 And $vValue <> "" And $vFinalValue = "" Then
+							If $vValue <> -1 And $vValue <> "" And $iString = "" Then
 								$vBoucle2 = UBound($aXpathCountry) - 1
-								$vFinalValue = $vValue
+								$iString = $vValue
 							EndIf
 						Next
-						_LOG("Text = " & $vFinalValue, 1, $iLOGPath)
-
-						$iString = $vFinalValue
-						$aPicParameters = _MIX_Engine_Dim($vWhile, $oMixConfig)
-						$iFont = _XML_Read("/Profil/Element[" & $vWhile & "]/Target_Font", 0, "", $oMixConfig)
-						$iFontSize = _XML_Read("/Profil/Element[" & $vWhile & "]/Target_FontSize", 0, "", $oMixConfig)
-						$iFontStyle = _XML_Read("/Profil/Element[" & $vWhile & "]/Target_FontStyle", 0, "", $oMixConfig)
-						$iFontColor = _XML_Read("/Profil/Element[" & $vWhile & "]/Target_FontColor", 0, "", $oMixConfig)
-						$vPath = $aMiXPicTemp[UBound($aMiXPicTemp) - 1]
-
-						_GDIPlus_Text($vPath, $iString, $aPicParameters[2], $aPicParameters[3], $iFont, $iFontSize, $iFontStyle, $iFontColor, $aPicParameters[13], $aPicParameters[14])
-
+						_LOG("Text = " & $iString, 1, $iLOGPath)
+					Case "fixe"
+						$iString = (_XML_Read("/Profil/Element[" & $vWhile & "]/Source_Value", 0, "", $oMixConfig))
+						_LOG("Text = " & $iString, 1, $iLOGPath)
 				EndSwitch
+				$aPicParameters = _MIX_Engine_Dim($vWhile, $oMixConfig)
+				$iFont = _XML_Read("/Profil/Element[" & $vWhile & "]/Target_Font", 0, "", $oMixConfig)
+				$iFontSize = _XML_Read("/Profil/Element[" & $vWhile & "]/Target_FontSize", 0, "", $oMixConfig)
+				$iFontStyle = _XML_Read("/Profil/Element[" & $vWhile & "]/Target_FontStyle", 0, "", $oMixConfig)
+				$iFontColor = _XML_Read("/Profil/Element[" & $vWhile & "]/Target_FontColor", 0, "", $oMixConfig)
+				$vPath = $aMiXPicTemp[UBound($aMiXPicTemp) - 1]
+
+				_GDIPlus_Text($vPath, $iString, $aPicParameters[2], $aPicParameters[3], $iFont, $iFontSize, $iFontStyle, $iFontColor, $aPicParameters[13], $aPicParameters[14])
 
 			Case 'gdi_function'
 				Switch StringLower(_XML_Read("/Profil/Element[" & $vWhile & "]/Source_Function", 0, "", $oMixConfig))
