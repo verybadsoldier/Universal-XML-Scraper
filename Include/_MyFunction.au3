@@ -176,7 +176,7 @@ EndFunc   ;==>_CheckURL
 ; #FUNCTION# ===================================================================================================
 ; Name...........: _Download
 ; Description ...: Download URL to a file with @Error and TimeOut
-; Syntax.........: _Download($iURL, $iPath)
+; Syntax.........: _Download($iURL, $iPath, $iTimeOut = 20, $iCRC = default)
 ; Parameters ....: $iURL		- URL to download
 ;                  $iPath		- Path to download
 ;                  $iTimeOut	- Time to wait before time out in second
@@ -189,9 +189,13 @@ EndFunc   ;==>_CheckURL
 ; Related .......:
 ; Link ..........;
 ; Example .......; No
-Func _Download($iURL, $iPath, $iTimeOut = 20)
+Func _Download($iURL, $iPath, $iTimeOut = 20, $iCRC = default)
 	Local $inetgettime = 0, $aData, $hDownload
-	$hDownload = InetGet($iURL, $iPath, $INET_FORCERELOAD, $INET_DOWNLOADBACKGROUND)
+	If $iURL = "" Then
+		_LOG("Nothing to Downloaded : " & $iPath, 2, $iLOGPath)
+		Return -1
+	EndIf
+	$hDownload = InetGet($iURL, $iPath,$INET_FORCERELOAD , $INET_DOWNLOADBACKGROUND)
 	Do
 		Sleep(250)
 		$inetgettime = $inetgettime + 0.25
@@ -203,6 +207,7 @@ Func _Download($iURL, $iPath, $iTimeOut = 20)
 		EndIf
 	Until InetGetInfo($hDownload, $INET_DOWNLOADCOMPLETE) ; Check if the download is complete.
 
+
 	$aData = InetGetInfo($hDownload)
 	If @error Then
 		_LOG("File Downloaded ERROR InetGetInfo : " & $iPath, 2, $iLOGPath)
@@ -212,14 +217,31 @@ Func _Download($iURL, $iPath, $iTimeOut = 20)
 	EndIf
 
 	InetClose($hDownload)
-
 	If $aData[$INET_DOWNLOADSUCCESS] Then
-		_LOG("File Downloaded Path : " & $iPath, 1, $iLOGPath)
+		If ($aData[$INET_DOWNLOADSIZE]<>0 And $aData[$INET_DOWNLOADREAD] <> $aData[$INET_DOWNLOADSIZE]) Or FileGetSize($iPath) < 50 Then
+			_LOG("Error Downloading URL : " & $iURL, 3, $iLOGPath)
+			_LOG("Error Downloading File : " & $iPath, 2, $iLOGPath)
+			_LOG("Error File Line 1 : " & FileReadLine($iPath), 2, $iLOGPath)
+			_LOG("Bytes read: " & $aData[$INET_DOWNLOADREAD], 2, $iLOGPath)
+			_LOG("Size: " & $aData[$INET_DOWNLOADSIZE], 2, $iLOGPath)
+			Return -1
+		EndIf
+
+		If $iCRC <> Default Then
+			$vDlCRC = StringRight(_CRC32ForFile($iPath), 8)
+			If $vDlCRC <> $iCRC Then
+				_LOG("Error CRC File ("& $vDlCRC & " <> " & $iCRC &") : " & $iPath, 2, $iLOGPath)
+;~ 				Return -1
+			Else
+				_LOG(">>> CRC OK ("& $vDlCRC & " = " & $iCRC &") : " & $iPath, 1, $iLOGPath)
+			EndIf
+		EndIf
 		_LOG("File Downloading URL : " & $iURL, 3, $iLOGPath)
+		_LOG("File Downloaded Path : " & $iPath, 1, $iLOGPath)
 		Return $iPath
 	Else
-		_LOG("Error Downloading File : " & $iPath, 2, $iLOGPath)
 		_LOG("Error Downloading URL : " & $iURL, 3, $iLOGPath)
+		_LOG("Error Downloading File : " & $iPath, 2, $iLOGPath)
 		_LOG("Bytes read: " & $aData[$INET_DOWNLOADREAD], 2, $iLOGPath)
 		_LOG("Size: " & $aData[$INET_DOWNLOADSIZE], 2, $iLOGPath)
 		_LOG("Complete: " & $aData[$INET_DOWNLOADCOMPLETE], 2, $iLOGPath)
@@ -233,7 +255,7 @@ EndFunc   ;==>_Download
 ; #FUNCTION# ===================================================================================================
 ; Name...........: _DownloadWRetry
 ; Description ...: Download URL to a file with @Error and TimeOut With Retry
-; Syntax.........: _DownloadWRetry($iURL, $iPath, $iRetry = 3)
+; Syntax.........: _DownloadWRetry($iURL, $iPath, $iRetry = 3, $iTimeOut = 20, $iCRC = default)
 ; Parameters ....: $iURL		- URL to download
 ;                  $iPath		- Path to download
 ;~ 				   $iRetry		- Number of retry
@@ -246,11 +268,11 @@ EndFunc   ;==>_Download
 ; Related .......:
 ; Link ..........;
 ; Example .......; No
-Func _DownloadWRetry($iURL, $iPath, $iRetry = 3, $iTimeOut = 20)
+Func _DownloadWRetry($iURL, $iPath, $iRetry = 3, $iTimeOut = 20, $iCRC = default)
 	Local $iCount = 0, $iResult = -1, $vTimer = TimerInit()
 	While $iResult < 0 And $iCount < $iRetry
 		$iCount = $iCount + 1
-		$iResult = _Download($iURL, $iPath, $iTimeOut)
+		$iResult = _Download($iURL, $iPath, $iTimeOut, $iCRC)
 	WEnd
 	_LOG("-In " & $iCount & " try and " & Round((TimerDiff($vTimer) / 1000), 2) & "s", 1, $iLOGPath)
 	Return $iResult
@@ -560,7 +582,7 @@ Func _MakeTEMPFile($iPath, $iPath_Temp)
 	If Not FileCopy($iPath, $iPath_Temp, $FC_OVERWRITE + $FC_CREATEPATH) Then
 		Sleep(250)
 		If Not FileCopy($iPath, $iPath_Temp, $FC_OVERWRITE + $FC_CREATEPATH) Then
-			_LOG("Error copying " & $iPath & " to " & $iPath_Temp, 2, $iLOGPath)
+			_LOG("Error copying " & $iPath & " to " & $iPath_Temp &" ("&FileGetSize($iPath)&")", 2, $iLOGPath)
 			Return -1
 		EndIf
 	EndIf
@@ -571,6 +593,7 @@ Func _MakeTEMPFile($iPath, $iPath_Temp)
 			Return -1
 		EndIf
 	EndIf
+	_LOG($iPath & " to temp OK : " & $iPath_Temp, 1, $iLOGPath)
 	Return $iPath_Temp
 EndFunc   ;==>_MakeTEMPFile
 
@@ -667,6 +690,7 @@ Func _GDIPlus_ResizeMax($iPath, $iMAX_Width, $iMAX_Height)
 	$iWidth = _GDIPlus_ImageGetWidth($hImage)
 	If $iWidth = 4294967295 Then $iWidth = 0 ;4294967295 en cas d'erreur.
 	$iHeight = _GDIPlus_ImageGetHeight($hImage)
+	If $iWidth = -1 Or $iHeight = -1 Then MsgBox(0,"error",$iPath & " or " & $iPath_Temp & " Fucked")
 	$iRatio = $iHeight / $iWidth
 	If $iMAX_Width <= 0 And $iMAX_Height > 0 Then $iMAX_Width = $iMAX_Height / $iRatio
 	If $iMAX_Height <= 0 And $iMAX_Width > 0 Then $iMAX_Height = $iMAX_Width * $iRatio
@@ -1185,7 +1209,10 @@ Func _GDIPlus_Merge($iPath1, $iPath2)
 	_PathSplit($iPath1, $sDrive, $sDir, $sFileName, $iExtension)
 	$iPath_Temp = $sDrive & $sDir & $sFileName & "-MER_Temp.PNG"
 
-	If _MakeTEMPFile($iPath1, $iPath_Temp) = -1 Then Return -1
+	If _MakeTEMPFile($iPath1, $iPath_Temp) = -1 Then
+		_LOG("Error Merging " & $iPath1 & " and " & $iPath2, 2, $iLOGPath)
+		Return -1
+	EndIf
 
 	$iPath1 = $sDrive & $sDir & $sFileName & ".png"
 
@@ -1613,7 +1640,7 @@ Func _XML_Open($iXMLPath)
 		_LOG('_XML_TIDY @error:' & @CRLF & XML_My_ErrorParser(@error), 2, $iLOGPath)
 		Return -1
 	EndIf
-	_LOG($iXMLPath & " Open", 3, $iLOGPath)
+;~ 	_LOG($iXMLPath & " Open", 3, $iLOGPath)
 	Return $oXMLDoc
 EndFunc   ;==>_XML_Open
 
@@ -1647,7 +1674,7 @@ Func _XML_Read($iXpath, $iXMLType = 0, $iXMLPath = "", $oXMLDoc = "")
 	Switch $iXMLType
 		Case 0
 			If _XML_NodeExists($oXMLDoc, $iXpath) <> $XML_RET_SUCCESS Then
-				_LOG('_XML_NodeExists ERROR (' & $iXpath & " doesn't exist)", 3, $iLOGPath)
+;~ 				_LOG('_XML_NodeExists ERROR (' & $iXpath & " doesn't exist)", 3, $iLOGPath)
 				Return ""
 			EndIf
 			$iXMLValue = _XML_GetValue($oXMLDoc, $iXpath)
@@ -1658,7 +1685,7 @@ Func _XML_Read($iXpath, $iXMLType = 0, $iXMLPath = "", $oXMLDoc = "")
 				Return -1
 			EndIf
 			If IsArray($iXMLValue) And UBound($iXMLValue) - 1 > 0 Then
-				_LOG('...Value..._XML_GetValue (' & $iXpath & ') = ' & $iXMLValue[1], 1, $iLOGPath)
+				_LOG('...Value..._XML_GetValue (' & $iXpath & ') = ' & $iXMLValue[1], 3, $iLOGPath)
 				Return $iXMLValue[1]
 			Else
 				_LOG('_XML_GetValue (' & $iXpath & ') is not an Array', 2, $iLOGPath)
@@ -1680,7 +1707,7 @@ Func _XML_Read($iXpath, $iXMLType = 0, $iXMLPath = "", $oXMLDoc = "")
 				_LOG('_XML_GetNodeAttributeValue @error:' & @CRLF & XML_My_ErrorParser(@error), 3, $iLOGPath)
 				Return -1
 			EndIf
-			_LOG('...Attribut..._XML_GetValue (' & $iXpath & ') = ' & $iXMLValue, 1, $iLOGPath)
+			_LOG('...Attribut..._XML_GetValue (' & $iXpath & ') = ' & $iXMLValue, 3, $iLOGPath)
 			Return $iXMLValue
 		Case Else
 			Return -2

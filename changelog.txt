@@ -1,3 +1,20 @@
+2.1.0.5
+* Corrected :
+ - Better stability on downloaded images (Some never download :S and miss in the MIX)
+* Added :
+ - Dynamique Handle to API server, now I can force the server to ask (for the futur when we have a fallback server ;) or country based server )
+ - Lot's of new Picto media (Nb of player, Notes, Classification, Editor, Developer, Genre) -> Beta it can change soon.
+ - Added 3 news MIX Template for Bigshot Theme with these new picto (1 is directly on local, the 2 other are on the repository, you can download them directly from UXS)
+* WARNING Added things that can "broke" you existing MIX Template
+ - You need to put the full Xpath to the Source_Value node (exemple : Game need to start by 'Data/jeu/' and System by 'Data/systeme [id="%IDSYSTEM%"]')
+ - The CENTER/LEFT/RIGHT/UP/DOWN function in Target_TopLeftX, Target_TopLeftY (and other) now take the "origin" point of the picture (default are TopLeft corner of the Picture)
+ - You can now use Target_OriginPicX and Target_OriginPicY to fixe the origin point of the picture. So now to center a picture you need to put :
+ 		<Target_TopLeftX>CENTER</Target_TopLeftX> 
+		<Target_OriginPicX>CENTER</Target_OriginPicX> 
+		<Target_TopLeftY>CENTER</Target_TopLeftY> 
+		<Target_OriginPicY>CENTER</Target_OriginPicY> 
+(The Origin point of the picture will be the center, and we center this origin point to the final picture)
+
 2.1.0.4
 * Corrected :
  - Some fallback in language xml

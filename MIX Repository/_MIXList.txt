@@ -4,6 +4,9 @@ Arcade (moon)-RetroPie
 Arcade Zoomed (moon)
 Arcade Zoomed (moon)-RecalBox
 Arcade Zoomed (moon)-Retropie
+BigPicture (2DBox)
+BigPicture (3DBox)
+BigPicture (ScreenShot)
 FoolScreen (Arcade)
 FoolScreen (GameGear)
 FoolScreen (GB)

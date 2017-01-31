@@ -1,0 +1,3 @@
+Author : Screech
+Description :
+BigPicture with Screenshot as main picture and several picto (Nb of player, note, genre, classification, editor)

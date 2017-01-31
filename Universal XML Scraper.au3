@@ -5,7 +5,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper XML Universel
-#AutoIt3Wrapper_Res_Fileversion=2.1.0.5
+#AutoIt3Wrapper_Res_Fileversion=2.1.0.6
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -140,6 +140,7 @@ FileInstall(".\Ressources\UXS Wizard.jpg", $iScriptPath & "\Ressources\UXS Wizar
 FileInstall(".\Ressources\jingle_uxs.MP3", $iScriptPath & "\Ressources\jingle_uxs.MP3")
 FileInstall(".\Mix\Arcade (moon).zip", $iScriptPath & "\Mix\")
 FileInstall(".\Mix\Standard (3img).zip", $iScriptPath & "\Mix\")
+FileInstall(".\Mix\BigPicture (ScreenShot).zip", $iScriptPath & "\Mix\")
 FileInstall(".\ProfilsFiles\RecalboxV3 (MIX).xml", $iScriptPath & "\ProfilsFiles\", 0)
 FileInstall(".\ProfilsFiles\RecalboxV3.xml", $iScriptPath & "\ProfilsFiles\", 0)
 FileInstall(".\ProfilsFiles\RecalboxV4 (MIX).xml", $iScriptPath & "\ProfilsFiles\", 0)
@@ -201,13 +202,8 @@ Local $L_SCRAPE_Parts[3] = [300, 480, -1]
 Local $oXMLProfil, $oXMLSystem, $oXMLCountry, $oXMLGenre
 Local $aConfig, $aRomList, $aXMLRomList
 Local $nMsg
-Local $sMailSlotMother = "\\.\mailslot\Mother"
-Local $sMailSlotCancel = "\\.\mailslot\Cancel"
-Local $hMailSlotMother = _CreateMailslot($sMailSlotMother)
 Local $vNbThread = IniRead($iINIPath, "LAST_USE", "$vNbThread", 1)
 Local $vStart = 0, $vWizCancel = 0
-Local $sMailSlotCheckEngine = "\\.\mailslot\CheckEngine"
-Local $hMailSlotCheckEngine = _CreateMailslot($sMailSlotCheckEngine)
 
 ;---------;
 ;Principal;
@@ -2216,7 +2212,12 @@ Func _ScrapeZipContent($aRomList, $vBoucle)
 EndFunc   ;==>_ScrapeZipContent
 
 Func _SCRAPE($oXMLProfil, $vNbThread = 1, $vFullScrape = 0)
+	Local $sMailSlotMother = "\\.\mailslot\Mother"
+	Local $sMailSlotCancel = "\\.\mailslot\Cancel"
 	Local $sMailSlotCheckEngine = "\\.\mailslot\CheckEngine"
+	Local $hMailSlotMother = _CreateMailslot($sMailSlotMother)
+	Local $hMailSlotCheckEngine = _CreateMailslot($sMailSlotCheckEngine)
+
 	Local $vForceUpdate = ""
 	While ProcessExists($iScraper)
 		ProcessClose($iScraper)
@@ -2326,7 +2327,7 @@ Func _SCRAPE($oXMLProfil, $vNbThread = 1, $vFullScrape = 0)
 					If $vEngineLaunched >= $vNbThread Then ExitLoop
 				EndIf
 				If Not _Check_Cancel() Then Return $aRomList
-				If (TimerDiff($vEngineTimer) / 1000) > 5 Then
+				If (TimerDiff($vEngineTimer) / 1000) > 10 Then
 					_LOG("Scrape Engine seems to not launch, check Antivirus and firewall", 2, $iLOGPath)
 					MsgBox($MB_ICONERROR, _MultiLang_GetText("err_title"), _MultiLang_GetText("err_UXSGlobal") & @CRLF & _MultiLang_GetText("err_ScrapeEngine"))
 					Return -1
@@ -2417,6 +2418,9 @@ Func _SCRAPE($oXMLProfil, $vNbThread = 1, $vFullScrape = 0)
 
 				If Not _Check_Cancel() Or ($vRomReceived = $vRomSend And $vBoucle = UBound($aRomList) - 1) Then ExitLoop
 			WEnd
+
+			_CloseMailAccount($hMailSlotMother)
+			_CloseMailAccount($hMailSlotCheckEngine)
 
 			;Reading Target xml
 			Dim $aXMLTarget

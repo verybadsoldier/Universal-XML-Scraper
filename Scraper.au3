@@ -5,7 +5,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper
-#AutoIt3Wrapper_Res_Fileversion=1.2.0.2
+#AutoIt3Wrapper_Res_Fileversion=1.2.0.3
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -28,6 +28,7 @@ $vThreadNumber = $CmdLine[1]
 #include <InetConstants.au3>
 #include <ComboConstants.au3>
 #include <GUIConstantsEx.au3>
+#include "./Include/_Hash.au3"
 
 If Not _FileCreate(@ScriptDir & "\test") Then ; Testing UXS Directory
 	Global $iScriptPath = @AppDataDir & "\UXMLS" ; If not, use Path to current user's Roaming Application Data
@@ -413,8 +414,9 @@ Func _MIX_Engine($aRomList, $vBoucle, $aConfig, $oXMLProfil)
 	Local $oMixConfig = _XML_Open($vMIXTemplatePath & "config.xml")
 	Local $vTarget_Width = _Coalesce(IniRead($iINIPath, "LAST_USE", "$vTarget_Image_Width", ""), _XML_Read("/Profil/General/Target_Width", 0, "", $oMixConfig))
 	Local $vTarget_Height = _Coalesce(IniRead($iINIPath, "LAST_USE", "$vTarget_Image_Height", ""), _XML_Read("/Profil/General/Target_Height", 0, "", $oMixConfig))
-	Local $vRoot_Game = _XML_Read("/Profil/Root/Root_Game", 0, "", $oMixConfig) & "/"
-	Local $vRoot_System = _XML_Read("/Profil/Root/Root_System", 0, "", $oMixConfig) & "[id=" & $aConfig[12] & "]/"
+;~ 	Local $vRoot_Game = _XML_Read("/Profil/Root/Root_Game", 0, "", $oMixConfig) & "/"
+;~ 	Local $vRoot_System = _XML_Read("/Profil/Root/Root_System", 0, "", $oMixConfig) & "[id=" & $aConfig[12] & "]/"
+	Local $vID_System = $aConfig[12]
 	Local $vPicTarget = -1, $vWhile = 1, $vFinalValue = ""
 	Dim $aMiXPicTemp[1]
 	Sleep(250)
@@ -427,11 +429,14 @@ Func _MIX_Engine($aRomList, $vBoucle, $aConfig, $oXMLProfil)
 		Switch StringLower(_XML_Read("/Profil/Element[" & $vWhile & "]/Source_Type", 0, "", $oMixConfig))
 			Case "fixe_value"
 				$vPicTarget = $iTEMPPath & "\MIX\" & _XML_Read("/Profil/Element[" & $vWhile & "]/Name", 0, "", $oMixConfig) & ".png"
-				If Not FileCopy($vMIXTemplatePath & _XML_Read("/Profil/Element[" & $vWhile & "]/Source_Value", 0, "", $oMixConfig), $vPicTarget, $FC_OVERWRITE + $FC_CREATEPATH) Then _LOG("Error copying " & $vMIXTemplatePath & _XML_Read("/Profil/Element[" & $vWhile & "]/Source_Value", 0, "", $oMixConfig) & " to " & $vPicTarget, 2, $iLOGPath)
-				$aPicParameters = _MIX_Engine_Dim($vWhile, $oMixConfig)
-				_GDIPlus_Imaging($vPicTarget, $aPicParameters, $vTarget_Width, $vTarget_Height)
-				_LOG("fixe_value : " & $vPicTarget & " Created", 1, $iLOGPath)
-				_ArrayAdd($aMiXPicTemp, $vPicTarget)
+				If Not FileCopy($vMIXTemplatePath & _XML_Read("/Profil/Element[" & $vWhile & "]/Source_Value", 0, "", $oMixConfig), $vPicTarget, $FC_OVERWRITE + $FC_CREATEPATH) Then
+					_LOG("Error copying " & $vMIXTemplatePath & _XML_Read("/Profil/Element[" & $vWhile & "]/Source_Value", 0, "", $oMixConfig) & " to " & $vPicTarget, 2, $iLOGPath)
+				Else
+					$aPicParameters = _MIX_Engine_Dim($vWhile, $oMixConfig)
+					_GDIPlus_Imaging($vPicTarget, $aPicParameters, $vTarget_Width, $vTarget_Height)
+					_LOG("fixe_value : " & $vPicTarget & " Created", 1, $iLOGPath)
+					_ArrayAdd($aMiXPicTemp, $vPicTarget)
+				EndIf
 			Case "xml_value"
 				$vPicTarget = $iTEMPPath & "\MIX\" & _XML_Read("/Profil/Element[" & $vWhile & "]/Name", 0, "", $oMixConfig) & ".png"
 				$vXpath = _XML_Read("/Profil/Element[" & $vWhile & "]/Source_Value", 0, "", $oMixConfig)
@@ -440,32 +445,41 @@ Func _MIX_Engine($aRomList, $vBoucle, $aConfig, $oXMLProfil)
 				$aPicParameters = _MIX_Engine_Dim($vWhile, $oMixConfig)
 				$aXpathCountry = _Fallback($aConfig, $vXpath, $aRomList[8])
 				For $vBoucle2 = 1 To UBound($aXpathCountry) - 1
-					If StringInStr($aXpathCountry[$vBoucle2], '%IDGENRE%') Then
-						$vIdGenre = _XML_Read("Data/jeu/genres/genres_id/genre_id", 0, $aRomList[8])
-						$aXpathCountry[$vBoucle2] = StringReplace($aXpathCountry[$vBoucle2], '%IDGENRE%', $vIdGenre)
-					EndIf
-					Switch $vOrigin
-						Case 'game'
-							$vDownloadURL = StringTrimRight(_XML_Read($vRoot_Game & $aXpathCountry[$vBoucle2], 0, $aRomList[8]), 3) & "png"
-						Case 'system'
-							$vDownloadURL = StringTrimRight(_XML_Read($vRoot_System & $aXpathCountry[$vBoucle2], 0, "", $oXMLSystem), 3) & "png"
-					EndSwitch
-					If $vDownloadURL <> "png" And Not FileExists($vPicTarget) Then
-						$vDownloadMaxWidth = "&maxwidth=" & _GDIPlus_RelativePos($aPicParameters[0], $vTarget_Width)
-						$vDownloadMaxHeight = "&maxheight=" & _GDIPlus_RelativePos($aPicParameters[1], $vTarget_Width)
-						$vDownloadOutputFormat = "&outputformat=png" & "&forceupdate=1"
-						$vValue = _DownloadWRetry($vDownloadURL & $vDownloadMaxWidth & $vDownloadMaxHeight & $vDownloadOutputFormat, $vPicTarget)
-						If $vValue < 0 Then
-							_LOG("xml_value : " & $vPicTarget & " Not Added", 2, $iLOGPath)
-						Else
-							$vRotationLvl = _Coalesce(_XML_Read("/Profil/Element[" & $vWhile & "]/Target_Rotation", 0, "", $oMixConfig), -1)
-							If $vRotationLvl >= 0 Then
-								If _GDIPlus_Rotation($vPicTarget, $vRotationLvl) = -1 Then _LOG("Rotation Failed", 2, $iLOGPath)
-							EndIf
-							_GDIPlus_Imaging($vPicTarget, $aPicParameters, $vTarget_Width, $vTarget_Height)
-							_ArrayAdd($aMiXPicTemp, $vPicTarget)
-							_LOG("xml_value : " & $vPicTarget & " Created", 1, $iLOGPath)
+					If Not FileExists($vPicTarget) Then
+						If StringInStr($aXpathCountry[$vBoucle2], '%IDGENRE%') Then
+							$vIdGenre = _XML_Read("Data/jeu/genres/genres_id/genre_id", 0, $aRomList[8])
+							$aXpathCountry[$vBoucle2] = StringReplace($aXpathCountry[$vBoucle2], '%IDGENRE%', $vIdGenre)
 						EndIf
+						Switch $vOrigin
+							Case 'game'
+								$vDownloadURL = _Coalesce(_XML_Read($aXpathCountry[$vBoucle2], 0, $aRomList[8]), -1)
+								$vCRC = _Coalesce(_XML_Read($aXpathCountry[$vBoucle2] & "_crc", 0, $aRomList[8]), Default)
+								If $vDownloadURL = -1 Then _LOG("No URL : " & $aXpathCountry[$vBoucle2], 1, $iLOGPath)
+							Case 'system'
+								$vDownloadURL = _Coalesce(_XML_Read(StringReplace($aXpathCountry[$vBoucle2], "%IDSYSTEM%", $vID_System), 0, "", $oXMLSystem), -1)
+								$vCRC = _Coalesce(_XML_Read(StringReplace($aXpathCountry[$vBoucle2], "%IDSYSTEM%", $vID_System) & "_crc", 0, "", $oXMLSystem), Default)
+								If $vDownloadURL = -1 Then _LOG("No URL : " & StringReplace($aXpathCountry[$vBoucle2], "%IDSYSTEM%", $vID_System), 1, $iLOGPath)
+						EndSwitch
+						If Not ($vDownloadURL < 0) Then
+;~ 						$vDownloadMaxWidth = "&maxwidth=" & _GDIPlus_RelativePos($aPicParameters[0], $vTarget_Width)
+;~ 						$vDownloadMaxHeight = "&maxheight=" & _GDIPlus_RelativePos($aPicParameters[1], $vTarget_Width)
+;~ 						$vDownloadOutputFormat = "&outputformat=png" & "&forceupdate=1"
+;~ 						$vValue = _DownloadWRetry($vDownloadURL & $vDownloadMaxWidth & $vDownloadMaxHeight & $vDownloadOutputFormat, $vPicTarget, 15, 20, $vCRC)
+							$vValue = _DownloadWRetry($vDownloadURL, $vPicTarget, 15, 20, $vCRC)
+							If $vValue < 0 Then
+								_LOG("xml_value : " & $vPicTarget & " Not Added", 2, $iLOGPath)
+							Else
+								$vRotationLvl = _Coalesce(_XML_Read("/Profil/Element[" & $vWhile & "]/Target_Rotation", 0, "", $oMixConfig), 0)
+								If $vRotationLvl > 0 Then
+									If _GDIPlus_Rotation($vPicTarget, $vRotationLvl) = -1 Then _LOG("Rotation Failed", 2, $iLOGPath)
+								EndIf
+								_GDIPlus_Imaging($vPicTarget, $aPicParameters, $vTarget_Width, $vTarget_Height)
+								_ArrayAdd($aMiXPicTemp, $vPicTarget)
+								_LOG("xml_value : " & $vPicTarget & " Created", 1, $iLOGPath)
+							EndIf
+						EndIf
+					Else
+						_LOG("File : " & $vPicTarget & " already exist", 1, $iLOGPath)
 					EndIf
 				Next
 			Case "text"
@@ -531,11 +545,13 @@ Func _MIX_Engine($aRomList, $vBoucle, $aConfig, $oXMLProfil)
 		$vWhile = $vWhile + 1
 	WEnd
 
+;~ 	_ArrayDisplay($aMiXPicTemp);Debug
+
 	For $vBoucle2 = UBound($aMiXPicTemp) - 1 To 2 Step -1
 		If FileExists($aMiXPicTemp[$vBoucle2 - 1]) Then _GDIPlus_Merge($aMiXPicTemp[$vBoucle2 - 1], $aMiXPicTemp[$vBoucle2])
 	Next
 
-	If Not IsArray($aMiXPicTemp) Or UBound($aMiXPicTemp) - 1 = 0 Then
+	If Not IsArray($aMiXPicTemp) Or UBound($aMiXPicTemp) - 1 <= 0 Then
 		_LOG("End Of Elements", 1, $iLOGPath)
 		Return -1
 	EndIf
