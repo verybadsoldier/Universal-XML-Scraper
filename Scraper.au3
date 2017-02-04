@@ -5,7 +5,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper
-#AutoIt3Wrapper_Res_Fileversion=1.2.0.3
+#AutoIt3Wrapper_Res_Fileversion=1.2.0.5
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -67,6 +67,8 @@ Global $iRessourcesPath = $iScriptPath & "\Ressources"
 Global $iLangPath = $iScriptPath & "\LanguageFiles" ; Where we are storing the language files.
 Global $iProfilsPath = $iScriptPath & "\ProfilsFiles" ; Where we are storing the profils files.
 Global $vNodeType = "Element"
+Global $vSSLogin = IniRead($iINIPath, "LAST_USE", "$vSSLogin", "")
+Global $vSSPassword = BinaryToString(_Crypt_DecryptData(IniRead($iINIPath, "LAST_USE", "$vSSPassword", ""), "1gdf1g1gf", $CALG_RC4))
 
 Local $iSize, $aRomList, $vBoucle, $aConfig, $vProfilsPath, $oXMLProfil, $oXMLSystem, $aMatchingCountry, $oXMLGenre
 Local $sMailSlotMother = "\\.\mailslot\Mother"
@@ -77,32 +79,33 @@ Local $hMailSlot = _CreateMailslot($sMailSlotName)
 Local $hMailSlotCancel = _CreateMailslot($sMailSlotCancel)
 Local $iNumberOfMessagesOverall = 1
 
+_SendMail($sMailSlotCheckEngine, $vThreadNumber & "|0")
+
 $oXMLSystem = _XMLSystem_Create()
 If $oXMLSystem = -1 Then Exit
 
 $oXMLGenre = _XMLGenre_Create()
 If $oXMLGenre = -1 Then Exit
 
-_SendMail($sMailSlotCheckEngine, $vThreadNumber)
+Sleep(1000)
+
+_SendMail($sMailSlotCheckEngine, $vThreadNumber & "|0")
 
 While $iNumberOfMessagesOverall < 5
 	If _MailSlotGetMessageCount($hMailSlot) >= 1 Then
 		Switch $iNumberOfMessagesOverall
 			Case 1
 				$aRomList = _ReadMessage($hMailSlot)
-;~ 				_SendMail($sMailSlotMother, $aRomList)
 				_LOG("Read Message $aRomList : " & $aRomList, 1, $iLOGPath)
 				$aRomList = StringSplit($aRomList, '{Break}', $STR_ENTIRESPLIT + $STR_NOCOUNT)
 				ReDim $aRomList[13]
 				$iNumberOfMessagesOverall += 1
 			Case 2
 				$vBoucle = _ReadMessage($hMailSlot)
-;~ 				_SendMail($sMailSlotMother, $vBoucle)
 				_LOG("Read Message $vBoucle : " & $vBoucle, 1, $iLOGPath)
 				$iNumberOfMessagesOverall += 1
 			Case 3
 				$aConfig = _ReadMessage($hMailSlot)
-;~ 				_SendMail($sMailSlotMother, $aConfig)
 				_LOG("Read Message $aConfig : " & $aConfig, 1, $iLOGPath)
 				$aConfig = StringSplit($aConfig, '{Break}', $STR_ENTIRESPLIT + $STR_NOCOUNT)
 				ReDim $aConfig[16]
@@ -115,7 +118,6 @@ While $iNumberOfMessagesOverall < 5
 				$iNumberOfMessagesOverall += 1
 			Case 4
 				$vProfilsPath = _ReadMessage($hMailSlot)
-;~ 				_SendMail($sMailSlotMother, $vProfilsPath)
 				_LOG("Read Message $vProfilsPath : " & $vProfilsPath, 1, $iLOGPath)
 				$oXMLProfil = _XML_Open($vProfilsPath)
 				$iNumberOfMessagesOverall += 1
@@ -125,9 +127,9 @@ While $iNumberOfMessagesOverall < 5
 		Sleep(200)
 	EndIf
 	If $iNumberOfMessagesOverall = 5 Then
+		_SendMail($sMailSlotCheckEngine, $vThreadNumber & "|1")
 		$vRomTimer = TimerInit()
 		_LOG("-----Making " & $aRomList[2], 1, $iLOGPath)
-;~ 		Sleep(1000)
 		$aRomList = _Game_Make($aRomList, $vBoucle, $aConfig, $oXMLProfil)
 		$oXMLAfterTidy = _XML_CreateDOMDocument(Default)
 		$vXMLAfterTidy = _XML_TIDY($aConfig[8])
@@ -138,6 +140,7 @@ While $iNumberOfMessagesOverall < 5
 		$vScrapedTime = Round((TimerDiff($vRomTimer) / 1000), 2)
 		_SendMail($sMailSlotMother, $vBoucle & "|" & $vScrapedTime)
 		_LOG("-----" & $aRomList[2] & " scraped in " & $vScrapedTime & "s", 3, $iLOGPath)
+		_SendMail($sMailSlotCheckEngine, $vThreadNumber & "|0")
 		If _CheckCount($hMailSlotCancel) >= 1 Then Exit
 	EndIf
 WEnd
@@ -288,7 +291,7 @@ Func _XML_Read_Source($aRomList, $vBoucle, $aConfig, $oXMLProfil, $vWhile)
 			For $vBoucle2 = 1 To UBound($aXpathCountry) - 1
 				$vDownloadURL = _Coalesce(_XML_Read($aXpathCountry[$vBoucle2], 0, $aRomList[8]), -1)
 				If $vDownloadURL < 0 Then
-					_LOG($aXpathCountry[$vBoucle2] & " problem : " & $vDownloadURL, 2, $iLOGPath)
+					If $aXpathCountry[$vBoucle2] <> 'None' Then _LOG($aXpathCountry[$vBoucle2] & " problem : " & $vDownloadURL, 2, $iLOGPath)
 				Else
 					$vDownloadMaxWidth = _Coalesce(_XML_Read("/Profil/" & $vNodeType & "[" & $vWhile & "]/Target_Image_Width", 0, "", $oXMLProfil), 0)
 					$vDownloadMaxHeight = _Coalesce(_XML_Read("/Profil/" & $vNodeType & "[" & $vWhile & "]/Target_Image_Height", 0, "", $oXMLProfil), 0)
@@ -400,7 +403,7 @@ Func _Picture_Download($vDownloadURL, $vSource_ImagePath, $oXMLProfil, $vDownloa
 		Return $vSource_ImagePath
 	EndIf
 
-	$vDownloadURL = $vDownloadURL & $vDownloadMaxWidth & $vDownloadMaxHeight & $vDownloadOutputFormat
+	$vDownloadURL = StringReplace($vDownloadURL, "#sspassword#", $vSSPassword) & $vDownloadMaxWidth & $vDownloadMaxHeight & $vDownloadOutputFormat
 	$vValue = _DownloadWRetry($vDownloadURL, $vSource_ImagePath)
 	If $vValue < 0 Or Not FileExists($vSource_ImagePath) Then
 		Return -1
@@ -414,8 +417,6 @@ Func _MIX_Engine($aRomList, $vBoucle, $aConfig, $oXMLProfil)
 	Local $oMixConfig = _XML_Open($vMIXTemplatePath & "config.xml")
 	Local $vTarget_Width = _Coalesce(IniRead($iINIPath, "LAST_USE", "$vTarget_Image_Width", ""), _XML_Read("/Profil/General/Target_Width", 0, "", $oMixConfig))
 	Local $vTarget_Height = _Coalesce(IniRead($iINIPath, "LAST_USE", "$vTarget_Image_Height", ""), _XML_Read("/Profil/General/Target_Height", 0, "", $oMixConfig))
-;~ 	Local $vRoot_Game = _XML_Read("/Profil/Root/Root_Game", 0, "", $oMixConfig) & "/"
-;~ 	Local $vRoot_System = _XML_Read("/Profil/Root/Root_System", 0, "", $oMixConfig) & "[id=" & $aConfig[12] & "]/"
 	Local $vID_System = $aConfig[12]
 	Local $vPicTarget = -1, $vWhile = 1, $vFinalValue = ""
 	Dim $aMiXPicTemp[1]
@@ -461,11 +462,7 @@ Func _MIX_Engine($aRomList, $vBoucle, $aConfig, $oXMLProfil)
 								If $vDownloadURL = -1 Then _LOG("No URL : " & StringReplace($aXpathCountry[$vBoucle2], "%IDSYSTEM%", $vID_System), 1, $iLOGPath)
 						EndSwitch
 						If Not ($vDownloadURL < 0) Then
-;~ 						$vDownloadMaxWidth = "&maxwidth=" & _GDIPlus_RelativePos($aPicParameters[0], $vTarget_Width)
-;~ 						$vDownloadMaxHeight = "&maxheight=" & _GDIPlus_RelativePos($aPicParameters[1], $vTarget_Width)
-;~ 						$vDownloadOutputFormat = "&outputformat=png" & "&forceupdate=1"
-;~ 						$vValue = _DownloadWRetry($vDownloadURL & $vDownloadMaxWidth & $vDownloadMaxHeight & $vDownloadOutputFormat, $vPicTarget, 15, 20, $vCRC)
-							$vValue = _DownloadWRetry($vDownloadURL, $vPicTarget, 15, 20, $vCRC)
+							$vValue = _DownloadWRetry(StringReplace($vDownloadURL, "#sspassword#", $vSSPassword), $vPicTarget, 15, 20, $vCRC)
 							If $vValue < 0 Then
 								_LOG("xml_value : " & $vPicTarget & " Not Added", 2, $iLOGPath)
 							Else

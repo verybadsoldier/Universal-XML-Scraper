@@ -91,7 +91,27 @@
 		<Target_Path_Type>%XML_Path_File%</Target_Path_Type>
 		<Target_Value>game/image</Target_Value>
 	</Element>
-	<Element Type="Picture">
+		<Element Type="Marquee">
+		<Source_Type>XML_Download</Source_Type>
+		<Source_Download_Path>%Local_Path_File%</Source_Download_Path>
+		<Source_Download_Tag>-marquee</Source_Download_Tag>
+		<Source_Download_Ext>jpg</Source_Download_Ext>
+		<Source_Value>None</Source_Value>
+		<Target_Type>XML_Path</Target_Type>
+		<Target_Path_Type>%XML_Path_File%</Target_Path_Type>
+		<Target_Value>game/marquee</Target_Value>
+	</Element>
+	<Element Type="Video">
+		<Source_Type>XML_Download</Source_Type>
+		<Source_Download_Path>%Local_Path_File%</Source_Download_Path>
+		<Source_Download_Tag>-video</Source_Download_Tag>
+		<Source_Download_Ext>mp4</Source_Download_Ext>
+		<Source_Value>None</Source_Value>
+		<Target_Type>XML_Path</Target_Type>
+		<Target_Path_Type>%XML_Path_File%</Target_Path_Type>
+		<Target_Value>game/video</Target_Value>
+	</Element>
+	<Element Type="thumbnail">
 		<Source_Type>Fixe_Value</Source_Type>
 		<Source_Value></Source_Value>
 		<Target_Type>XML_Value</Target_Type>
@@ -177,6 +197,30 @@
 			<Source_Value_Option Name="Gamename+Country" Desc="The Game Name + The Rom Country">%Name+Country%</Source_Value_Option>
 			<Source_Value_Option Name="Gamename+Bracket" Desc="The Game Name + The Rom FilName Bracket">%Name+Filename_Bracket%</Source_Value_Option>
 			<Source_Value_Option Name="Filename" Desc="The Rom FileName without extension">%Filename%</Source_Value_Option>
+		</Option>
+		<Option>
+			<Option_Name>Marquee</Option_Name>
+			<Type>Marquee</Type>
+			<NodeName>Source_Value</NodeName>
+			<Source_Value_Option Name="Nothing" Desc="Don't download the Marquee">None</Source_Value_Option>
+			<Source_Value_Option Name="Marquee" Desc="Download the Marquee">Data/jeu/medias/media_marquee</Source_Value_Option>
+			<Source_Value_Option Name="Screenshot" Desc="The Game Screenshot">Data/jeu/medias/media_screenshot</Source_Value_Option>
+			<Source_Value_Option Name="Box 2D" Desc="The Box Front in 2D">Data/jeu/medias/media_boxs/media_boxs2d/media_box2d_%COUNTRY%</Source_Value_Option>
+			<Source_Value_Option Name="Box 3D" Desc="The Box Front and Side in 3D">Data/jeu/medias/media_boxs/media_boxs3d/media_box3d_%COUNTRY%</Source_Value_Option>
+			<Source_Value_Option Name="Box Texture" Desc="The Box Back, Side and Front">Data/jeu/medias/media_boxs/media_boxstexture/media_boxtexture_%COUNTRY%</Source_Value_Option>
+			<Source_Value_Option Name="Support 2D" Desc="The Media in 2D">Data/jeu/medias/media_supports/media_supports2d/media_support2d_%COUNTRY%</Source_Value_Option>
+			<Source_Value_Option Name="Support Texture" Desc="The Media Label">Data/jeu/medias/media_supports/media_supportstexture/media_supporttexture_%COUNTRY%</Source_Value_Option>
+			<Source_Value_Option Name="Fanart" Desc="Big Fanart representing the game">Data/jeu/medias/media_fanart</Source_Value_Option>
+			<Source_Value_Option Name="Wheels" Desc="The game Logo">Data/jeu/medias/media_wheels/media_wheel_%COUNTRY%</Source_Value_Option>
+			<Source_Value_Option Name="Wheels Carbon" Desc="The game Logo in a Carbon Wheel">Data/jeu/medias/media_wheelscarbon/media_wheelcarbon_%COUNTRY%</Source_Value_Option>
+			<Source_Value_Option Name="Wheels Steel" Desc="The game Logo in a Steel Wheel">Data/jeu/medias/media_wheelssteel/media_wheelsteel_%COUNTRY%</Source_Value_Option>
+		</Option>
+		<Option>
+			<Option_Name>Video</Option_Name>
+			<Type>Video</Type>
+			<NodeName>Source_Value</NodeName>
+			<Source_Value_Option Name="Yes" Desc="Download the Video">Data/jeu/medias/media_video</Source_Value_Option>
+			<Source_Value_Option Name="No" Desc="Don't download the Video">None</Source_Value_Option>
 		</Option>
 		<Option>
 			<Option_Name>Name Case</Option_Name>

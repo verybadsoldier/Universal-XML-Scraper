@@ -1,3 +1,13 @@
+2.1.0.6
+* Corrected :
+ - Problem on System Media Download
+ - Cleaning some security issue
+ - Changing TimeOut handler
+* Added :
+ - New Handling of scrape Engine (it will not hammer so much the server)
+* Profil modification :
+ - No more Retropie(Video) profil. Now you can choose to add video and marquee directly in the "Option Configuration Menu"
+
 2.1.0.5
 * Corrected :
  - Better stability on downloaded images (Some never download :S and miss in the MIX)

@@ -5,7 +5,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper XML Universel
-#AutoIt3Wrapper_Res_Fileversion=2.1.0.6
+#AutoIt3Wrapper_Res_Fileversion=2.1.0.7
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -64,7 +64,6 @@ Global $MS_AutoConfigItem
 #include "./Include/_ExtMsgBox.au3"
 #include "./Include/_Trim.au3"
 #include "./Include/_Hash.au3"
-;~ #include "./Include/_zip.au3"
 #include "./Include/_XML.au3"
 #include "./Include/MailSlot.au3"
 #include "./Include/_GraphGDIPlus.au3"
@@ -147,9 +146,9 @@ FileInstall(".\ProfilsFiles\RecalboxV4 (MIX).xml", $iScriptPath & "\ProfilsFiles
 FileInstall(".\ProfilsFiles\RecalboxV4 [SCUMMVM] (MIX).xml", $iScriptPath & "\ProfilsFiles\", 0)
 FileInstall(".\ProfilsFiles\RecalboxV4.xml", $iScriptPath & "\ProfilsFiles\", 0)
 FileInstall(".\ProfilsFiles\Retropie (MIX).xml", $iScriptPath & "\ProfilsFiles\", 0)
-FileInstall(".\ProfilsFiles\Retropie (MIX)(Video).xml", $iScriptPath & "\ProfilsFiles\", 0)
+;~ FileInstall(".\ProfilsFiles\Retropie (MIX)(Video).xml", $iScriptPath & "\ProfilsFiles\", 0)
 FileInstall(".\ProfilsFiles\Retropie.xml", $iScriptPath & "\ProfilsFiles\", 0)
-FileInstall(".\ProfilsFiles\Retropie (Video).xml", $iScriptPath & "\ProfilsFiles\", 0)
+;~ FileInstall(".\ProfilsFiles\Retropie (Video).xml", $iScriptPath & "\ProfilsFiles\", 0)
 FileInstall(".\ProfilsFiles\Retropie [Rom folder] (MIX).xml", $iScriptPath & "\ProfilsFiles\", 0)
 FileInstall(".\ProfilsFiles\Retropie [Rom folder].xml", $iScriptPath & "\ProfilsFiles\", 0)
 FileInstall(".\ProfilsFiles\Ressources\empty.jpg", $iScriptPath & "\ProfilsFiles\Ressources\", 0)
@@ -157,11 +156,11 @@ FileInstall(".\ProfilsFiles\Ressources\Screenscraper(MIX)-SCUMMVM-RecalboxV4.jpg
 FileInstall(".\ProfilsFiles\Ressources\Screenscraper(MIX)-RecalboxV4.jpg", $iScriptPath & "\ProfilsFiles\Ressources\", 0)
 FileInstall(".\ProfilsFiles\Ressources\Screenscraper(MIX)-RecalboxV3.jpg", $iScriptPath & "\ProfilsFiles\Ressources\", 0)
 FileInstall(".\ProfilsFiles\Ressources\Screenscraper(MIX)-Retropie.jpg", $iScriptPath & "\ProfilsFiles\Ressources\", 0)
-FileInstall(".\ProfilsFiles\Ressources\Screenscraper(MIX)-Retropie(Video).jpg", $iScriptPath & "\ProfilsFiles\Ressources\", 0)
+;~ FileInstall(".\ProfilsFiles\Ressources\Screenscraper(MIX)-Retropie(Video).jpg", $iScriptPath & "\ProfilsFiles\Ressources\", 0)
 FileInstall(".\ProfilsFiles\Ressources\Screenscraper-RecalboxV4.jpg", $iScriptPath & "\ProfilsFiles\Ressources\", 0)
 FileInstall(".\ProfilsFiles\Ressources\Screenscraper-RecalboxV3.jpg", $iScriptPath & "\ProfilsFiles\Ressources\", 0)
 FileInstall(".\ProfilsFiles\Ressources\Screenscraper-Retropie.jpg", $iScriptPath & "\ProfilsFiles\Ressources\", 0)
-FileInstall(".\ProfilsFiles\Ressources\Screenscraper-Retropie(Video).jpg", $iScriptPath & "\ProfilsFiles\Ressources\", 0)
+;~ FileInstall(".\ProfilsFiles\Ressources\Screenscraper-Retropie(Video).jpg", $iScriptPath & "\ProfilsFiles\Ressources\", 0)
 FileInstall(".\Scraper.exe", $iScriptPath & "\Scraper.exe", 0)
 FileInstall(".\Scraper64.exe", $iScriptPath & "\Scraper64.exe", 0)
 FileSetAttrib($iScriptPath & "\Scraper.exe", "+H")
@@ -237,7 +236,7 @@ Switch $Result
 EndSwitch
 
 $vSSLogin = IniRead($iINIPath, "LAST_USE", "$vSSLogin", "")
-$vSSPassword = BinaryToString(_Crypt_DecryptData(IniRead($iINIPath, "LAST_USE", "$vSSPassword", ""), "1gdf1g1gf", $CALG_RC4))
+$vSSPassword = IniRead($iINIPath, "LAST_USE", "$vSSPassword", "")
 
 ;Catching SystemList.xml
 $oXMLSystem = _XMLSystem_Create($vSSLogin, $vSSPassword)
@@ -321,7 +320,6 @@ Else
 	;Opening XML Profil file
 	$oXMLProfil = _XML_Open($vProfilsPath)
 	If $oXMLProfil = -1 Then Exit
-
 	;Setting MIX Template
 	_LOG("Setting Mix Template", 0, $iLOGPath)
 	$vLastMIX = $iMIXPath & "\" & IniRead($iINIPath, "LAST_USE", "$vMixImage", "Standard (3img)") & ".zip"
@@ -338,7 +336,6 @@ Else
 				_LOG("Unknown Zip Error (" & @error & ")", 2, $iLOGPath)
 		EndSwitch
 	EndIf
-
 	$aDIRList = _Check_autoconf($oXMLProfil)
 	_LoadConfig()
 	_GUI_Refresh($oXMLProfil)
@@ -620,7 +617,7 @@ Func _LoadConfig()
 	$aConfig[11] = $iRessourcesPath & "\regionlist.txt"
 	$aConfig[12] = 0
 	$aConfig[13] = IniRead($iINIPath, "LAST_USE", "$vSSLogin", "")
-	$aConfig[14] = BinaryToString(_Crypt_DecryptData(IniRead($iINIPath, "LAST_USE", "$vSSPassword", ""), "1gdf1g1gf", $CALG_RC4))
+	$aConfig[14] = IniRead($iINIPath, "LAST_USE", "$vSSPassword", "")
 
 	If Not FileExists($aConfig[1]) Then
 		_ExtMsgBox($EMB_ICONEXCLAM, "OK", _MultiLang_GetText("err_title"), _MultiLang_GetText("err_PathRom"), 15)
@@ -1111,37 +1108,6 @@ Func _GUI_Config_MISC()
 	$vSSPassword = GUICtrlRead($I_SSPassword) ;$vSSPassword
 
 	$vTEMPPathSSCheck = _DownloadWRetry($iURLScraper & "api/ssuserInfos.php?devid=" & $iDevId & "&devpassword=" & $iDevPassword & "&softname=" & $iSoftname & "&output=XML&ssid=" & $vSSLogin & "&sspassword=" & $vSSPassword, $vTEMPPathSSCheck)
-;~ 	$vSSParticipation = Number(_XML_Read("/Data/ssuser/uploadsysteme", 0, $vTEMPPathSSCheck)) + Number(_XML_Read("/Data/ssuser/uploadinfos", 0, $vTEMPPathSSCheck)) + Number(_XML_Read("/Data/ssuser/romasso", 0, $vTEMPPathSSCheck)) + Number(_XML_Read("/Data/ssuser/uploadmedia", 0, $vTEMPPathSSCheck))
-;~ 	$vSSContrib = Number(_XML_Read("/Data/ssuser/contribution", 0, $vTEMPPathSSCheck))
-;~ 	_LOG("SS Check ssid=" & $vSSLogin & " participation = " & $vSSParticipation & " contribution = " & $vSSContrib, 1, $iLOGPath)
-;~ 	If $vSSParticipation < 1 Then $vSSParticipation = 0
-;~ 	Switch $vSSParticipation
-;~ 		Case 0
-;~ 			$vNbThreadMax = 1
-;~ 		Case 1
-;~ 			$vNbThreadMax = 2
-;~ 		Case 2 To 49
-;~ 			$vNbThreadMax = 3
-;~ 		Case 50 To 199
-;~ 			$vNbThreadMax = 4
-;~ 		Case 200 To 499
-;~ 			$vNbThreadMax = 5
-;~ 		Case 500 To 749
-;~ 			$vNbThreadMax = 6
-;~ 		Case 750 To 999
-;~ 			$vNbThreadMax = 7
-;~ 		Case 999 To 9999999
-;~ 			$vNbThreadMax = 8
-;~ 		Case Else
-;~ 			$vNbThreadMax = 1
-;~ 	EndSwitch
-;~ 	Switch $vSSContrib
-;~ 		Case 2
-;~ 			$vNbThreadMax = $vNbThreadMax + 1
-;~ 		Case 3 To 999999
-;~ 			$vNbThreadMax = $vNbThreadMax + 5
-;~ 	EndSwitch
-
 	$vNbThreadMax = _Coalesce(Number(_XML_Read("/Data/ssuser/maxthreads", 0, $vTEMPPathSSCheck)), 1)
 	_LOG("SS Check ssid=" & $vSSLogin & " maxthreads = " & $vNbThreadMax, 1, $iLOGPath)
 
@@ -1220,37 +1186,7 @@ Func _GUI_Config_MISC()
 				$vSSPassword = GUICtrlRead($I_SSPassword) ;$vSSPassword
 				$vTEMPPathSSCheck = _DownloadWRetry($iURLScraper & "api/ssuserInfos.php?devid=" & $iDevId & "&devpassword=" & $iDevPassword & "&softname=" & $iSoftname & "&output=XML&ssid=" & $vSSLogin & "&sspassword=" & $vSSPassword, $vTEMPPathSSCheck)
 
-;~ 				$vSSParticipation = Number(_XML_Read("/Data/ssuser/uploadsysteme", 0, $vTEMPPathSSCheck)) + Number(_XML_Read("/Data/ssuser/uploadinfos", 0, $vTEMPPathSSCheck)) + Number(_XML_Read("/Data/ssuser/romasso", 0, $vTEMPPathSSCheck)) + Number(_XML_Read("/Data/ssuser/uploadmedia", 0, $vTEMPPathSSCheck))
-;~ 				$vSSContrib = Number(_XML_Read("/Data/ssuser/contribution", 0, $vTEMPPathSSCheck))
 				$vSSLevel = Number(_XML_Read("/Data/ssuser/niveau", 0, $vTEMPPathSSCheck))
-;~ 				_LOG("SS Check ssid=" & $vSSLogin & " participation = " & $vSSParticipation & " contribution = " & $vSSContrib, 1, $iLOGPath)
-;~ 				If $vSSParticipation < 1 Then $vSSParticipation = 0
-;~ 				Switch $vSSParticipation
-;~ 					Case 0
-;~ 						$vNbThreadMax = 1
-;~ 					Case 1
-;~ 						$vNbThreadMax = 2
-;~ 					Case 2 To 49
-;~ 						$vNbThreadMax = 3
-;~ 					Case 50 To 199
-;~ 						$vNbThreadMax = 4
-;~ 					Case 200 To 499
-;~ 						$vNbThreadMax = 5
-;~ 					Case 500 To 749
-;~ 						$vNbThreadMax = 6
-;~ 					Case 750 To 999
-;~ 						$vNbThreadMax = 7
-;~ 					Case 999 To 9999999
-;~ 						$vNbThreadMax = 8
-;~ 					Case Else
-;~ 						$vNbThreadMax = 1
-;~ 				EndSwitch
-;~ 				Switch $vSSContrib
-;~ 					Case 2
-;~ 						$vNbThreadMax = $vNbThreadMax + 1
-;~ 					Case 3 To 999999
-;~ 						$vNbThreadMax = $vNbThreadMax + 5
-;~ 				EndSwitch
 
 				$vNbThreadMax = _Coalesce(Number(_XML_Read("/Data/ssuser/maxthreads", 0, $vTEMPPathSSCheck)), 1)
 				_LOG("SS Check ssid=" & $vSSLogin & " maxthreads = " & $vNbThreadMax, 1, $iLOGPath)
@@ -1719,11 +1655,9 @@ Func _Check_autoconf($oXMLProfil)
 			$aDIRList[$vBoucle][3] = _ReplacePath($vTarget_XMLName, $aDIRList, $vBoucle, $vSource_RootPath)
 			$aDIRList[$vBoucle][4] = _ReplacePath($vSource_ImagePath, $aDIRList, $vBoucle, $vSource_RootPath)
 			$aDIRList[$vBoucle][5] = _ReplacePath($vTarget_ImagePath, $aDIRList, $vBoucle, $vSource_RootPath)
-;~ 			DirCreate($aDIRList[$vBoucle][4])
-;~ 			If Not FileExists($aDIRList[$vBoucle][3]) Then _FileCreate($aDIRList[$vBoucle][3])
 			$MS_AutoConfigItem[$vBoucle] = GUICtrlCreateMenuItem($aDIRList[$vBoucle][0], $MS_AutoConfig)
 		Next
-;~ 		_ArrayDisplay($aDIRList, "$aDIRList")
+;~ 		_ArrayDisplay($aDIRList, "$aDIRList") ; Debug
 		GUISetState(@SW_ENABLE, $F_UniversalScraper)
 		WinActivate($F_UniversalScraper)
 		SplashOff()
@@ -1812,7 +1746,7 @@ Func _RomList_Create($aConfig, $vFullScrape = 0, $oXMLProfil = "")
 			Next
 	EndSwitch
 
-;~ 	_ArrayDisplay($aRomList, "$aRomList")
+;~ 	_ArrayDisplay($aRomList, "$aRomList") ; Debug
 
 	Return $aRomList
 EndFunc   ;==>_RomList_Create
@@ -1870,7 +1804,7 @@ Func _Check_Rom2Scrape($aRomList, $vNoRom, $aXMLRomList, $vTarget_RomPath, $vScr
 EndFunc   ;==>_Check_Rom2Scrape
 
 Func _CalcHash($aRomList, $vNoRom, $oXMLProfil)
-;~ 	_ArrayDisplay($aRomList, "$aRomList")
+;~ 	_ArrayDisplay($aRomList, "$aRomList") ; Debug
 	Local $TimerHashCRC = "N/A", $TimerHashMD5 = "N/A", $TimerHashSHA1 = "N/A"
 	If Not _Check_Cancel() Then Return $aRomList
 	$TimerHash = TimerInit()
@@ -1919,7 +1853,7 @@ EndFunc   ;==>_CalcHash
 
 Func _XMLSystem_Create($vSSLogin = "test", $vSSPassword = "test")
 	Local $oXMLSystem, $vXMLSystemPath = $iScriptPath & "\Ressources\systemlist.xml"
-	$vXMLSystemPath = _DownloadWRetry($iURLScraper & "api/systemesListe.php?devid=" & $iDevId & "&devpassword=" & $iDevPassword & "&softname=" & $iSoftname & "&output=XML&ssid=" & $vSSLogin & "&sspassword=" & $vSSPassword, $vXMLSystemPath, 3, 40)
+	$vXMLSystemPath = _DownloadWRetry($iURLScraper & "api/systemesListe.php?devid=" & $iDevId & "&devpassword=" & $iDevPassword & "&softname=" & $iSoftname & "&output=XML&ssid=" & $vSSLogin & "&sspassword=" & BinaryToString(_Crypt_DecryptData($vSSPassword, "1gdf1g1gf", $CALG_RC4)), $vXMLSystemPath, 3, 40)
 	Switch $vXMLSystemPath
 		Case -1
 			MsgBox($MB_ICONERROR, _MultiLang_GetText("err_title"), _MultiLang_GetText("err_UXSGlobal") & @CRLF & _MultiLang_GetText("err_Connection"))
@@ -1941,7 +1875,7 @@ EndFunc   ;==>_XMLSystem_Create
 
 Func _XMLCountry_Create($vSSLogin = "test", $vSSPassword = "test")
 	Local $oXMLCountry, $vXMLCountryPath = $iScriptPath & "\Ressources\Countrylist.xml"
-	$vXMLCountryPath = _DownloadWRetry($iURLScraper & "api/regionsListe.php?devid=" & $iDevId & "&devpassword=" & $iDevPassword & "&softname=" & $iSoftname & "&output=XML&ssid=" & $vSSLogin & "&sspassword=" & $vSSPassword, $vXMLCountryPath)
+	$vXMLCountryPath = _DownloadWRetry($iURLScraper & "api/regionsListe.php?devid=" & $iDevId & "&devpassword=" & $iDevPassword & "&softname=" & $iSoftname & "&output=XML&ssid=" & $vSSLogin & "&sspassword=" & BinaryToString(_Crypt_DecryptData($vSSPassword, "1gdf1g1gf", $CALG_RC4)), $vXMLCountryPath)
 	Switch $vXMLCountryPath
 		Case -1
 			MsgBox($MB_ICONERROR, _MultiLang_GetText("err_title"), _MultiLang_GetText("err_UXSGlobal") & @CRLF & _MultiLang_GetText("err_Connection"))
@@ -1963,7 +1897,7 @@ EndFunc   ;==>_XMLCountry_Create
 
 Func _XMLGenre_Create($vSSLogin = "test", $vSSPassword = "test")
 	Local $oXMLGenre, $vXMLGenrePath = $iScriptPath & "\Ressources\Genresliste.xml"
-	$vXMLGenrePath = _DownloadWRetry($iURLScraper & "api/genresListe.php?devid=" & $iDevId & "&devpassword=" & $iDevPassword & "&softname=" & $iSoftname & "&output=XML&ssid=" & $vSSLogin & "&sspassword=" & $vSSPassword, $vXMLGenrePath)
+	$vXMLGenrePath = _DownloadWRetry($iURLScraper & "api/genresListe.php?devid=" & $iDevId & "&devpassword=" & $iDevPassword & "&softname=" & $iSoftname & "&output=XML&ssid=" & $vSSLogin & "&sspassword=" & BinaryToString(_Crypt_DecryptData($vSSPassword, "1gdf1g1gf", $CALG_RC4)), $vXMLGenrePath)
 	Switch $vXMLGenrePath
 		Case -1
 			MsgBox($MB_ICONERROR, _MultiLang_GetText("err_title"), _MultiLang_GetText("err_UXSGlobal") & @CRLF & _MultiLang_GetText("err_Connection"))
@@ -1990,10 +1924,10 @@ Func _DownloadROMXML($aRomList, $vBoucle, $vSystemID, $vSSLogin = "", $vSSPasswo
 	Local $vXMLRom = $iTEMPPath & "\" & StringRegExpReplace($aRomList[$vBoucle][2], '[\[\]/\|\:\?"\*\\<>]', "") & ".xml"
 	$aPathSplit = _PathSplit($aRomList[$vBoucle][0], $sDrive, $sDir, $sFileName, $sExtension)
 	$vRomName = _URIEncode($sFileName & $sExtension)
-	If $vScrapeSearchMode = 0 Or $vScrapeSearchMode = 1 Then $aRomList[$vBoucle][8] = _DownloadWRetry($iURLScraper & "api/jeuInfos.php?devid=" & $iDevId & "&devpassword=" & $iDevPassword & "&softname=" & $iSoftname & "&output=xml&ssid=" & $vSSLogin & "&sspassword=" & $vSSPassword & "&crc=" & $aRomList[$vBoucle][5] & "&md5=" & $aRomList[$vBoucle][6] & "&sha1=" & $aRomList[$vBoucle][7] & "&systemeid=" & $vSystemID & "&romtype=rom&romnom=" & $vRomName & "&romtaille=" & $aRomList[$vBoucle][4] & $vForceUpdate, $vXMLRom)
+	If $vScrapeSearchMode = 0 Or $vScrapeSearchMode = 1 Then $aRomList[$vBoucle][8] = _DownloadWRetry($iURLScraper & "api/jeuInfos.php?devid=" & $iDevId & "&devpassword=" & $iDevPassword & "&softname=" & $iSoftname & "&output=xml&ssid=" & $vSSLogin & "&sspassword=" & BinaryToString(_Crypt_DecryptData($vSSPassword, "1gdf1g1gf", $CALG_RC4)) & "&crc=" & $aRomList[$vBoucle][5] & "&md5=" & $aRomList[$vBoucle][6] & "&sha1=" & $aRomList[$vBoucle][7] & "&systemeid=" & $vSystemID & "&romtype=rom&romnom=" & $vRomName & "&romtaille=" & $aRomList[$vBoucle][4] & $vForceUpdate, $vXMLRom)
 	If (StringInStr(FileReadLine($aRomList[$vBoucle][8]), "Erreur") Or Not FileExists($aRomList[$vBoucle][8])) Then
 		$vRomName = _URIEncode($sFileName)
-		If $vScrapeSearchMode = 0 Or $vScrapeSearchMode = 2 Then $aRomList[$vBoucle][8] = _DownloadWRetry($iURLScraper & "api/jeuInfos.php?devid=" & $iDevId & "&devpassword=" & $iDevPassword & "&softname=" & $iSoftname & "&output=xml&ssid=" & $vSSLogin & "&sspassword=" & $vSSPassword & "&crc=&md5=&sha1=&systemeid=" & $vSystemID & "&romtype=rom&romnom=" & $vRomName & "&romtaille=" & $aRomList[$vBoucle][4] & $vForceUpdate, $vXMLRom)
+		If $vScrapeSearchMode = 0 Or $vScrapeSearchMode = 2 Then $aRomList[$vBoucle][8] = _DownloadWRetry($iURLScraper & "api/jeuInfos.php?devid=" & $iDevId & "&devpassword=" & $iDevPassword & "&softname=" & $iSoftname & "&output=xml&ssid=" & $vSSLogin & "&sspassword=" & BinaryToString(_Crypt_DecryptData($vSSPassword, "1gdf1g1gf", $CALG_RC4)) & "&crc=&md5=&sha1=&systemeid=" & $vSystemID & "&romtype=rom&romnom=" & $vRomName & "&romtaille=" & $aRomList[$vBoucle][4] & $vForceUpdate, $vXMLRom)
 		If (StringInStr(FileReadLine($aRomList[$vBoucle][8]), "Erreur") Or Not FileExists($aRomList[$vBoucle][8])) Then
 			FileDelete($aRomList[$vBoucle][8])
 			$aRomList[$vBoucle][8] = ""
@@ -2109,7 +2043,6 @@ Func _Results($aRomList, $vNbThread, $vFullTimer, $vFullScrape = 0)
 	$L_Xmax = GUICtrlCreateLabel($vNbRom, 325, 355, 200, 17, $SS_RIGHT)
 	$L_Ymin = GUICtrlCreateLabel("0s", 0, 340, 24, 17, $SS_RIGHT)
 	$L_Ymax = GUICtrlCreateLabel(Round($vTimeMax, 1) & "s", 0, 160, 24, 17, $SS_RIGHT)
-;~ 	$G_Time = _GraphGDIPlus_Create($F_Results, 50, 160, 200, 150, 0xFF000000, 0xFF34495c)
 	GUISetState(@SW_SHOW)
 	GUISetState(@SW_DISABLE, $F_UniversalScraper)
 	#EndRegion ### END Koda GUI section ###
@@ -2219,6 +2152,7 @@ Func _SCRAPE($oXMLProfil, $vNbThread = 1, $vFullScrape = 0)
 	Local $hMailSlotCheckEngine = _CreateMailslot($sMailSlotCheckEngine)
 
 	Local $vForceUpdate = ""
+	Local $vEngineReady = 0
 	While ProcessExists($iScraper)
 		ProcessClose($iScraper)
 	WEnd
@@ -2227,7 +2161,6 @@ Func _SCRAPE($oXMLProfil, $vNbThread = 1, $vFullScrape = 0)
 	DirCreate($iTEMPPath)
 	FileSetAttrib($iTEMPPath, "+H")
 	DirCreate($iTEMPPath & "\scraped")
-;~ 	$nMsg = ""
 
 	If $aConfig <> 0 Then
 		_GUI_Refresh($oXMLProfil, 1)
@@ -2245,38 +2178,7 @@ Func _SCRAPE($oXMLProfil, $vNbThread = 1, $vFullScrape = 0)
 		If StringLeft($aConfig[0], 2) = "\\" And $vFullScrape = 0 Then _Plink($oXMLProfil, "killall") ; Ask to kill ES
 
 		;Checking NbThread
-		$vTEMPPathSSCheck = _DownloadWRetry($iURLScraper & "api/ssuserInfos.php?devid=" & $iDevId & "&devpassword=" & $iDevPassword & "&softname=" & $iSoftname & "&output=XML&ssid=" & $aConfig[13] & "&sspassword=" & $aConfig[14], $iScriptPath & "\Ressources\SSCheck.xml")
-;~ 		$vSSParticipation = Number(_XML_Read("/Data/ssuser/uploadsysteme", 0, $vTEMPPathSSCheck)) + Number(_XML_Read("/Data/ssuser/uploadinfos", 0, $vTEMPPathSSCheck)) + Number(_XML_Read("/Data/ssuser/romasso", 0, $vTEMPPathSSCheck)) + Number(_XML_Read("/Data/ssuser/uploadmedia", 0, $vTEMPPathSSCheck))
-;~ 		$vSSContrib = Number(_XML_Read("/Data/ssuser/contribution", 0, $vTEMPPathSSCheck))
-;~ 		$vSSLevel = Number(_XML_Read("/Data/ssuser/niveau", 0, $vTEMPPathSSCheck))
-;~ 		If $vSSParticipation < 1 Then $vSSParticipation = 0
-;~ 		Switch $vSSParticipation
-;~ 			Case 0
-;~ 				$vNbThreadMax = 1
-;~ 			Case 1
-;~ 				$vNbThreadMax = 2
-;~ 			Case 2 To 49
-;~ 				$vNbThreadMax = 3
-;~ 			Case 50 To 199
-;~ 				$vNbThreadMax = 4
-;~ 			Case 200 To 499
-;~ 				$vNbThreadMax = 5
-;~ 			Case 500 To 749
-;~ 				$vNbThreadMax = 6
-;~ 			Case 750 To 999
-;~ 				$vNbThreadMax = 7
-;~ 			Case 999 To 9999999
-;~ 				$vNbThreadMax = 8
-;~ 			Case Else
-;~ 				$vNbThreadMax = 1
-;~ 		EndSwitch
-;~ 		Switch $vSSContrib
-;~ 			Case 2
-;~ 				$vNbThreadMax = $vNbThreadMax + 1
-;~ 			Case 3 To 999999
-;~ 				$vNbThreadMax = $vNbThreadMax + 5
-;~ 		EndSwitch
-
+		$vTEMPPathSSCheck = _DownloadWRetry($iURLScraper & "api/ssuserInfos.php?devid=" & $iDevId & "&devpassword=" & $iDevPassword & "&softname=" & $iSoftname & "&output=XML&ssid=" & $aConfig[13] & "&sspassword=" & BinaryToString(_Crypt_DecryptData($vSSPassword, "1gdf1g1gf", $CALG_RC4)), $iScriptPath & "\Ressources\SSCheck.xml")
 		$vNbThreadMax = _Coalesce(Number(_XML_Read("/Data/ssuser/maxthreads", 0, $vTEMPPathSSCheck)), 1)
 
 		If $vNbThread > $vNbThreadMax Then
@@ -2299,11 +2201,30 @@ Func _SCRAPE($oXMLProfil, $vNbThread = 1, $vFullScrape = 0)
 
 		If IsArray($aRomList) And _Check_Cancel() Then
 
+			Local $aScrapeEngine[$vNbThread + 1][2]
+			Local $vEngineLaunched = 1
 			;Starting Scrape Engine
-			For $vBoucle = 1 To $vNbThread
-				ShellExecute($iScriptPath & "\" & $iScraper, $vBoucle)
-				_LOG("Start Scrape Engine Number " & $vBoucle, 1, $iLOGPath)
-			Next
+			While $vEngineLaunched < $vNbThread + 1
+				ShellExecute($iScriptPath & "\" & $iScraper, $vEngineLaunched)
+				_LOG("Start Scrape Engine Number " & $vEngineLaunched, 1, $iLOGPath)
+				;Checking Scrape Engine
+				Local $vEngineTimer = TimerInit()
+				While 1
+					If _MailSlotGetMessageCount($hMailSlotCheckEngine) >= 1 Then
+						$aEngineState = StringSplit(_ReadMessage($hMailSlotCheckEngine), "|", $STR_NOCOUNT)
+						$aScrapeEngine[$vEngineLaunched][0] = $aEngineState[0]
+						$aScrapeEngine[$vEngineLaunched][1] = $aEngineState[1]
+						_LOG("------------------------------------Engine Number " & $aEngineState[0] & " OK", 1, $iLOGPath)
+						$vEngineLaunched += 1
+						ExitLoop
+					EndIf
+					If Not _Check_Cancel() Then Return $aRomList
+					If (TimerDiff($vEngineTimer) / 1000) > 10 Then
+						_LOG("Scrape Engine " & $aEngineState[0] & " seems to not launch, check Antivirus and firewall", 2, $iLOGPath)
+						MsgBox($MB_ICONERROR, _MultiLang_GetText("err_title"), _MultiLang_GetText("err_UXSGlobal") & @CRLF & _MultiLang_GetText("err_ScrapeEngine"))
+					EndIf
+				WEnd
+			WEnd
 
 			;Creating gamelist.xml
 			If $aConfig[5] = 0 Or ($aConfig[5] > 0 And FileGetSize($aConfig[0]) < 100) Then
@@ -2316,23 +2237,6 @@ Func _SCRAPE($oXMLProfil, $vNbThread = 1, $vFullScrape = 0)
 			;Checking existing gamelist.xml
 			$vXpath2RomPath = "/" & _XML_Read("Profil/Root/Target_Value", 0, "", $oXMLProfil) & "/" & _XML_Read("Profil/Element[@Type='RomPath']/Target_Value", 0, "", $oXMLProfil)
 			If FileGetSize($aConfig[0]) > 100 And _Check_Cancel() Then $aXMLRomList = _XML_ListValue($vXpath2RomPath, $aConfig[0])
-
-			;Checking Scrape Engine
-			Local $vEngineLaunched = 0
-			Local $vEngineTimer = TimerInit()
-			While 1
-				If _MailSlotGetMessageCount($hMailSlotCheckEngine) >= 1 Then
-					$vEngineLaunched += 1
-					_LOG("Engine Number " & _ReadMessage($hMailSlotCheckEngine) & " OK", 1, $iLOGPath)
-					If $vEngineLaunched >= $vNbThread Then ExitLoop
-				EndIf
-				If Not _Check_Cancel() Then Return $aRomList
-				If (TimerDiff($vEngineTimer) / 1000) > 10 Then
-					_LOG("Scrape Engine seems to not launch, check Antivirus and firewall", 2, $iLOGPath)
-					MsgBox($MB_ICONERROR, _MultiLang_GetText("err_title"), _MultiLang_GetText("err_UXSGlobal") & @CRLF & _MultiLang_GetText("err_ScrapeEngine"))
-					Return -1
-				EndIf
-			WEnd
 
 			_ITaskBar_SetProgressState($F_UniversalScraper, 2)
 
@@ -2353,31 +2257,42 @@ Func _SCRAPE($oXMLProfil, $vNbThread = 1, $vFullScrape = 0)
 							$aRomList = _ScrapeZipContent($aRomList, $vBoucle)
 						EndIf
 
-;~ 						MsgBox(0, "PAUSE", "PAUSE")
-
-						;If found (or missingRom_Mode = 1 or Rom to Hide) Send it to the scrape Engine
 						If ($aRomList[$vBoucle][9] = 1 Or $vMissingRom_Mode = 1 Or $aRomList[$vBoucle][3] > 1) And _Check_Cancel() Then
-							If $aRomList[$vBoucle][3] = 4 Then
-								_XML_Make($iTEMPPath & "\scraped\" & $vBoucle & ".xml", _XML_Read("Profil/FolderRoot/Target_Value", 0, "", $oXMLProfil))
-							Else
-								_XML_Make($iTEMPPath & "\scraped\" & $vBoucle & ".xml", _XML_Read("Profil/Game/Target_Value", 0, "", $oXMLProfil))
-							EndIf
-							$sMailSlotName = "\\.\mailslot\Son" & $vThreadUsed
-							$vMessage = _ArrayToString($aRomList, '{Break}', $vBoucle, $vBoucle, '{Break}')
-							$vResultSM = _SendMail($sMailSlotName, $vMessage)
-							$vResultSM = _SendMail($sMailSlotName, $vBoucle)
-							$vMessage = _ArrayToString($aConfig, '{Break}')
-							$vResultSM = _SendMail($sMailSlotName, $vMessage)
-							$vResultSM = _SendMail($sMailSlotName, $vProfilsPath)
-							If $vResultSM = 1 Then ; Check Scrape Engine
+
+							$vEngineReady = 0
+							While $vEngineReady < 1
+								If Not ProcessExists($iScraper) Then
+									_LOG("Scrape Engine seems to not Exist, check Antivirus and firewall", 2, $iLOGPath)
+									MsgBox($MB_ICONERROR, _MultiLang_GetText("err_title"), _MultiLang_GetText("err_UXSGlobal") & @CRLF & _MultiLang_GetText("err_ScrapeEngine"))
+									$vScrapeCancelled = 1
+								EndIf
+								If _MailSlotGetMessageCount($hMailSlotCheckEngine) >= 1 Then
+									$aEngineState = StringSplit(_ReadMessage($hMailSlotCheckEngine), "|", $STR_NOCOUNT)
+									$aScrapeEngine[$aEngineState[0]][1] = $aEngineState[1]
+									_LOG("-Message reiceved : " & $aEngineState[0] & " - " & $aEngineState[1], 3, $iLOGPath)
+									If $aScrapeEngine[$aEngineState[0]][1] = 0 Then
+										_LOG("-Engine Number " & $aEngineState[0] & " Ready", 1, $iLOGPath)
+										$vEngineReady = $aEngineState[0]
+									EndIf
+								EndIf
+								If Not _Check_Cancel() Then ExitLoop
+							WEnd
+
+							If _Check_Cancel() Then
+								If $aRomList[$vBoucle][3] = 4 Then
+									_XML_Make($iTEMPPath & "\scraped\" & $vBoucle & ".xml", _XML_Read("Profil/FolderRoot/Target_Value", 0, "", $oXMLProfil))
+								Else
+									_XML_Make($iTEMPPath & "\scraped\" & $vBoucle & ".xml", _XML_Read("Profil/Game/Target_Value", 0, "", $oXMLProfil))
+								EndIf
+								$sMailSlotName = "\\.\mailslot\Son" & $vEngineReady
+								$vMessage = _ArrayToString($aRomList, '{Break}', $vBoucle, $vBoucle, '{Break}')
+								$vResultSM = _SendMail($sMailSlotName, $vMessage)
+								$vResultSM = _SendMail($sMailSlotName, $vBoucle)
+								$vMessage = _ArrayToString($aConfig, '{Break}')
+								$vResultSM = _SendMail($sMailSlotName, $vMessage)
+								$vResultSM = _SendMail($sMailSlotName, $vProfilsPath)
 								$aRomList[$vBoucle][11] = 1
 								$vRomSend += 1
-								$vThreadUsed += 1
-								If $vThreadUsed > $vNbThread Then $vThreadUsed = 1
-							Else ; Try to relaunch scrape engine
-								_LOG("Error Thread No " & $vThreadUsed & " Doesn't exist anymore Try to Relaunch", 2, $iLOGPath)
-								ShellExecute($iScriptPath & "\" & $iScraper, $vThreadUsed)
-								$vBoucle -= 1
 							EndIf
 						EndIf
 					EndIf
@@ -2402,7 +2317,6 @@ Func _SCRAPE($oXMLProfil, $vNbThread = 1, $vFullScrape = 0)
 					$vRomReceived += 1
 
 					;Timers
-;~ 					$vSendTimerTotal = Round(TimerDiff($vEngineTimer) / 1000, 2)
 					$vSendTimerTotal += $aRomList[$aMessageFromChild[0]][10]
 					$vSendTimerMoy = Round(Round($vSendTimerTotal / $vRomReceived, 2) / $vNbThread, 2)
 					$vSendTimerLeft = $vSendTimerMoy * (((UBound($aRomList) - 1 - $vBoucle) * ($vBoucle / $vRomSend)) + ($vRomSend - $vRomReceived))
@@ -2485,7 +2399,7 @@ EndFunc   ;==>_SCRAPE
 Func _CreateMissing($aRomList, $aConfig)
 	Local $vMaxNameLen = 68
 	$vSysName = _XML_Read('/Data/systeme[id=' & $aConfig[12] & ']/noms/nom_eu', 0, $iScriptPath & "\Ressources\systemlist.xml")
-;~ 	_ArrayDisplay($aConfig, "$aConfig")
+;~ 	_ArrayDisplay($aConfig, "$aConfig") ;Debug
 	If Not _FileCreate($aConfig[1] & '\_' & $vSysName & "_missing.txt") Then MsgBox(4096, "Error", " Erreur creation du Fichier missing      error:" & @error)
 	For $vBoucle = 1 To UBound($aRomList) - 1
 		If $aRomList[$vBoucle][9] = 0 Then
@@ -2710,3 +2624,4 @@ EndFunc   ;==>_TestServer
 ;~ $aDIRList[][3] = Target gamelist.xml full Local path
 ;~ $aDIRList[][4] = Source Image directory full Local path
 ;~ $aDIRList[][5] = Target Image directory full Local path
+
