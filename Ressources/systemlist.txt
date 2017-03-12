@@ -54,12 +54,10 @@ Daphne|Daphne
 Dc|Dreamcast
 Doom|PC Dos
 Dragon 32|Dragon 32/64
-Dragon 32/64|Dragon 32/64
 Dragon 3264|Dragon 32/64
 Dragon 32-64|Dragon 32/64
 Dragon 64|Dragon 32/64
 Dragon32|Dragon 32/64
-Dragon32/64|Dragon 32/64
 Dragon3264|Dragon 32/64
 Dragon32-64|Dragon 32/64
 Dragon64|Dragon 32/64
@@ -124,12 +122,12 @@ N64|Nintendo 64
 NEC - PC Engine - TurboGrafx 16|PC Engine
 NEC - PC Engine SuperGrafx|PC Engine SuperGrafx
 NEC - Super Grafx|PC Engine SuperGrafx
-Neogeo|Mame
-Neo-Geo|Mame
-NeoGeo AES|Mame
-Neo-Geo AES|Mame
-Neogeo MVS|Mame
-Neo-Geo MVS|Mame
+Neogeo|Neo-Geo
+Neo-Geo|Neo-Geo
+NeoGeo AES|Neo-Geo
+Neo-Geo AES|Neo-Geo
+Neogeo MVS|Neo-Geo
+Neo-Geo MVS|Neo-Geo
 Neo-Geo Pocket|Neo-Geo Pocket
 Neo-Geo Pocket Color|Neo-Geo Pocket Color
 Nes|NES
@@ -164,7 +162,6 @@ Pcengine|PC Engine
 Pcenginecd|PC Engine CD-Rom
 Philips - Videopac+|Videopac G7000
 Playstation|Playstation
-Plus/4|Plus/4
 Plus4|Plus/4
 Plus-4|Plus/4
 Prboom|PC Dos

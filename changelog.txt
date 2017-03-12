@@ -1,3 +1,29 @@
+2.2.0.0
+* Corrected :
+ - Problem with Fullscrape
+ - Full Scrape result
+ - Problem with multi scrape in one session
+* Modification :
+ - Menu reorganised
+ - New Wizard
+ - New Profil Handling (now there is only 2 Profils Recalbox & Retropie)
+* Added :
+ - New Tag Name [Country] (Clone, Beta, Demo, Proto, Trad, Hack, Unl, Alt, Best)
+ - New option Menu (Where you can choose MIX or not, and lot's of stuff)
+ - New option to scrape or not in zip file
+ - New system logo on interface when plateform is selected
+ - New Language added : English became English UK and English US to handle media from each country
+* coming soon :
+ - New Server
+ - New API
+ - New error handling
+* WARNING The Profil have change, So if you have make your own Profil, it may be broke.
+	Please re-use a standard profil to make your modification and save it with an other name.
+	Don't modify the 2 standard Profil (Recalbox.xml and Retropie.xml)
+* HELP WANTED : look for some translation about the new wizard.
+	If you can help in German, Spanish, Dutch, Portugaise, Japanaise, Italian. You are welcome Then
+	(Juste look in the LanguageFiles Folder. Open the XML. The stuff needing translation are at the end ;) )
+
 2.1.0.6
 * Corrected :
  - Problem on System Media Download

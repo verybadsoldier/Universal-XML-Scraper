@@ -1,0 +1,373 @@
+<?xml version="1.0" encoding="UTF-8"?><Profil Name="Recalbox">
+	<General>
+		<Source_Image>Recalbox.jpg</Source_Image>
+		<UpperCase>True</UpperCase>
+		<Mix>False</Mix>
+		<Target_Image_Extension>jpg</Target_Image_Extension>
+		<Target_Image_Width>600</Target_Image_Width>
+		<Target_Image_Height>400</Target_Image_Height>
+		<Research>*.32x;*.a26;*.a78;*.bin;*.cbn;*.ccd;*.cdi;*.chd;*.col;*.cso;*.cue;*.d64;*.do;*.dos;*.dsk;*.exe;*.fba;*.fds;*.gb;*.gba;*.gbc;*.gc;*.gcz;*.gdi;*.gen;*.gg;*.img;*.iso;*.lnx;*.lua;*.lutro;*.md;*.mgd;*.mgw;*.moonlight;*.mx1;*.mx2;*.n64;*.nes;*.ngc;*.ngp;*.nib;*.p;*.pbp;*.pc;*.pce;*.po;*.rom;*.rzx;*.scl;*.scummvm;*.sfc;*.sg;*.sgx;*.smc;*.smd;*.sms;*.st;*.stx;*.t64;*.tap;*.trd;*.tzx;*.v64;*.vb;*.vec;*.wad;*.wbfs;*.ws;*.wsc;*.x64;*.z64;*.z80;*.zip;*.zx80||</Research>
+	</General>
+	<DefaultAutoConf>
+		<Source_RootPath>\\RECALBOX\share\roms</Source_RootPath>
+		<Target_XMLName>%Source_RootPath%\%system%\gamelist.xml</Target_XMLName>
+		<Target_RomPath>./</Target_RomPath>
+		<Source_ImagePath>%Source_RootPath%\%system%\downloaded_images</Source_ImagePath>
+		<Target_ImagePath>./downloaded_images/</Target_ImagePath>
+	</DefaultAutoConf>
+	<AutoConf>
+		<Source_RootPath>\\RECALBOX\share\roms</Source_RootPath>
+		<Target_XMLName>%Source_RootPath%\%system%\gamelist.xml</Target_XMLName>
+		<Target_RomPath>./</Target_RomPath>
+		<Source_ImagePath>%Source_RootPath%\%system%\downloaded_images</Source_ImagePath>
+		<Target_ImagePath>./downloaded_images/</Target_ImagePath>
+	</AutoConf>
+	<Plink>
+		<Ip>RECALBOX</Ip>
+		<Root>root</Root>
+		<Pswd>recalboxroot</Pswd>
+		<Command>
+			<killall>killall emulationstation</killall>
+			<reboot>/sbin/reboot</reboot>
+			<poweroff>/sbin/poweroff</poweroff>
+		</Command>
+	</Plink>
+	<Root>
+		<Source_Value>Data</Source_Value>
+		<Target_Value>gameList</Target_Value>
+	</Root>
+	<Game>
+		<Source_Value>game</Source_Value>
+		<Target_Value>game</Target_Value>
+	</Game>
+	<Country>
+		<Source_Value>Data/jeu/regionshortnames/regionshortname</Source_Value>
+	</Country>
+	<Element Type="Id">
+		<Source_Type>XML_Value</Source_Type>
+		<Source_Value>Data/jeu/id</Source_Value>
+		<Target_Type>XML_Attribute</Target_Type>
+		<Target_Attribute_Name>id</Target_Attribute_Name>
+		<Target_Value>game</Target_Value>
+	</Element>
+	<Element Type="Source">
+		<Source_Type>Fixe_Value</Source_Type>
+		<Source_Value>ScreenScraper</Source_Value>
+		<Target_Type>XML_Attribute</Target_Type>
+		<Target_Attribute_Name>source</Target_Attribute_Name>
+		<Target_Value>game</Target_Value>
+	</Element>
+	<Element Type="RomPath">
+		<Source_Type>Variable_Value</Source_Type>
+		<Source_Value>%XML_Rom_Path%</Source_Value>
+		<Target_Type>XML_Value</Target_Type>
+		<Target_Value>game/path</Target_Value>
+	</Element>
+	<Element Type="Name">
+		<Source_Type>XML_Value</Source_Type>
+		<Source_Value>Data/jeu/noms/nom_%COUNTRY%</Source_Value>
+		<Target_Type>XML_Value_FORMAT</Target_Type>
+		<Target_FORMAT>%Name+Option%</Target_FORMAT>
+		<Target_Value>game/name</Target_Value>
+		<Target_CASE>True</Target_CASE>
+		<Target_NameOption_Country>YesNoWorld</Target_NameOption_Country>
+		<Target_NameOption_Clone>Yes</Target_NameOption_Clone>
+		<Target_NameOption_Beta>Yes</Target_NameOption_Beta>
+		<Target_NameOption_Demo>Yes</Target_NameOption_Demo>
+		<Target_NameOption_Proto>Yes</Target_NameOption_Proto>
+		<Target_NameOption_Trad>Yes</Target_NameOption_Trad>
+		<Target_NameOption_Hack>Yes</Target_NameOption_Hack>
+		<Target_NameOption_Unl>Yes</Target_NameOption_Unl>
+		<Target_NameOption_Alt>No</Target_NameOption_Alt>
+		<Target_NameOption_Best>No</Target_NameOption_Best>
+	</Element>
+	<Element Type="Description">
+		<Source_Type>XML_Value</Source_Type>
+		<Source_Value>Data/jeu/synopsis/synopsis_%LANG%</Source_Value>
+		<Target_Type>XML_Value</Target_Type>
+		<Target_Value>game/desc</Target_Value>
+		<Target_CASE>True</Target_CASE>
+	</Element>
+	<Element Type="Picture">
+		<Source_Type>XML_Download</Source_Type>
+		<Source_Download_Path>%Local_Path_File%</Source_Download_Path>
+		<Source_Download_Tag>-image</Source_Download_Tag>
+		<Source_Download_Ext>jpg</Source_Download_Ext>
+		<Source_Value>Data/jeu/medias/media_screenshot</Source_Value>
+		<Target_Type>XML_Path</Target_Type>
+		<Target_Path_Type>%XML_Path_File%</Target_Path_Type>
+		<Target_Value>game/image</Target_Value>
+	</Element>
+		<Element Type="Picture Alt">
+		<Source_Type>XML_Download</Source_Type>
+		<Source_Download_Path>%Local_Path_File%</Source_Download_Path>
+		<Source_Download_Tag>-image</Source_Download_Tag>
+		<Source_Download_Ext>jpg</Source_Download_Ext>
+		<Source_Value>Data/jeu/medias/media_boxs/media_boxs2d/media_box2d_%COUNTRY%</Source_Value>
+		<Target_Type>XML_Path</Target_Type>
+		<Target_Path_Type>%XML_Path_File%</Target_Path_Type>
+		<Target_Value>game/image</Target_Value>
+	</Element>
+	<Element Type="Rating">
+		<Source_Type>XML_Value</Source_Type>
+		<Source_Value>Data/jeu/note</Source_Value>
+		<Target_Type>XML_Value_FORMAT</Target_Type>
+		<Target_FORMAT>%20on1%</Target_FORMAT>
+		<Target_Value>game/rating</Target_Value>
+	</Element>
+	<Element Type="ReleaseDate">
+		<Source_Type>XML_Value</Source_Type>
+		<Source_Value>Data/jeu/dates/date_%COUNTRY%</Source_Value>
+		<Target_Type>XML_Value_FORMAT</Target_Type>
+		<Target_FORMAT>%ES_Date%</Target_FORMAT>
+		<Target_Value>game/releasedate</Target_Value>
+	</Element>
+	<Element Type="Developer">
+		<Source_Type>XML_Value</Source_Type>
+		<Source_Value>Data/jeu/developpeur</Source_Value>
+		<Target_Type>XML_Value</Target_Type>
+		<Target_Value>game/developer</Target_Value>
+		<Target_CASE>True</Target_CASE>
+	</Element>
+	<Element Type="Publisher">
+		<Source_Type>XML_Value</Source_Type>
+		<Source_Value>Data/jeu/editeur</Source_Value>
+		<Target_Type>XML_Value</Target_Type>
+		<Target_Value>game/publisher</Target_Value>
+		<Target_CASE>True</Target_CASE>
+	</Element>
+	<Element Type="Genre">
+		<Source_Type>XML_Value</Source_Type>
+		<Source_Value>Data/jeu/genres/genres_%LANG%/genre_%LANG%</Source_Value>
+		<Target_Type>XML_Value</Target_Type>
+		<Target_Value>game/genre</Target_Value>
+		<Target_CASE>True</Target_CASE>
+	</Element>
+	<Element Type="NbPlayer">
+		<Source_Type>XML_Value</Source_Type>
+		<Source_Value>Data/jeu/joueurs</Source_Value>
+		<Target_Type>XML_Value</Target_Type>
+		<Target_Value>game/players</Target_Value>
+	</Element>
+	<Element Type="Region">
+		<Source_Type>XML_Value</Source_Type>
+		<Source_Value>Data/jeu/region</Source_Value>
+		<Target_Type>XML_Value</Target_Type>
+		<Target_Value>game/region</Target_Value>
+	</Element>
+	<Element Type="RomHidden">
+		<Source_Type>Variable_Value</Source_Type>
+		<Source_Value>%AutoHide%</Source_Value>
+		<AutoHideEXT>bin|img|iso</AutoHideEXT>
+		<AutoHideValue>(Track |[Bios]|(Bios)</AutoHideValue>
+		<Target_Type>XML_Value</Target_Type>
+		<Target_Value>game/hidden</Target_Value>
+	</Element>
+	<Options>
+		<Option>
+			<Option_Group>Media</Option_Group>
+			<Option_Condition>None</Option_Condition>
+			<Option_Name>MediaType</Option_Name>
+			<Type>Picture</Type>
+			<NodeName>Source_Type</NodeName>
+			<Source_Value_Option Name="SimpleMedia" Desc="The Game Screenshot">XML_Download</Source_Value_Option>
+			<Source_Value_Option Name="MixMedia" Desc="The Game Screenshot">MIX_Template</Source_Value_Option>
+		</Option>
+		<Option>
+			<Option_Group>Media</Option_Group>
+			<Option_Condition Value="XML_Download">Profil/Element[@Type = "Picture"]/Source_Type</Option_Condition>
+			<Option_Name>Separator</Option_Name>
+		</Option>
+		<Option>
+			<Option_Group>Media</Option_Group>
+			<Option_Condition Value="XML_Download">Profil/Element[@Type = "Picture"]/Source_Type</Option_Condition>
+			<Option_Name>DefaultPicture</Option_Name>
+			<Type>Picture</Type>
+			<NodeName>Source_Value</NodeName>
+			<Source_Value_Option Name="Screenshot" Desc="The Game Screenshot">Data/jeu/medias/media_screenshot</Source_Value_Option>
+			<Source_Value_Option Name="Box2D" Desc="The Box Front in 2D">Data/jeu/medias/media_boxs/media_boxs2d/media_box2d_%COUNTRY%</Source_Value_Option>
+			<Source_Value_Option Name="Box3D" Desc="The Box Front and Side in 3D">Data/jeu/medias/media_boxs/media_boxs3d/media_box3d_%COUNTRY%</Source_Value_Option>
+			<Source_Value_Option Name="BoxTexture" Desc="The Box Back, Side and Front">Data/jeu/medias/media_boxs/media_boxstexture/media_boxtexture_%COUNTRY%</Source_Value_Option>
+			<Source_Value_Option Name="Support2D" Desc="The Media in 2D">Data/jeu/medias/media_supports/media_supports2d/media_support2d_%COUNTRY%</Source_Value_Option>
+			<Source_Value_Option Name="SupportTexture" Desc="The Media Label">Data/jeu/medias/media_supports/media_supportstexture/media_supporttexture_%COUNTRY%</Source_Value_Option>
+			<Source_Value_Option Name="Fanart" Desc="Big Fanart representing the game">Data/jeu/medias/media_fanart</Source_Value_Option>
+			<Source_Value_Option Name="Wheels" Desc="The game Logo">Data/jeu/medias/media_wheels/media_wheel_%COUNTRY%</Source_Value_Option>
+			<Source_Value_Option Name="WheelsCarbon" Desc="The game Logo in a Carbon Wheel">Data/jeu/medias/media_wheelscarbon/media_wheelcarbon_%COUNTRY%</Source_Value_Option>
+			<Source_Value_Option Name="WheelsSteel" Desc="The game Logo in a Steel Wheel">Data/jeu/medias/media_wheelssteel/media_wheelsteel_%COUNTRY%</Source_Value_Option>
+		</Option>
+		<Option>
+			<Option_Group>Media</Option_Group>
+			<Option_Condition Value="XML_Download">Profil/Element[@Type = "Picture"]/Source_Type</Option_Condition>
+			<Option_Name>AlternativePicture</Option_Name>
+			<Type>Picture Alt</Type>
+			<NodeName>Source_Value</NodeName>
+			<Source_Value_Option Name="Screenshot" Desc="The Game Screenshot">Data/jeu/medias/media_screenshot</Source_Value_Option>
+			<Source_Value_Option Name="Box2D" Desc="The Box Front in 2D">Data/jeu/medias/media_boxs/media_boxs2d/media_box2d_%COUNTRY%</Source_Value_Option>
+			<Source_Value_Option Name="Box3D" Desc="The Box Front and Side in 3D">Data/jeu/medias/media_boxs/media_boxs3d/media_box3d_%COUNTRY%</Source_Value_Option>
+			<Source_Value_Option Name="BoxTexture" Desc="The Box Back, Side and Front">Data/jeu/medias/media_boxs/media_boxstexture/media_boxtexture_%COUNTRY%</Source_Value_Option>
+			<Source_Value_Option Name="Support2D" Desc="The Media in 2D">Data/jeu/medias/media_supports/media_supports2d/media_support2d_%COUNTRY%</Source_Value_Option>
+			<Source_Value_Option Name="SupportTexture" Desc="The Media Label">Data/jeu/medias/media_supports/media_supportstexture/media_supporttexture_%COUNTRY%</Source_Value_Option>
+			<Source_Value_Option Name="Fanart" Desc="Big Fanart representing the game">Data/jeu/medias/media_fanart</Source_Value_Option>
+			<Source_Value_Option Name="Wheels" Desc="The game Logo">Data/jeu/medias/media_wheels/media_wheel_%COUNTRY%</Source_Value_Option>
+			<Source_Value_Option Name="WheelsCarbon" Desc="The game Logo in a Carbon Wheel">Data/jeu/medias/media_wheelscarbon/media_wheelcarbon_%COUNTRY%</Source_Value_Option>
+			<Source_Value_Option Name="WheelsSteel" Desc="The game Logo in a Steel Wheel">Data/jeu/medias/media_wheelssteel/media_wheelsteel_%COUNTRY%</Source_Value_Option>
+		</Option>
+		<Option>
+			<Option_Group>Name</Option_Group>
+			<Option_Condition>None</Option_Condition>
+			<Option_Name>NameFormat</Option_Name>
+			<Type>Name</Type>
+			<NodeName>Target_FORMAT</NodeName>
+			<Source_Value_Option Name="Standard" Desc="The Game Name">%%</Source_Value_Option>
+			<Source_Value_Option Name="GamenameOption" Desc="The Game Name + Selected Options">%Name+Option%</Source_Value_Option>
+			<Source_Value_Option Name="GamenameFilneameBracket" Desc="The Game Name + The Rom FileName Bracket">%Name+Filename_Bracket%</Source_Value_Option>
+			<Source_Value_Option Name="Filename" Desc="The Rom FileName without extension">%Filename%</Source_Value_Option>
+		</Option>
+		<Option>
+			<Option_Group>Name</Option_Group>
+			<Option_Condition Value="%Name+Option%">Profil/Element[@Type = "Name"]/Target_FORMAT</Option_Condition>
+			<Option_Name>Separator</Option_Name>
+		</Option>
+		<Option>
+			<Option_Group>Name</Option_Group>
+			<Option_Condition Value="%Name+Option%">Profil/Element[@Type = "Name"]/Target_FORMAT</Option_Condition>
+			<Option_Name>Country</Option_Name>
+			<Type>Name</Type>
+			<NodeName>Target_NameOption_Country</NodeName>
+			<Source_Value_Option Name="Yes" Desc="Add the country to the name">Yes</Source_Value_Option>
+			<Source_Value_Option Name="YesWithoutWord" Desc="Add the country to the name">YesNoWorld</Source_Value_Option>
+			<Source_Value_Option Name="No" Desc="Add nothing to the name">No</Source_Value_Option>
+		</Option>
+		<Option>
+			<Option_Group>Name</Option_Group>
+			<Option_Condition Value="%Name+Option%">Profil/Element[@Type = "Name"]/Target_FORMAT</Option_Condition>
+			<Option_Name>Clone</Option_Name>
+			<Type>Name</Type>
+			<NodeName>Target_NameOption_Clone</NodeName>
+			<Source_Value_Option Name="Yes" Desc="Add the tag (Clone) to the name">Yes</Source_Value_Option>
+			<Source_Value_Option Name="No" Desc="Add nothing to the name">No</Source_Value_Option>
+		</Option>
+		<Option>
+			<Option_Group>Name</Option_Group>
+			<Option_Condition Value="%Name+Option%">Profil/Element[@Type = "Name"]/Target_FORMAT</Option_Condition>
+			<Option_Name>Beta</Option_Name>
+			<Type>Name</Type>
+			<NodeName>Target_NameOption_Beta</NodeName>
+			<Source_Value_Option Name="Yes" Desc="Add the tag (Beta) to the name">Yes</Source_Value_Option>
+			<Source_Value_Option Name="No" Desc="Add nothing to the name">No</Source_Value_Option>
+		</Option>
+		<Option>
+			<Option_Group>Name</Option_Group>
+			<Option_Condition Value="%Name+Option%">Profil/Element[@Type = "Name"]/Target_FORMAT</Option_Condition>
+			<Option_Name>Demo</Option_Name>
+			<Type>Name</Type>
+			<NodeName>Target_NameOption_Demo</NodeName>
+			<Source_Value_Option Name="Yes" Desc="Add the tag (Demo) to the name">Yes</Source_Value_Option>
+			<Source_Value_Option Name="No" Desc="Add nothing to the name">No</Source_Value_Option>
+		</Option>
+		<Option>
+			<Option_Group>Name</Option_Group>
+			<Option_Condition Value="%Name+Option%">Profil/Element[@Type = "Name"]/Target_FORMAT</Option_Condition>
+			<Option_Name>Proto</Option_Name>
+			<Type>Name</Type>
+			<NodeName>Target_NameOption_Proto</NodeName>
+			<Source_Value_Option Name="Yes" Desc="Add the tag (Proto) to the name">Yes</Source_Value_Option>
+			<Source_Value_Option Name="No" Desc="Add nothing to the name">No</Source_Value_Option>
+		</Option>
+		<Option>
+			<Option_Group>Name</Option_Group>
+			<Option_Condition Value="%Name+Option%">Profil/Element[@Type = "Name"]/Target_FORMAT</Option_Condition>
+			<Option_Name>Trad</Option_Name>
+			<Type>Name</Type>
+			<NodeName>Target_NameOption_Trad</NodeName>
+			<Source_Value_Option Name="Yes" Desc="Add the tag (Trad) to the name">Yes</Source_Value_Option>
+			<Source_Value_Option Name="No" Desc="Add nothing to the name">No</Source_Value_Option>
+		</Option>
+		<Option>
+			<Option_Group>Name</Option_Group>
+			<Option_Condition Value="%Name+Option%">Profil/Element[@Type = "Name"]/Target_FORMAT</Option_Condition>
+			<Option_Name>Hack</Option_Name>
+			<Type>Name</Type>
+			<NodeName>Target_NameOption_Hack</NodeName>
+			<Source_Value_Option Name="Yes" Desc="Add the tag (Hack) to the name">Yes</Source_Value_Option>
+			<Source_Value_Option Name="No" Desc="Add nothing to the name">No</Source_Value_Option>
+		</Option>
+		<Option>
+			<Option_Group>Name</Option_Group>
+			<Option_Condition Value="%Name+Option%">Profil/Element[@Type = "Name"]/Target_FORMAT</Option_Condition>
+			<Option_Name>Unl</Option_Name>
+			<Type>Name</Type>
+			<NodeName>Target_NameOption_Unl</NodeName>
+			<Source_Value_Option Name="Yes" Desc="Add the tag (Unl) to the name">Yes</Source_Value_Option>
+			<Source_Value_Option Name="No" Desc="Add nothing to the name">No</Source_Value_Option>
+		</Option>
+		<Option>
+			<Option_Group>Name</Option_Group>
+			<Option_Condition Value="%Name+Option%">Profil/Element[@Type = "Name"]/Target_FORMAT</Option_Condition>
+			<Option_Name>Alt</Option_Name>
+			<Type>Name</Type>
+			<NodeName>Target_NameOption_Alt</NodeName>
+			<Source_Value_Option Name="Yes" Desc="Add the tag (Alt) to the name">Yes</Source_Value_Option>
+			<Source_Value_Option Name="No" Desc="Add nothing to the name">No</Source_Value_Option>
+		</Option>
+		<Option>
+			<Option_Group>Name</Option_Group>
+			<Option_Condition Value="%Name+Option%">Profil/Element[@Type = "Name"]/Target_FORMAT</Option_Condition>
+			<Option_Name>Best</Option_Name>
+			<Type>Name</Type>
+			<NodeName>Target_NameOption_Best</NodeName>
+			<Source_Value_Option Name="Yes" Desc="Add the tag (Best) to the name">Yes</Source_Value_Option>
+			<Source_Value_Option Name="No" Desc="Add nothing to the name">No</Source_Value_Option>
+		</Option>
+		<Option>
+			<Option_Group>Case</Option_Group>
+			<Option_Condition>None</Option_Condition>
+			<Option_Name>NameCase</Option_Name>
+			<Type>Name</Type>
+			<NodeName>Target_CASE</NodeName>
+			<Source_Value_Option Name="Default" Desc="Name like it is from DB">Default</Source_Value_Option>
+			<Source_Value_Option Name="UpperCase" Desc="Name in UPPER CASE">True</Source_Value_Option>
+			<Source_Value_Option Name="LowerCase" Desc="Name in LOWER CASE">False</Source_Value_Option>
+		</Option>
+		<Option>
+			<Option_Group>Case</Option_Group>
+			<Option_Condition>None</Option_Condition>
+			<Option_Name>DescriptionCase</Option_Name>
+			<Type>Description</Type>
+			<NodeName>Target_CASE</NodeName>
+			<Source_Value_Option Name="Default" Desc="Description like it is from DB">Default</Source_Value_Option>
+			<Source_Value_Option Name="UpperCase" Desc="Description in UPPER CASE">True</Source_Value_Option>
+			<Source_Value_Option Name="LowerCase" Desc="Description in LOWER CASE">False</Source_Value_Option>
+		</Option>
+		<Option>
+			<Option_Group>Case</Option_Group>
+			<Option_Condition>None</Option_Condition>
+			<Option_Name>DeveloperCase</Option_Name>
+			<Type>Developer</Type>
+			<NodeName>Target_CASE</NodeName>
+			<Source_Value_Option Name="Default" Desc="Developer like it is from DB">Default</Source_Value_Option>
+			<Source_Value_Option Name="UpperCase" Desc="Developer in UPPER CASE">True</Source_Value_Option>
+			<Source_Value_Option Name="LowerCase" Desc="Developer in LOWER CASE">False</Source_Value_Option>
+		</Option>
+		<Option>
+			<Option_Group>Case</Option_Group>
+			<Option_Condition>None</Option_Condition>
+			<Option_Name>PublisherCase</Option_Name>
+			<Type>Publisher</Type>
+			<NodeName>Target_CASE</NodeName>
+			<Source_Value_Option Name="Default" Desc="Publisher like it is from DB">Default</Source_Value_Option>
+			<Source_Value_Option Name="UPPERCASE" Desc="Publisher in UPPER CASE">True</Source_Value_Option>
+			<Source_Value_Option Name="lowerCase" Desc="Publisher in LOWER CASE">False</Source_Value_Option>
+		</Option>
+		<Option>
+			<Option_Group>Case</Option_Group>
+			<Option_Condition>None</Option_Condition>
+			<Option_Name>GenreCase</Option_Name>
+			<Type>Genre</Type>
+			<NodeName>Target_CASE</NodeName>
+			<Source_Value_Option Name="Default" Desc="Genre like it is from DB">Default</Source_Value_Option>
+			<Source_Value_Option Name="UpperCase" Desc="Genre in UPPER CASE">True</Source_Value_Option>
+			<Source_Value_Option Name="LowerCase" Desc="Genre in LOWER CASE">False</Source_Value_Option>
+		</Option>
+	</Options>
+</Profil>

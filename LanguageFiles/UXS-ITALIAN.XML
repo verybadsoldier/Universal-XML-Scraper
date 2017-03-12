@@ -1,5 +1,5 @@
 <datapref>
-	<langpref>it|en</langpref>
+	<langpref>it|en|wor</langpref>
 	<countrypref>%COUNTRY%|it|eu|wor|ss|us|jp|cus</countrypref>
 </datapref>
 <error>
@@ -39,7 +39,7 @@
 	<mnu_cfg_Wizard>Lancia configurazione guidata</mnu_cfg_Wizard>
 	<mnu_cfg_config_LU>Configurazione Percorso</mnu_cfg_config_LU>
 	<mnu_cfg_config_MISC>Configurazione Generale</mnu_cfg_config_MISC>
-	<mnu_cfg_config_Option>Configurazione Opzioni</mnu_cfg_config_Option>
+	<mnu_cfg_config_Option>Opzioni</mnu_cfg_config_Option>
 	<mnu_cfg_config_PIC>Configurazione Immagini</mnu_cfg_config_PIC>
 	<mnu_cfg_config_autoconf>Configurazione Percorso di autoconfigurazione</mnu_cfg_config_autoconf>
 	<mnu_cfg_profil>Modifica il tuo profilo</mnu_cfg_profil>
@@ -49,7 +49,7 @@
 	
 	<mnu_scrape>Scansiona</mnu_scrape>
 	<mnu_scrape_autoconf>Seleziona il tuo sistema (Autoconf)</mnu_scrape_autoconf>
-	<mnu_scrape_solo>Scansiona	</mnu_scrape_solo>
+	<mnu_scrape_solo>Scansiona</mnu_scrape_solo>
 	<mnu_scrape_fullscrape>Scansiona tutti i tuoi sistemi</mnu_scrape_fullscrape>
 	
 	<mnu_ssh>Comando SSH</mnu_ssh>
@@ -65,134 +65,237 @@
 	<mnu_help_link>Links</mnu_help_link>
 	<mnu_help_about>About</mnu_help_about>
 	</menu>
+	
 	<windows>
-	<scrap_button>Scansiona</scrap_button>
-	<scrap_cancel_button>Annulla</scrap_cancel_button>
-	<win_sel_langue>
-		<win_sel_langue_Title>Seleziona la tua lingua</win_sel_langue_Title>
-		<win_sel_langue_text>Seleziona la tua lingua</win_sel_langue_text>
-		<win_sel_langue_button>Seleziona</win_sel_langue_button>
-	</win_sel_langue>
-	<win_sel_profil>
-		<win_sel_profil_Title>Seleziona il tuo profilo</win_sel_profil_Title>
-		<win_sel_profil_text>Seleziona il tuo profilo</win_sel_profil_text>
-		<win_sel_profil_button>Seleziona</win_sel_profil_button>
-	</win_sel_profil>
-	<win_sel_system>
-		<win_sel_system_Title>Seleziona il tuo sistema</win_sel_system_Title>
-		<win_sel_system_text>Seleziona il tuo sistema</win_sel_system_text>
-		<win_sel_system_button>Seleziona</win_sel_system_button>
-	</win_sel_system>
-	<win_config>
-		<win_config_LU_Title>Configurazione Percorso</win_config_LU_Title>
-		<win_config_LU_GroupScrap>Scanner</win_config_LU_GroupScrap>
-		<win_config_LU_GroupScrap_Source_RootPath>Cartella delle Rom da scansionare</win_config_LU_GroupScrap_Source_RootPath>
-		<win_config_LU_GroupScrap_Source_RomPath>Cartella delle Rom da scansionare</win_config_LU_GroupScrap_Source_RomPath>
-		<win_config_LU_GroupScrap_Target_XMLName>Percorso del file XML</win_config_LU_GroupScrap_Target_XMLName>
-		<win_config_LU_GroupScrap_Target_RomPath>Percorso delle roms nel tuo file XML</win_config_LU_GroupScrap_Target_RomPath>
-		<win_config_LU_GroupImage>Immagini</win_config_LU_GroupImage>
-		<win_config_LU_GroupImage_Source_ImagePath>Cartella in cui saranno scaricate le immagini</win_config_LU_GroupImage_Source_ImagePath>
-		<win_config_LU_GroupImage_Target_ImagePath>Percorso delle immagini nel tuo file XML</win_config_LU_GroupImage_Target_ImagePath>
-		
-		<win_config_PIC_Title>Configurazione immagini</win_config_PIC_Title>
-		<win_config_PIC_GroupPICParam>Parametri immagine</win_config_PIC_GroupPICParam>
-		<win_config_PIC_GroupPICParam_PicSize>Dimensione immagine</win_config_PIC_GroupPICParam_PicSize>
-		<win_config_PIC_GroupPICParam_PicExt>Estensione immagine</win_config_PIC_GroupPICParam_PicExt>
-		
-		<win_config_Option_Title>Configurazione Opzioni</win_config_Option_Title>
-		<win_config_Option_GroupOption>Oggetto da modificare</win_config_Option_GroupOption>
-		<win_config_Option_GroupOption_Choice>Scelta oggetto</win_config_Option_GroupOption_Choice>
-		<win_config_Option_GroupParam>Parametro da modificare</win_config_Option_GroupParam>
-		
-		<win_config_MISC_Title>Configurazione Generale</win_config_MISC_Title>
-		<win_config_MISC_GroupMISC>Varie</win_config_MISC_GroupMISC>
-		<win_config_MISC_GroupMISC_CountryPref>Preferenze regionali</win_config_MISC_GroupMISC_CountryPref>
-		<win_config_MISC_GroupMISC_LangPref>Preferenze linguaggio</win_config_MISC_GroupMISC_LangPref>
-		<win_config_MISC_GroupMISC_ScrapeMode>Modalità di scansione</win_config_MISC_GroupMISC_ScrapeMode>
-		<win_config_MISC_GroupMISC_ScrapeModeChoice>0 - Nuovo File|1 - Aggiorna XML (Aggiungi Nuova Rom)|2 - solo creare questa immagine</win_config_MISC_GroupMISC_ScrapeModeChoice>
-		<win_config_MISC_GroupMISC_ScrapeSearchMode>Tipo di ricerca</win_config_MISC_GroupMISC_ScrapeSearchMode>
-		<win_config_MISC_GroupMISC_ScrapeSearchModeChoice>0 - CRC+FileName|1 - CRC|2 - FileName</win_config_MISC_GroupMISC_ScrapeSearchModeChoice>
-		<win_config_MISC_GroupMISC_CountryPicMode>Modo Immagine</win_config_MISC_GroupMISC_CountryPicMode>
-		<win_config_MISC_GroupMISC_CountryPicModeChoice>0 - Img Lingua|1 - Img Rom|2 - Img Lingua Strict|3 - Img Rom Strict</win_config_MISC_GroupMISC_CountryPicModeChoice>
-		<win_config_MISC_GroupMISC_Verbose>Livello di Log</win_config_MISC_GroupMISC_Verbose>
-		<win_config_MISC_GroupMISC_VerboseChoice>0 - Standard|1 - Avanzato|2 - Completo</win_config_MISC_GroupMISC_VerboseChoice>
-		<win_config_MISC_GroupMISC_MissingMode>Aggiungi rom mancanti nell'XML</win_config_MISC_GroupMISC_MissingMode>
-		<win_config_MISC_GroupMISC_RechSys>Auto seleziona il tuo sistema</win_config_MISC_GroupMISC_RechSys>
-		<win_config_MISC_GroupMISC_Mirror>Usa DigiMirror</win_config_MISC_GroupMISC_Mirror>
-		<win_config_MISC_GroupScreenScraper>Screenscraper</win_config_MISC_GroupScreenScraper>
-		<win_config_MISC_GroupScreenScraper_Login>Login di Screenscraper</win_config_MISC_GroupScreenScraper_Login>
-		<win_config_MISC_GroupScreenScraper_Password>Password di Screenscraper</win_config_MISC_GroupScreenScraper_Password>
-		<win_config_MISC_GroupScreenScraper_NbThread>Numero Thread</win_config_MISC_GroupScreenScraper_NbThread>
-		<win_config_MISC_GroupScreenScraper_Check>Verifica</win_config_MISC_GroupScreenScraper_Check>
-		<win_config_MISC_GroupScreenScraper_SSRegister>Registrati su Screenscraper</win_config_MISC_GroupScreenScraper_SSRegister>
-		<win_config_MISC_GroupRechFiles>Files scansionati</win_config_MISC_GroupRechFiles>
-		<win_config_MISC_GroupRechFiles_Include>Files inclusi</win_config_MISC_GroupRechFiles_Include>
-		<win_config_MISC_GroupRechFiles_Exclude>Files esclusi</win_config_MISC_GroupRechFiles_Exclude>
-		<win_config_MISC_GroupRechFiles_ExcludeFolder>Cartelle escluse</win_config_MISC_GroupRechFiles_ExcludeFolder>
-		
-		<win_config_autoconf_Title>Configurazione percorso di Autoconfigurazione</win_config_autoconf_Title>
-		<win_config_autoconf_Use>Utilizza autoconfigurazione</win_config_autoconf_Use>
-		<win_config_autoconf_GroupScrap>Scanner</win_config_autoconf_GroupScrap>
-		<win_config_autoconf_GroupScrap_Source_RootPath>Cartella Root di sistema</win_config_autoconf_GroupScrap_Source_RootPath>
-		<win_config_autoconf_GroupScrap_Target_XMLName>Nome del file XML</win_config_autoconf_GroupScrap_Target_XMLName>
-		<win_config_autoconf_GroupScrap_Target_RomPath>Percorso alle rom nel tuo file XML</win_config_autoconf_GroupScrap_Target_RomPath>
-		<win_config_autoconf_GroupImage>Immagine</win_config_autoconf_GroupImage>
-		<win_config_autoconf_GroupImage_Source_ImagePath>Nome della cartella dove le immagini verranno scaricate</win_config_autoconf_GroupImage_Source_ImagePath>
-		<win_config_autoconf_GroupImage_Target_ImagePath>Percorso all'immagine nel tuo file XML</win_config_autoconf_GroupImage_Target_ImagePath>
-		<win_config_Enreg>Salva</win_config_Enreg>
-		<win_config_Cancel>Annulla</win_config_Cancel>
-		<win_config_Advanced>Avanzato</win_config_Advanced>
-	</win_config>
-	<win_config_mix>
-		<win_config_mix_Title>Configurazione Mix Immagini</win_config_mix_Title>
-		<win_config_mix_empty>Esempio vuoto</win_config_mix_empty>
-		<win_config_mix_exemple>Esempio</win_config_mix_exemple>
-		<win_config_mix_Enreg>Salva</win_config_mix_Enreg>
-		<win_config_mix_Cancel>Annulla</win_config_mix_Cancel>
-	</win_config_mix>
-	<win_config_mix_Download>
-		<win_config_mix_Download_Title>Scaricare Mix Immagini</win_config_mix_Download_Title>
-		<win_config_mix_Download_empty>Empty Exemple</win_config_mix_Download_empty>
-		<win_config_mix_Download_exemple>Exemple</win_config_mix_Download_exemple>
-		<win_config_mix_Download_Download>Scaricare</win_config_mix_Download_Download>
-		<win_config_mix_Download_Exit>Uscita</win_config_mix_Download_Exit>
-	</win_config_mix_Download>
-	<win_About>
-		<win_About_Title>About</win_About_Title>
-		<win_About_By>Autore : Screech</win_About_By>
-		<win_About_Thanks>Grazie a :</win_About_Thanks>
-	</win_About>
-	<win_Results>
-		<win_Results_Title>Risultati scansione</win_Results_Title>
-		<win_Results_Text>Scansione conclusa</win_Results_Text>
-		<win_Results_FilesFound>Files trovati :	</win_Results_FilesFound>
-		<win_Results_RomsFound>Rom trovate :	</win_Results_RomsFound>
-		<win_Results_PercentFound>Percentuale Rom trovate :	</win_Results_PercentFound>
-		<win_Results_MoyTime>Tempo medio per Rom :	</win_Results_MoyTime>
-		<win_Results_FullTime>Tempo totale :	</win_Results_FullTime>
-		<win_Results_NbThread>Thread(s) usati :	</win_Results_NbThread>
-	</win_Results>
-	<win_Wizard>
-		<win_Wizard_Next>Avanti</win_Wizard_Next>
-		<win_Wizard_Back>Indietro</win_Wizard_Back>
-		<win_Wizard_End>OK</win_Wizard_End>
-		<win_Wizard_Cancel>Annulla</win_Wizard_Cancel>
-		<win_Wizard_Profil>
-		<win_Wizard_Profil_Title>Selezione profilo</win_Wizard_Profil_Title>
-		<win_Wizard_Profil_Desc>Qui puoi selezionare il profilo che corrisponde al tuo sistema operativo.|!||!|La MIX Version combina un'immagine con diverse altre come screenshot, scatola 3D e Logo del gioco.|!||!|Puoi modificare il profilo MIX nel menu : |!|"Modifica il tuo proilo Mix Immagine"|!|o proseguendo nella configurazione guidata.</win_Wizard_Profil_Desc>
-		</win_Wizard_Profil>
-		<win_Wizard_Autoconf>
-		<win_Wizard_Autoconf_Title>Percorso Autoconfigurazione</win_Wizard_Autoconf_Title>
-		<win_Wizard_Autoconf_Desc>L'autoconfigurazione ti permette di scansionare i tuoi sistemi senza perdere tempo nella configurazione dei percorsi.|!||!|Il percorso predefinito (previsto dal profilo che hai selezionato) è proprio sotto questo testo.|!|Puoi modificarlo con la cartella Root del tuo sistema.|!||!|Per esempio :|!|Le tue rom SNES sono in|!|E:\Emulation\Rom\SNES,|!|il tuo percorso di Root sarà|!|E:\Emulation\Rom</win_Wizard_Autoconf_Desc>
-		</win_Wizard_Autoconf>
-		<win_Wizard_MIX>
-		<win_Wizard_MIX_Title>Selezione profilo MIX Immagine</win_Wizard_MIX_Title>
-		<win_Wizard_MIX_Desc>Scelta profilo con MIX Immagine|!||!|Puoi scegliere l'immagine generata dal template di UXS nella schermata successiva.|!||!|ATTENZIONE, alcuni profili Mix Immagine richiedono un tema specifico nel FrontEnd.|!|(Per esempio, il profilo "Full Back" richiede un tema specifico)|!|Grazie e se necessario visita la pagina Wiki.</win_Wizard_MIX_Desc>
-		</win_Wizard_MIX>
-		<win_Wizard_END>
-		<win_Wizard_END_Title>Fine configurazione guidata</win_Wizard_END_Title>
-		<win_Wizard_END_Desc>La configurazione base di UXS è conclusa.|!||!|Puoi ora selezionare il tuo sistema in|!|"Scansiona"|!|->"Seleziona il tuo sistema (Autoconf)"|!|e lancia la tua prima Scansione.|!||!|Grazie per utilizzare Universal XML Scraper.</win_Wizard_END_Desc>
-		</win_Wizard_END>
-	</win_Wizard>
-</windows>
+		<scrap_button>Scansiona</scrap_button>
+		<scrap_cancel_button>Annulla</scrap_cancel_button>
+		<win_sel_langue>
+			<win_sel_langue_Title>Seleziona la tua lingua</win_sel_langue_Title>
+			<win_sel_langue_text>Seleziona la tua lingua</win_sel_langue_text>
+			<win_sel_langue_button>Seleziona</win_sel_langue_button>
+		</win_sel_langue>
+		<win_sel_profil>
+			<win_sel_profil_Title>Seleziona il tuo profilo</win_sel_profil_Title>
+			<win_sel_profil_text>Seleziona il tuo profilo</win_sel_profil_text>
+			<win_sel_profil_button>Seleziona</win_sel_profil_button>
+		</win_sel_profil>
+		<win_sel_system>
+			<win_sel_system_Title>Seleziona il tuo sistema</win_sel_system_Title>
+			<win_sel_system_text>Seleziona il tuo sistema</win_sel_system_text>
+			<win_sel_system_button>Seleziona</win_sel_system_button>
+		</win_sel_system>
+		<win_config>
+			<win_config_LU_Title>Configurazione Percorso</win_config_LU_Title>
+			<win_config_LU_GroupScrap>Scanner</win_config_LU_GroupScrap>
+			<win_config_LU_GroupScrap_Source_RootPath>Cartella delle Rom da scansionare</win_config_LU_GroupScrap_Source_RootPath>
+			<win_config_LU_GroupScrap_Source_RomPath>Cartella delle Rom da scansionare</win_config_LU_GroupScrap_Source_RomPath>
+			<win_config_LU_GroupScrap_Target_XMLName>Percorso del file XML</win_config_LU_GroupScrap_Target_XMLName>
+			<win_config_LU_GroupScrap_Target_RomPath>Percorso delle roms nel tuo file XML</win_config_LU_GroupScrap_Target_RomPath>
+			<win_config_LU_GroupImage>Immagini</win_config_LU_GroupImage>
+			<win_config_LU_GroupImage_Source_ImagePath>Cartella in cui saranno scaricate le immagini</win_config_LU_GroupImage_Source_ImagePath>
+			<win_config_LU_GroupImage_Target_ImagePath>Percorso delle immagini nel tuo file XML</win_config_LU_GroupImage_Target_ImagePath>
+			
+			<win_config_PIC_Title>Configurazione immagini</win_config_PIC_Title>
+			<win_config_PIC_GroupPICParam>Parametri immagine</win_config_PIC_GroupPICParam>
+			<win_config_PIC_GroupPICParam_PicSize>Dimensione immagine</win_config_PIC_GroupPICParam_PicSize>
+			<win_config_PIC_GroupPICParam_PicExt>Estensione immagine</win_config_PIC_GroupPICParam_PicExt>
+			
+			<win_config_Option_Title>Configurazione Opzioni</win_config_Option_Title>
+			<win_config_Option_GroupOption>Oggetto da modificare</win_config_Option_GroupOption>
+			<win_config_Option_GroupOption_Choice>Scelta oggetto</win_config_Option_GroupOption_Choice>
+			<win_config_Option_GroupParam>Parametro da modificare</win_config_Option_GroupParam>
+			
+			<win_config_MISC_Title>Configurazione Generale</win_config_MISC_Title>
+			<win_config_MISC_GroupMISC>Varie</win_config_MISC_GroupMISC>
+			<win_config_MISC_GroupMISC_CountryPref>Preferenze regionali</win_config_MISC_GroupMISC_CountryPref>
+			<win_config_MISC_GroupMISC_LangPref>Preferenze linguaggio</win_config_MISC_GroupMISC_LangPref>
+			<win_config_MISC_GroupMISC_ScrapeMode>Modalità di scansione</win_config_MISC_GroupMISC_ScrapeMode>
+			<win_config_MISC_GroupMISC_ScrapeModeChoice>0 - Nuovo File|1 - Aggiorna XML (Aggiungi Nuova Rom)|2 - solo creare questa immagine</win_config_MISC_GroupMISC_ScrapeModeChoice>
+			<win_config_MISC_GroupMISC_ScrapeSearchMode>Tipo di ricerca</win_config_MISC_GroupMISC_ScrapeSearchMode>
+			<win_config_MISC_GroupMISC_ScrapeSearchModeChoice>0 - CRC+FileName|1 - CRC|2 - FileName</win_config_MISC_GroupMISC_ScrapeSearchModeChoice>
+			<win_config_MISC_GroupMISC_CountryPicMode>Modo Immagine</win_config_MISC_GroupMISC_CountryPicMode>
+			<win_config_MISC_GroupMISC_CountryPicModeChoice>0 - Img Lingua|1 - Img Rom|2 - Img Lingua Strict|3 - Img Rom Strict</win_config_MISC_GroupMISC_CountryPicModeChoice>
+			<win_config_MISC_GroupMISC_Verbose>Livello di Log</win_config_MISC_GroupMISC_Verbose>
+			<win_config_MISC_GroupMISC_VerboseChoice>0 - Standard|1 - Avanzato|2 - Completo</win_config_MISC_GroupMISC_VerboseChoice>
+			<win_config_MISC_GroupMISC_MissingMode>Aggiungi rom mancanti nell'XML</win_config_MISC_GroupMISC_MissingMode>
+			<win_config_MISC_GroupMISC_RechSys>Auto seleziona il tuo sistema</win_config_MISC_GroupMISC_RechSys>
+			<win_config_MISC_GroupMISC_Mirror>Usa DigiMirror</win_config_MISC_GroupMISC_Mirror>
+			<win_config_MISC_GroupScreenScraper>Screenscraper</win_config_MISC_GroupScreenScraper>
+			<win_config_MISC_GroupScreenScraper_Login>Login di Screenscraper</win_config_MISC_GroupScreenScraper_Login>
+			<win_config_MISC_GroupScreenScraper_Password>Password di Screenscraper</win_config_MISC_GroupScreenScraper_Password>
+			<win_config_MISC_GroupScreenScraper_NbThread>Numero Thread</win_config_MISC_GroupScreenScraper_NbThread>
+			<win_config_MISC_GroupScreenScraper_Check>Verifica</win_config_MISC_GroupScreenScraper_Check>
+			<win_config_MISC_GroupScreenScraper_SSRegister>Registrati su Screenscraper</win_config_MISC_GroupScreenScraper_SSRegister>
+			<win_config_MISC_GroupRechFiles>Files scansionati</win_config_MISC_GroupRechFiles>
+			<win_config_MISC_GroupRechFiles_Include>Files inclusi</win_config_MISC_GroupRechFiles_Include>
+			<win_config_MISC_GroupRechFiles_Exclude>Files esclusi</win_config_MISC_GroupRechFiles_Exclude>
+			<win_config_MISC_GroupRechFiles_ExcludeFolder>Cartelle escluse</win_config_MISC_GroupRechFiles_ExcludeFolder>
+			
+			<win_config_autoconf_Title>Configurazione percorso di Autoconfigurazione</win_config_autoconf_Title>
+			<win_config_autoconf_Use>Utilizza autoconfigurazione</win_config_autoconf_Use>
+			<win_config_autoconf_GroupScrap>Scanner</win_config_autoconf_GroupScrap>
+			<win_config_autoconf_GroupScrap_Source_RootPath>Cartella Root di sistema</win_config_autoconf_GroupScrap_Source_RootPath>
+			<win_config_autoconf_GroupScrap_Target_XMLName>Nome del file XML</win_config_autoconf_GroupScrap_Target_XMLName>
+			<win_config_autoconf_GroupScrap_Target_RomPath>Percorso alle rom nel tuo file XML</win_config_autoconf_GroupScrap_Target_RomPath>
+			<win_config_autoconf_GroupImage>Immagine</win_config_autoconf_GroupImage>
+			<win_config_autoconf_GroupImage_Source_ImagePath>Nome della cartella dove le immagini verranno scaricate</win_config_autoconf_GroupImage_Source_ImagePath>
+			<win_config_autoconf_GroupImage_Target_ImagePath>Percorso all'immagine nel tuo file XML</win_config_autoconf_GroupImage_Target_ImagePath>
+			<win_config_Enreg>Salva</win_config_Enreg>
+			<win_config_Cancel>Annulla</win_config_Cancel>
+			<win_config_Advanced>Avanzato</win_config_Advanced>
+		</win_config>
+		<win_config_mix>
+			<win_config_mix_Title>Configurazione Mix Immagini</win_config_mix_Title>
+			<win_config_mix_empty>Esempio vuoto</win_config_mix_empty>
+			<win_config_mix_exemple>Esempio</win_config_mix_exemple>
+			<win_config_mix_Enreg>Salva</win_config_mix_Enreg>
+			<win_config_mix_Cancel>Annulla</win_config_mix_Cancel>
+		</win_config_mix>
+		<win_config_mix_Download>
+			<win_config_mix_Download_Title>Scaricare Mix Immagini</win_config_mix_Download_Title>
+			<win_config_mix_Download_empty>Empty Exemple</win_config_mix_Download_empty>
+			<win_config_mix_Download_exemple>Exemple</win_config_mix_Download_exemple>
+			<win_config_mix_Download_Download>Scaricare</win_config_mix_Download_Download>
+			<win_config_mix_Download_Exit>Uscita</win_config_mix_Download_Exit>
+		</win_config_mix_Download>
+		<win_About>
+			<win_About_Title>About</win_About_Title>
+			<win_About_By>Autore : Screech</win_About_By>
+			<win_About_Thanks>Grazie a :</win_About_Thanks>
+		</win_About>
+		<win_Results>
+			<win_Results_Title>Risultati scansione</win_Results_Title>
+			<win_Results_Text>Scansione conclusa</win_Results_Text>
+			<win_Results_FilesFound>Files trovati :</win_Results_FilesFound>
+			<win_Results_RomsFound>Rom trovate :</win_Results_RomsFound>
+			<win_Results_PercentFound>Percentuale Rom trovate :</win_Results_PercentFound>
+			<win_Results_MoyTime>Tempo medio per Rom :</win_Results_MoyTime>
+			<win_Results_FullTime>Tempo totale :</win_Results_FullTime>
+			<win_Results_NbThread>Thread(s) usati :</win_Results_NbThread>
+		</win_Results>
+
+; TRANSLATION NEEDED
+
+		<Win_Wizard>
+			<win_Wizard_Next>Next</win_Wizard_Next>
+			<win_Wizard_Back>Back</win_Wizard_Back>
+			<Win_Wizard_OS>
+				<Win_Wizard_OS_Group>Your OS</Win_Wizard_OS_Group>
+				<Win_Wizard_OS_Libelle>Select your operating system</Win_Wizard_OS_Libelle>
+				<Win_Wizard_OS_Tip_Recalbox>Recalbox</Win_Wizard_OS_Tip_Recalbox>
+				<Win_Wizard_OS_Tip_Retropie>Retropie</Win_Wizard_OS_Tip_Retropie>
+			</Win_Wizard_OS>
+			<Win_Wizard_MediaChoice>
+				<Win_Wizard_MediaChoice_Group>Visual choice</Win_Wizard_MediaChoice_Group>
+				<Win_Wizard_MediaChoice_Libelle>Select your visual</Win_Wizard_MediaChoice_Libelle>
+				<Win_Wizard_MediaChoice_Tip_Simple>A simple media</Win_Wizard_MediaChoice_Tip_Simple>
+				<Win_Wizard_MediaChoice_Tip_Mix>A several media MIX </Win_Wizard_MediaChoice_Tip_Mix>
+			</Win_Wizard_MediaChoice>
+			<Win_Wizard_MediaSimpleChoice>
+				<Win_Wizard_MediaSimpleChoice_Group>Default visual choice</Win_Wizard_MediaSimpleChoice_Group>
+				<Win_Wizard_MediaSimpleChoice_Libelle>Select your default visual</Win_Wizard_MediaSimpleChoice_Libelle>
+				<Win_Wizard_MediaSimpleChoice_Tip_SS>A Screenshot</Win_Wizard_MediaSimpleChoice_Tip_SS>
+				<Win_Wizard_MediaSimpleChoice_Tip_Wheel>A wheel</Win_Wizard_MediaSimpleChoice_Tip_Wheel>
+				<Win_Wizard_MediaSimpleChoice_Tip_2DBox>A 2D Cover</Win_Wizard_MediaSimpleChoice_Tip_2DBox>
+				<Win_Wizard_MediaSimpleChoice_Tip_3DBox>A 3D Cover</Win_Wizard_MediaSimpleChoice_Tip_3DBox>
+			</Win_Wizard_MediaSimpleChoice>
+			<Win_Wizard_MediaSimpleAltChoice>
+				<Win_Wizard_MediaSimpleAltChoice_Group>Alt visual choice</Win_Wizard_MediaSimpleAltChoice_Group>
+				<Win_Wizard_MediaSimpleAltChoice_Libelle>Select your alt visual@CRLF(If the default one don't exist)</Win_Wizard_MediaSimpleAltChoice_Libelle>
+				<Win_Wizard_MediaSimpleAltChoice_Tip_SS>A Screenshot</Win_Wizard_MediaSimpleAltChoice_Tip_SS>
+				<Win_Wizard_MediaSimpleAltChoice_Tip_Wheel>A wheel</Win_Wizard_MediaSimpleAltChoice_Tip_Wheel>
+				<Win_Wizard_MediaSimpleAltChoice_Tip_2DBox>A 2D Cover</Win_Wizard_MediaSimpleAltChoice_Tip_2DBox>
+				<Win_Wizard_MediaSimpleAltChoice_Tip_3DBox>A 3D Cover</Win_Wizard_MediaSimpleAltChoice_Tip_3DBox>
+			</Win_Wizard_MediaSimpleAltChoice>
+			<Win_Wizard_RomChoice>
+				<Win_Wizard_RomChoice_Group>Rom folder choice</Win_Wizard_RomChoice_Group>
+				<Win_Wizard_RomChoice_Libelle>Where are your roms</Win_Wizard_RomChoice_Libelle>
+				<Win_Wizard_RomChoice_Tip_RPI>On your RaspberryPi</Win_Wizard_RomChoice_Tip_RPI>
+				<Win_Wizard_RomChoice_Tip_Local>Localy (external hard drive, USB Key,...)</Win_Wizard_RomChoice_Tip_Local>
+				<Win_Wizard_RomChoice_Browse>Specify the root path of your roms directories</Win_Wizard_RomChoice_Browse>
+				<Win_Wizard_RomChoice_Browse_Warning_Title>WARNING</Win_Wizard_RomChoice_Browse_Warning_Title>
+				<Win_Wizard_RomChoice_Browse_Warning_Label>The folder you choose seem to have no rom folder.@CRLFDo you want to continue ?</Win_Wizard_RomChoice_Browse_Warning_Label>
+			</Win_Wizard_RomChoice>
+			<Win_Wizard_SSChoice>
+				<Win_Wizard_SSChoice_Group>ScreenScraper</Win_Wizard_SSChoice_Group>
+				<Win_Wizard_SSChoice_Libelle>Are you registered on ScreenScraper ?</Win_Wizard_SSChoice_Libelle>
+				<Win_Wizard_SSChoice_Tip_Yes>Yes</Win_Wizard_SSChoice_Tip_Yes>
+				<Win_Wizard_SSChoice_Tip_No>No</Win_Wizard_SSChoice_Tip_No>
+			</Win_Wizard_SSChoice>
+			<Win_Wizard_SSIdChoice>
+				<Win_Wizard_SSIdChoice_Group>ScreenScraper</Win_Wizard_SSIdChoice_Group>
+				<Win_Wizard_SSIdChoice_Id>Your Id :</Win_Wizard_SSIdChoice_Id>
+				<Win_Wizard_SSIdChoice_Tip_Id>Your ScreenScraper identification</Win_Wizard_SSIdChoice_Tip_Id>
+				<Win_Wizard_SSIdChoice_Pwd>Your Pwd :</Win_Wizard_SSIdChoice_Pwd>
+				<Win_Wizard_SSIdChoice_Tip_Pwd>Your ScreenScraper Password</Win_Wizard_SSIdChoice_Tip_Pwd>
+				<Win_Wizard_SSIdChoice_Test>Check your Id</Win_Wizard_SSIdChoice_Test>
+				<Win_Wizard_SSIdChoice_Tip_Test>Check your connexion to the website with your Id</Win_Wizard_SSIdChoice_Tip_Test>
+			</Win_Wizard_SSIdChoice>
+			<Win_Wizard_ScrapeChoice>
+				<Win_Wizard_ScrapeChoice_Group>Scrape</Win_Wizard_ScrapeChoice_Group>
+				<Win_Wizard_ScrapeChoice_Libelle>Do you wan't to scrape ?</Win_Wizard_ScrapeChoice_Libelle>
+				<Win_Wizard_ScrapeChoice_Tip_Yes>Yes</Win_Wizard_ScrapeChoice_Tip_Yes>
+				<Win_Wizard_ScrapeChoice_Tip_No>No - Back to the interface</Win_Wizard_ScrapeChoice_Tip_No>
+			</Win_Wizard_ScrapeChoice>
+		</Win_Wizard>
+	</windows>
 </gui>
+
+<Options>
+	<Option_Group_Media>Visual</Option_Group_Media>
+	<Option_Group_Name>Name</Option_Group_Name>
+	<Option_Group_Case>Case</Option_Group_Case>
+
+	<Option_Name_MediaType>Visuel type</Option_Name_MediaType>
+	<Option_Name_DefaultPicture>Default visual</Option_Name_DefaultPicture>
+	<Option_Name_AlternativePicture>Alt visual</Option_Name_AlternativePicture>
+	<Option_Name_Marquee>Marquee</Option_Name_Marquee>
+	<Option_Name_Video>Video</Option_Name_Video>
+	<Option_Name_NameFormat>Name format</Option_Name_NameFormat>
+	<Option_Name_Country>Country</Option_Name_Country>
+	<Option_Name_Clone>Clone</Option_Name_Clone>
+	<Option_Name_Beta>Beta</Option_Name_Beta>
+	<Option_Name_Demo>Demo</Option_Name_Demo>
+	<Option_Name_Proto>Prototype</Option_Name_Proto>
+	<Option_Name_Trad>Translation</Option_Name_Trad>
+	<Option_Name_Hack>Hack</Option_Name_Hack>
+	<Option_Name_Unl>Unlicensed</Option_Name_Unl>
+	<Option_Name_Alt>Alternatif</Option_Name_Alt>
+	<Option_Name_Best>Best</Option_Name_Best>
+	<Option_Name_NameCase>Name case</Option_Name_NameCase>
+	<Option_Name_DescriptionCase>Description Case</Option_Name_DescriptionCase>
+	<Option_Name_DeveloperCase>Developer Case</Option_Name_DeveloperCase>
+	<Option_Name_PublisherCase>Publisher Case</Option_Name_PublisherCase>
+	<Option_Name_GenreCase>Genre Case</Option_Name_GenreCase>
+
+	<Option_Value_SimpleMedia>Simple visual</Option_Value_SimpleMedia>
+	<Option_Value_MixMedia>MIX visual</Option_Value_MixMedia>
+	<Option_Value_Nothing>Nothing</Option_Value_Nothing>
+	<Option_Value_Marquee>Marquee</Option_Value_Marquee>
+	<Option_Value_Screenshot>Screenshot</Option_Value_Screenshot>
+	<Option_Value_Box2D>2D Cover</Option_Value_Box2D>
+	<Option_Value_Box3D>3D Cover</Option_Value_Box3D>
+	<Option_Value_BoxTexture>Texture Cover</Option_Value_BoxTexture>
+	<Option_Value_Support2D>2D Support</Option_Value_Support2D>
+	<Option_Value_SupportTexture>Texture support</Option_Value_SupportTexture>
+	<Option_Value_Fanart>Fanart</Option_Value_Fanart>
+	<Option_Value_Wheels>Wheel</Option_Value_Wheels>
+	<Option_Value_WheelsCarbon>Wheel carbon</Option_Value_WheelsCarbon>
+	<Option_Value_WheelsSteel>Wheel steel</Option_Value_WheelsSteel>
+	<Option_Value_Standard>Game name</Option_Value_Standard>
+	<Option_Value_GamenameOption>Game name + Options</Option_Value_GamenameOption>
+	<Option_Value_GamenameFilneameBracket>Game name + filename tag</Option_Value_GamenameFilneameBracket>
+	<Option_Value_Filename>Filename (without ext)</Option_Value_Filename>
+	<Option_Value_Yes>Yes</Option_Value_Yes>
+	<Option_Value_YesWithoutWord>Yes without (World)</Option_Value_YesWithoutWord>
+	<Option_Value_No>No</Option_Value_No>
+	<Option_Value_Default>Default</Option_Value_Default>
+	<Option_Value_UpperCase>UPPERCASE</Option_Value_UpperCase>
+	<Option_Value_LowerCase>lowercase</Option_Value_LowerCase>
+</Options>
+
+<mess_ssh_killallForced>UXS will kill EmulationStation to scrape.</mess_ssh_killallForced>
+<win_config_MISC_GroupMISC_ScrapeZip>UnZip files</win_config_MISC_GroupMISC_ScrapeZip>
+<mess_continue>Do you want to continue ?</mess_continue>
+<mess_Yes>Yes</mess_Yes>
+<mess_No>No</mess_No>

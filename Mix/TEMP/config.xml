@@ -2,6 +2,7 @@
 	<Infos>
 		<Author>Screech</Author>
 		<Description>3 images assembled : 3D Box, Screenshot and Wheel</Description>
+		<Link>https://www.screenscraper.fr</Link>
 	</Infos>
 	<General>
 		<Empty_Exemple>Empty_exemple.jpg</Empty_Exemple>
@@ -32,13 +33,9 @@
 		<Source_Value>Data/jeu/medias/media_screenshot</Source_Value>
 		<Target_Width>%0.9</Target_Width>
 		<Target_Height>%0.85</Target_Height>
-		<Target_TopLeftX>0</Target_TopLeftX> 
-		<Target_TopLeftY>50</Target_TopLeftY> 
-		<Target_TopRightX>500</Target_TopRightX> 
-		<Target_TopRightY>100</Target_TopRightY>
-		<Target_BottomLeftX>50</Target_BottomLeftX> 
-		<Target_BottomLeftY>300</Target_BottomLeftY>
-
+		<Target_TopLeftX>CENTER</Target_TopLeftX> 
+		<Target_OriginPicX>CENTER</Target_OriginPicX> 
+		<Target_TopLeftY>UP</Target_TopLeftY> 
 		<Target_Maximize>Yes</Target_Maximize> 
 	</Element>
 	<Element>
@@ -50,6 +47,7 @@
 		<Target_Height>%0.75</Target_Height>
 		<Target_TopLeftX>LEFT</Target_TopLeftX> 
 		<Target_TopLeftY>DOWN</Target_TopLeftY> 
+		<Target_OriginPicY>DOWN</Target_OriginPicY> 
 		<Target_Maximize>Yes</Target_Maximize> 
 	</Element>
 	<Element>
@@ -60,21 +58,9 @@
 		<Target_Width>%0.5</Target_Width>
 		<Target_Height>%0.333</Target_Height>
 		<Target_TopLeftX>RIGHT</Target_TopLeftX> 
+		<Target_OriginPicX>RIGHT</Target_OriginPicX> 
 		<Target_TopLeftY>DOWN</Target_TopLeftY> 
-		<Target_OriginPicX>CENTER</Target_OriginPicX> 
-		<Target_OriginPicY>CENTER</Target_OriginPicY> 
+		<Target_OriginPicY>DOWN</Target_OriginPicY> 
 		<Target_Maximize>Yes</Target_Maximize> 
-	</Element>
-	<Element>
-		<Name>NbJoueurTEMP</Name>
-		<Source_Type>Text</Source_Type>
-		<Source_TextType>XML_Value</Source_TextType>
-		<Source_Value>Data/jeu/joueurs</Source_Value>
-		<Target_Font>Arial</Target_Font>
-		<Target_FontSize>20</Target_FontSize>
-		<Target_FontStyle>3</Target_FontStyle>
-		<Target_FontColor>0xFFFF0000</Target_FontColor>
-		<Target_TopLeftX>CENTER</Target_TopLeftX>
-		<Target_TopLeftY>UP</Target_TopLeftY>
 	</Element>
 </Profil>

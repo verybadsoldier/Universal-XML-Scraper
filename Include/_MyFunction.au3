@@ -1,5 +1,17 @@
-#Region MISC Function
+; #VARIABLES/INCLUDES# ==================================================================
+#include-once
+#include <ButtonConstants.au3>
+#include <ComboConstants.au3>
+#include <InetConstants.au3>
+#include <EditConstants.au3>
+#include <GUIConstantsEx.au3>
+#include <WindowsConstants.au3>
+#include <StaticConstants.au3>
+#include <GuiMenu.au3>
+#include "_WinHttp.au3"
+#include "_GraphGDIPlus.au3"
 
+#Region MISC Function
 ; #FUNCTION# ===================================================================================================
 ; Name...........: _Unzip
 ; Description ...: Unzip with 7za
@@ -22,7 +34,7 @@ Func _Unzip($iPathZip, $iPathTarget)
 		_LOG("Not a ZIP file : " & $iPathZip, 2, $iLOGPath)
 		Return -1
 	EndIf
-	$sRun = '"' & $iScriptPath & '\Ressources\7za.exe" e "' & $iPathZip & '" -o"' & $iPathTarget & '"'
+	$sRun = '"' & $iScriptPath & '\Ressources\7za.exe" x "' & $iPathZip & '" -o"' & $iPathTarget & '" -aoa'
 	_LOG("7za command: " & $sRun, 1, $iLOGPath)
 	$iPid = Run($sRun, '', @SW_HIDE, $STDERR_CHILD + $STDOUT_CHILD)
 	While ProcessExists($iPid)
@@ -127,7 +139,7 @@ Func _LOG($iMessage = "", $iLOGType = 0, $iLOGPath = @ScriptDir & "\Log.txt")
 			EndIf
 			ConsoleWrite("!" & $iMessage & @CRLF)
 		Case 3
-			FileWrite($iLOGPath, $iTimestamp & $iMessage & @CRLF)
+;~ 			FileWrite($iLOGPath, $iTimestamp & $iMessage & @CRLF)
 			ConsoleWrite(">----" & $iMessage & @CRLF)
 	EndSwitch
 EndFunc   ;==>_LOG
@@ -135,43 +147,133 @@ EndFunc   ;==>_LOG
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _CheckURL
 ; Description ...: Check if an URL Exist
-; Syntax ........: _CheckURL($sTestUrl)
-; Parameters ....: $sTestUrl            - URL to test
+; Syntax ........: _CheckURL($vUrl)
+; Parameters ....: $vUrl            - URL to test
 ; Return values .: Success - 1
-;                  Failure - 0 and sets @error to non-zero
-;                   |@error:
-;                   |1 - Input is not an array.
-;                   |2 - Array dimension is greater than 2.
-;                   |3 - Start index is greater than the size of the array.
-; Author ........: guinness
+;                  Failure - -1 (known error)
+;~ 							 -2 (Unknown error)
+; Author ........: Screech
 ; Modified ......:
 ; Remarks .......:
-; Related .......: _FileWriteFromArray
+; Related .......:
 ; Link ..........:
-; Example .......: Yes
+; Example .......:
 ; ===============================================================================================================================
-Func _CheckURL($sTestUrl = "https://www.screenscraper.fr/api/ssuserInfos.php")
+Func _CheckUrl($vUrl = "https://www.screenscraper.fr/api/ssuserInfos.php")
+	_LOG("Testing : " & $vUrl, 3, $iLOGPath)
+	Local $Timer = TimerInit()
+	Local $aURL = _WinHttpCrackUrl($vUrl)
+	Local $sScheme = $aURL[0]
+	Local $sDomain = $aURL[2]
+	Local $sPage = $aURL[6]
+	Local $sExtra = $aURL[7]
+;~  	_ArrayDisplay($aURL) ; Debug
+	; Initialize and get session handle
+	Local $hOpen = _WinHttpOpen()
+	; Get connection handle
+	Local $hConnect = _WinHttpConnect($hOpen, $sDomain)
+	; Make a Simple request
+	Switch $sScheme
+		Case "http"
+			_LOG($sScheme & " Request", 3, $iLOGPath)
+			$hRequest = _WinHttpSimpleSendRequest($hConnect, Default, $sPage & $sExtra)
+		Case "https"
+			_LOG($sScheme & " Request", 3, $iLOGPath)
+			$hRequest = _WinHttpSimpleSendSSLRequest($hConnect, Default, $sPage & $sExtra)
+		Case Else
+			_LOG($sScheme & " - Not an HTTP or HTTPS url", 2, $iLOGPath)
+	EndSwitch
+	; Get full header
+	Local $sReturned = StringMid(_WinHttpQueryHeaders($hRequest), 10, 3)
+	; See what's returned
+	Switch $sReturned
+		Case 200
+			_LOG($sDomain & $sPage & " - OK (200) - " & Round((TimerDiff($Timer) / 1000), 2) & "s", 3, $iLOGPath)
+			Return 1
+		Case 400
+			_LOG($sDomain & $sPage & " - Problème dans les parametres d'url - " & Round((TimerDiff($Timer) / 1000), 2) & "s", 2, $iLOGPath)
+			Return -1
+		Case 401
+			_LOG($sDomain & $sPage & " - API fermé pour les non-inscrit a ScreenScraper / les membres inactifs - " & Round((TimerDiff($Timer) / 1000), 2) & "s", 2, $iLOGPath)
+			Return -1
+		Case 403
+			_LOG($sDomain & $sPage & " - Erreur de login developpeur - " & Round((TimerDiff($Timer) / 1000), 2) & "s", 2, $iLOGPath)
+			Return -1
+		Case 404
+			_LOG($sDomain & $sPage & " - Aucune concordance trouvée ! - " & Round((TimerDiff($Timer) / 1000), 2) & "s", 2, $iLOGPath)
+			Return -1
+		Case 426
+			_LOG($sDomain & $sPage & " - Le logiciel de scrap a été bloqué par ScreenScraper (gestion des versions obsolètes de logiciel ou non conforme aux régles de ScreenScraper) - " & Round((TimerDiff($Timer) / 1000), 2) & "s", 2, $iLOGPath)
+			Return -1
+		Case 429
+			_LOG($sDomain & $sPage & " - Nombre de connexions en cours supérieur au nombres de connexions maximum autorisés - " & Round((TimerDiff($Timer) / 1000), 2) & "s", 2, $iLOGPath)
+			Return -1
+		Case Else
+			_LOG($sDomain & $sPage & " - No referenced Status : " & $sReturned & " - " & Round((TimerDiff($Timer) / 1000), 2) & "s", 2, $iLOGPath)
+			Return -2
+	EndSwitch
+	; Close handles when they are not needed any more
+	_WinHttpCloseHandle($hRequest)
+	_WinHttpCloseHandle($hConnect)
+	_WinHttpCloseHandle($hOpen)
+EndFunc   ;==>_CheckUrl
+
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _CheckURL2
+; Description ...: Check if an URL Exist
+; Syntax ........: _CheckURL2($sTestUrl)
+; Parameters ....: $sTestUrl            - URL to test
+; Return values .: Success - 1
+;                  Failure - 0
+; Author ........: DaleHohm
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........: https://www.autoitscript.com/forum/topic/22343-is-there-a-way-to-check-if-a-url-exists-without-calling-it/
+; Example .......:
+; ===============================================================================================================================
+Func _CheckURL2($sTestUrl = "https://www.screenscraper.fr/api/ssuserInfos.php")
+	$sTestUrl = "http://www.google.fr"
+	_LOG("Test de l'URL : " & $sTestUrl, 0, $iLOGPath)
+
+	Local $Timer = TimerInit()
+	$oHttpRequest = ""
+	$oHttpRequest = ObjCreate("MSXML2.ServerXMLHTTP")
 	$ResolveTimeout = 500
 	$ConnectTimeout = 500
 	$SendTimeout = 500
 	$ReceiveTimeout = 500
-	$oHttpRequest = ObjCreate("MSXML2.ServerXMLHTTP")
-	With $oHttpRequest
-		.SetTimeouts($ResolveTimeout, $ConnectTimeout, $SendTimeout, $ReceiveTimeout)
-		.Open("GET", $sTestUrl)
-		.Send
-		Select
-			Case .Status = 200 ;No problem!
-				Return 1
-			Case .Status = 404 ;Not found
-				Return -1
-				_LOG($sTestUrl & " could not be found (404 Error)", 2, $iLOGPath)
-			Case Else ;Some other problem
-				Return -2
-				_LOG($sTestUrl & "had unexpected HTTP Status value was returned: " & .Status, 2, $iLOGPath)
-		EndSelect
-	EndWith
-EndFunc   ;==>_CheckURL
+
+	$oHttpRequest.SetTimeouts($ResolveTimeout, $ConnectTimeout, $SendTimeout, $ReceiveTimeout)
+	$oHttpRequest.Open("GET", $sTestUrl)
+	$oHttpRequest.Send
+	$urlStatus = $oHttpRequest.Status
+
+;~     Local $oHTTP = ObjCreate("WinHttp.WinHttpRequest.5.1")
+;~     $oHTTP.Open("HEAD", $sTestUrl, False)
+;~     If @error Then _LOG("Opening HEAD error", 2, $iLOGPath)
+;~     $oHTTP.Send()
+;~     If @error Then _LOG("Error 105 (net::ERR_NAME_NOT_RESOLVED)", 2, $iLOGPath)
+;~     Local $urlStatus = $oHTTP.Status
+;~     If @error Then _LOG("Error 118 (net::ERR_CONNECTION_TIMED_OUT)", 2, $iLOGPath)
+
+	_LOG("Timer : " & Round((TimerDiff($Timer) / 1000), 2), 0, $iLOGPath)
+
+	Switch $urlStatus
+		Case 200
+			_LOG($sTestUrl & " OK (200)", 3, $iLOGPath)
+			Return 1
+		Case 404
+			_LOG("Connection Successful! (" & $urlStatus & ") - URL Not Found: " & $sTestUrl, 2, $iLOGPath)
+			Return -1
+		Case 105
+			_LOG("Connection error: ERR_NAME_NOT_RESOLVED (" & $urlStatus & ") - URL is Not Found: " & $sTestUrl, 2, $iLOGPath)
+			Return -1
+		Case Else
+			_LOG("Connection error! (" & $urlStatus & ") - URL: " & $sTestUrl, 2, $iLOGPath)
+			Return -2
+	EndSwitch
+EndFunc   ;==>_CheckURL2
 
 ; #FUNCTION# ===================================================================================================
 ; Name...........: _Download
@@ -195,6 +297,9 @@ Func _Download($iURL, $iPath, $iTimeOut = 10, $iCRC = Default)
 		_LOG("Nothing to Downloaded : " & $iPath, 2, $iLOGPath)
 		Return -1
 	EndIf
+
+;~ 	If _CheckUrl($iURL) <0 Then Return -1
+
 	$hDownload = InetGet($iURL, $iPath, $INET_FORCERELOAD, $INET_DOWNLOADBACKGROUND)
 	Do
 		Sleep(250)
@@ -306,11 +411,24 @@ Func _MultiLang_LoadLangDef($iLangPath, $vUserLang)
 	; [n][0] = Display Name in Local Language (Used for Select Function)
 	; [n][1] = Language File (Full path.  In this case we used a $iLangPath
 	; [n][2] = [Space delimited] Character codes as used by @OS_LANG (used to select correct lang file)
-	Local $aLangFiles[8][3]
+	Local $aLangFiles[9][3]
 
-	$aLangFiles[0][0] = "English (US)" ;
-	$aLangFiles[0][1] = $iLangPath & "\UXS-ENGLISH.XML"
-	$aLangFiles[0][2] = "0409 " & _ ;English_United_States
+	$aLangFiles[0][0] = "Français" ; French
+	$aLangFiles[0][1] = $iLangPath & "\UXS-FRENCH.XML"
+	$aLangFiles[0][2] = "040c " & _ ;French_Standard
+			"080c " & _ ;French_Belgian
+			"0c0c " & _ ;French_Canadian
+			"100c " & _ ;French_Swiss
+			"140c " & _ ;French_Luxembourg
+			"180c" ;French_Monaco
+
+	$aLangFiles[1][0] = "English (UK)" ;
+	$aLangFiles[1][1] = $iLangPath & "\UXS-ENGLISHUK.XML"
+	$aLangFiles[1][2] = "0809 " ;English_United_Kingdom
+
+	$aLangFiles[2][0] = "English (US)" ;
+	$aLangFiles[2][1] = $iLangPath & "\UXS-ENGLISHUS.XML"
+	$aLangFiles[2][2] = "0409 " & _ ;English_United_States
 			"0809 " & _ ;English_United_Kingdom
 			"0c09 " & _ ;English_Australia
 			"1009 " & _ ;English_Canadian
@@ -324,31 +442,9 @@ Func _MultiLang_LoadLangDef($iLangPath, $vUserLang)
 			"3009 " & _ ;English_Zimbabwe
 			"3409" ;English_Philippines
 
-	$aLangFiles[1][0] = "Français" ; French
-	$aLangFiles[1][1] = $iLangPath & "\UXS-FRENCH.XML"
-	$aLangFiles[1][2] = "040c " & _ ;French_Standard
-			"080c " & _ ;French_Belgian
-			"0c0c " & _ ;French_Canadian
-			"100c " & _ ;French_Swiss
-			"140c " & _ ;French_Luxembourg
-			"180c" ;French_Monaco
-
-	$aLangFiles[2][0] = "Portugues" ; Portuguese
-	$aLangFiles[2][1] = $iLangPath & "\UXS-PORTUGUESE.XML"
-	$aLangFiles[2][2] = "0816 " & _ ;Portuguese - Portugal
-			"0416 " ;Portuguese - Brazil
-
-	$aLangFiles[3][0] = "Deutsch" ; German
-	$aLangFiles[3][1] = $iLangPath & "\UXS-GERMAN.XML"
-	$aLangFiles[3][2] = "0407 " & _ ;German - Germany
-			"0807 " & _ ;German - Switzerland
-			"0C07 " & _ ;German - Austria
-			"1007 " & _ ;German - Luxembourg
-			"1407 " ;German - Liechtenstein
-
-	$aLangFiles[4][0] = "Espanol" ; Spanish
-	$aLangFiles[4][1] = $iLangPath & "\UXS-SPANISH.XML"
-	$aLangFiles[4][2] = "040A " & _ ;Spanish - Spain
+	$aLangFiles[3][0] = "Espanol" ; Spanish
+	$aLangFiles[3][1] = $iLangPath & "\UXS-SPANISH.XML"
+	$aLangFiles[3][2] = "040A " & _ ;Spanish - Spain
 			"080A " & _ ;Spanish - Mexico
 			"0C0A " & _ ;Spanish - Spain
 			"100A " & _ ;Spanish - Guatemala
@@ -370,19 +466,32 @@ Func _MultiLang_LoadLangDef($iLangPath, $vUserLang)
 			"500A " & _ ;Spanish - Puerto Rico
 			"540A " ;Spanish - United State
 
-	$aLangFiles[5][0] = "Italian" ; Italian
-	$aLangFiles[5][1] = $iLangPath & "\UXS-ITALIAN.XML"
-	$aLangFiles[5][2] = "0410 " & _ ;Italian - Italy
+	$aLangFiles[4][0] = "Deutsch" ; German
+	$aLangFiles[4][1] = $iLangPath & "\UXS-GERMAN.XML"
+	$aLangFiles[4][2] = "0407 " & _ ;German - Germany
+			"0807 " & _ ;German - Switzerland
+			"0C07 " & _ ;German - Austria
+			"1007 " & _ ;German - Luxembourg
+			"1407 " ;German - Liechtenstein
+
+	$aLangFiles[5][0] = "Portugues" ; Portuguese
+	$aLangFiles[5][1] = $iLangPath & "\UXS-PORTUGUESE.XML"
+	$aLangFiles[5][2] = "0816 " & _ ;Portuguese - Portugal
+			"0416 " ;Portuguese - Brazil
+
+	$aLangFiles[6][0] = "Italian" ; Italian
+	$aLangFiles[6][1] = $iLangPath & "\UXS-ITALIAN.XML"
+	$aLangFiles[6][2] = "0410 " & _ ;Italian - Italy
 			"0810 " ;Italian - Switzerland
 
-	$aLangFiles[6][0] = "Dutch" ; Dutch
-	$aLangFiles[6][1] = $iLangPath & "\UXS-DUTCH.XML"
-	$aLangFiles[6][2] = "0413 " & _ ;Dutch - Netherlands
+	$aLangFiles[7][0] = "Dutch" ; Dutch
+	$aLangFiles[7][1] = $iLangPath & "\UXS-DUTCH.XML"
+	$aLangFiles[7][2] = "0413 " & _ ;Dutch - Netherlands
 			"0813 " ;Dutch - Belgium
 
-	$aLangFiles[7][0] = "Japanese" ; Japanese
-	$aLangFiles[7][1] = $iLangPath & "\UXS-JAPANESE.XML"
-	$aLangFiles[7][2] = "0411 " ;Japanese - Japan
+	$aLangFiles[8][0] = "Japanese" ; Japanese
+	$aLangFiles[8][1] = $iLangPath & "\UXS-JAPANESE.XML"
+	$aLangFiles[8][2] = "0411 " ;Japanese - Japan
 
 	;Set the available language files, names, and codes.
 	_MultiLang_SetFileInfo($aLangFiles)
@@ -445,11 +554,21 @@ Func _SelectGUI($aSelectionItem, $default = -1, $vText = "standard", $vLanguageS
 	EndIf
 
 
+	Local $_Selector_gui_GUI = GUICreate(_MultiLang_GetText("win_sel_" & $vText & "_Title"), 340, 165, -1, -1, BitOR($WS_POPUP, $WS_BORDER), -1)
+	Local $_Selector_gui_Pic = GUICtrlCreatePic(@ScriptDir & "\" & "Ressources\Images\UXS_Wizard_Half.jpg", 2, 2, 100, 160, -1, -1)
+	Local $_Selector_gui_Group = GUICtrlCreateGroup(_MultiLang_GetText("win_sel_" & $vText & "_Title"), 108, 1, 230, 163, -1, -1)
+	GUICtrlSetBkColor(-1, "0xF0F0F0")
+	Local $_Selector_gui_Label = GUICtrlCreateLabel(_MultiLang_GetText("win_sel_" & $vText & "_text"), 116, 25, 215, 40, $SS_CENTERIMAGE, -1)
+	GUICtrlSetBkColor(-1, "-2")
+	Local $_Selector_gui_Combo = GUICtrlCreateCombo("(" & _MultiLang_GetText("win_sel_" & $vText & "_Title") & ")", 116, 75, 215, 21, BitOR($GUI_SS_DEFAULT_COMBO, $CBS_SIMPLE)) ;BitOR($CBS_DROPDOWNLIST, $CBS_AUTOHSCROLL))
+	GUICtrlSetData(-1, "")
+	Local $_Selector_gui_Button = GUICtrlCreateButton(_MultiLang_GetText("win_sel_" & $vText & "_button"), 231, 125, 100, 30, -1, -1)
+;~ 	$B_SelectorCancel = GUICtrlCreateButton("Cancel",116,125,100,30,-1,-1)
 
-	Local $_Selector_gui_GUI = GUICreate(_MultiLang_GetText("win_sel_" & $vText & "_Title"), 230, 100)
-	Local $_Selector_gui_Combo = GUICtrlCreateCombo("(" & _MultiLang_GetText("win_sel_" & $vText & "_Title") & ")", 8, 48, 209, 25, BitOR($GUI_SS_DEFAULT_COMBO, $CBS_SIMPLE)) ;BitOR($CBS_DROPDOWNLIST, $CBS_AUTOHSCROLL))
-	Local $_Selector_gui_Button = GUICtrlCreateButton(_MultiLang_GetText("win_sel_" & $vText & "_button"), 144, 72, 75, 25)
-	Local $_Selector_gui_Label = GUICtrlCreateLabel(_MultiLang_GetText("win_sel_" & $vText & "_text"), 8, 8, 212, 33)
+;~ 	Local $_Selector_gui_GUI = GUICreate(_MultiLang_GetText("win_sel_" & $vText & "_Title"), 230, 100)
+;~ 	Local $_Selector_gui_Combo = GUICtrlCreateCombo("(" & _MultiLang_GetText("win_sel_" & $vText & "_Title") & ")", 8, 48, 209, 25, BitOR($GUI_SS_DEFAULT_COMBO, $CBS_SIMPLE)) ;BitOR($CBS_DROPDOWNLIST, $CBS_AUTOHSCROLL))
+;~ 	Local $_Selector_gui_Button = GUICtrlCreateButton(_MultiLang_GetText("win_sel_" & $vText & "_button"), 144, 72, 75, 25)
+;~ 	Local $_Selector_gui_Label = GUICtrlCreateLabel(_MultiLang_GetText("win_sel_" & $vText & "_text"), 8, 8, 212, 33)
 
 	;Create List of available Items
 	For $I = 0 To UBound($aSelectionItem) - 1
@@ -535,7 +654,27 @@ EndFunc   ;==>_IsChecked
 ; Related .......:
 ; Link ..........;
 ; Example .......;
-Func _FormatElapsedTime($Input_Seconds)
+Func _FormatElapsedTime($nr_sec)
+	$sec2time_hour = Int($nr_sec / 3600)
+	$sec2time_min = Int(($nr_sec - $sec2time_hour * 3600) / 60)
+	$sec2time_sec = $nr_sec - $sec2time_hour * 3600 - $sec2time_min * 60
+	Return StringFormat('%02d:%02d:%02d', $sec2time_hour, $sec2time_min, $sec2time_sec)
+EndFunc   ;==>_FormatElapsedTime
+
+
+; #FUNCTION# ===================================================================================================
+; Name...........: _FormatElapsedTime
+; Description ...: Return a formated time
+; Syntax.........: _FormatElapsedTime($Input_Seconds)
+; Parameters ....: $Input_Seconds	- Time in seconds
+; Return values .: Success      - Return a formated string for time
+; Author ........:
+; Modified.......:
+; Remarks .......:
+; Related .......:
+; Link ..........;
+; Example .......;
+Func _FormatElapsedTime2($Input_Seconds)
 	If $Input_Seconds < 1 Then Return
 	Global $ElapsedMessage = ''
 	Global $Input = $Input_Seconds
@@ -556,7 +695,7 @@ Func _FormatElapsedTime($Input_Seconds)
 			GetSeconds()
 	EndSwitch
 	Return $ElapsedMessage
-EndFunc   ;==>_FormatElapsedTime
+EndFunc   ;==>_FormatElapsedTime2
 
 Func GetDays()
 	$Days = Int($Input / 86400)
@@ -609,6 +748,18 @@ Func _Coalesce($vValue1, $vValue2, $vTestValue = "")
 	If $vValue1 = $vTestValue Then Return $vValue2
 	Return $vValue1
 EndFunc   ;==>_Coalesce
+
+Func _KillScrapeEngine($iScraper)
+	$aPID = ProcessList($iScraper)
+;~ 	_ArrayDisplay($aPID,"$aPID")
+	For $Boucle = 1 To $aPID[0][0]
+		_LOG("Killing Process : " & $aPID[$Boucle][0] & " - " & $aPID[$Boucle][1], 0, $iLOGPath)
+;~ 		_SendMail($sMailSlotCancel & $vBoucle, "CANCELED")
+		ProcessClose($aPID[$Boucle][1])
+		If @error Then _LOG("Error Killing Process : " & $aPID[$Boucle][0] & " - " & $aPID[$Boucle][1] & "(" & @error & ")", 2, $iLOGPath)
+	Next
+
+EndFunc   ;==>_KillScrapeEngine
 
 #EndRegion MISC Function
 
@@ -691,7 +842,7 @@ Func _GDIPlus_ResizeMax($iPath, $iMAX_Width, $iMAX_Height)
 	Local $hImage, $iWidth, $iHeight, $iWidth_New, $iHeight_New, $iRatio, $hImageResized
 	Local $sDrive, $sDir, $sFileName, $iExtension, $iPath_Temp, $iResized
 	_PathSplit($iPath, $sDrive, $sDir, $sFileName, $iExtension)
-	$iPath_Temp = $sDrive & $sDir & $sFileName & "-RESIZE_Temp." & $iExtension
+	$iPath_Temp = $sDrive & $sDir & $sFileName & "-RESIZE_Temp" & $iExtension
 	If _MakeTEMPFile($iPath, $iPath_Temp) = -1 Then Return -1
 	_GDIPlus_Startup()
 	$hImage = _GDIPlus_ImageLoadFromFile($iPath_Temp)
@@ -762,7 +913,7 @@ Func _GDIPlus_Rotation($iPath, $iRotation = 0)
 	#forceref $hImage, $iWidth, $iHeight, $iWidth_New, $iHeight_New
 	Local $sDrive, $sDir, $sFileName, $iExtension, $iPath_Temp
 	_PathSplit($iPath, $sDrive, $sDir, $sFileName, $iExtension)
-	$iPath_Temp = $sDrive & $sDir & $sFileName & "-ROTATE_Temp." & $iExtension
+	$iPath_Temp = $sDrive & $sDir & $sFileName & "-ROTATE_Temp" & $iExtension
 	If _MakeTEMPFile($iPath, $iPath_Temp) = -1 Then Return -1
 	If $iRotation = '' Or $iRotation > 7 Then $iRotation = 0
 	_GDIPlus_Startup()
@@ -1741,7 +1892,7 @@ EndFunc   ;==>_XML_Read
 ; Related .......:
 ; Link ..........;
 ; Example .......; No
-Func _XML_Replace($iXpath, $iValue =" ", $iXMLType = 0, $iXMLPath = "", $oXMLDoc = "")
+Func _XML_Replace($iXpath, $iValue = " ", $iXMLType = 0, $iXMLPath = "", $oXMLDoc = "")
 	Local $iXMLValue = -1, $oNode, $iXpathSplit, $iXMLAttributeName
 	If $iXMLPath = "" And $oXMLDoc = "" Then
 		_LOG('_XML_Replace Error : Need an Handle or Path', 2, $iLOGPath)

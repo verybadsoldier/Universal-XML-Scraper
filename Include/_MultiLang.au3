@@ -114,7 +114,7 @@ EndFunc   ;==>_MultiLang_LoadLangFile
 ;	Website:		http://www.signa5.com
 ;	Last Updated:	14 August 2010
 ;=======================================================
-Func _MultiLang_GetText($sControl, $multiline = 0, $default = "Unknown Text")
+Func _MultiLang_GetText($sControl, $multiline = 1, $default = "Unknown Text")
 	If $_gh_aLangFileArray = -1 Then Return SetError(1, 0, 0)
 	If IsArray($_gh_aLangFileArray) = 0 Then Return SetError(1, 0, 0)
 	If $_gh_sLangFileData = -1 Then Return SetError(2, 0, 0)

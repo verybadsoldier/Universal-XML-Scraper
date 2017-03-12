@@ -1,5 +1,5 @@
 <datapref>
-	<langpref>fr|en</langpref>
+	<langpref>fr|en|wor</langpref>
 	<countrypref>%COUNTRY%|fr|eu|wor|ss|us|jp|cus</countrypref>
 </datapref>
 
@@ -23,6 +23,7 @@
 	<mess_autoconf_ask_Title>Configuration Automatique</mess_autoconf_ask_Title>
 	<mess_autoconf_ask_Question>Souhaitez-vous activer la configuration automatique ?</mess_autoconf_ask_Question>
 	<mess_ssh_killall>Etes-vous sur de vouloir arrêter EmulationStation ?</mess_ssh_killall>
+	<mess_ssh_killallForced>UXS va arrêter EmulationStation pour lancer le scrape.</mess_ssh_killallForced>
 	<mess_ssh_start>Etes-vous sur de vouloir démarrer EmulationStation ?</mess_ssh_start>
 	<mess_ssh_reboot>Etes-vous sur de vouloir Rebooter la machine distante ?</mess_ssh_reboot>
 	<mess_ssh_poweroff>Etes-vous sur de vouloir arrêter la machine distante ?</mess_ssh_poweroff>
@@ -31,6 +32,9 @@
 	<mess_ssregister_title>Compte reconnu</mess_ssregister_title>
 	<mess_ssregister_OK>Votre compte vous donne droit à un maximum de </mess_ssregister_OK>
 	<mess_ssregister_GodMode>Vous êtes : ou un dieu, ou un demi dieu (voir un 2/3 de dieu), ou Chuck Norris. Attention à pas tout casser !!!</mess_ssregister_GodMode>
+	<mess_continue>Etes vous sur de continuer ?</mess_continue>
+	<mess_Yes>Oui</mess_Yes>
+	<mess_No>Non</mess_No>
 </message>
 
 <gui>
@@ -43,7 +47,7 @@
 		<mnu_cfg_Wizard>Utiliser le wizard</mnu_cfg_Wizard>
 		<mnu_cfg_config_LU>Configuration des chemins</mnu_cfg_config_LU>
 		<mnu_cfg_config_MISC>Configuration générale</mnu_cfg_config_MISC>
-		<mnu_cfg_config_Option>Configuration des options</mnu_cfg_config_Option>
+		<mnu_cfg_config_Option>Options</mnu_cfg_config_Option>
 		<mnu_cfg_config_PIC>Configuration des images</mnu_cfg_config_PIC>
 		<mnu_cfg_config_autoconf>Configuration des chemins de la configuration automatique</mnu_cfg_config_autoconf>
 		<mnu_cfg_profil>Charger un profil</mnu_cfg_profil>
@@ -122,6 +126,7 @@
 			<win_config_MISC_GroupMISC_MissingMode>Ajout des roms manquantes</win_config_MISC_GroupMISC_MissingMode>
 			<win_config_MISC_GroupMISC_RechSys>Recherche automatique de Systeme</win_config_MISC_GroupMISC_RechSys>
 			<win_config_MISC_GroupMISC_Mirror>Utiliser le DigiMirror</win_config_MISC_GroupMISC_Mirror>
+			<win_config_MISC_GroupMISC_ScrapeZip>Décompresser les Zip</win_config_MISC_GroupMISC_ScrapeZip>
 			<win_config_MISC_GroupScreenScraper>Screenscraper</win_config_MISC_GroupScreenScraper>
 			<win_config_MISC_GroupScreenScraper_Login>Identifiant Screenscraper</win_config_MISC_GroupScreenScraper_Login>
 			<win_config_MISC_GroupScreenScraper_Password>Mot de passe Screenscraper</win_config_MISC_GroupScreenScraper_Password>
@@ -176,49 +181,120 @@
 			<win_Results_FullTime>Temps Total du Scrape : </win_Results_FullTime>
 			<win_Results_NbThread>Nombre de Thread(s) utilisé(s) : </win_Results_NbThread>
 		</win_Results>
-		<win_Wizard>
+		<Win_Wizard>
 			<win_Wizard_Next>Suivant</win_Wizard_Next>
 			<win_Wizard_Back>Retour</win_Wizard_Back>
-			<win_Wizard_End>Terminer</win_Wizard_End>
-			<win_Wizard_Cancel>Annuler</win_Wizard_Cancel>
-			<win_Wizard_Profil>
-				<win_Wizard_Profil_Title>Selection du Profil</win_Wizard_Profil_Title>
-				<win_Wizard_Profil_Desc>Merci de sélectionner le profil correspondant à votre système d'exploitation.|!||!|Les Versions MIX créer une image composées de plusieurs images tel que le screenshot, une box en 2D et le logo du jeu.|!||!|Vous pourrez sélectionner votre MIX dans le menu : |!|"Changer le profil Mix Images"|!|ou plus tard dans le wizard.</win_Wizard_Profil_Desc>
-			</win_Wizard_Profil>
-			<win_Wizard_Autoconf>
-				<win_Wizard_Autoconf_Title>Reglage de l'autoconfiguration</win_Wizard_Autoconf_Title>
-				<win_Wizard_Autoconf_Desc>L'Autoconfiguration vous permet de scraper facilement vos différents systèmes sans passer du temps à configurer les différents chemins.|!||!|En fonction de votre choix de profil, le chemin par défaut est indiqué ci-dessous.|!|Vous pouvez cependant le modifier.|!||!|Merci d'indiquer le chemin "source" de vos systèmes.|!||!|Par exemple :|!|Si vos roms SNES se trouve dans|!|E:\Emulation\Rom\SNES,|!|le chemin à indiquer sera|!|E:\Emulation\Rom</win_Wizard_Autoconf_Desc>
-			</win_Wizard_Autoconf>
-			<win_Wizard_MIX>
-				<win_Wizard_MIX_Title>Profil MIX Image</win_Wizard_MIX_Title>
-				<win_Wizard_MIX_Desc>Vous avez choisi un Profil MIX Image|!||!|L'image générée par UXS dépend d'un profil que vous pourrez sélectionner dans la fenêtre suivante.|!||!|Attention, certain profils MIX Image dépendent du thème de votre FrontEnd.|!|(par Exemple, le profil Full Back nécessite un thème adapté)|!|Merci de consulter le wiki dans ce cas.</win_Wizard_MIX_Desc>
-			</win_Wizard_MIX>
-			<win_Wizard_END>
-				<win_Wizard_END_Title>Fin du Wizard</win_Wizard_END_Title>
-				<win_Wizard_END_Desc>La configuration "basic" d'UXS est maintenant terminée.|!||!|Vous pouvez désormais sélectionner le système à scraper dans le menu|!|"Scraper"|!|->"Sélection du système (Conf Auto)"|!|et lancer vos premiers Scrapes.|!||!|Merci d'utiliser Universal XML Scraper.</win_Wizard_END_Desc>
-			</win_Wizard_END>
-		</win_Wizard>
+			<Win_Wizard_OS>
+				<Win_Wizard_OS_Group>Votre système d'exploitation</Win_Wizard_OS_Group>
+				<Win_Wizard_OS_Libelle>Selectionnez votre système d'exploitation</Win_Wizard_OS_Libelle>
+				<Win_Wizard_OS_Tip_Recalbox>Recalbox</Win_Wizard_OS_Tip_Recalbox>
+				<Win_Wizard_OS_Tip_Retropie>Retropie</Win_Wizard_OS_Tip_Retropie>
+			</Win_Wizard_OS>
+			<Win_Wizard_MediaChoice>
+				<Win_Wizard_MediaChoice_Group>Choix du visuel</Win_Wizard_MediaChoice_Group>
+				<Win_Wizard_MediaChoice_Libelle>Selectionnez votre type de visuel</Win_Wizard_MediaChoice_Libelle>
+				<Win_Wizard_MediaChoice_Tip_Simple>Un simple média</Win_Wizard_MediaChoice_Tip_Simple>
+				<Win_Wizard_MediaChoice_Tip_Mix>Un composition graphique de plusieurs médias</Win_Wizard_MediaChoice_Tip_Mix>
+			</Win_Wizard_MediaChoice>
+			<Win_Wizard_MediaSimpleChoice>
+				<Win_Wizard_MediaSimpleChoice_Group>Choix du visuel par default</Win_Wizard_MediaSimpleChoice_Group>
+				<Win_Wizard_MediaSimpleChoice_Libelle>Selectionnez votre type de visuel par défaut</Win_Wizard_MediaSimpleChoice_Libelle>
+				<Win_Wizard_MediaSimpleChoice_Tip_SS>Une capture d'écran</Win_Wizard_MediaSimpleChoice_Tip_SS>
+				<Win_Wizard_MediaSimpleChoice_Tip_Wheel>Un logo</Win_Wizard_MediaSimpleChoice_Tip_Wheel>
+				<Win_Wizard_MediaSimpleChoice_Tip_2DBox>Une boite en 2D</Win_Wizard_MediaSimpleChoice_Tip_2DBox>
+				<Win_Wizard_MediaSimpleChoice_Tip_3DBox>Une boite en 3D</Win_Wizard_MediaSimpleChoice_Tip_3DBox>
+			</Win_Wizard_MediaSimpleChoice>
+			<Win_Wizard_MediaSimpleAltChoice>
+				<Win_Wizard_MediaSimpleAltChoice_Group>Choix du visuel alternatif</Win_Wizard_MediaSimpleAltChoice_Group>
+				<Win_Wizard_MediaSimpleAltChoice_Libelle>Selectionnez votre type de visuel alternatif@CRLF(Si le visuel par défaut n'est pas disponible)</Win_Wizard_MediaSimpleAltChoice_Libelle>
+				<Win_Wizard_MediaSimpleAltChoice_Tip_SS>Une capture d'écran</Win_Wizard_MediaSimpleAltChoice_Tip_SS>
+				<Win_Wizard_MediaSimpleAltChoice_Tip_Wheel>Un logo</Win_Wizard_MediaSimpleAltChoice_Tip_Wheel>
+				<Win_Wizard_MediaSimpleAltChoice_Tip_2DBox>Une boite en 2D</Win_Wizard_MediaSimpleAltChoice_Tip_2DBox>
+				<Win_Wizard_MediaSimpleAltChoice_Tip_3DBox>Une boite en 3D</Win_Wizard_MediaSimpleAltChoice_Tip_3DBox>
+			</Win_Wizard_MediaSimpleAltChoice>
+			<Win_Wizard_RomChoice>
+				<Win_Wizard_RomChoice_Group>Choix de l'emplacement des roms</Win_Wizard_RomChoice_Group>
+				<Win_Wizard_RomChoice_Libelle>Selectionnez l'emplacement de vos roms</Win_Wizard_RomChoice_Libelle>
+				<Win_Wizard_RomChoice_Tip_RPI>Sur votre RaspberryPi</Win_Wizard_RomChoice_Tip_RPI>
+				<Win_Wizard_RomChoice_Tip_Local>En local (Disque externe, clef USB,...)</Win_Wizard_RomChoice_Tip_Local>
+				<Win_Wizard_RomChoice_Browse>Précisez le chemin racine de vos repertoires de rom</Win_Wizard_RomChoice_Browse>
+				<Win_Wizard_RomChoice_Browse_Warning_Title>ATTENTION</Win_Wizard_RomChoice_Browse_Warning_Title>
+				<Win_Wizard_RomChoice_Browse_Warning_Label>Le repertoire séléctionné ne semble pas contenir de repertoire de rom.@CRLFVoulez-vous continuer quand meme ?</Win_Wizard_RomChoice_Browse_Warning_Label>
+			</Win_Wizard_RomChoice>
+			<Win_Wizard_SSChoice>
+				<Win_Wizard_SSChoice_Group>ScreenScraper</Win_Wizard_SSChoice_Group>
+				<Win_Wizard_SSChoice_Libelle>Possedez vous un compte ScreenScraper ?</Win_Wizard_SSChoice_Libelle>
+				<Win_Wizard_SSChoice_Tip_Yes>Oui</Win_Wizard_SSChoice_Tip_Yes>
+				<Win_Wizard_SSChoice_Tip_No>Non</Win_Wizard_SSChoice_Tip_No>
+			</Win_Wizard_SSChoice>
+			<Win_Wizard_SSIdChoice>
+				<Win_Wizard_SSIdChoice_Group>ScreenScraper</Win_Wizard_SSIdChoice_Group>
+				<Win_Wizard_SSIdChoice_Id>Votre Id :</Win_Wizard_SSIdChoice_Id>
+				<Win_Wizard_SSIdChoice_Tip_Id>Votre Identifiant ScreenScraper</Win_Wizard_SSIdChoice_Tip_Id>
+				<Win_Wizard_SSIdChoice_Pwd>Votre Mdp :</Win_Wizard_SSIdChoice_Pwd>
+				<Win_Wizard_SSIdChoice_Tip_Pwd>Votre Mot de passe ScreenScraper</Win_Wizard_SSIdChoice_Tip_Pwd>
+				<Win_Wizard_SSIdChoice_Test>Tester votre Id</Win_Wizard_SSIdChoice_Test>
+				<Win_Wizard_SSIdChoice_Tip_Test>Test la connection au serveur avec votre Id</Win_Wizard_SSIdChoice_Tip_Test>
+			</Win_Wizard_SSIdChoice>
+			<Win_Wizard_ScrapeChoice>
+				<Win_Wizard_ScrapeChoice_Group>Scraper</Win_Wizard_ScrapeChoice_Group>
+				<Win_Wizard_ScrapeChoice_Libelle>Souhaitez vous lancer un scrape ?</Win_Wizard_ScrapeChoice_Libelle>
+				<Win_Wizard_ScrapeChoice_Tip_Yes>Oui</Win_Wizard_ScrapeChoice_Tip_Yes>
+				<Win_Wizard_ScrapeChoice_Tip_No>Non - Retour à l'interface</Win_Wizard_ScrapeChoice_Tip_No>
+			</Win_Wizard_ScrapeChoice>
+		</Win_Wizard>
 	</windows>
-	<tips>
-		<tips_config>
-			<tips_config_GroupScrap_PathRom>Répertoire dans lequel se trouve les roms à scrapper</tips_config_GroupScrap_PathRom>
-			<tips_config_GroupScrap_PathXML>Répertoire et nom du fichier XML généré par le scraper</tips_config_GroupScrap_PathXML>
-			<tips_config_GroupScrap_PathRomSub>Indication dans le fichier XML du chemin ou les roms seront trouvées en local</tips_config_GroupScrap_PathRomSub>
-			<tips_config_GroupImage_PathImage>Répertoire dans lequel les images seront téléchargées</tips_config_GroupImage_PathImage>
-			<tips_config_GroupImage_hautImage>Hauteur maximum des images téléchargées(Redimensionne)</tips_config_GroupImage_hautImage>
-			<tips_config_GroupImage_LongImage>Largeur maximum des images téléchargées(Redimensionne)</tips_config_GroupImage_LongImage>
-			<tips_config_GroupImage_PathImageSub>Indication dans le fichier XML du chemin ou les images seront trouvées en local</tips_config_GroupImage_PathImageSub>
-			<tips_config_GroupImage_Extension>Extension des images (défaut = identique au site de scrape)</tips_config_GroupImage_Extension>
-			<tips_config_GroupAutoconf_PathRom>Répertoire dans lequel se trouve les différents systèmes à scraper</tips_config_GroupAutoconf_PathRom>
-			<tips_config_GroupAutoconf_PathXML>Nom du fichier XML généré par le scraper</tips_config_GroupAutoconf_PathXML>
-			<tips_config_GroupAutoconf_PathRomSub>Indication dans le fichier XML du chemin ou les roms seront trouvées en local</tips_config_GroupAutoconf_PathRomSub>
-			<tips_config_GroupAutoconf_PathImage>Nom du répertoire ou seront téléchargé les images</tips_config_GroupAutoconf_PathImage>
-			<tips_config_GroupAutoconf_PathImageSub>Indication dans le fichier XML du chemin ou les images seront trouvées en local</tips_config_GroupAutoconf_PathImageSub>
-			<tips_config_GroupAutoconf_Use>Activation du menu de Configuration Automatique</tips_config_GroupAutoconf_Use>
-			<tips_config_mode_new>Le scraper créera un nouveau fichier XML (écrase l'existant)</tips_config_mode_new>
-			<tips_config_mode_append>Le scraper ajoutera les roms manquantes aux fichiers XML existants</tips_config_mode_append>
-			<tips_config_mode_empty>Ajout d'entrées vide concernant les Roms non trouvées</tips_config_mode_empty>
-			<tips_config_mode_MAJ>Conversion en majuscule des valeurs scrapées</tips_config_mode_MAJ>
-		</tips_config>
-	<tips>
 </gui>
+
+<Options>
+	<Option_Group_Media>Visuel</Option_Group_Media>
+	<Option_Group_Name>Nom</Option_Group_Name>
+	<Option_Group_Case>Casse</Option_Group_Case>
+
+	<Option_Name_MediaType>Type de visuel</Option_Name_MediaType>
+	<Option_Name_DefaultPicture>Image par default</Option_Name_DefaultPicture>
+	<Option_Name_AlternativePicture>Image alternative</Option_Name_AlternativePicture>
+	<Option_Name_Marquee>Marquee</Option_Name_Marquee>
+	<Option_Name_Video>Vidéo</Option_Name_Video>
+	<Option_Name_NameFormat>Format du nom</Option_Name_NameFormat>
+	<Option_Name_Country>Region</Option_Name_Country>
+	<Option_Name_Clone>Clone</Option_Name_Clone>
+	<Option_Name_Beta>Beta</Option_Name_Beta>
+	<Option_Name_Demo>Demo</Option_Name_Demo>
+	<Option_Name_Proto>Prototype</Option_Name_Proto>
+	<Option_Name_Trad>Traduction</Option_Name_Trad>
+	<Option_Name_Hack>Hack</Option_Name_Hack>
+	<Option_Name_Unl>Sans licence</Option_Name_Unl>
+	<Option_Name_Alt>Alternatif</Option_Name_Alt>
+	<Option_Name_Best>Meilleur</Option_Name_Best>
+	<Option_Name_NameCase>Casse du nom</Option_Name_NameCase>
+	<Option_Name_DescriptionCase>Casse de la description</Option_Name_DescriptionCase>
+	<Option_Name_DeveloperCase>Casse du développeur</Option_Name_DeveloperCase>
+	<Option_Name_PublisherCase>Casse de l'éditeur</Option_Name_PublisherCase>
+	<Option_Name_GenreCase>Casse du genre</Option_Name_GenreCase>
+
+	<Option_Value_SimpleMedia>Visuel simple</Option_Value_SimpleMedia>
+	<Option_Value_MixMedia>Visuel MIX</Option_Value_MixMedia>
+	<Option_Value_Nothing>Rien</Option_Value_Nothing>
+	<Option_Value_Marquee>Marquee</Option_Value_Marquee>
+	<Option_Value_Screenshot>Capture d'écran</Option_Value_Screenshot>
+	<Option_Value_Box2D>Boite en 2D</Option_Value_Box2D>
+	<Option_Value_Box3D>Boite en 3D</Option_Value_Box3D>
+	<Option_Value_BoxTexture>Texture de la boite</Option_Value_BoxTexture>
+	<Option_Value_Support2D>Support en 2D</Option_Value_Support2D>
+	<Option_Value_SupportTexture>Texture du support</Option_Value_SupportTexture>
+	<Option_Value_Fanart>Fanart</Option_Value_Fanart>
+	<Option_Value_Wheels>Logo</Option_Value_Wheels>
+	<Option_Value_WheelsCarbon>Logo carbon</Option_Value_WheelsCarbon>
+	<Option_Value_WheelsSteel>Logo acier</Option_Value_WheelsSteel>
+	<Option_Value_Standard>Nom du jeu</Option_Value_Standard>
+	<Option_Value_GamenameOption>Nom du jeu + Options</Option_Value_GamenameOption>
+	<Option_Value_GamenameFilneameBracket>Nom du jeu + tag du fichier</Option_Value_GamenameFilneameBracket>
+	<Option_Value_Filename>Nom du ficher (sans ext)</Option_Value_Filename>
+	<Option_Value_Yes>Oui</Option_Value_Yes>
+	<Option_Value_YesWithoutWord>Oui sans les (Monde)</Option_Value_YesWithoutWord>
+	<Option_Value_No>Non</Option_Value_No>
+	<Option_Value_Default>Par defaut</Option_Value_Default>
+	<Option_Value_UpperCase>MAJUSCULE</Option_Value_UpperCase>
+	<Option_Value_LowerCase>minuscule</Option_Value_LowerCase>
+</Options>

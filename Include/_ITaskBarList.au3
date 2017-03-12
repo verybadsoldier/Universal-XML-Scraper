@@ -335,7 +335,7 @@ Func _ITaskBar_UpdateTBButton($iButton, $iFlags = -1, $sToolTip = -1, $sIcon = -
 
 	If Not $g_ITBL_oButtonIDs.Exists($iButton) Then Return SetError(1, 0, 0)
 	Local $iIndex = $g_ITBL_oButtonIDs.Item($iButton)
-	ConsoleWrite('@@ Debug(' & @ScriptLineNumber & ') : $iIndex = ' & $iIndex & @CRLF & '>Error code: ' & @error & @CRLF) ;### Debug Console
+	ConsoleWrite('@ Debug(' & @ScriptLineNumber & ') : $iIndex = ' & $iIndex & @CRLF & '>Error code: ' & @error & @CRLF) ;### Debug Console
 
 
 	If $sIcon <> -1 Then $g_ITBL_aButtons[$iIndex][$g_ITBL_hIcon] = $sIcon
