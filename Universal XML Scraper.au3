@@ -5,7 +5,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper XML Universel
-#AutoIt3Wrapper_Res_Fileversion=2.2.0.0
+#AutoIt3Wrapper_Res_Fileversion=2.2.0.2
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -55,6 +55,7 @@ EndIf
 
 Global $iINIPath = $iScriptPath & "\UXS-config.ini"
 Global $iLOGPath = $iScriptPath & "\LOGs\log.txt"
+Global $iWizzPath = $iScriptPath & "\Ressources\Images\Wizard"
 Global $iVerboseLVL = IniRead($iINIPath, "GENERAL", "$vVerbose", 0)
 Global $MS_AutoConfigItem
 
@@ -71,17 +72,14 @@ Global $MS_AutoConfigItem
 #include "./Include/_MyFunction.au3"
 #include "./Include/_ITaskBarList.au3"
 #include "./Include/_WinHttp.au3"
-#include "./Include/_AutoItErrorTrap.au3"
-
-;~ ; Custom title and text...
-;~ _AutoItErrorTrap("AutoItErrorTrap", "Hi!" & @CRLF & @CRLF & "An error was detected in the program, you can try again," & _
-;~ 		" cancel to exit or continue to see more details of the error." & @CRLF & @CRLF & "Sorry for the inconvenience!")
+;~ #include "./Include/_AutoItErrorTrap.au3"
+#include "./Include/_GDIpProgress.au3"
 
 $oTaskbar = _ITaskBar_CreateTaskBarObj()
 
 ;Checking Version
 ;----------------
-_LOG_Ceation($iLOGPath) ; Starting Log
+_LOG_Ceation($iLOGPath) ; Starting Log General
 
 If @OSArch = "X64" Then
 	_LOG("Scrape in x64", 0, $iLOGPath)
@@ -182,7 +180,8 @@ Global $vUserLang = IniRead($iINIPath, "LAST_USE", "$vUserLang", -1)
 Global $MP_, $aPlink_Command, $vScrapeCancelled
 Global $vProfilsPath = IniRead($iINIPath, "LAST_USE", "$vProfilsPath", -1)
 Local $vXpath2RomPath, $vFullTimer, $vRomTimer, $vSelectedProfil = -1
-Local $L_SCRAPE_Parts[3] = [300, 480, -1]
+;~ Local $L_SCRAPE_Parts[3] = [300, 480, -1]
+Local $L_SCRAPE_Parts[2] = [480, -1]
 Local $oXMLProfil, $oXMLSystem, $oXMLCountry, $oXMLGenre
 Global $aConfig = 1, $aRomList, $aXMLRomList
 Local $nMsg
@@ -290,9 +289,13 @@ Local $MH_About = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_help_about"), $M
 Local $P_BACKGROUND = GUICtrlCreatePic($iScriptPath & "\ProfilsFiles\Ressources\empty.jpg", -1, 0, 600, 293)
 Global $P_MIX = GUICtrlCreatePic("", 58, 193, 165, 100, -1, -1)
 Global $P_WHEEL = GUICtrlCreatePic("", 270, 225, 120, 60, -1, -1)
-Local $PB_SCRAPE = GUICtrlCreateProgress(2, 297, 478, 25)
-Local $B_SCRAPE = GUICtrlCreateButton(_MultiLang_GetText("scrap_button"), 481, 296, 118, 27)
+;~ Local $PB_SCRAPE = GUICtrlCreateProgress(2, 297, 478, 25, $PBS_SMOOTH)
+Global $PB_SCRAPE = _ProgressCreate(2, 297, 478, 25)
+_ProgressSetImages($PB_SCRAPE, $iScriptPath & "\Ressources\Images\ProgressBar\green.jpg", $iScriptPath & "\Ressources\Images\ProgressBar\bg.jpg")
+_ProgressSetFont($PB_SCRAPE, "", -1, 0, 0xF0F0F0, 0)
+_ProgressSetText($PB_SCRAPE, "")
 Local $L_SCRAPE = _GUICtrlStatusBar_Create($F_UniversalScraper)
+Local $B_SCRAPE = GUICtrlCreateButton(_MultiLang_GetText("scrap_button"), 481, 296, 118, 27)
 _GUICtrlStatusBar_SetParts($L_SCRAPE, $L_SCRAPE_Parts)
 GUISetState(@SW_SHOW)
 #EndRegion ### END Koda GUI section ###
@@ -513,6 +516,7 @@ While 1
 		Case $B_SCRAPE, $MS_Scrape ;Solo Scrape or Cancel
 			_GUI_Refresh($oXMLProfil, 1)
 			$vFullTimer = TimerInit()
+			$aConfig = _LoadConfig()
 			_GUICtrlStatusBar_SetText($L_SCRAPE, "Please Wait... Testing Server.")
 			$vNbThread = IniRead($iINIPath, "LAST_USE", "$vNbThread", 1)
 			_KillScrapeEngine($iScraper)
@@ -532,6 +536,7 @@ While 1
 			_GUI_Refresh($oXMLProfil, 1)
 			Dim $aRomList_FULL[1][12]
 			$vFullTimer = TimerInit()
+			$aConfig = _LoadConfig()
 			_GUICtrlStatusBar_SetText($L_SCRAPE, "Please Wait... Testing Server.")
 			$vNbThread = IniRead($iINIPath, "LAST_USE", "$vNbThread", 1)
 			_KillScrapeEngine($iScraper)
@@ -682,68 +687,58 @@ Func _ProfilSelection($iProfilsPath, $vProfilsPath = -1) ;Profil Selection
 	Return $vProfilsPath
 EndFunc   ;==>_ProfilSelection
 
-Func _Plink($oXMLProfil, $vPlinkCommand_Menu, $vSilentPlink = 0) ;Send a Command via Plink
+Func _Plink($oXMLProfil, $vPlink_Command, $vSilentPlink = 0, $vTimeout = 10) ;Send a Command via Plink
 	Local $vPlink_Ip = _XML_Read("Profil/Plink/Ip", 0, "", $oXMLProfil)
 	Local $vPlink_Root = _XML_Read("Profil/Plink/Root", 0, "", $oXMLProfil)
 	Local $vPlink_Pswd = _XML_Read("Profil/Plink/Pswd", 0, "", $oXMLProfil)
-
+	Local $vPlink_Return = ""
+	$vPlink_Command_Menu = $vPlink_Command
 	If $vSilentPlink = 0 Then
-		Local $vPlink_Command = _XML_Read("Profil/Plink/Command/" & $vPlinkCommand_Menu, 0, "", $oXMLProfil)
-		If MsgBox($MB_OKCANCEL, $vPlinkCommand_Menu, _MultiLang_GetText("mess_ssh_" & $vPlinkCommand_Menu)) = $IDOK Then
-			_LOG("SSH : " & $vPlink_Command, 0, $iLOGPath)
-			$sRun = $iScriptPath & "\Ressources\plink.exe " & $vPlink_Ip & " -ssh -l " & $vPlink_Root & " -pw " & $vPlink_Pswd & " " & $aPlink_Command
-			$iPid = Run($sRun, '', @SW_HIDE, $STDERR_CHILD + $STDOUT_CHILD) ;@ComSpec & " /c " &
-			$PlinkTimeout = TimerInit()
-			While ProcessExists($iPid)
-				If TimerDiff($PlinkTimeout) > 5000 Then
-					MsgBox($MB_ICONERROR, _MultiLang_GetText("err_title"), _MultiLang_GetText("err_PlinkGlobal") & @CRLF & "(Timeout)")
-					_LOG("TimeOut with Plink (" & $vPlink_Root & ":" & $vPlink_Pswd & "@" & $vPlink_Ip & ")", 2, $iLOGPath)
-					StdioClose($iPid)
-					Return -1
-				EndIf
-				$_StderrRead = StderrRead($iPid)
-				If Not @error And $_StderrRead <> '' Then
-					If StringInStr($_StderrRead, 'Unable to open connection') Then
-						MsgBox($MB_ICONERROR, _MultiLang_GetText("err_title"), _MultiLang_GetText("err_PlinkGlobal") & @CRLF & _MultiLang_GetText("err_PlinkConnection"))
-						_LOG("Unable to open connection with Plink (" & $vPlink_Root & ":" & $vPlink_Pswd & "@" & $vPlink_Ip & ")", 2, $iLOGPath)
-						StdioClose($iPid)
-						Return -1
-					EndIf
-				EndIf
-			WEnd
-		Else
-			_LOG("SSH canceled : " & $vPlink_Command, 1, $iLOGPath)
+		If MsgBox($MB_OKCANCEL, $vPlink_Command_Menu, _MultiLang_GetText("mess_ssh_" & $vPlink_Command_Menu)) = $IDCANCEL Then
+			_LOG("SSH canceled", 1, $iLOGPath)
 			Return -2
 		EndIf
-	Else
-		$sRun = $iScriptPath & "\Ressources\plink.exe " & $vPlink_Ip & " -ssh -l " & $vPlink_Root & " -pw " & $vPlink_Pswd & " " & $vPlinkCommand_Menu
-		_LOG("SSH : " & $sRun, 1, $iLOGPath)
-		$iPid = Run(@ComSpec & " /c " & $sRun, '', @SW_HIDE, $STDIN_CHILD + $STDERR_CHILD + $STDOUT_CHILD) ;@ComSpec & " /c " &
-		$PlinkTimeout = TimerInit()
-		While ProcessExists($iPid)
-			If TimerDiff($PlinkTimeout) > 300000 Then
-				MsgBox($MB_ICONERROR, _MultiLang_GetText("err_title"), _MultiLang_GetText("err_PlinkGlobal") & @CRLF & "(Timeout)")
-				_LOG("TimeOut with Plink (" & $vPlink_Root & ":" & $vPlink_Pswd & "@" & $vPlink_Ip & ")", 2, $iLOGPath)
+	EndIf
+	If $vPlink_Command = "killallForced" Then $vPlink_Command = "killall"
+	If $vSilentPlink < 2 Then
+		$vPlink_Command = _XML_Read("Profil/Plink/Command/" & $vPlink_Command_Menu, 0, "", $oXMLProfil)
+		$vPlink_Return = _Coalesce(_XML_Read("Profil/Plink/Command/Ret_" & $vPlink_Command_Menu, 0, "", $oXMLProfil), "NoWait")
+	EndIf
+
+	_LOG("SSH Command : " & $vPlink_Command, 0, $iLOGPath)
+
+	$sRun = '"' & $iScriptPath & '\Ressources\plink.exe" ' & $vPlink_Ip & " -ssh -l " & $vPlink_Root & " -pw " & $vPlink_Pswd & " " & $vPlink_Command
+;~ 	_LOG("SSH Command Line : " & $sRun, 1, $iLOGPath)
+	$iPid = Run(@ComSpec & " /c " & $sRun, '', @SW_HIDE, $STDIN_CHILD + $STDERR_CHILD + $STDOUT_CHILD) ;@ComSpec & " /c " &
+	$PlinkTimeout = TimerInit()
+	While _Check_Cancel() ; ProcessExists($iPid)
+		If TimerDiff($PlinkTimeout) / 1000 > $vTimeout Then
+			MsgBox($MB_ICONERROR, _MultiLang_GetText("err_title"), _MultiLang_GetText("err_PlinkGlobal") & @CRLF & "(Timeout)")
+			_LOG("TimeOut : " & $vTimeout & "s", 2, $iLOGPath)
+			StdioClose($iPid)
+			Return -1
+		EndIf
+		$_StderrRead = StderrRead($iPid)
+		If Not @error And $_StderrRead <> '' Then
+			If StringInStr($_StderrRead, 'Unable to open connection') Then
+				MsgBox($MB_ICONERROR, _MultiLang_GetText("err_title"), _MultiLang_GetText("err_PlinkGlobal") & @CRLF & _MultiLang_GetText("err_PlinkConnection"))
+				_LOG("Unable to open connection with Plink", 2, $iLOGPath)
+				StdioClose($iPid)
+				Return -1
+			Else
+				_LOG($_StderrRead, 2, $iLOGPath)
 				StdioClose($iPid)
 				Return -1
 			EndIf
-			$_StderrRead = StderrRead($iPid)
-			If Not @error And $_StderrRead <> '' Then
-				If StringInStr($_StderrRead, 'Unable to open connection') Then
-					_LOG("Unable to open connection with Plink (" & $vPlink_Root & ":" & $vPlink_Pswd & "@" & $vPlink_Ip & ")", 2, $iLOGPath)
-					StdioClose($iPid)
-					Return -1
-				EndIf
-			EndIf
-			$_StdoutRead = StdoutRead($iPid)
-			If $_StdoutRead <> '' Then
-				_LOG("SSH Return : " & $_StdoutRead, 1, $iLOGPath)
-				StdioClose($iPid)
-				Return $_StdoutRead
-			EndIf
-		WEnd
-	EndIf
-	Return
+		EndIf
+		$_StdoutRead = StdoutRead($iPid)
+;~ 		_LOG(">" & $_StdoutRead, 1, $iLOGPath);Debug
+		If $_StdoutRead <> "" Or $vPlink_Return = "NoWait" Then
+			_LOG($_StdoutRead, 1, $iLOGPath)
+			StdioClose($iPid)
+			Return $_StdoutRead
+		EndIf
+	WEnd
 EndFunc   ;==>_Plink
 
 Func _GUI_Config_Image($oXMLProfil, $iPathMixTmp)
@@ -807,12 +802,12 @@ Func _GUI_Config_MIX($iMIXPath, $iPathMixTmp, $vCancelButton = 0)
 		$vMIXListC = $vMIXListC & "|" & StringTrimRight($aMIXList[$vBoucle], 4)
 	Next
 
-	$vMIXLast = _Coalesce(_XML_Read("/Profil/Name", 1, $iPathMixTmp & "\config.xml"), StringTrimRight($aMIXList[1], 4), -1)
+	$vMIXLast = _Coalesce(_XML_Read("/Profil/Name", 1, $iPathMixTmp & "\config.xml"), StringTrimRight($aMIXList[1], 4))
 	_Unzip($iMIXPath & "\" & $vMIXLast & ".zip", $iPathMixTmp)
 
 	#Region ### START Koda GUI section ### Form=
 	$F_MIXIMAGE = GUICreate(_MultiLang_GetText("win_config_mix_Title"), 830, 425, -1, -1, BitOR($WS_POPUP, $WS_BORDER), -1, $F_UniversalScraper)
-	$P_UXS = GUICtrlCreatePic(@ScriptDir & "\" & "Ressources\Images\UXS_Wizard_Half.jpg", 5, 263, 100, 160, -1, -1)
+	$P_UXS = GUICtrlCreatePic($iWizzPath & "\UXS_Wizard_Half.jpg", 5, 263, 100, 160, -1, -1)
 	$G_MIXSelection = GUICtrlCreateGroup("Votre Mix", 5, 1, 820, 260, -1, -1)
 	GUICtrlSetBkColor(-1, "0xF0F0F0")
 	$L_MIXSelection = GUICtrlCreateLabel("Quel type de Mix souhaitez vous :", 13, 21, 214, 25, $SS_CENTERIMAGE, -1)
@@ -938,7 +933,7 @@ Func _GUI_Config_MIX_Download()
 
 	#Region ### START Koda GUI section ### Form=
 	$F_MIXIMAGE = GUICreate(_MultiLang_GetText("win_config_mix_Download_Title"), 830, 425, -1, -1, BitOR($WS_POPUP, $WS_BORDER), -1, $F_UniversalScraper)
-	$P_UXS = GUICtrlCreatePic(@ScriptDir & "\" & "Ressources\Images\UXS_Wizard_Half.jpg", 5, 263, 100, 160, -1, -1)
+	$P_UXS = GUICtrlCreatePic($iWizzPath & "\UXS_Wizard_Half.jpg", 5, 263, 100, 160, -1, -1)
 	$G_MIXSelection = GUICtrlCreateGroup("Votre Mix", 5, 1, 820, 260, -1, -1)
 	GUICtrlSetBkColor(-1, "0xF0F0F0")
 	$L_MIXSelection = GUICtrlCreateLabel("Quel type de Mix souhaitez vous :", 13, 21, 214, 25, $SS_CENTERIMAGE, -1)
@@ -1433,7 +1428,7 @@ Func _GUI_Refresh($oXMLProfil = -1, $ScrapIP = 0, $vScrapeOK = 0) ;Refresh GUI
 					$vXpath = StringReplace('Data/systeme[id="' & $vSystemID & '"]/medias/media_wheelscarbon/media_wheelcarbon_%LANG%', '%LANG%', $aLangPref[$vBoucle])
 					$vURLWheel = _XML_Read($vXpath, 0, $iScriptPath & "\Ressources\systemlist.xml") & "&maxwidth=120&maxheight=60"
 					If $vURLWheel <> -1 And $vURLWheel <> "&maxwidth=120&maxheight=60" Then
-						_DownloadWRetry($vURLWheel, $iScriptPath & "\Ressources\Images\Temp\Wheel.png")
+						_DownloadWRetry($vURLWheel, $iScriptPath & "\Ressources\Images\Temp\Wheel.png", 1, 2)
 						$vBoucle = UBound($aLangPref) - 1
 						$vWheelOk += 1
 					EndIf
@@ -1710,6 +1705,7 @@ EndFunc   ;==>_ReplacePath
 Func _Check_Cancel()
 	If GUIGetMsg() = $B_SCRAPE Or $vScrapeCancelled = 1 Then
 		_LOG("Scrape Cancelled", 0, $iLOGPath)
+		_ProgressSetImages($PB_SCRAPE, $iScriptPath & "\Ressources\Images\ProgressBar\red.jpg", $iScriptPath & "\Ressources\Images\ProgressBar\bg.jpg")
 		$vScrapeCancelled = 1
 		Return False
 	Else
@@ -1837,9 +1833,9 @@ Func _CalcHash($aRomList, $vNoRom, $oXMLProfil)
 		$vSysName = $vSysName[UBound($vSysName) - 1]
 		$vRootPathOnPI = IniRead($iINIPath, "LAST_USE", "$vRootPathOnPI", "/recalbox/share/roms")
 		$vPathtoHash = $vRootPathOnPI & "/" & $vSysName & "/" & StringReplace($aRomList[$vNoRom][0], "\", "/")
-		$vPlinkCommand = '"' & "md5sum " & StringReplace(StringReplace($vPathtoHash, " ", "\ "), "'", "\'") & '"'
+		$vPlinkCommand = "md5sum '" & StringReplace($vPathtoHash, "'", "''") & "'"
 		_LOG("$vPlinkCommand : " & $vPlinkCommand, 1, $iLOGPath)
-		$aPlinkReturn = StringSplit(_Plink($oXMLProfil, $vPlinkCommand, 1), " ", $STR_NOCOUNT)
+		$aPlinkReturn = StringSplit(_Plink($oXMLProfil, $vPlinkCommand, 2, 600), " ", $STR_NOCOUNT)
 		$aRomList[$vNoRom][6] = $aPlinkReturn[0]
 		$TimerHashMD5 = Round((TimerDiff($TimerHashMD5) / 1000), 2)
 		_LOG("Rom Info (" & $aRomList[$vNoRom][0] & ") Hash in " & Round((TimerDiff($TimerHash) / 1000), 2) & "s", 0, $iLOGPath)
@@ -2224,9 +2220,9 @@ Func _SCRAPE($oXMLProfil, $aScrapeEngine, $vNbThread = 1, $vFullScrape = 0)
 	DirCreate($iTEMPPath & "\scraped")
 
 	If $aConfig <> 0 Then
+		_ProgressSetImages($PB_SCRAPE, $iScriptPath & "\Ressources\Images\ProgressBar\red.jpg", $iScriptPath & "\Ressources\Images\ProgressBar\bg.jpg")
 		_GUICtrlStatusBar_SetText($L_SCRAPE, "Please Wait... Testing server connection...")
 		Local $vScrapeCancelled = 0
-		Local $aConfig = _LoadConfig()
 		Local $aExtToHide = StringSplit(_XML_Read('/Profil/Element[Source_Value="%AutoHide%"]/AutoHideEXT', 0, "", $oXMLProfil), "|")
 		Local $aValueToHide = StringSplit(_XML_Read('/Profil/Element[Source_Value="%AutoHide%"]/AutoHideValue', 0, "", $oXMLProfil), "|")
 		Local $vSendTimerLeft = 0, $vCreateTimerLeft = 0, $vSendTimerMoy = 0, $vCreateTimerMoy = 0, $vSendTimerTotal = 0, $vSendTimerTotalbyRom = 0, $vCreateTimerTotal = 0, $PercentProgression = 0
@@ -2276,7 +2272,7 @@ Func _SCRAPE($oXMLProfil, $aScrapeEngine, $vNbThread = 1, $vFullScrape = 0)
 			If FileGetSize($aConfig[0]) > 100 And _Check_Cancel() Then $aXMLRomList = _XML_ListValue($vXpath2RomPath, $aConfig[0])
 
 			_ITaskBar_SetProgressState($F_UniversalScraper, 2)
-
+			$vFullTimerSolo = TimerInit()
 			Local $vBoucle = 0, $vRomSend = 0, $vRomReceived = 0
 			While 1
 				If $vBoucle < UBound($aRomList) - 1 Then
@@ -2345,22 +2341,36 @@ Func _SCRAPE($oXMLProfil, $aScrapeEngine, $vNbThread = 1, $vFullScrape = 0)
 					$vRomReceived += 1
 
 					;Timers
-					$vSendTimerTotal += $aRomList[$aMessageFromChild[0]][10]
-					$vSendTimerMoy = Round(Round($vSendTimerTotal / $vRomReceived, 2) / $vNbThread, 2)
-					$vSendTimerLeft = $vSendTimerMoy * (((UBound($aRomList) - 1 - $vBoucle) * ($vBoucle / $vRomSend)) + ($vRomSend - $vRomReceived))
+;~ 					$vSendTimerTotal += $aRomList[$aMessageFromChild[0]][10]
+;~ 					$vSendTimerMoy = Round(Round($vSendTimerTotal / $vRomReceived, 2) / $vNbThread, 2)
+;~ 					$vSendTimerLeft = $vSendTimerMoy * (((UBound($aRomList) - 1 - $vBoucle) * ($vBoucle / $vRomSend)) + ($vRomSend - $vRomReceived))
+
+					$vSendTimerTotal = Round(TimerDiff($vFullTimerSolo) / 1000, 2)
+
+					$vNbRomFull = (UBound($aRomList) - 1)
+					$vNbRomTest = $vBoucle
+					$vNbRatioSend = $vRomSend / $vNbRomTest
+					$vNbRomTotal = $vNbRomFull * $vNbRatioSend
+
+					$vSendTimerMoy = Round($vSendTimerTotal / ($vRomReceived), 2)
+					$vSendTimerLeft = Round($vSendTimerMoy * ($vNbRomTotal - $vRomReceived), 2)
 
 					$PercentProgression = Round(($vRomReceived * 100) / UBound($aRomList) - 1)
-					GUICtrlSetData($PB_SCRAPE, $PercentProgression)
+;~ 					GUICtrlSetData($PB_SCRAPE, $PercentProgression)
+					_ProgressSet($PB_SCRAPE, $PercentProgression)
+					_ProgressSetText($PB_SCRAPE, $vRomReceived & "/" & UBound($aRomList) - 1)
 					_ITaskBar_SetProgressValue($F_UniversalScraper, $PercentProgression)
 					_GUICtrlStatusBar_SetText($L_SCRAPE, $aRomList[$aMessageFromChild[0]][2])
-					_GUICtrlStatusBar_SetText($L_SCRAPE, "Time Left  : " & _FormatElapsedTime($vSendTimerLeft), 1)
-					_GUICtrlStatusBar_SetText($L_SCRAPE, @TAB & @TAB & $vRomReceived & "/" & UBound($aRomList) - 1, 2)
+					_GUICtrlStatusBar_SetText($L_SCRAPE, @TAB & @TAB & _FormatElapsedTime($vSendTimerLeft), 1) ; "Time Left  : " &
+;~ 					_GUICtrlStatusBar_SetText($L_SCRAPE, @TAB & @TAB & $vRomReceived & "/" & UBound($aRomList) - 1, 2)
 				EndIf
 
 				If Not _Check_Cancel() Or ($vRomReceived = $vRomSend And $vBoucle = UBound($aRomList) - 1) Then ExitLoop
 			WEnd
 
-			GUICtrlSetData($PB_SCRAPE, 0)
+;~ 			GUICtrlSetData($PB_SCRAPE, 0)
+			_ProgressSet($PB_SCRAPE, 0)
+			_ProgressSetText($PB_SCRAPE, "")
 			_ITaskBar_SetProgressState($F_UniversalScraper)
 			_GUICtrlStatusBar_SetText($L_SCRAPE, " ", 0)
 			_GUICtrlStatusBar_SetText($L_SCRAPE, " ", 1)
@@ -2380,6 +2390,8 @@ Func _SCRAPE($oXMLProfil, $aScrapeEngine, $vNbThread = 1, $vFullScrape = 0)
 EndFunc   ;==>_SCRAPE
 
 Func _CreateXML($aRomList, $aConfig)
+	_ProgressSetImages($PB_SCRAPE, $iScriptPath & "\Ressources\Images\ProgressBar\yellow.jpg", $iScriptPath & "\Ressources\Images\ProgressBar\bg.jpg")
+	_ProgressSet($PB_SCRAPE, 0)
 	;Reading Target xml
 	Dim $aXMLTarget
 	_FileReadToArray($aConfig[0], $aXMLTarget)
@@ -2405,7 +2417,8 @@ Func _CreateXML($aRomList, $aConfig)
 	For $vBoucle = 1 To UBound($aRomList) - 1
 		Dim $aXMLSource
 		$PercentProgression = Round((UBound($aRomList) - 1 * 100) / UBound($aRomList) - 1)
-		GUICtrlSetData($PB_SCRAPE, $PercentProgression)
+;~ 		GUICtrlSetData($PB_SCRAPE, $PercentProgression)
+		_ProgressSet($PB_SCRAPE, $PercentProgression)
 		_ITaskBar_SetProgressValue($F_UniversalScraper, $PercentProgression)
 		If $aRomList[$vBoucle][12] = 1 Then
 			_GUICtrlStatusBar_SetText($L_SCRAPE, $aRomList[$vBoucle][2])
@@ -2426,6 +2439,8 @@ Func _CreateXML($aRomList, $aConfig)
 	_XML_LoadXML($oXMLAfterTidy, $vXMLAfterTidy)
 	FileDelete($aConfig[0])
 	_XML_SaveToFile($oXMLAfterTidy, $aConfig[0])
+	_ProgressSet($PB_SCRAPE, 0)
+	_ProgressSetText($PB_SCRAPE, "")
 	Return
 EndFunc   ;==>_CreateXML
 
@@ -2455,13 +2470,13 @@ EndFunc   ;==>_CreateMissing
 Func _Wizz_OS()
 	#Region ### START Koda GUI section ### Form=
 	$F_Wizz_OS = GUICreate("", 340, 165, -1, -1, BitOR($WS_POPUP, $WS_BORDER), -1, $F_UniversalScraper)
-	$P_UXS = GUICtrlCreatePic(@ScriptDir & "\" & "Ressources\Images\UXS_Wizard_Half.jpg", 2, 2, 100, 160, -1, -1)
+	$P_UXS = GUICtrlCreatePic($iWizzPath & "\UXS_Wizard_Half.jpg", 2, 2, 100, 160, -1, -1)
 	$G_SystemSelection = GUICtrlCreateGroup(_MultiLang_GetText("Win_Wizard_OS_Group"), 108, 1, 230, 163, -1, -1)
 	GUICtrlSetBkColor(-1, "0xF0F0F0")
 	$L_SystemSelection = GUICtrlCreateLabel(_MultiLang_GetText("Win_Wizard_OS_Libelle"), 116, 21, 214, 25, $SS_CENTERIMAGE, -1)
-	$P_Recalbox = GUICtrlCreatePic(@ScriptDir & "\" & "Ressources\Images\Recalbox_Logo.jpg", 116, 53, 102, 102, -1, BitOR($WS_EX_CLIENTEDGE, $WS_EX_STATICEDGE))
+	$P_Recalbox = GUICtrlCreatePic($iWizzPath & "\Recalbox_Logo.jpg", 116, 53, 102, 102, -1, BitOR($WS_EX_CLIENTEDGE, $WS_EX_STATICEDGE))
 	GUICtrlSetTip(-1, _MultiLang_GetText("Win_Wizard_OS_Tip_Recalbox"))
-	$P_Retropie = GUICtrlCreatePic(@ScriptDir & "\" & "Ressources\Images\Retropie_Logo.jpg", 228, 53, 100, 100, -1, BitOR($WS_EX_CLIENTEDGE, $WS_EX_STATICEDGE))
+	$P_Retropie = GUICtrlCreatePic($iWizzPath & "\Retropie_Logo.jpg", 228, 53, 100, 100, -1, BitOR($WS_EX_CLIENTEDGE, $WS_EX_STATICEDGE))
 	GUICtrlSetTip(-1, _MultiLang_GetText("Win_Wizard_OS_Tip_Retropie"))
 	#EndRegion ### END Koda GUI section ###
 	GUISetState(@SW_SHOW)
@@ -2486,13 +2501,13 @@ EndFunc   ;==>_Wizz_OS
 Func _Wizz_MediaChoice($oXMLProfil, $vProfilsPath)
 	#Region ### START Koda GUI section ### Form=
 	$F_Wizz_MediaChoice = GUICreate("", 340, 165, -1, -1, BitOR($WS_POPUP, $WS_BORDER), -1, $F_UniversalScraper)
-	$P_UXS = GUICtrlCreatePic(@ScriptDir & "\" & "Ressources\Images\UXS_Wizard_Half.jpg", 2, 2, 100, 160, -1, -1)
+	$P_UXS = GUICtrlCreatePic($iWizzPath & "\UXS_Wizard_Half.jpg", 2, 2, 100, 160, -1, -1)
 	$G_MediaSelection = GUICtrlCreateGroup(_MultiLang_GetText("Win_Wizard_MediaChoice_Group"), 108, 1, 230, 163, -1, -1)
 	GUICtrlSetBkColor(-1, "0xF0F0F0")
 	$L_MediaSelection = GUICtrlCreateLabel(_MultiLang_GetText("Win_Wizard_MediaChoice_Libelle"), 116, 21, 214, 25, $SS_CENTERIMAGE, -1)
-	$P_MediaSimple = GUICtrlCreatePic(@ScriptDir & "\" & "Ressources\Images\MediaSimpleSS_Logo.jpg", 116, 53, 102, 102, -1, BitOR($WS_EX_CLIENTEDGE, $WS_EX_STATICEDGE))
+	$P_MediaSimple = GUICtrlCreatePic($iWizzPath & "\MediaSimpleSS_Logo.jpg", 116, 53, 102, 102, -1, BitOR($WS_EX_CLIENTEDGE, $WS_EX_STATICEDGE))
 	GUICtrlSetTip(-1, _MultiLang_GetText("Win_Wizard_MediaChoice_Tip_Simple"))
-	$P_MediaMIX = GUICtrlCreatePic(@ScriptDir & "\" & "Ressources\Images\MediaMIX_Logo.jpg", 228, 53, 100, 100, -1, BitOR($WS_EX_CLIENTEDGE, $WS_EX_STATICEDGE))
+	$P_MediaMIX = GUICtrlCreatePic($iWizzPath & "\MediaMIX_Logo.jpg", 228, 53, 100, 100, -1, BitOR($WS_EX_CLIENTEDGE, $WS_EX_STATICEDGE))
 	GUICtrlSetTip(-1, _MultiLang_GetText("Win_Wizard_MediaChoice_Tip_Mix"))
 	#EndRegion ### END Koda GUI section ###
 	GUISetState(@SW_SHOW)
@@ -2531,18 +2546,18 @@ EndFunc   ;==>_Wizz_MediaChoice
 Func _Wizz_MediaSimpleChoice($oXMLProfil, $vProfilsPath)
 	#Region ### START Koda GUI section ### Form=
 	$F_Wizz_MediaSimpleChoice = GUICreate("", 340, 283, -1, -1, BitOR($WS_POPUP, $WS_BORDER), -1, $F_UniversalScraper)
-	$P_UXS = GUICtrlCreatePic(@ScriptDir & "\" & "Ressources\Images\UXS_Wizard_Half.jpg", 2, 61.5, 100, 160, -1, -1)
+	$P_UXS = GUICtrlCreatePic($iWizzPath & "\UXS_Wizard_Half.jpg", 2, 61.5, 100, 160, -1, -1)
 	$G_MediaSimpleSelection = GUICtrlCreateGroup(_MultiLang_GetText("Win_Wizard_MediaSimpleChoice_Group"), 108, 1, 230, 280, -1, -1)
 	GUICtrlSetBkColor(-1, "0xF0F0F0")
 	$L_MediaSimpleSelection = GUICtrlCreateEdit(_MultiLang_GetText("Win_Wizard_MediaSimpleChoice_Libelle"), 116, 15, 218, 35, BitOR($ES_READONLY, $ES_MULTILINE, $SS_CENTERIMAGE), 0)
 ;~ 	GUICtrlCreateLabel(_MultiLang_GetText("Win_Wizard_MediaSimpleChoice_Libelle"), 116, 21, 214, 25, $SS_CENTERIMAGE, -1)
-	$P_MediaSimpleSS = GUICtrlCreatePic(@ScriptDir & "\" & "Ressources\Images\MediaSimpleSS_Logo.jpg", 116, 53, 102, 102, -1, BitOR($WS_EX_CLIENTEDGE, $WS_EX_STATICEDGE))
+	$P_MediaSimpleSS = GUICtrlCreatePic($iWizzPath & "\MediaSimpleSS_Logo.jpg", 116, 53, 102, 102, -1, BitOR($WS_EX_CLIENTEDGE, $WS_EX_STATICEDGE))
 	GUICtrlSetTip(-1, _MultiLang_GetText("Win_Wizard_MediaSimpleChoice_Tip_SS"))
-	$P_MediaSimpleWheel = GUICtrlCreatePic(@ScriptDir & "\" & "Ressources\Images\MediaSimpleWheel_Logo.jpg", 228, 53, 100, 100, -1, BitOR($WS_EX_CLIENTEDGE, $WS_EX_STATICEDGE))
+	$P_MediaSimpleWheel = GUICtrlCreatePic($iWizzPath & "\MediaSimpleWheel_Logo.jpg", 228, 53, 100, 100, -1, BitOR($WS_EX_CLIENTEDGE, $WS_EX_STATICEDGE))
 	GUICtrlSetTip(-1, _MultiLang_GetText("Win_Wizard_MediaSimpleChoice_Tip_Wheel"))
-	$P_MediaSimple2DBox = GUICtrlCreatePic(@ScriptDir & "\" & "Ressources\Images\MediaSimple2DBox_Logo.jpg", 116, 170, 100, 100, -1, BitOR($WS_EX_CLIENTEDGE, $WS_EX_STATICEDGE))
+	$P_MediaSimple2DBox = GUICtrlCreatePic($iWizzPath & "\MediaSimple2DBox_Logo.jpg", 116, 170, 100, 100, -1, BitOR($WS_EX_CLIENTEDGE, $WS_EX_STATICEDGE))
 	GUICtrlSetTip(-1, _MultiLang_GetText("Win_Wizard_MediaSimpleChoice_Tip_2DBox"))
-	$P_MediaSimple3DBox = GUICtrlCreatePic(@ScriptDir & "\" & "Ressources\Images\MediaSimple3DBox_Logo.jpg", 230, 170, 100, 100, -1, BitOR($WS_EX_CLIENTEDGE, $WS_EX_STATICEDGE))
+	$P_MediaSimple3DBox = GUICtrlCreatePic($iWizzPath & "\MediaSimple3DBox_Logo.jpg", 230, 170, 100, 100, -1, BitOR($WS_EX_CLIENTEDGE, $WS_EX_STATICEDGE))
 	GUICtrlSetTip(-1, _MultiLang_GetText("Win_Wizard_MediaSimpleChoice_Tip_3DBox"))
 	#EndRegion ### END Koda GUI section ###
 	GUISetState(@SW_SHOW)
@@ -2589,18 +2604,18 @@ EndFunc   ;==>_Wizz_MediaSimpleChoice
 Func _Wizz_MediaSimpleAltChoice($oXMLProfil, $vProfilsPath, $vMainMedia)
 	#Region ### START Koda GUI section ### Form=
 	$F_Wizz_MediaSimpleAltChoice = GUICreate("", 340, 283, -1, -1, BitOR($WS_POPUP, $WS_BORDER), -1, $F_UniversalScraper)
-	$P_UXS = GUICtrlCreatePic(@ScriptDir & "\" & "Ressources\Images\UXS_Wizard_Half.jpg", 2, 61.5, 100, 160, -1, -1)
+	$P_UXS = GUICtrlCreatePic($iWizzPath & "\UXS_Wizard_Half.jpg", 2, 61.5, 100, 160, -1, -1)
 	$G_MediaSimpleAltSelection = GUICtrlCreateGroup(_MultiLang_GetText("Win_Wizard_MediaSimpleAltChoice_Group"), 108, 1, 230, 280, -1, -1)
 	GUICtrlSetBkColor(-1, "0xF0F0F0")
 ;~ 	$L_MediaSimpleAltSelection = GUICtrlCreateLabel(_MultiLang_GetText("Win_Wizard_MediaSimpleAltChoice_Libelle"), 116, 21, 214, 25, $SS_CENTERIMAGE, -1)
 	$L_MediaSimpleAltSelection = GUICtrlCreateEdit(_MultiLang_GetText("Win_Wizard_MediaSimpleAltChoice_Libelle"), 116, 15, 218, 35, BitOR($ES_READONLY, $ES_MULTILINE, $SS_CENTERIMAGE), 0)
-	$P_MediaSimpleAltSS = GUICtrlCreatePic(@ScriptDir & "\" & "Ressources\Images\MediaSimpleSS_Logo.jpg", 116, 53, 102, 102, -1, BitOR($WS_EX_CLIENTEDGE, $WS_EX_STATICEDGE))
+	$P_MediaSimpleAltSS = GUICtrlCreatePic($iWizzPath & "\MediaSimpleSS_Logo.jpg", 116, 53, 102, 102, -1, BitOR($WS_EX_CLIENTEDGE, $WS_EX_STATICEDGE))
 	GUICtrlSetTip(-1, _MultiLang_GetText("Win_Wizard_MediaSimpleAltChoice_Tip_SS"))
-	$P_MediaSimpleAltWheel = GUICtrlCreatePic(@ScriptDir & "\" & "Ressources\Images\MediaSimpleWheel_Logo.jpg", 228, 53, 100, 100, -1, BitOR($WS_EX_CLIENTEDGE, $WS_EX_STATICEDGE))
+	$P_MediaSimpleAltWheel = GUICtrlCreatePic($iWizzPath & "\MediaSimpleWheel_Logo.jpg", 228, 53, 100, 100, -1, BitOR($WS_EX_CLIENTEDGE, $WS_EX_STATICEDGE))
 	GUICtrlSetTip(-1, _MultiLang_GetText("Win_Wizard_MediaSimpleAltChoice_Tip_Wheel"))
-	$P_MediaSimpleAlt2DBox = GUICtrlCreatePic(@ScriptDir & "\" & "Ressources\Images\MediaSimple2DBox_Logo.jpg", 116, 170, 100, 100, -1, BitOR($WS_EX_CLIENTEDGE, $WS_EX_STATICEDGE))
+	$P_MediaSimpleAlt2DBox = GUICtrlCreatePic($iWizzPath & "\MediaSimple2DBox_Logo.jpg", 116, 170, 100, 100, -1, BitOR($WS_EX_CLIENTEDGE, $WS_EX_STATICEDGE))
 	GUICtrlSetTip(-1, _MultiLang_GetText("Win_Wizard_MediaSimpleAltChoice_Tip_2DBox"))
-	$P_MediaSimpleAlt3DBox = GUICtrlCreatePic(@ScriptDir & "\" & "Ressources\Images\MediaSimple3DBox_Logo.jpg", 230, 170, 100, 100, -1, BitOR($WS_EX_CLIENTEDGE, $WS_EX_STATICEDGE))
+	$P_MediaSimpleAlt3DBox = GUICtrlCreatePic($iWizzPath & "\MediaSimple3DBox_Logo.jpg", 230, 170, 100, 100, -1, BitOR($WS_EX_CLIENTEDGE, $WS_EX_STATICEDGE))
 	GUICtrlSetTip(-1, _MultiLang_GetText("Win_Wizard_MediaSimpleAltChoice_Tip_3DBox"))
 	#EndRegion ### END Koda GUI section ###
 	GUISetState(@SW_SHOW)
@@ -2663,13 +2678,13 @@ EndFunc   ;==>_Wizz_MediaSimpleAltChoice
 Func _Wizz_Rom($oXMLProfil)
 	#Region ### START Koda GUI section ### Form=
 	$F_Wizz_Path = GUICreate("", 340, 165, -1, -1, BitOR($WS_POPUP, $WS_BORDER), -1, $F_UniversalScraper)
-	$P_UXS = GUICtrlCreatePic(@ScriptDir & "\" & "Ressources\Images\UXS_Wizard_Half.jpg", 2, 2, 100, 160, -1, -1)
+	$P_UXS = GUICtrlCreatePic($iWizzPath & "\UXS_Wizard_Half.jpg", 2, 2, 100, 160, -1, -1)
 	$G_RomPathSelection = GUICtrlCreateGroup(_MultiLang_GetText("Win_Wizard_RomChoice_Group"), 108, 1, 230, 163, -1, -1)
 	GUICtrlSetBkColor(-1, "0xF0F0F0")
 	$L_RomPathSelection = GUICtrlCreateLabel(_MultiLang_GetText("Win_Wizard_RomChoice_Libelle"), 116, 21, 214, 25, $SS_CENTERIMAGE, -1)
-	$P_RaspberryPi = GUICtrlCreatePic(@ScriptDir & "\" & "Ressources\Images\RaspberryPi_Logo.jpg", 116, 53, 100, 100, -1, BitOR($WS_EX_CLIENTEDGE, $WS_EX_STATICEDGE))
+	$P_RaspberryPi = GUICtrlCreatePic($iWizzPath & "\RaspberryPi_Logo.jpg", 116, 53, 100, 100, -1, BitOR($WS_EX_CLIENTEDGE, $WS_EX_STATICEDGE))
 	GUICtrlSetTip(-1, _MultiLang_GetText("Win_Wizard_RomChoice_Tip_RPI"))
-	$P_Computer = GUICtrlCreatePic(@ScriptDir & "\" & "Ressources\Images\Computer_Logo.jpg", 228, 53, 100, 100, -1, BitOR($WS_EX_CLIENTEDGE, $WS_EX_STATICEDGE))
+	$P_Computer = GUICtrlCreatePic($iWizzPath & "\Computer_Logo.jpg", 228, 53, 100, 100, -1, BitOR($WS_EX_CLIENTEDGE, $WS_EX_STATICEDGE))
 	GUICtrlSetTip(-1, _MultiLang_GetText("Win_Wizard_RomChoice_Tip_Local"))
 	#EndRegion ### END Koda GUI section ###
 	GUISetState(@SW_SHOW)
@@ -2700,7 +2715,7 @@ Func _Wizz_Rom($oXMLProfil)
 				If (StringRight($vSource_RootPath, 1) = '\') Then StringTrimRight($vSource_RootPath, 1)
 				If FileExists($vSource_RootPath) Then
 					Local $aMaskFolder, $vMaskFolder = '', $vPathOk = 0
-					_FileReadToArray(@ScriptDir & "\" & "Ressources\systemlist.txt", $aMaskFolder, $FRTA_COUNT, "|")
+					_FileReadToArray($iScriptPath & "\Ressources\systemlist.txt", $aMaskFolder, $FRTA_COUNT, "|")
 					For $vBoucle = 1 To UBound($aMaskFolder) - 1
 						$vMaskFolder = $vMaskFolder & $aMaskFolder[$vBoucle][0] & ';'
 					Next
@@ -2737,15 +2752,16 @@ Func _Wizz_Rom($oXMLProfil)
 EndFunc   ;==>_Wizz_Rom
 
 Func _Wizz_SSChoice()
+	If IniRead($iINIPath, "LAST_USE", "$vSSLogin", "") <> "" Then Return "No"
 	#Region ### START Koda GUI section ### Form=
 	$F_Wizz_SSChoice = GUICreate("", 340, 165, -1, -1, BitOR($WS_POPUP, $WS_BORDER), -1, $F_UniversalScraper)
-	$P_UXS = GUICtrlCreatePic(@ScriptDir & "\" & "Ressources\Images\UXS_Wizard_Half.jpg", 2, 2, 100, 160, -1, -1)
+	$P_UXS = GUICtrlCreatePic($iWizzPath & "\UXS_Wizard_Half.jpg", 2, 2, 100, 160, -1, -1)
 	$G_SSSelection = GUICtrlCreateGroup(_MultiLang_GetText("Win_Wizard_SSChoice_Group"), 108, 1, 230, 163, -1, -1)
 	GUICtrlSetBkColor(-1, "0xF0F0F0")
 	$L_SSSelection = GUICtrlCreateLabel(_MultiLang_GetText("Win_Wizard_SSChoice_Libelle"), 116, 21, 214, 25, $SS_CENTERIMAGE, -1)
-	$P_SSYes = GUICtrlCreatePic(@ScriptDir & "\" & "Ressources\Images\SSYes_Logo.jpg", 116, 53, 100, 100, -1, BitOR($WS_EX_CLIENTEDGE, $WS_EX_STATICEDGE))
+	$P_SSYes = GUICtrlCreatePic($iWizzPath & "\SSYes_Logo.jpg", 116, 53, 100, 100, -1, BitOR($WS_EX_CLIENTEDGE, $WS_EX_STATICEDGE))
 	GUICtrlSetTip(-1, _MultiLang_GetText("Win_Wizard_SSChoice_Tip_Yes"))
-	$P_SSNo = GUICtrlCreatePic(@ScriptDir & "\" & "Ressources\Images\SSNo_Logo.jpg", 228, 53, 100, 100, -1, BitOR($WS_EX_CLIENTEDGE, $WS_EX_STATICEDGE))
+	$P_SSNo = GUICtrlCreatePic($iWizzPath & "\SSNo_Logo.jpg", 228, 53, 100, 100, -1, BitOR($WS_EX_CLIENTEDGE, $WS_EX_STATICEDGE))
 	GUICtrlSetTip(-1, _MultiLang_GetText("Win_Wizard_SSChoice_Tip_No"))
 	#EndRegion ### END Koda GUI section ###
 	GUISetState(@SW_SHOW)
@@ -2774,7 +2790,7 @@ EndFunc   ;==>_Wizz_SSChoice
 Func _Wizz_SSId()
 	#Region ### START Koda GUI section ### Form=
 	$F_Wizz_SSId = GUICreate("", 340, 165, -1, -1, BitOR($WS_POPUP, $WS_BORDER), -1, $F_UniversalScraper)
-	$P_UXS = GUICtrlCreatePic(@ScriptDir & "\" & "Ressources\Images\UXS_Wizard_Half.jpg", 2, 2, 100, 160, -1, -1)
+	$P_UXS = GUICtrlCreatePic($iWizzPath & "\UXS_Wizard_Half.jpg", 2, 2, 100, 160, -1, -1)
 	$G_SSId = GUICtrlCreateGroup(_MultiLang_GetText("Win_Wizard_SSChoice_Group"), 108, 1, 230, 163, -1, -1)
 	GUICtrlSetBkColor(-1, "0xF0F0F0")
 	$L_SSId = GUICtrlCreateLabel(_MultiLang_GetText("Win_Wizard_SSIdChoice_Id"), 116, 25, 70, 25, $SS_CENTERIMAGE, -1)
@@ -2907,13 +2923,13 @@ EndFunc   ;==>_Wizz_SystemChoice
 Func _Wizz_Scrape()
 	#Region ### START Koda GUI section ### Form=
 	$F_Wizz_ScrapeChoice = GUICreate("", 340, 165, -1, -1, BitOR($WS_POPUP, $WS_BORDER), -1, $F_UniversalScraper)
-	$P_UXS = GUICtrlCreatePic(@ScriptDir & "\" & "Ressources\Images\UXS_Wizard_Half.jpg", 2, 2, 100, 160, -1, -1)
+	$P_UXS = GUICtrlCreatePic($iWizzPath & "\UXS_Wizard_Half.jpg", 2, 2, 100, 160, -1, -1)
 	$G_ScrapeSelection = GUICtrlCreateGroup(_MultiLang_GetText("Win_Wizard_ScrapeChoice_Group"), 108, 1, 230, 163, -1, -1)
 	GUICtrlSetBkColor(-1, "0xF0F0F0")
 	$L_ScrapeSelection = GUICtrlCreateLabel(_MultiLang_GetText("Win_Wizard_ScrapeChoice_Libelle"), 116, 21, 214, 25, $SS_CENTERIMAGE, -1)
-	$P_ScrapeYes = GUICtrlCreatePic(@ScriptDir & "\" & "Ressources\Images\ScrapeYes_Logo.jpg", 116, 53, 102, 102, -1, BitOR($WS_EX_CLIENTEDGE, $WS_EX_STATICEDGE))
+	$P_ScrapeYes = GUICtrlCreatePic($iWizzPath & "\ScrapeYes_Logo.jpg", 116, 53, 102, 102, -1, BitOR($WS_EX_CLIENTEDGE, $WS_EX_STATICEDGE))
 	GUICtrlSetTip(-1, _MultiLang_GetText("Win_Wizard_ScrapeChoice_Tip_Yes"))
-	$P_ScrapeNo = GUICtrlCreatePic(@ScriptDir & "\" & "Ressources\Images\ScrapeNo_Logo.jpg", 228, 53, 100, 100, -1, BitOR($WS_EX_CLIENTEDGE, $WS_EX_STATICEDGE))
+	$P_ScrapeNo = GUICtrlCreatePic($iWizzPath & "\ScrapeNo_Logo.jpg", 228, 53, 100, 100, -1, BitOR($WS_EX_CLIENTEDGE, $WS_EX_STATICEDGE))
 	GUICtrlSetTip(-1, _MultiLang_GetText("Win_Wizard_ScrapeChoice_Tip_No"))
 	#EndRegion ### END Koda GUI section ###
 	GUISetState(@SW_SHOW)
@@ -2942,7 +2958,7 @@ Func _TestServer($vNbThreadMax = 1)
 	Switch StringLower($aServerList[0])
 		Case 'fallback'
 			For $Boucle = 1 To UBound($aServerList) - 1
-				If _CheckURL($aServerList[$Boucle]) Then
+				If _CheckURL($aServerList[$Boucle] & "/api/ssuserInfos.php?devid=xxx&devpassword=yyy&softname=zzz&output=xml&ssid=test&sspassword=test") Then
 					_LOG("Server (fallback) = " & $aServerList[$Boucle], 1, $iLOGPath)
 ;~ 					Return "http://new.screenscraper.fr/"
 					Return $aServerList[$Boucle]
@@ -2951,7 +2967,7 @@ Func _TestServer($vNbThreadMax = 1)
 		Case 'priorisation'
 			If $vNbThreadMax = 1 Then
 				For $Boucle = UBound($aServerList) - 1 To 1 Step -1
-					If _CheckURL($aServerList[$Boucle]) Then
+					If _CheckURL($aServerList[$Boucle] & "/api/ssuserInfos.php?devid=xxx&devpassword=yyy&softname=zzz&output=xml&ssid=test&sspassword=test") Then
 						_LOG("Server (priorisation Unreg) = " & $aServerList[$Boucle], 1, $iLOGPath)
 ;~ 						Return "http://new.screenscraper.fr/"
 						Return $aServerList[$Boucle]
@@ -2959,7 +2975,7 @@ Func _TestServer($vNbThreadMax = 1)
 				Next
 			Else
 				For $Boucle = 1 To UBound($aServerList) - 1
-					If _CheckURL($aServerList[$Boucle]) Then
+					If _CheckURL($aServerList[$Boucle] & "/api/ssuserInfos.php?devid=xxx&devpassword=yyy&softname=zzz&output=xml&ssid=test&sspassword=test") Then
 						_LOG("Server (priorisation Reg)= " & $aServerList[$Boucle], 1, $iLOGPath)
 ;~ 						Return "http://new.screenscraper.fr/"
 						Return $aServerList[$Boucle]

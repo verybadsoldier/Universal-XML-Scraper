@@ -1,0 +1,3 @@
+Author : Screech
+Description :
+BigShot with 3D Box as main picture and several picto (To try with theme like Eudora Bigshot)

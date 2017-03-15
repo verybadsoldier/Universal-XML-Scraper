@@ -1,3 +1,0 @@
-Author : Screech
-Description :
-BigPicture with 3D Box as main picture and several picto (Nb of player, note, genre, classification, editor)

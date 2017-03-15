@@ -93,17 +93,17 @@ EndFunc   ;==>_URIEncode
 ; Related .......:
 ; Link ..........;
 ; Example .......; No
-Func _LOG_Ceation($iLOGPath = @ScriptDir & "\Log.txt")
+Func _LOG_Ceation($iLOGPathC = @ScriptDir & "\Log.txt")
 	Local $iVersion
 	If @Compiled Then
 		$iVersion = FileGetVersion(@ScriptFullPath)
 	Else
 		$iVersion = 'In Progress'
 	EndIf
-	FileDelete($iLOGPath)
-	If Not _FileCreate($iLOGPath) Then MsgBox(4096, "Error", " Erreur creation du Fichier LOG      error:" & @error)
-	_LOG(@ScriptFullPath & " (" & $iVersion & ")", 0, $iLOGPath)
-	_LOG(@OSVersion & "(" & @OSArch & ") - " & @OSLang, 0, $iLOGPath)
+	FileDelete($iLOGPathC)
+	If Not _FileCreate($iLOGPathC) Then MsgBox(4096, "Error", " Erreur creation du Fichier LOG      error:" & @error)
+	_LOG(@ScriptFullPath & " (" & $iVersion & ")", 0, $iLOGPathC)
+	_LOG(@OSVersion & "(" & @OSArch & ") - " & @OSLang, 0, $iLOGPathC)
 EndFunc   ;==>_LOG_Ceation
 
 ; #FUNCTION# ===================================================================================================
@@ -555,7 +555,7 @@ Func _SelectGUI($aSelectionItem, $default = -1, $vText = "standard", $vLanguageS
 
 
 	Local $_Selector_gui_GUI = GUICreate(_MultiLang_GetText("win_sel_" & $vText & "_Title"), 340, 165, -1, -1, BitOR($WS_POPUP, $WS_BORDER), -1)
-	Local $_Selector_gui_Pic = GUICtrlCreatePic(@ScriptDir & "\" & "Ressources\Images\UXS_Wizard_Half.jpg", 2, 2, 100, 160, -1, -1)
+	Local $_Selector_gui_Pic = GUICtrlCreatePic($iScriptPath & "\" & "Ressources\Images\Wizard\UXS_Wizard_Half.jpg", 2, 2, 100, 160, -1, -1)
 	Local $_Selector_gui_Group = GUICtrlCreateGroup(_MultiLang_GetText("win_sel_" & $vText & "_Title"), 108, 1, 230, 163, -1, -1)
 	GUICtrlSetBkColor(-1, "0xF0F0F0")
 	Local $_Selector_gui_Label = GUICtrlCreateLabel(_MultiLang_GetText("win_sel_" & $vText & "_text"), 116, 25, 215, 40, $SS_CENTERIMAGE, -1)
@@ -2132,7 +2132,7 @@ Func ErrFunc_CustomUserHandler_XML($oError)
 	; here is declared another path to UDF au3 file
 	; thanks to this with using _XML_ComErrorHandler_UserFunction(ErrFunc_CustomUserHandler_XML)
 	;  you get errors which after pressing F4 in SciTE4AutoIt you goes directly to the specified UDF Error Line
-	ConsoleWrite(@ScriptDir & '\XMLWrapperEx.au3' & " (" & $oError.scriptline & ") : UDF ==> COM Error intercepted ! " & @CRLF & _
+	ConsoleWrite('XMLWrapperEx' & " (" & $oError.scriptline & ") : UDF ==> COM Error intercepted ! " & @CRLF & _
 			@TAB & "err.number is: " & @TAB & @TAB & "0x" & Hex($oError.number) & @CRLF & _
 			@TAB & "err.windescription:" & @TAB & $oError.windescription & @CRLF & _
 			@TAB & "err.description is: " & @TAB & $oError.description & @CRLF & _

@@ -1,0 +1,17 @@
+[ISNAUTOITSTUDIO]
+mainfile=Universal XML Scraper.au3
+compile_exename=Universal XML Scraper
+name=UXS
+date=13.03.2017
+author=Screech
+comment=
+studioversion=1.03
+version=2.2.0.0
+time=3521615
+projectopened=2
+use_changelog_manager=true
+changelog_use_author_from_project=true
+lastusedfiles=\Include\_GDIpProgress.au3|\UXS-config.ini|\changelog.txt|\changelog_next.txt|\Scraper.au3|\Include\_MyFunction.au3|\Universal XML Scraper.au3|\Include\_Plink.au3|\Include\InlineImgs.au3|\Include\GDIpProgress.au3|\Include\GDIpProgress_Ex.au3
+opened=
+lastopendate=15.03.2017 22:24
+opened_tabs=%projectdir%\Universal XML Scraper.au3|%projectdir%\Include\_MyFunction.au3|%projectdir%\Scraper.au3|%projectdir%\changelog_next.txt|%projectdir%\changelog.txt|%projectdir%\UXS-config.ini|%projectdir%\Include\_GDIpProgress.au3|

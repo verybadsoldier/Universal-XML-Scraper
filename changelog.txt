@@ -1,3 +1,12 @@
+2.2.0.1
+* Corrected :
+ - SSH command are ok now
+ - Thread number are now keept
+* Modification :
+ - New ProgressBar with count on it
+ - New Algo for estimated time
+ - Renaming BigPicture to Bigshot (to match Eudora Theme)
+
 2.2.0.0
 * Corrected :
  - Problem with Fullscrape
