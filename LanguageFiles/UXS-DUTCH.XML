@@ -177,69 +177,66 @@
 			<win_Results_FullTime>Totale Tijd : </win_Results_FullTime>
 			<win_Results_NbThread>Thread(s) gebruikt : </win_Results_NbThread>
 		</win_Results>
-
-; TRANSLATION NEEDED
-
 		<Win_Wizard>
-			<win_Wizard_Next>Next</win_Wizard_Next>
-			<win_Wizard_Back>Back</win_Wizard_Back>
+			<win_Wizard_Next>Volgende</win_Wizard_Next>
+			<win_Wizard_Back>Vorige</win_Wizard_Back>
 			<Win_Wizard_OS>
-				<Win_Wizard_OS_Group>Your OS</Win_Wizard_OS_Group>
-				<Win_Wizard_OS_Libelle>Select your operating system</Win_Wizard_OS_Libelle>
+				<Win_Wizard_OS_Group>OS selectie</Win_Wizard_OS_Group>
+				<Win_Wizard_OS_Libelle>Selecteer je OS</Win_Wizard_OS_Libelle>
 				<Win_Wizard_OS_Tip_Recalbox>Recalbox</Win_Wizard_OS_Tip_Recalbox>
 				<Win_Wizard_OS_Tip_Retropie>Retropie</Win_Wizard_OS_Tip_Retropie>
 			</Win_Wizard_OS>
 			<Win_Wizard_MediaChoice>
-				<Win_Wizard_MediaChoice_Group>Visual choice</Win_Wizard_MediaChoice_Group>
-				<Win_Wizard_MediaChoice_Libelle>Select your visual</Win_Wizard_MediaChoice_Libelle>
-				<Win_Wizard_MediaChoice_Tip_Simple>A simple media</Win_Wizard_MediaChoice_Tip_Simple>
-				<Win_Wizard_MediaChoice_Tip_Mix>A several media MIX </Win_Wizard_MediaChoice_Tip_Mix>
+				<Win_Wizard_MediaChoice_Group>Visual selectie</Win_Wizard_MediaChoice_Group>
+				<Win_Wizard_MediaChoice_Libelle>Selecteer je visual</Win_Wizard_MediaChoice_Libelle>
+				<Win_Wizard_MediaChoice_Tip_Simple>Simpele media</Win_Wizard_MediaChoice_Tip_Simple>
+				<Win_Wizard_MediaChoice_Tip_Mix>Een gemengde media MIX</Win_Wizard_MediaChoice_Tip_Mix>
 			</Win_Wizard_MediaChoice>
 			<Win_Wizard_MediaSimpleChoice>
-				<Win_Wizard_MediaSimpleChoice_Group>Default visual choice</Win_Wizard_MediaSimpleChoice_Group>
-				<Win_Wizard_MediaSimpleChoice_Libelle>Select your default visual</Win_Wizard_MediaSimpleChoice_Libelle>
-				<Win_Wizard_MediaSimpleChoice_Tip_SS>A Screenshot</Win_Wizard_MediaSimpleChoice_Tip_SS>
-				<Win_Wizard_MediaSimpleChoice_Tip_Wheel>A wheel</Win_Wizard_MediaSimpleChoice_Tip_Wheel>
-				<Win_Wizard_MediaSimpleChoice_Tip_2DBox>A 2D Cover</Win_Wizard_MediaSimpleChoice_Tip_2DBox>
-				<Win_Wizard_MediaSimpleChoice_Tip_3DBox>A 3D Cover</Win_Wizard_MediaSimpleChoice_Tip_3DBox>
+				<Win_Wizard_MediaSimpleChoice_Group>Standaard visual selectie</Win_Wizard_MediaSimpleChoice_Group>
+				<Win_Wizard_MediaSimpleChoice_Libelle>Selecteer je standaard visual</Win_Wizard_MediaSimpleChoice_Libelle>
+				<Win_Wizard_MediaSimpleChoice_Tip_SS>Een screenshot</Win_Wizard_MediaSimpleChoice_Tip_SS>
+				<Win_Wizard_MediaSimpleChoice_Tip_Wheel>Een wiel</Win_Wizard_MediaSimpleChoice_Tip_Wheel>
+				<Win_Wizard_MediaSimpleChoice_Tip_2DBox>Een 2D Cover</Win_Wizard_MediaSimpleChoice_Tip_2DBox>
+				<Win_Wizard_MediaSimpleChoice_Tip_3DBox>Een 3D Cover</Win_Wizard_MediaSimpleChoice_Tip_3DBox>
 			</Win_Wizard_MediaSimpleChoice>
 			<Win_Wizard_MediaSimpleAltChoice>
-				<Win_Wizard_MediaSimpleAltChoice_Group>Alt visual choice</Win_Wizard_MediaSimpleAltChoice_Group>
-				<Win_Wizard_MediaSimpleAltChoice_Libelle>Select your alt visual@CRLF(If the default one don't exist)</Win_Wizard_MediaSimpleAltChoice_Libelle>
-				<Win_Wizard_MediaSimpleAltChoice_Tip_SS>A Screenshot</Win_Wizard_MediaSimpleAltChoice_Tip_SS>
-				<Win_Wizard_MediaSimpleAltChoice_Tip_Wheel>A wheel</Win_Wizard_MediaSimpleAltChoice_Tip_Wheel>
-				<Win_Wizard_MediaSimpleAltChoice_Tip_2DBox>A 2D Cover</Win_Wizard_MediaSimpleAltChoice_Tip_2DBox>
-				<Win_Wizard_MediaSimpleAltChoice_Tip_3DBox>A 3D Cover</Win_Wizard_MediaSimpleAltChoice_Tip_3DBox>
+				<Win_Wizard_MediaSimpleAltChoice_Group>Alternatieve visual keus</Win_Wizard_MediaSimpleAltChoice_Group>
+				<Win_Wizard_MediaSimpleAltChoice_Libelle>Selecteer je alternatieve visual@CRLF(Als de standaard visual niet bestaat)</Win_Wizard_MediaSimpleAltChoice_Libelle>
+				<Win_Wizard_MediaSimpleAltChoice_Tip_SS>Een screenshot</Win_Wizard_MediaSimpleAltChoice_Tip_SS>
+				<Win_Wizard_MediaSimpleAltChoice_Tip_Wheel>Een wiel</Win_Wizard_MediaSimpleAltChoice_Tip_Wheel>
+				<Win_Wizard_MediaSimpleAltChoice_Tip_2DBox>Een 2D Cover</Win_Wizard_MediaSimpleAltChoice_Tip_2DBox>
+				<Win_Wizard_MediaSimpleAltChoice_Tip_3DBox>Een 3D Cover</Win_Wizard_MediaSimpleAltChoice_Tip_3DBox>
 			</Win_Wizard_MediaSimpleAltChoice>
 			<Win_Wizard_RomChoice>
-				<Win_Wizard_RomChoice_Group>Rom folder choice</Win_Wizard_RomChoice_Group>
-				<Win_Wizard_RomChoice_Libelle>Where are your roms</Win_Wizard_RomChoice_Libelle>
-				<Win_Wizard_RomChoice_Tip_RPI>On your RaspberryPi</Win_Wizard_RomChoice_Tip_RPI>
-				<Win_Wizard_RomChoice_Tip_Local>Localy (external hard drive, USB Key,...)</Win_Wizard_RomChoice_Tip_Local>
-				<Win_Wizard_RomChoice_Browse>Specify the root path of your roms directories</Win_Wizard_RomChoice_Browse>
-				<Win_Wizard_RomChoice_Browse_Warning_Title>WARNING</Win_Wizard_RomChoice_Browse_Warning_Title>
-				<Win_Wizard_RomChoice_Browse_Warning_Label>The folder you choose seem to have no rom folder.@CRLFDo you want to continue ?</Win_Wizard_RomChoice_Browse_Warning_Label>
+				<Win_Wizard_RomChoice_Group>Rom folder selectie</Win_Wizard_RomChoice_Group>
+				<Win_Wizard_RomChoice_Libelle>Waar staan je roms</Win_Wizard_RomChoice_Libelle>
+				<Win_Wizard_RomChoice_Tip_RPI>Op mijn RaspberryPi</Win_Wizard_RomChoice_Tip_RPI>
+				<Win_Wizard_RomChoice_Tip_Local>Lokaal (externe harde schijf, USB stick,...)</Win_Wizard_RomChoice_Tip_Local>
+				<Win_Wizard_RomChoice_Browse>Het startpad voor je roms folder</Win_Wizard_RomChoice_Browse>
+				<Win_Wizard_RomChoice_Browse_Warning_Title>LET OP</Win_Wizard_RomChoice_Browse_Warning_Title>
+				<Win_Wizard_RomChoice_Browse_Warning_Label>Het startpad dat je selecteerde heeft geen rom folder.@CRLFWil je toch verder gaan ?</Win_Wizard_RomChoice_Browse_Warning_Label>
 			</Win_Wizard_RomChoice>
 			<Win_Wizard_SSChoice>
 				<Win_Wizard_SSChoice_Group>ScreenScraper</Win_Wizard_SSChoice_Group>
-				<Win_Wizard_SSChoice_Libelle>Are you registered on ScreenScraper ?</Win_Wizard_SSChoice_Libelle>
-				<Win_Wizard_SSChoice_Tip_Yes>Yes</Win_Wizard_SSChoice_Tip_Yes>
-				<Win_Wizard_SSChoice_Tip_No>No</Win_Wizard_SSChoice_Tip_No>
+				<Win_Wizard_SSChoice_Libelle>Ben je geregistreerd op ScreenScraper ?</Win_Wizard_SSChoice_Libelle>
+				<Win_Wizard_SSChoice_Tip_Yes>Ja</Win_Wizard_SSChoice_Tip_Yes>
+				<Win_Wizard_SSChoice_Tip_No>Nee</Win_Wizard_SSChoice_Tip_No>
 			</Win_Wizard_SSChoice>
 			<Win_Wizard_SSIdChoice>
 				<Win_Wizard_SSIdChoice_Group>ScreenScraper</Win_Wizard_SSIdChoice_Group>
-				<Win_Wizard_SSIdChoice_Id>Your Id :</Win_Wizard_SSIdChoice_Id>
-				<Win_Wizard_SSIdChoice_Tip_Id>Your ScreenScraper identification</Win_Wizard_SSIdChoice_Tip_Id>
-				<Win_Wizard_SSIdChoice_Pwd>Your Pwd :</Win_Wizard_SSIdChoice_Pwd>
-				<Win_Wizard_SSIdChoice_Tip_Pwd>Your ScreenScraper Password</Win_Wizard_SSIdChoice_Tip_Pwd>
-				<Win_Wizard_SSIdChoice_Test>Check your Id</Win_Wizard_SSIdChoice_Test>
-				<Win_Wizard_SSIdChoice_Tip_Test>Check your connexion to the website with your Id</Win_Wizard_SSIdChoice_Tip_Test>
+				<Win_Wizard_SSIdChoice_Id>Je Id :</Win_Wizard_SSIdChoice_Id>
+				<Win_Wizard_SSIdChoice_Tip_Id>Je ScreenScraper inloggegevens</Win_Wizard_SSIdChoice_Tip_Id>
+				<Win_Wizard_SSIdChoice_Pwd>Je wachtwoord :</Win_Wizard_SSIdChoice_Pwd>
+				<Win_Wizard_SSIdChoice_Tip_Pwd>Je ScreenScraper wachtwoord</Win_Wizard_SSIdChoice_Tip_Pwd>
+				<Win_Wizard_SSIdChoice_Test>Controleeer je Id</Win_Wizard_SSIdChoice_Test>
+				<Win_Wizard_SSIdChoice_Tip_Test>Controleer de verbinding naar de website met je Id</Win_Wizard_SSIdChoice_Tip_Test>
 			</Win_Wizard_SSIdChoice>
 			<Win_Wizard_ScrapeChoice>
 				<Win_Wizard_ScrapeChoice_Group>Scrape</Win_Wizard_ScrapeChoice_Group>
-				<Win_Wizard_ScrapeChoice_Libelle>Do you wan't to scrape ?</Win_Wizard_ScrapeChoice_Libelle>
-				<Win_Wizard_ScrapeChoice_Tip_Yes>Yes</Win_Wizard_ScrapeChoice_Tip_Yes>
-				<Win_Wizard_ScrapeChoice_Tip_No>No - Back to the interface</Win_Wizard_ScrapeChoice_Tip_No>
+				<Win_Wizard_ScrapeChoice_Libelle>Wil je gaan scrapen ?</Win_Wizard_ScrapeChoice_Libelle>
+				<Win_Wizard_ScrapeChoice_Tip_Yes>Ja</Win_Wizard_ScrapeChoice_Tip_Yes>
+				<Win_Wizard_ScrapeChoice_Tip_No>Nee - Terug naar de interface</Win_Wizard_ScrapeChoice_Tip_No>
 			</Win_Wizard_ScrapeChoice>
 		</Win_Wizard>
 	</windows>
@@ -247,59 +244,59 @@
 
 <Options>
 	<Option_Group_Media>Visual</Option_Group_Media>
-	<Option_Group_Name>Name</Option_Group_Name>
+	<Option_Group_Name>Naam</Option_Group_Name>
 	<Option_Group_Case>Case</Option_Group_Case>
 
-	<Option_Name_MediaType>Visuel type</Option_Name_MediaType>
-	<Option_Name_DefaultPicture>Default visual</Option_Name_DefaultPicture>
-	<Option_Name_AlternativePicture>Alt visual</Option_Name_AlternativePicture>
+	<Option_Name_MediaType>Visual type</Option_Name_MediaType>
+	<Option_Name_DefaultPicture>Standaard visual</Option_Name_DefaultPicture>
+	<Option_Name_AlternativePicture>Alternatieve visual</Option_Name_AlternativePicture>
 	<Option_Name_Marquee>Marquee</Option_Name_Marquee>
 	<Option_Name_Video>Video</Option_Name_Video>
-	<Option_Name_NameFormat>Name format</Option_Name_NameFormat>
-	<Option_Name_Country>Country</Option_Name_Country>
+	<Option_Name_NameFormat>Naam formaat</Option_Name_NameFormat>
+	<Option_Name_Country>Land</Option_Name_Country>
 	<Option_Name_Clone>Clone</Option_Name_Clone>
 	<Option_Name_Beta>Beta</Option_Name_Beta>
 	<Option_Name_Demo>Demo</Option_Name_Demo>
 	<Option_Name_Proto>Prototype</Option_Name_Proto>
-	<Option_Name_Trad>Translation</Option_Name_Trad>
+	<Option_Name_Trad>Vertaling</Option_Name_Trad>
 	<Option_Name_Hack>Hack</Option_Name_Hack>
-	<Option_Name_Unl>Unlicensed</Option_Name_Unl>
-	<Option_Name_Alt>Alternatif</Option_Name_Alt>
-	<Option_Name_Best>Best</Option_Name_Best>
-	<Option_Name_NameCase>Name case</Option_Name_NameCase>
-	<Option_Name_DescriptionCase>Description Case</Option_Name_DescriptionCase>
+	<Option_Name_Unl>Ongelicenseerd</Option_Name_Unl>
+	<Option_Name_Alt>Alternatief</Option_Name_Alt>
+	<Option_Name_Best>Beste</Option_Name_Best>
+	<Option_Name_NameCase>Naam case</Option_Name_NameCase>
+	<Option_Name_DescriptionCase>Omschrijving Case</Option_Name_DescriptionCase>
 	<Option_Name_DeveloperCase>Developer Case</Option_Name_DeveloperCase>
 	<Option_Name_PublisherCase>Publisher Case</Option_Name_PublisherCase>
 	<Option_Name_GenreCase>Genre Case</Option_Name_GenreCase>
 
-	<Option_Value_SimpleMedia>Simple visual</Option_Value_SimpleMedia>
+	<Option_Value_SimpleMedia>Simpele visual</Option_Value_SimpleMedia>
 	<Option_Value_MixMedia>MIX visual</Option_Value_MixMedia>
-	<Option_Value_Nothing>Nothing</Option_Value_Nothing>
+	<Option_Value_Nothing>Niets</Option_Value_Nothing>
 	<Option_Value_Marquee>Marquee</Option_Value_Marquee>
 	<Option_Value_Screenshot>Screenshot</Option_Value_Screenshot>
 	<Option_Value_Box2D>2D Cover</Option_Value_Box2D>
 	<Option_Value_Box3D>3D Cover</Option_Value_Box3D>
-	<Option_Value_BoxTexture>Texture Cover</Option_Value_BoxTexture>
-	<Option_Value_Support2D>2D Support</Option_Value_Support2D>
-	<Option_Value_SupportTexture>Texture support</Option_Value_SupportTexture>
+	<Option_Value_BoxTexture>Textuur Cover</Option_Value_BoxTexture>
+	<Option_Value_Support2D>2D Ondersteuning</Option_Value_Support2D>
+	<Option_Value_SupportTexture>Textuur Ondersteuning</Option_Value_SupportTexture>
 	<Option_Value_Fanart>Fanart</Option_Value_Fanart>
-	<Option_Value_Wheels>Wheel</Option_Value_Wheels>
-	<Option_Value_WheelsCarbon>Wheel carbon</Option_Value_WheelsCarbon>
-	<Option_Value_WheelsSteel>Wheel steel</Option_Value_WheelsSteel>
-	<Option_Value_Standard>Game name</Option_Value_Standard>
-	<Option_Value_GamenameOption>Game name + Options</Option_Value_GamenameOption>
-	<Option_Value_GamenameFilneameBracket>Game name + filename tag</Option_Value_GamenameFilneameBracket>
-	<Option_Value_Filename>Filename (without ext)</Option_Value_Filename>
-	<Option_Value_Yes>Yes</Option_Value_Yes>
-	<Option_Value_YesWithoutWord>Yes without (World)</Option_Value_YesWithoutWord>
-	<Option_Value_No>No</Option_Value_No>
-	<Option_Value_Default>Default</Option_Value_Default>
-	<Option_Value_UpperCase>UPPERCASE</Option_Value_UpperCase>
-	<Option_Value_LowerCase>lowercase</Option_Value_LowerCase>
+	<Option_Value_Wheels>Wiel</Option_Value_Wheels>
+	<Option_Value_WheelsCarbon>Wiel carbon</Option_Value_WheelsCarbon>
+	<Option_Value_WheelsSteel>Wiel staal</Option_Value_WheelsSteel>
+	<Option_Value_Standard>Game naam</Option_Value_Standard>
+	<Option_Value_GamenameOption>Game naam + Opties</Option_Value_GamenameOption>
+	<Option_Value_GamenameFilneameBracket>Game naam + bestandsnaam tag</Option_Value_GamenameFilneameBracket>
+	<Option_Value_Filename>Bestandsnaam (zonder extensie)</Option_Value_Filename>
+	<Option_Value_Yes>Ja</Option_Value_Yes>
+	<Option_Value_YesWithoutWord>Ja zonder (woord)</Option_Value_YesWithoutWord>
+	<Option_Value_No>Nee</Option_Value_No>
+	<Option_Value_Default>Standaard</Option_Value_Default>
+	<Option_Value_UpperCase>HOOFDLETTERS</Option_Value_UpperCase>
+	<Option_Value_LowerCase>kleine letters</Option_Value_LowerCase>
 </Options>
 
-<mess_ssh_killallForced>UXS will kill EmulationStation to scrape.</mess_ssh_killallForced>
-<win_config_MISC_GroupMISC_ScrapeZip>UnZip files</win_config_MISC_GroupMISC_ScrapeZip>
-<mess_continue>Do you want to continue ?</mess_continue>
-<mess_Yes>Yes</mess_Yes>
-<mess_No>No</mess_No>
+<mess_ssh_killallForced>UXS zal EmulationStation stoppen om te scrapen.</mess_ssh_killallForced>
+<win_config_MISC_GroupMISC_ScrapeZip>Bestanden uitpakken</win_config_MISC_GroupMISC_ScrapeZip>
+<mess_continue>Wil je doorgaan ?</mess_continue>
+<mess_Yes>Ja</mess_Yes>
+<mess_No>Nee</mess_No>
