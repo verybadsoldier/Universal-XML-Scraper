@@ -48,6 +48,7 @@
 		<mnu_cfg_config_autoconf>Configuração da Path de configuração automática</mnu_cfg_config_autoconf>
 		<mnu_cfg_profil>Alterar perfil</mnu_cfg_profil>
 		<mnu_cfg_miximage>Alterar perfil de imagens MIX</mnu_cfg_miximage>
+		<mnu_cfg_download_miximage>Baixar Imagens MIX</mnu_cfg_download_miximage>
 		<mnu_cfg_langue>Alterar idioma</mnu_cfg_langue>
 		
 		<mnu_scrape>Scrape</mnu_scrape>
@@ -73,17 +74,17 @@
 		<scrap_cancel_button>Cancelar</scrap_cancel_button>
 		<win_sel_langue>
 			<win_sel_langue_Title>Seleção de idioma</win_sel_langue_Title>
-			<win_sel_langue_text>Seleciona o teu idioma</win_sel_langue_text>
+			<win_sel_langue_text>Seleciona o seu idioma</win_sel_langue_text>
 			<win_sel_langue_button>Selecionar</win_sel_langue_button>
 		</win_sel_langue>
 		<win_sel_profil>
 			<win_sel_profil_Title>Seleção de perfil</win_sel_profil_Title>
-			<win_sel_profil_text>Escolhe o teu perfil</win_sel_profil_text>
+			<win_sel_profil_text>Escolhe o seu perfil</win_sel_profil_text>
 			<win_sel_profil_button>Selecionar</win_sel_profil_button>
 		</win_sel_profil>
 		<win_sel_system>
 			<win_sel_system_Title>Seleção de sistema</win_sel_system_Title>
-			<win_sel_system_text>Escolhe o teu sistema</win_sel_system_text>
+			<win_sel_system_text>Escolhe a sua pasta de imagens</win_sel_system_text>
 			<win_sel_system_button>Selecionar</win_sel_system_button>
 		</win_sel_system>
 		<win_config>
@@ -143,7 +144,7 @@
 			<win_config_autoconf_GroupImage_Source_ImagePath>Pasta para onde as imagens vão ser descarregadas</win_config_autoconf_GroupImage_Source_ImagePath>
 			<win_config_autoconf_GroupImage_Target_ImagePath>Path das imagens no ficheiro XML</win_config_autoconf_GroupImage_Target_ImagePath>
 
-			<win_config_Enreg>Gravar</win_config_Enreg>
+			<win_config_Enreg>Salvar</win_config_Enreg>
 			<win_config_Cancel>Cancelar</win_config_Cancel>
 			<win_config_Advanced>Avançado</win_config_Advanced>
 		</win_config>
@@ -151,14 +152,14 @@
 			<win_config_mix_Title>Configuração Imagens Mix</win_config_mix_Title>
 			<win_config_mix_empty>Exemplo vazio</win_config_mix_empty>
 			<win_config_mix_exemple>Exemplo</win_config_mix_exemple>
-			<win_config_mix_Enreg>Gravar</win_config_mix_Enreg>
+			<win_config_mix_Enreg>Salvar</win_config_mix_Enreg>
 			<win_config_mix_Cancel>Cancelar</win_config_mix_Cancel>
 		</win_config_mix>
 		<win_config_mix_Download>
-			<win_config_mix_Download_Title>Descarregar template Mix</win_config_mix_Download_Title>
+			<win_config_mix_Download_Title>Baixar modelo Mix</win_config_mix_Download_Title>
 			<win_config_mix_Download_empty>Exemplo vazio</win_config_mix_Download_empty>
 			<win_config_mix_Download_exemple>Exemplo</win_config_mix_Download_exemple>
-			<win_config_mix_Download_Download>Descarregar</win_config_mix_Download_Download>
+			<win_config_mix_Download_Download>Baixar</win_config_mix_Download_Download>
 			<win_config_mix_Download_Exit>Sair</win_config_mix_Download_Exit>
 		</win_config_mix_Download>
 		<win_About>
@@ -176,74 +177,71 @@
 			<win_Results_FullTime>Tempo total : </win_Results_FullTime>
 			<win_Results_NbThread>Thread(s) usadas : </win_Results_NbThread>
 		</win_Results>
-
-; TRANSLATION NEEDED
-
-		<Win_Wizard>
-			<win_Wizard_Next>Next</win_Wizard_Next>
-			<win_Wizard_Back>Back</win_Wizard_Back>
+        <Win_Wizard>
+			<win_Wizard_Next>Proximo</win_Wizard_Next>
+			<win_Wizard_Back>Voltar</win_Wizard_Back>
 			<Win_Wizard_OS>
-				<Win_Wizard_OS_Group>Your OS</Win_Wizard_OS_Group>
-				<Win_Wizard_OS_Libelle>Select your operating system</Win_Wizard_OS_Libelle>
+				<Win_Wizard_OS_Group>Seu sistema</Win_Wizard_OS_Group>
+				<Win_Wizard_OS_Libelle>Selecionar seu sistema</Win_Wizard_OS_Libelle>
 				<Win_Wizard_OS_Tip_Recalbox>Recalbox</Win_Wizard_OS_Tip_Recalbox>
 				<Win_Wizard_OS_Tip_Retropie>Retropie</Win_Wizard_OS_Tip_Retropie>
 			</Win_Wizard_OS>
 			<Win_Wizard_MediaChoice>
-				<Win_Wizard_MediaChoice_Group>Visual choice</Win_Wizard_MediaChoice_Group>
-				<Win_Wizard_MediaChoice_Libelle>Select your visual</Win_Wizard_MediaChoice_Libelle>
-				<Win_Wizard_MediaChoice_Tip_Simple>A simple media</Win_Wizard_MediaChoice_Tip_Simple>
-				<Win_Wizard_MediaChoice_Tip_Mix>A several media MIX </Win_Wizard_MediaChoice_Tip_Mix>
+				<Win_Wizard_MediaChoice_Group>Escolha Visual</Win_Wizard_MediaChoice_Group>
+				<Win_Wizard_MediaChoice_Libelle>Selecione seu visual</Win_Wizard_MediaChoice_Libelle>
+				<Win_Wizard_MediaChoice_Tip_Simple>Simples</Win_Wizard_MediaChoice_Tip_Simple>
+				<Win_Wizard_MediaChoice_Tip_Mix>Midia MIX </Win_Wizard_MediaChoice_Tip_Mix>
 			</Win_Wizard_MediaChoice>
 			<Win_Wizard_MediaSimpleChoice>
-				<Win_Wizard_MediaSimpleChoice_Group>Default visual choice</Win_Wizard_MediaSimpleChoice_Group>
-				<Win_Wizard_MediaSimpleChoice_Libelle>Select your default visual</Win_Wizard_MediaSimpleChoice_Libelle>
-				<Win_Wizard_MediaSimpleChoice_Tip_SS>A Screenshot</Win_Wizard_MediaSimpleChoice_Tip_SS>
-				<Win_Wizard_MediaSimpleChoice_Tip_Wheel>A wheel</Win_Wizard_MediaSimpleChoice_Tip_Wheel>
-				<Win_Wizard_MediaSimpleChoice_Tip_2DBox>A 2D Cover</Win_Wizard_MediaSimpleChoice_Tip_2DBox>
-				<Win_Wizard_MediaSimpleChoice_Tip_3DBox>A 3D Cover</Win_Wizard_MediaSimpleChoice_Tip_3DBox>
+				<Win_Wizard_MediaSimpleChoice_Group>Escolha visual padrão</Win_Wizard_MediaSimpleChoice_Group>
+				<Win_Wizard_MediaSimpleChoice_Libelle>Selecione seu visual padrão</Win_Wizard_MediaSimpleChoice_Libelle>
+				<Win_Wizard_MediaSimpleChoice_Tip_SS>Screenshot simples</Win_Wizard_MediaSimpleChoice_Tip_SS>
+				<Win_Wizard_MediaSimpleChoice_Tip_Wheel>Logo</Win_Wizard_MediaSimpleChoice_Tip_Wheel>
+				<Win_Wizard_MediaSimpleChoice_Tip_2DBox>Cover 2D</Win_Wizard_MediaSimpleChoice_Tip_2DBox>
+				<Win_Wizard_MediaSimpleChoice_Tip_3DBox>Cover 3D</Win_Wizard_MediaSimpleChoice_Tip_3DBox>
 			</Win_Wizard_MediaSimpleChoice>
 			<Win_Wizard_MediaSimpleAltChoice>
-				<Win_Wizard_MediaSimpleAltChoice_Group>Alt visual choice</Win_Wizard_MediaSimpleAltChoice_Group>
-				<Win_Wizard_MediaSimpleAltChoice_Libelle>Select your alt visual@CRLF(If the default one don't exist)</Win_Wizard_MediaSimpleAltChoice_Libelle>
-				<Win_Wizard_MediaSimpleAltChoice_Tip_SS>A Screenshot</Win_Wizard_MediaSimpleAltChoice_Tip_SS>
-				<Win_Wizard_MediaSimpleAltChoice_Tip_Wheel>A wheel</Win_Wizard_MediaSimpleAltChoice_Tip_Wheel>
-				<Win_Wizard_MediaSimpleAltChoice_Tip_2DBox>A 2D Cover</Win_Wizard_MediaSimpleAltChoice_Tip_2DBox>
-				<Win_Wizard_MediaSimpleAltChoice_Tip_3DBox>A 3D Cover</Win_Wizard_MediaSimpleAltChoice_Tip_3DBox>
+				<Win_Wizard_MediaSimpleAltChoice_Group>Visual Alternativo</Win_Wizard_MediaSimpleAltChoice_Group>
+				<Win_Wizard_MediaSimpleAltChoice_Libelle>Selecione seu visual Atlternativo@CRLF(Se o padrão um não existir)</Win_Wizard_MediaSimpleAltChoice_Libelle>
+				<Win_Wizard_MediaSimpleAltChoice_Tip_SS>Screenshot simples</Win_Wizard_MediaSimpleAltChoice_Tip_SS>
+				<Win_Wizard_MediaSimpleAltChoice_Tip_Wheel>Logo</Win_Wizard_MediaSimpleAltChoice_Tip_Wheel>
+				<Win_Wizard_MediaSimpleAltChoice_Tip_2DBox>Cover 2D</Win_Wizard_MediaSimpleAltChoice_Tip_2DBox>
+				<Win_Wizard_MediaSimpleAltChoice_Tip_3DBox>Cover 3D</Win_Wizard_MediaSimpleAltChoice_Tip_3DBox>
 			</Win_Wizard_MediaSimpleAltChoice>
 			<Win_Wizard_RomChoice>
-				<Win_Wizard_RomChoice_Group>Rom folder choice</Win_Wizard_RomChoice_Group>
-				<Win_Wizard_RomChoice_Libelle>Where are your roms</Win_Wizard_RomChoice_Libelle>
-				<Win_Wizard_RomChoice_Tip_RPI>On your RaspberryPi</Win_Wizard_RomChoice_Tip_RPI>
-				<Win_Wizard_RomChoice_Tip_Local>Localy (external hard drive, USB Key,...)</Win_Wizard_RomChoice_Tip_Local>
-				<Win_Wizard_RomChoice_Browse>Specify the root path of your roms directories</Win_Wizard_RomChoice_Browse>
-				<Win_Wizard_RomChoice_Browse_Warning_Title>WARNING</Win_Wizard_RomChoice_Browse_Warning_Title>
-				<Win_Wizard_RomChoice_Browse_Warning_Label>The folder you choose seem to have no rom folder.@CRLFDo you want to continue ?</Win_Wizard_RomChoice_Browse_Warning_Label>
+				<Win_Wizard_RomChoice_Group>Escolha a pasta das Roms</Win_Wizard_RomChoice_Group>
+				<Win_Wizard_RomChoice_Libelle>Escolha onde estão as suas Roms</Win_Wizard_RomChoice_Libelle>
+				<Win_Wizard_RomChoice_Tip_RPI>No seu RaspberryPi</Win_Wizard_RomChoice_Tip_RPI>
+				<Win_Wizard_RomChoice_Tip_Local>Local (HD externo, Pendriver,...)</Win_Wizard_RomChoice_Tip_Local>
+				<Win_Wizard_RomChoice_Browse>Especifique o caminho da sua pasta de roms</Win_Wizard_RomChoice_Browse>
+				<Win_Wizard_RomChoice_Browse_Warning_Title>ATENÇÃO!!!</Win_Wizard_RomChoice_Browse_Warning_Title>
+				<Win_Wizard_RomChoice_Browse_Warning_Label>A pasta escolhida parece não ter nenhuma rom.@CRLFVoce quer continuar ?</Win_Wizard_RomChoice_Browse_Warning_Label>
 			</Win_Wizard_RomChoice>
 			<Win_Wizard_SSChoice>
 				<Win_Wizard_SSChoice_Group>ScreenScraper</Win_Wizard_SSChoice_Group>
-				<Win_Wizard_SSChoice_Libelle>Are you registered on ScreenScraper ?</Win_Wizard_SSChoice_Libelle>
-				<Win_Wizard_SSChoice_Tip_Yes>Yes</Win_Wizard_SSChoice_Tip_Yes>
-				<Win_Wizard_SSChoice_Tip_No>No</Win_Wizard_SSChoice_Tip_No>
+				<Win_Wizard_SSChoice_Libelle>Você está registrado no ScreenScraper?</Win_Wizard_SSChoice_Libelle>
+				<Win_Wizard_SSChoice_Tip_Yes>Sim</Win_Wizard_SSChoice_Tip_Yes>
+				<Win_Wizard_SSChoice_Tip_No>Não</Win_Wizard_SSChoice_Tip_No>
 			</Win_Wizard_SSChoice>
 			<Win_Wizard_SSIdChoice>
 				<Win_Wizard_SSIdChoice_Group>ScreenScraper</Win_Wizard_SSIdChoice_Group>
-				<Win_Wizard_SSIdChoice_Id>Your Id :</Win_Wizard_SSIdChoice_Id>
-				<Win_Wizard_SSIdChoice_Tip_Id>Your ScreenScraper identification</Win_Wizard_SSIdChoice_Tip_Id>
-				<Win_Wizard_SSIdChoice_Pwd>Your Pwd :</Win_Wizard_SSIdChoice_Pwd>
-				<Win_Wizard_SSIdChoice_Tip_Pwd>Your ScreenScraper Password</Win_Wizard_SSIdChoice_Tip_Pwd>
-				<Win_Wizard_SSIdChoice_Test>Check your Id</Win_Wizard_SSIdChoice_Test>
-				<Win_Wizard_SSIdChoice_Tip_Test>Check your connexion to the website with your Id</Win_Wizard_SSIdChoice_Tip_Test>
+				<Win_Wizard_SSIdChoice_Id>Seu Id :</Win_Wizard_SSIdChoice_Id>
+				<Win_Wizard_SSIdChoice_Tip_Id>Seu login ScreenScraper</Win_Wizard_SSIdChoice_Tip_Id>
+				<Win_Wizard_SSIdChoice_Pwd>Sua senha :</Win_Wizard_SSIdChoice_Pwd>
+				<Win_Wizard_SSIdChoice_Tip_Pwd>Sua senha ScreenScraper</Win_Wizard_SSIdChoice_Tip_Pwd>
+				<Win_Wizard_SSIdChoice_Test>Check seu Id</Win_Wizard_SSIdChoice_Test>
+				<Win_Wizard_SSIdChoice_Tip_Test>Verifique a sua conexão no site com o seu ID</Win_Wizard_SSIdChoice_Tip_Test>
 			</Win_Wizard_SSIdChoice>
 			<Win_Wizard_ScrapeChoice>
 				<Win_Wizard_ScrapeChoice_Group>Scrape</Win_Wizard_ScrapeChoice_Group>
-				<Win_Wizard_ScrapeChoice_Libelle>Do you wan't to scrape ?</Win_Wizard_ScrapeChoice_Libelle>
-				<Win_Wizard_ScrapeChoice_Tip_Yes>Yes</Win_Wizard_ScrapeChoice_Tip_Yes>
-				<Win_Wizard_ScrapeChoice_Tip_No>No - Back to the interface</Win_Wizard_ScrapeChoice_Tip_No>
+				<Win_Wizard_ScrapeChoice_Libelle>Voce quer fazer o scrape ?</Win_Wizard_ScrapeChoice_Libelle>
+				<Win_Wizard_ScrapeChoice_Tip_Yes>Sim</Win_Wizard_ScrapeChoice_Tip_Yes>
+				<Win_Wizard_ScrapeChoice_Tip_No>Não - Volte para interface</Win_Wizard_ScrapeChoice_Tip_No>
 			</Win_Wizard_ScrapeChoice>
 		</Win_Wizard>
 	</windows>
 </gui>
-
+; TRANSLATION NEEDED
 <Options>
 	<Option_Group_Media>Visual</Option_Group_Media>
 	<Option_Group_Name>Name</Option_Group_Name>
