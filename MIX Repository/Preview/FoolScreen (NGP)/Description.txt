@@ -1,0 +1,4 @@
+Author : CoteDePorc
+Description :
+FoolScreen pour NeoGeo Pocket. Inspire par le travail de kent79 (GameStation pour AttractMode : http://forum.attractmode.org/index.php?topic=505.0)
+Tuto : https://forum.recalbox.com/topic/5786/theme-mix-foolscreen
