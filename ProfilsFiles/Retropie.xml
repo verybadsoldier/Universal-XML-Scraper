@@ -175,6 +175,12 @@
 		<Target_Type>XML_Value</Target_Type>
 		<Target_Value>game/players</Target_Value>
 	</Element>
+	<Element Type="RomExcluded">
+		<Source_Type>Variable_Value</Source_Type>
+		<Source_Value>%AutoExclude%</Source_Value>
+		<AutoExcludeEXT>bin|img|iso|ccd|sub</AutoExcludeEXT>
+		<AutoExcludeValue>(Track |[Bios]|(Bios)</AutoExcludeValue>
+	</Element>
 	<Options>
 		<Option>
 			<Option_Group>Media</Option_Group>

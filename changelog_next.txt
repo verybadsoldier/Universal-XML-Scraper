@@ -1,3 +1,23 @@
+2.2.0.2
+* Corrected :
+ - Full Scrape don't neverend anymore.
+ - SSH works now on scrape
+* Modification :
+ - New ProgressBar changing color (Green = OK, Red = Timeout or error download, Yellow = Not found)
+* Addes :
+ - New Element Type : RomExcluded
+Exemple : 
+	<Element Type="RomExcluded">
+		<Source_Type>Variable_Value</Source_Type>
+		<Source_Value>%AutoExclude%</Source_Value>
+		<AutoExcludeEXT>bin|img|iso|ccd|sub</AutoExcludeEXT>
+		<AutoExcludeValue>(Track |[Bios]|(Bios)</AutoExcludeValue>
+	</Element>
+Mean : 
+	When a duplicate name file (without extension) is found:
+	- it check the extension. If in list (bin|img|iso|ccd|sub) it won't scrape it
+	- it check if the file contain a value ("(Track ","[Bios]","(Bios)"). If yes, it won't scrape it
+
 2.2.0.1
 * Corrected :
  - SSH command are ok now

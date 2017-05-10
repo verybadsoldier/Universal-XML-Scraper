@@ -155,13 +155,11 @@
 		<Target_Type>XML_Value</Target_Type>
 		<Target_Value>game/region</Target_Value>
 	</Element>
-	<Element Type="RomHidden">
+	<Element Type="RomExcluded">
 		<Source_Type>Variable_Value</Source_Type>
-		<Source_Value>%AutoHide%</Source_Value>
-		<AutoHideEXT>bin|img|iso</AutoHideEXT>
-		<AutoHideValue>(Track |[Bios]|(Bios)</AutoHideValue>
-		<Target_Type>XML_Value</Target_Type>
-		<Target_Value>game/hidden</Target_Value>
+		<Source_Value>%AutoExclude%</Source_Value>
+		<AutoExcludeEXT>bin|img|iso|ccd|sub</AutoExcludeEXT>
+		<AutoExcludeValue>(Track |[Bios]|(Bios)</AutoExcludeValue>
 	</Element>
 	<Options>
 		<Option>
