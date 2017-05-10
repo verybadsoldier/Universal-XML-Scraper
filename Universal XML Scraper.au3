@@ -5,7 +5,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper XML Universel
-#AutoIt3Wrapper_Res_Fileversion=2.2.0.2
+#AutoIt3Wrapper_Res_Fileversion=2.2.0.3
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -58,6 +58,7 @@ Global $iLOGPath = $iScriptPath & "\LOGs\log.txt"
 Global $iWizzPath = $iScriptPath & "\Ressources\Images\Wizard"
 Global $iVerboseLVL = IniRead($iINIPath, "GENERAL", "$vVerbose", 0)
 Global $MS_AutoConfigItem
+Global $PB_SCRAPE
 
 ;Personnal Librairy definitions
 ;---------------------------
@@ -144,13 +145,14 @@ If $vMaj = 1 Then
 		EndSwitch
 	EndIf
 EndIf
+FileCreateShortcut(@ScriptFullPath, @ScriptDir & "\Silent_UXS", @ScriptDir, "-Silent", "Run UXS in Silentmode", $iScriptPath & "\Ressources\Images\Universal_Xml_Scraper.ico")
 _LOG("Ending files installation", 1, $iLOGPath)
 #EndRegion FileInstall
 
 ;Splash Screen
 $F_Splashcreen = GUICreate("", 799, 449, -1, -1, $WS_POPUPWINDOW, $WS_EX_TOOLWINDOW)
 GUICtrlCreatePic($iScriptPath & "\Ressources\Images\UXS.jpg", -1, -1, 800, 450)
-SoundPlay($iScriptPath & "\Ressources\Sons\jingle_uxs.MP3")
+If $CmdLine[0] < 1 Then SoundPlay($iScriptPath & "\Ressources\Sons\jingle_uxs.MP3")
 GUISetState()
 
 ;Const def
@@ -245,14 +247,14 @@ Local $MF_Exit = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_file_exit"), $MF)
 
 Local $MC = GUICtrlCreateMenu(_MultiLang_GetText("mnu_cfg"), -1, 2)
 Local $MC_Wizard = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_cfg_Wizard"), $MC)
-Local $MC_Separation = GUICtrlCreateMenuItem("", $MC)
+Local $MC_Separation1 = GUICtrlCreateMenuItem("", $MC)
 Local $MC_Profil = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_cfg_profil"), $MC)
 Local $MC_Langue = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_cfg_langue"), $MC)
-Local $MC_Separation = GUICtrlCreateMenuItem("", $MC)
+Local $MC_Separation2 = GUICtrlCreateMenuItem("", $MC)
 Local $MC_Mix = GUICtrlCreateMenu("Mix", $MC)
 Local $MC_Miximage = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_cfg_miximage"), $MC_Mix)
 Local $MC_MixDownload = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_cfg_download_miximage"), $MC_Mix)
-Local $MC_Separation = GUICtrlCreateMenuItem("", $MC)
+Local $MC_Separation3 = GUICtrlCreateMenuItem("", $MC)
 Local $MC_config_MISC = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_cfg_config_MISC"), $MC)
 Local $MC_config_Advanced = GUICtrlCreateMenu("Advanced", $MC)
 Local $MC_config_PIC = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_cfg_config_PIC"), $MC_config_Advanced)
@@ -289,8 +291,22 @@ Local $MH_About = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_help_about"), $M
 Local $P_BACKGROUND = GUICtrlCreatePic($iScriptPath & "\ProfilsFiles\Ressources\empty.jpg", -1, 0, 600, 293)
 Global $P_MIX = GUICtrlCreatePic("", 58, 193, 165, 100, -1, -1)
 Global $P_WHEEL = GUICtrlCreatePic("", 270, 225, 120, 60, -1, -1)
+
+Local $R_EngineX = 576
+Local $R_EngineY = 272
+Global $R_Engine[31]
+For $vBoucle = 1 To 30
+	If $vBoucle = 11 Or $vBoucle = 21 Then
+		$R_EngineY = $R_EngineY - 17
+		$R_EngineX = 576
+	EndIf
+	$R_Engine[$vBoucle] = GUICtrlCreateCheckbox("", $R_EngineX, $R_EngineY, 17, 17)
+	$R_EngineX = $R_EngineX - 17
+	GUICtrlSetState($R_Engine[$vBoucle], $GUI_HIDE)
+Next
+
 ;~ Local $PB_SCRAPE = GUICtrlCreateProgress(2, 297, 478, 25, $PBS_SMOOTH)
-Global $PB_SCRAPE = _ProgressCreate(2, 297, 478, 25)
+$PB_SCRAPE = _ProgressCreate(2, 297, 478, 25)
 _ProgressSetImages($PB_SCRAPE, $iScriptPath & "\Ressources\Images\ProgressBar\green.jpg", $iScriptPath & "\Ressources\Images\ProgressBar\bg.jpg")
 _ProgressSetFont($PB_SCRAPE, "", -1, 0, 0xF0F0F0, 0)
 _ProgressSetText($PB_SCRAPE, "")
@@ -514,29 +530,55 @@ While 1
 			_ExtMsgBoxSet(1, 2, 0x34495c, 0xFFFF00, 10, "Arial")
 			_ExtMsgBox($EMB_ICONINFO, "OK", _MultiLang_GetText("win_About_Title"), $sMsg, 15)
 		Case $B_SCRAPE, $MS_Scrape ;Solo Scrape or Cancel
-			_GUI_Refresh($oXMLProfil, 1)
-			$vFullTimer = TimerInit()
-			$aConfig = _LoadConfig()
-			_GUICtrlStatusBar_SetText($L_SCRAPE, "Please Wait... Testing Server.")
-			$vNbThread = IniRead($iINIPath, "LAST_USE", "$vNbThread", 1)
-			_KillScrapeEngine($iScraper)
-			$aScrapeEngine = _LaunchEngine($oXMLProfil, $vNbThread)
-			_GUICtrlStatusBar_SetText($L_SCRAPE, "Please Wait... Testing Server..")
-			If IsArray($aScrapeEngine) Then
-				$aRomList = _SCRAPE($oXMLProfil, $aScrapeEngine, $vNbThread)
-				If IsArray($aRomList) Then
-					_LOG("-- Full Scrape in " & Round((TimerDiff($vFullTimer) / 1000), 2) & "s", 0, $iLOGPath)
-					_Results($aRomList, Round((TimerDiff($vFullTimer) / 1000), 2))
+
+			If FileExists($iTEMPPath & "\scraped\1.xml") Then
+				If MsgBox($MB_ICONWARNING + $MB_YESNO, "Temporary Files Found", "Some temporary file where found, do you want to generate an xml file ?", 0, $F_UniversalScraper) = $IDYES Then
+					Dim $aConfigTemp[1]
+					$aConfigTemp[0] = FileSaveDialog("Where do you want to store the XML File ?", "", "XML files (*.xml)", BitOR($FD_PATHMUSTEXIST, $FD_PROMPTOVERWRITE), "Restored.xml", $F_UniversalScraper)
+
+					FileDelete($aConfigTemp[0])
+					_FileCreate($aConfigTemp[0])
+					$oXMLTarget = _XML_Make($aConfigTemp[0], _XML_Read("Profil/Root/Target_Value", 0, "", $oXMLProfil))
+
+					Local $aRomListTemp = _FileListToArray($iTEMPPath & "\scraped\", "*.xml", $FLTA_FILES)
+					For $vBoucle = 1 To 13
+						_ArrayColInsert($aRomListTemp, $vBoucle)
+					Next
+;~ 					_ArrayDisplay($aRomListTemp, "$aRomListTemp")
+					_CreateXML($aRomListTemp, $aConfigTemp, 1)
+					DirRemove($iTEMPPath, 1)
+				Else
+					DirRemove($iTEMPPath, 1)
 				EndIf
+			Else
+				_GUI_Refresh($oXMLProfil, 1)
+				$vFullTimer = TimerInit()
+				$aConfig = _LoadConfig()
+				_GUICtrlStatusBar_SetText($L_SCRAPE, "Please Wait... Testing Server.")
+				$vNbThread = IniRead($iINIPath, "LAST_USE", "$vNbThread", 1)
 				_KillScrapeEngine($iScraper)
+				$aScrapeEngine = _LaunchEngine($oXMLProfil, $vNbThread)
+				_GUICtrlStatusBar_SetText($L_SCRAPE, "Please Wait... Testing Server..")
+				If IsArray($aScrapeEngine) Then
+					$aRomList = _SCRAPE($oXMLProfil, $aScrapeEngine, $vNbThread)
+					If IsArray($aRomList) Then
+						_LOG("-- Full Scrape in " & Round((TimerDiff($vFullTimer) / 1000), 2) & "s", 0, $iLOGPath)
+						_Results($aRomList, Round((TimerDiff($vFullTimer) / 1000), 2))
+					EndIf
+					_KillScrapeEngine($iScraper)
+					For $vBoucle = 1 To 30
+						GUICtrlSetState($R_Engine[$vBoucle], $GUI_HIDE)
+					Next
+				EndIf
+				$vScrapeCancelled = 0
+				_GUI_Refresh($oXMLProfil)
 			EndIf
-			$vScrapeCancelled = 0
-			_GUI_Refresh($oXMLProfil)
 		Case $MS_FullScrape ;FullScrape
 			_GUI_Refresh($oXMLProfil, 1)
 			Dim $aRomList_FULL[1][12]
 			$vFullTimer = TimerInit()
 			$aConfig = _LoadConfig()
+			$aDIRList = _Check_autoconf($oXMLProfil)
 			_GUICtrlStatusBar_SetText($L_SCRAPE, "Please Wait... Testing Server.")
 			$vNbThread = IniRead($iINIPath, "LAST_USE", "$vNbThread", 1)
 			_KillScrapeEngine($iScraper)
@@ -545,6 +587,7 @@ While 1
 			If IsArray($aScrapeEngine) Then
 				For $vBoucleSysteme = 1 To UBound($MS_AutoConfigItem) - 1
 					_LOG("-- Scrape System n°" & $vBoucleSysteme, 0, $iLOGPath)
+					_ArrayDisplay($aDIRList)
 					IniWrite($iINIPath, "LAST_USE", "$vSource_RomPath", $aDIRList[$vBoucleSysteme][1])
 					IniWrite($iINIPath, "LAST_USE", "$vTarget_RomPath", $aDIRList[$vBoucleSysteme][2])
 					IniWrite($iINIPath, "LAST_USE", "$vTarget_XMLName", $aDIRList[$vBoucleSysteme][3])
@@ -552,6 +595,7 @@ While 1
 					IniWrite($iINIPath, "LAST_USE", "$vTarget_ImagePath", $aDIRList[$vBoucleSysteme][5])
 					_GUI_Refresh($oXMLProfil)
 					_GUI_Refresh($oXMLProfil, 1)
+					$aConfig = _LoadConfig()
 					$aRomList = _SCRAPE($oXMLProfil, $aScrapeEngine, $vNbThread, 1)
 					If IsArray($aRomList) Then
 						For $i = 1 To UBound($aRomList, 1) - 1
@@ -692,18 +736,19 @@ Func _Plink($oXMLProfil, $vPlink_Command, $vSilentPlink = 0, $vTimeout = 10) ;Se
 	Local $vPlink_Root = _XML_Read("Profil/Plink/Root", 0, "", $oXMLProfil)
 	Local $vPlink_Pswd = _XML_Read("Profil/Plink/Pswd", 0, "", $oXMLProfil)
 	Local $vPlink_Return = ""
+
 	$vPlink_Command_Menu = $vPlink_Command
-	If $vSilentPlink = 0 Then
-		If MsgBox($MB_OKCANCEL, $vPlink_Command_Menu, _MultiLang_GetText("mess_ssh_" & $vPlink_Command_Menu)) = $IDCANCEL Then
-			_LOG("SSH canceled", 1, $iLOGPath)
-			Return -2
-		EndIf
-	EndIf
 	If $vPlink_Command = "killallForced" Then $vPlink_Command = "killall"
-	If $vSilentPlink < 2 Then
-		$vPlink_Command = _XML_Read("Profil/Plink/Command/" & $vPlink_Command_Menu, 0, "", $oXMLProfil)
-		$vPlink_Return = _Coalesce(_XML_Read("Profil/Plink/Command/Ret_" & $vPlink_Command_Menu, 0, "", $oXMLProfil), "NoWait")
-	EndIf
+	Switch $vSilentPlink
+		Case 0
+			If MsgBox($MB_OKCANCEL, $vPlink_Command_Menu, _MultiLang_GetText("mess_ssh_" & $vPlink_Command_Menu)) = $IDCANCEL Then
+				_LOG("SSH canceled", 1, $iLOGPath)
+				Return -2
+			EndIf
+		Case 1
+			$vPlink_Command = _XML_Read("Profil/Plink/Command/" & $vPlink_Command_Menu, 0, "", $oXMLProfil)
+			$vPlink_Return = _Coalesce(_XML_Read("Profil/Plink/Command/Ret_" & $vPlink_Command_Menu, 0, "", $oXMLProfil), "NoWait")
+	EndSwitch
 
 	_LOG("SSH Command : " & $vPlink_Command, 0, $iLOGPath)
 
@@ -1768,11 +1813,26 @@ Func _RomList_Create($aConfig, $vFullScrape = 0, $oXMLProfil = "")
 	Return $aRomList
 EndFunc   ;==>_RomList_Create
 
-Func _Check_Rom2Scrape($aRomList, $vNoRom, $aXMLRomList, $vTarget_RomPath, $vScrape_Mode, $aExtToHide = "", $aValueToHide = "")
+Func _Check_Rom2Scrape($aRomList, $vNoRom, $aXMLRomList, $vTarget_RomPath, $vScrape_Mode, $oXMLProfil)
 	Local $sDrive = "", $sDir = "", $sFileName = "", $sExtension = "", $aPathSplit
 
 	If $aRomList[$vNoRom][3] > 0 Then Return $aRomList
 
+	Local $aExtExclude = StringSplit(_XML_Read('/Profil/Element[Source_Value="%AutoExclude%"]/AutoExcludeEXT', 0, "", $oXMLProfil), "|")
+	If IsArray($aExtExclude) Then
+		$aPathSplit = _PathSplit($aRomList[$vNoRom][0], $sDrive, $sDir, $sFileName, $sExtension)
+		$aFindDuplicate = _ArrayFindAll($aRomList, $sFileName, 0, 0, 0, 0, 2)
+		For $vBoucle = 1 To UBound($aExtExclude) - 1
+			If StringLeft($aExtExclude[$vBoucle], 1) <> "." Then $aExtExclude[$vBoucle] = "." & $aExtExclude[$vBoucle]
+			If UBound($aFindDuplicate) > 1 And $sExtension = $aExtExclude[$vBoucle] Then
+				$aRomList[$vNoRom][3] = 0
+				_LOG($aRomList[$vNoRom][2] & " NOT Scraped (AutoExcluded = " & $sExtension & " )", 1, $iLOGPath)
+				Return $aRomList
+			EndIf
+		Next
+	EndIf
+
+	Local $aExtToHide = StringSplit(_XML_Read('/Profil/Element[Source_Value="%AutoHide%"]/AutoHideEXT', 0, "", $oXMLProfil), "|")
 	If IsArray($aExtToHide) Then
 		$aPathSplit = _PathSplit($aRomList[$vNoRom][0], $sDrive, $sDir, $sFileName, $sExtension)
 		$aFindDuplicate = _ArrayFindAll($aRomList, $sFileName, 0, 0, 0, 0, 2)
@@ -1786,6 +1846,18 @@ Func _Check_Rom2Scrape($aRomList, $vNoRom, $aXMLRomList, $vTarget_RomPath, $vScr
 		Next
 	EndIf
 
+	Local $aValueExclude = StringSplit(_XML_Read('/Profil/Element[Source_Value="%AutoExclude%"]/AutoExcludeValue', 0, "", $oXMLProfil), "|")
+	If IsArray($aValueExclude) Then
+		For $vBoucle = 1 To UBound($aValueExclude) - 1
+			If StringInStr($aRomList[$vNoRom][0], $aValueExclude[$vBoucle]) Then
+				$aRomList[$vNoRom][3] = 3
+				_LOG($aRomList[$vNoRom][2] & " Excluded", 1, $iLOGPath)
+				Return $aRomList
+			EndIf
+		Next
+	EndIf
+
+	Local $aValueToHide = StringSplit(_XML_Read('/Profil/Element[Source_Value="%AutoHide%"]/AutoHideValue', 0, "", $oXMLProfil), "|")
 	If IsArray($aValueToHide) Then
 		For $vBoucle = 1 To UBound($aValueToHide) - 1
 			If StringInStr($aRomList[$vNoRom][0], $aValueToHide[$vBoucle]) Then
@@ -1949,9 +2021,11 @@ Func _DownloadROMXML($aRomList, $vBoucle, $vSystemID, $vSSLogin = "", $vSSPasswo
 			FileDelete($aRomList[$vBoucle][8])
 			$aRomList[$vBoucle][8] = ""
 			$aRomList[$vBoucle][9] = 0
+			_ProgressSetImages($PB_SCRAPE, $iScriptPath & "\Ressources\Images\ProgressBar\yellow.jpg", $iScriptPath & "\Ressources\Images\ProgressBar\bg.jpg")
 			Return $aRomList
 		EndIf
 	EndIf
+	_ProgressSetImages($PB_SCRAPE, $iScriptPath & "\Ressources\Images\ProgressBar\green.jpg", $iScriptPath & "\Ressources\Images\ProgressBar\bg.jpg")
 	$aRomList[$vBoucle][9] = 1
 	Return $aRomList
 EndFunc   ;==>_DownloadROMXML
@@ -2186,12 +2260,14 @@ Func _LaunchEngine($oXMLProfil, $vNbThread = 1)
 		_LOG("Start Scrape Engine Number " & $vEngineLaunched, 1, $iLOGPath)
 		;Checking Scrape Engine
 		Local $vEngineTimer = TimerInit()
+		GUICtrlSetState($R_Engine[$vEngineLaunched], $GUI_SHOW)
 		While 1
 			If _MailSlotGetMessageCount($hMailSlotCheckEngine) >= 1 Then
 				$aEngineState = StringSplit(_ReadMessage($hMailSlotCheckEngine), "|", $STR_NOCOUNT)
 				$aScrapeEngine[$vEngineLaunched][0] = $aEngineState[0]
 				$aScrapeEngine[$vEngineLaunched][1] = $aEngineState[1]
 				_LOG("------------------------------------Engine Number " & $aEngineState[0] & " OK", 1, $iLOGPath)
+				GUICtrlSetState($R_Engine[$vEngineLaunched], $GUI_UNCHECKED)
 				$vEngineLaunched += 1
 				ExitLoop
 			EndIf
@@ -2220,11 +2296,9 @@ Func _SCRAPE($oXMLProfil, $aScrapeEngine, $vNbThread = 1, $vFullScrape = 0)
 	DirCreate($iTEMPPath & "\scraped")
 
 	If $aConfig <> 0 Then
-		_ProgressSetImages($PB_SCRAPE, $iScriptPath & "\Ressources\Images\ProgressBar\red.jpg", $iScriptPath & "\Ressources\Images\ProgressBar\bg.jpg")
+		_ProgressSetImages($PB_SCRAPE, $iScriptPath & "\Ressources\Images\ProgressBar\green.jpg", $iScriptPath & "\Ressources\Images\ProgressBar\bg.jpg")
 		_GUICtrlStatusBar_SetText($L_SCRAPE, "Please Wait... Testing server connection...")
 		Local $vScrapeCancelled = 0
-		Local $aExtToHide = StringSplit(_XML_Read('/Profil/Element[Source_Value="%AutoHide%"]/AutoHideEXT', 0, "", $oXMLProfil), "|")
-		Local $aValueToHide = StringSplit(_XML_Read('/Profil/Element[Source_Value="%AutoHide%"]/AutoHideValue', 0, "", $oXMLProfil), "|")
 		Local $vSendTimerLeft = 0, $vCreateTimerLeft = 0, $vSendTimerMoy = 0, $vCreateTimerMoy = 0, $vSendTimerTotal = 0, $vSendTimerTotalbyRom = 0, $vCreateTimerTotal = 0, $PercentProgression = 0
 		Local $vMissingRom_Mode = $aConfig[6]
 		Local $vThreadUsed = 1
@@ -2261,9 +2335,9 @@ Func _SCRAPE($oXMLProfil, $aScrapeEngine, $vNbThread = 1, $vFullScrape = 0)
 
 			;Creating gamelist.xml
 			If $aConfig[5] = 0 Or ($aConfig[5] > 0 And FileGetSize($aConfig[0]) < 100) Then
-				_FileCreate($aConfig[0])
-				FileDelete($aConfig[0])
 				_LOG("vScrape_Mode = " & $aConfig[5] & " And " & $aConfig[0] & " = " & FileGetSize($aConfig[0]) & " ---> _XML_Make", 1, $iLOGPath)
+				FileDelete($aConfig[0])
+				_FileCreate($aConfig[0])
 				$oXMLTarget = _XML_Make($aConfig[0], _XML_Read("Profil/Root/Target_Value", 0, "", $oXMLProfil))
 			EndIf
 
@@ -2278,7 +2352,7 @@ Func _SCRAPE($oXMLProfil, $aScrapeEngine, $vNbThread = 1, $vFullScrape = 0)
 				If $vBoucle < UBound($aRomList) - 1 Then
 					$vSendTimer = TimerInit()
 					$vBoucle += 1
-					$aRomList = _Check_Rom2Scrape($aRomList, $vBoucle, $aXMLRomList, $aConfig[2], $aConfig[5], $aExtToHide, $aValueToHide) ;Check if rom need to be scraped
+					$aRomList = _Check_Rom2Scrape($aRomList, $vBoucle, $aXMLRomList, $aConfig[2], $aConfig[5], $oXMLProfil) ;Check if rom need to be scraped
 					If $aRomList[$vBoucle][3] >= 1 And _Check_Cancel() Then
 						If $aRomList[$vBoucle][3] < 2 Then
 							$aRomList = _CalcHash($aRomList, $vBoucle, $oXMLProfil) ;Hash calculation
@@ -2293,17 +2367,43 @@ Func _SCRAPE($oXMLProfil, $aScrapeEngine, $vNbThread = 1, $vFullScrape = 0)
 
 						If ($aRomList[$vBoucle][9] = 1 Or $vMissingRom_Mode = 1 Or $aRomList[$vBoucle][3] > 1) And _Check_Cancel() Then
 
+;~ 							$vEngineReady = 0
+;~ 							While $vEngineReady < 1
+;~ 								If _MailSlotGetMessageCount($hMailSlotCheckEngine) >= 1 Then
+;~ 									$aEngineState = StringSplit(_ReadMessage($hMailSlotCheckEngine), "|", $STR_NOCOUNT)
+;~ 									$aScrapeEngine[$aEngineState[0]][1] = $aEngineState[1]
+;~ 									_LOG("-Message reiceved : " & $aEngineState[0] & " - " & $aEngineState[1], 3, $iLOGPath)
+;~ 									If $aScrapeEngine[$aEngineState[0]][1] = 0 Then
+;~ 										_LOG("-Engine Number " & $aEngineState[0] & " Ready", 1, $iLOGPath)
+;~ 										$vEngineReady = $aEngineState[0]
+;~ 										GUICtrlSetState($R_Engine[$vEngineReady], $GUI_UNCHECKED)
+;~ 									EndIf
+;~ 								EndIf
+;~ 								If Not _Check_Cancel() Then ExitLoop
+;~ 							WEnd
+
 							$vEngineReady = 0
 							While $vEngineReady < 1
-								If _MailSlotGetMessageCount($hMailSlotCheckEngine) >= 1 Then
+								While _MailSlotGetMessageCount($hMailSlotCheckEngine) >= 1
 									$aEngineState = StringSplit(_ReadMessage($hMailSlotCheckEngine), "|", $STR_NOCOUNT)
 									$aScrapeEngine[$aEngineState[0]][1] = $aEngineState[1]
 									_LOG("-Message reiceved : " & $aEngineState[0] & " - " & $aEngineState[1], 3, $iLOGPath)
 									If $aScrapeEngine[$aEngineState[0]][1] = 0 Then
 										_LOG("-Engine Number " & $aEngineState[0] & " Ready", 1, $iLOGPath)
 										$vEngineReady = $aEngineState[0]
+										GUICtrlSetState($R_Engine[$vEngineReady], $GUI_UNCHECKED)
 									EndIf
-								EndIf
+									If Not _Check_Cancel() Then ExitLoop
+								WEnd
+								For $vBoucle2 = 1 To $vNbThread
+									If Not _IsChecked($R_Engine[$vBoucle2]) Then
+										_LOG("-SENDING TO Engine Number " & $vBoucle2, 1, $iLOGPath)
+										$vEngineReady = $vBoucle2
+										GUICtrlSetState($R_Engine[$vEngineReady], $GUI_CHECKED)
+										ExitLoop
+									EndIf
+								Next
+								If $vEngineReady > 0 Then ExitLoop
 								If Not _Check_Cancel() Then ExitLoop
 							WEnd
 
@@ -2322,6 +2422,7 @@ Func _SCRAPE($oXMLProfil, $aScrapeEngine, $vNbThread = 1, $vFullScrape = 0)
 								$vResultSM = _SendMail($sMailSlotName, $vProfilsPath)
 								$aRomList[$vBoucle][11] = 1
 								$vRomSend += 1
+								_LOG("-Engine Number " & $vEngineReady & " Started", 1, $iLOGPath)
 							EndIf
 						EndIf
 					EndIf
@@ -2339,31 +2440,21 @@ Func _SCRAPE($oXMLProfil, $aScrapeEngine, $vNbThread = 1, $vFullScrape = 0)
 					$aRomList[$aMessageFromChild[0]][10] += $aMessageFromChild[1]
 					$aRomList[$aMessageFromChild[0]][12] = 1
 					$vRomReceived += 1
-
-					;Timers
-;~ 					$vSendTimerTotal += $aRomList[$aMessageFromChild[0]][10]
-;~ 					$vSendTimerMoy = Round(Round($vSendTimerTotal / $vRomReceived, 2) / $vNbThread, 2)
-;~ 					$vSendTimerLeft = $vSendTimerMoy * (((UBound($aRomList) - 1 - $vBoucle) * ($vBoucle / $vRomSend)) + ($vRomSend - $vRomReceived))
-
-					$vSendTimerTotal = Round(TimerDiff($vFullTimerSolo) / 1000, 2)
-
-					$vNbRomFull = (UBound($aRomList) - 1)
-					$vNbRomTest = $vBoucle
-					$vNbRatioSend = $vRomSend / $vNbRomTest
-					$vNbRomTotal = $vNbRomFull * $vNbRatioSend
-
-					$vSendTimerMoy = Round($vSendTimerTotal / ($vRomReceived), 2)
-					$vSendTimerLeft = Round($vSendTimerMoy * ($vNbRomTotal - $vRomReceived), 2)
-
-					$PercentProgression = Round(($vRomReceived * 100) / UBound($aRomList) - 1)
-;~ 					GUICtrlSetData($PB_SCRAPE, $PercentProgression)
-					_ProgressSet($PB_SCRAPE, $PercentProgression)
-					_ProgressSetText($PB_SCRAPE, $vRomReceived & "/" & UBound($aRomList) - 1)
-					_ITaskBar_SetProgressValue($F_UniversalScraper, $PercentProgression)
-					_GUICtrlStatusBar_SetText($L_SCRAPE, $aRomList[$aMessageFromChild[0]][2])
-					_GUICtrlStatusBar_SetText($L_SCRAPE, @TAB & @TAB & _FormatElapsedTime($vSendTimerLeft), 1) ; "Time Left  : " &
-;~ 					_GUICtrlStatusBar_SetText($L_SCRAPE, @TAB & @TAB & $vRomReceived & "/" & UBound($aRomList) - 1, 2)
 				EndIf
+				;Timers
+				$vSendTimerTotal = Round(TimerDiff($vFullTimerSolo) / 1000, 2)
+				$vNbRomFull = (UBound($aRomList) - 1)
+				$vNbRomTest = $vBoucle
+				$vNbRatioSend = $vRomSend / $vNbRomTest
+				$vNbRomTotal = $vNbRomFull * $vNbRatioSend
+				$vSendTimerMoy = Round($vSendTimerTotal / ($vRomReceived), 2)
+				$vSendTimerLeft = Round($vSendTimerMoy * ($vNbRomTotal - $vRomReceived), 2)
+				$PercentProgression = Round(($vNbRomTest * 100) / UBound($aRomList) - 1)
+				_ProgressSet($PB_SCRAPE, $PercentProgression)
+				_ProgressSetText($PB_SCRAPE, $vNbRomTest & "/" & UBound($aRomList) - 1)
+				_ITaskBar_SetProgressValue($F_UniversalScraper, $PercentProgression)
+				_GUICtrlStatusBar_SetText($L_SCRAPE, $aRomList[$vNbRomTest][2])
+				_GUICtrlStatusBar_SetText($L_SCRAPE, @TAB & @TAB & _FormatElapsedTime($vSendTimerLeft), 1) ; "Time Left  : " &
 
 				If Not _Check_Cancel() Or ($vRomReceived = $vRomSend And $vBoucle = UBound($aRomList) - 1) Then ExitLoop
 			WEnd
@@ -2389,14 +2480,17 @@ Func _SCRAPE($oXMLProfil, $aScrapeEngine, $vNbThread = 1, $vFullScrape = 0)
 	Return $aRomList
 EndFunc   ;==>_SCRAPE
 
-Func _CreateXML($aRomList, $aConfig)
+Func _CreateXML($aRomListXML, $aConfigXML, $vRestoring = 0)
+	Local $vLastLine = ''
 	_ProgressSetImages($PB_SCRAPE, $iScriptPath & "\Ressources\Images\ProgressBar\yellow.jpg", $iScriptPath & "\Ressources\Images\ProgressBar\bg.jpg")
 	_ProgressSet($PB_SCRAPE, 0)
 	;Reading Target xml
 	Dim $aXMLTarget
-	_FileReadToArray($aConfig[0], $aXMLTarget)
+;~ 	MsgBox(0, "$aConfigXML[0]", $aConfigXML[0])
+	_FileReadToArray($aConfigXML[0], $aXMLTarget)
+;~ 	_ArrayDisplay($aXMLTarget, "$aXMLTarget")
 	_ArrayDelete($aXMLTarget, 0)
-	FileDelete($aConfig[0])
+	FileDelete($aConfigXML[0])
 	$vBoucle = UBound($aXMLTarget) - 1
 	While $vBoucle <> 0 ;Grabing last line (without "" )
 		If $aXMLTarget[$vBoucle] = "" Then
@@ -2414,15 +2508,15 @@ Func _CreateXML($aRomList, $aConfig)
 		$vLastLine = '</' & _XML_Read("Profil/Root/Target_Value", 0, "", $oXMLProfil) & '>'
 	EndIf
 
-	For $vBoucle = 1 To UBound($aRomList) - 1
+	For $vBoucle = 1 To UBound($aRomListXML) - 1
 		Dim $aXMLSource
-		$PercentProgression = Round((UBound($aRomList) - 1 * 100) / UBound($aRomList) - 1)
+		$PercentProgression = Round((UBound($aRomListXML) - 1 * 100) / UBound($aRomListXML) - 1)
 ;~ 		GUICtrlSetData($PB_SCRAPE, $PercentProgression)
 		_ProgressSet($PB_SCRAPE, $PercentProgression)
 		_ITaskBar_SetProgressValue($F_UniversalScraper, $PercentProgression)
-		If $aRomList[$vBoucle][12] = 1 Then
-			_GUICtrlStatusBar_SetText($L_SCRAPE, $aRomList[$vBoucle][2])
-			_GUICtrlStatusBar_SetText($L_SCRAPE, @TAB & @TAB & $vBoucle & "/" & UBound($aRomList) - 1, 2)
+		If $aRomListXML[$vBoucle][12] = 1 Or $vRestoring = 1 Then
+			_GUICtrlStatusBar_SetText($L_SCRAPE, $aRomListXML[$vBoucle][2])
+			_GUICtrlStatusBar_SetText($L_SCRAPE, @TAB & @TAB & $vBoucle & "/" & UBound($aRomListXML) - 1, 2)
 			_FileReadToArray($iTEMPPath & "\scraped\" & $vBoucle & ".xml", $aXMLSource)
 			For $vBoucle2 = 1 To UBound($aXMLSource) - 1
 				_ArrayAdd($aXMLTarget, $aXMLSource[$vBoucle2])
@@ -2431,14 +2525,14 @@ Func _CreateXML($aRomList, $aConfig)
 	Next
 
 	_ArrayAdd($aXMLTarget, $vLastLine)
-	_FileWriteFromArray($aConfig[0], $aXMLTarget)
+	_FileWriteFromArray($aConfigXML[0], $aXMLTarget)
 
 	Local $oXMLAfterTidy = _XML_CreateDOMDocument(Default)
-	$oToTidy = _XML_Open($aConfig[0])
+	$oToTidy = _XML_Open($aConfigXML[0])
 	Local $vXMLAfterTidy = _XML_TIDY($oToTidy, -1)
 	_XML_LoadXML($oXMLAfterTidy, $vXMLAfterTidy)
-	FileDelete($aConfig[0])
-	_XML_SaveToFile($oXMLAfterTidy, $aConfig[0])
+	FileDelete($aConfigXML[0])
+	_XML_SaveToFile($oXMLAfterTidy, $aConfigXML[0])
 	_ProgressSet($PB_SCRAPE, 0)
 	_ProgressSetText($PB_SCRAPE, "")
 	Return
