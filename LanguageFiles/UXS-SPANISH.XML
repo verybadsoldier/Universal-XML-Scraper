@@ -303,3 +303,6 @@
 <mess_continue>Do you want to continue ?</mess_continue>
 <mess_Yes>Yes</mess_Yes>
 <mess_No>No</mess_No>
+<mess_filefound_Title>Temporary Files Found</mess_filefound_Title>
+<mess_filefound>Some temporary file where found, do you want to generate an xml file ?</mess_filefound>
+<mess_filefound_Path>Where do you want to store the XML File ?</mess_filefound_Path>

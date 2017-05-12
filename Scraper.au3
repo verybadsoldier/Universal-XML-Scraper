@@ -255,26 +255,26 @@ Func _Game_Make($aRomList, $vBoucle, $aConfig, $oXMLProfil)
 						Local $vTarget_NameOption_Alt_Value = "0"
 						Local $vTarget_NameOption_Best_Value = "0"
 
-						If _XML_Read('Profil/Element[@Type="Name"]/Target_NameOption_Clone', 0, "", $oXMLProfil) = "Yes" Then $vTarget_NameOption_Clone_Value = _Coalesce(_XML_Read("Data/jeu/cloneof", 0, $aRomList[8]), 0)
-						If _XML_Read('Profil/Element[@Type="Name"]/Target_NameOption_Beta', 0, "", $oXMLProfil) = "Yes" Then $vTarget_NameOption_Beta_Value = _Coalesce(_XML_Read('Data/jeu/roms/rom[romid="' & $vRomId & '"]/beta', 0, $aRomList[8]), 0)
-						If _XML_Read('Profil/Element[@Type="Name"]/Target_NameOption_Demo', 0, "", $oXMLProfil) = "Yes" Then $vTarget_NameOption_Demo_Value = _Coalesce(_XML_Read('Data/jeu/roms/rom[romid="' & $vRomId & '"]/demo', 0, $aRomList[8]), 0)
-						If _XML_Read('Profil/Element[@Type="Name"]/Target_NameOption_Proto', 0, "", $oXMLProfil) = "Yes" Then $vTarget_NameOption_Proto_Value = _Coalesce(_XML_Read('Data/jeu/roms/rom[romid="' & $vRomId & '"]/proto', 0, $aRomList[8]), 0)
-						If _XML_Read('Profil/Element[@Type="Name"]/Target_NameOption_Trad', 0, "", $oXMLProfil) = "Yes" Then $vTarget_NameOption_Trad_Value = _Coalesce(_XML_Read('Data/jeu/roms/rom[romid="' & $vRomId & '"]/trad', 0, $aRomList[8]), 0)
-						If _XML_Read('Profil/Element[@Type="Name"]/Target_NameOption_Hack', 0, "", $oXMLProfil) = "Yes" Then $vTarget_NameOption_Hack_Value = _Coalesce(_XML_Read('Data/jeu/roms/rom[romid="' & $vRomId & '"]/hack', 0, $aRomList[8]), 0)
-						If _XML_Read('Profil/Element[@Type="Name"]/Target_NameOption_Unl', 0, "", $oXMLProfil) = "Yes" Then $vTarget_NameOption_Unl_Value = _Coalesce(_XML_Read('Data/jeu/roms/rom[romid="' & $vRomId & '"]/unl', 0, $aRomList[8]), 0)
-						If _XML_Read('Profil/Element[@Type="Name"]/Target_NameOption_Alt', 0, "", $oXMLProfil) = "Yes" Then $vTarget_NameOption_Alt_Value = _Coalesce(_XML_Read('Data/jeu/roms/rom[romid="' & $vRomId & '"]/alt', 0, $aRomList[8]), 0)
-						If _XML_Read('Profil/Element[@Type="Name"]/Target_NameOption_Best', 0, "", $oXMLProfil) = "Yes" Then $vTarget_NameOption_Best_Value = _Coalesce(_XML_Read('Data/jeu/roms/rom[romid="' & $vRomId & '"]/best', 0, $aRomList[8]), 0)
+						If _XML_Read('Profil/Element[@Type="Name"]/Target_NameOption_Clone', 0, "", $oXMLProfil) = "Yes" Then $vTarget_NameOption_Clone_Value = _Coalesce(_XML_Read("Data/jeu/cloneof", 0, $aRomList[8]), "0")
+						If _XML_Read('Profil/Element[@Type="Name"]/Target_NameOption_Beta', 0, "", $oXMLProfil) = "Yes" Then $vTarget_NameOption_Beta_Value = _Coalesce(_XML_Read('Data/jeu/roms/rom[romid="' & $vRomId & '"]/beta', 0, $aRomList[8]), "0")
+						If _XML_Read('Profil/Element[@Type="Name"]/Target_NameOption_Demo', 0, "", $oXMLProfil) = "Yes" Then $vTarget_NameOption_Demo_Value = _Coalesce(_XML_Read('Data/jeu/roms/rom[romid="' & $vRomId & '"]/demo', 0, $aRomList[8]), "0")
+						If _XML_Read('Profil/Element[@Type="Name"]/Target_NameOption_Proto', 0, "", $oXMLProfil) = "Yes" Then $vTarget_NameOption_Proto_Value = _Coalesce(_XML_Read('Data/jeu/roms/rom[romid="' & $vRomId & '"]/proto', 0, $aRomList[8]), "0")
+						If _XML_Read('Profil/Element[@Type="Name"]/Target_NameOption_Trad', 0, "", $oXMLProfil) = "Yes" Then $vTarget_NameOption_Trad_Value = _Coalesce(_XML_Read('Data/jeu/roms/rom[romid="' & $vRomId & '"]/trad', 0, $aRomList[8]), "0")
+						If _XML_Read('Profil/Element[@Type="Name"]/Target_NameOption_Hack', 0, "", $oXMLProfil) = "Yes" Then $vTarget_NameOption_Hack_Value = _Coalesce(_XML_Read('Data/jeu/roms/rom[romid="' & $vRomId & '"]/hack', 0, $aRomList[8]), "0")
+						If _XML_Read('Profil/Element[@Type="Name"]/Target_NameOption_Unl', 0, "", $oXMLProfil) = "Yes" Then $vTarget_NameOption_Unl_Value = _Coalesce(_XML_Read('Data/jeu/roms/rom[romid="' & $vRomId & '"]/unl', 0, $aRomList[8]), "0")
+						If _XML_Read('Profil/Element[@Type="Name"]/Target_NameOption_Alt', 0, "", $oXMLProfil) = "Yes" Then $vTarget_NameOption_Alt_Value = _Coalesce(_XML_Read('Data/jeu/roms/rom[romid="' & $vRomId & '"]/alt', 0, $aRomList[8]), "0")
+						If _XML_Read('Profil/Element[@Type="Name"]/Target_NameOption_Best', 0, "", $oXMLProfil) = "Yes" Then $vTarget_NameOption_Best_Value = _Coalesce(_XML_Read('Data/jeu/roms/rom[romid="' & $vRomId & '"]/best', 0, $aRomList[8]), "0")
 
 						$vNameTag = ""
-						If $vTarget_NameOption_Clone_Value <> "0" Then $vNameTag = $vNameTag & "Clone, "
-						If $vTarget_NameOption_Beta_Value <> "0" Then $vNameTag = $vNameTag & "Beta, "
-						If $vTarget_NameOption_Demo_Value <> "0" Then $vNameTag = $vNameTag & "Demo, "
-						If $vTarget_NameOption_Proto_Value <> "0" Then $vNameTag = $vNameTag & "Proto, "
-						If $vTarget_NameOption_Trad_Value <> "0" Then $vNameTag = $vNameTag & "Trad, "
-						If $vTarget_NameOption_Hack_Value <> "0" Then $vNameTag = $vNameTag & "Hack, "
-						If $vTarget_NameOption_Unl_Value <> "0" Then $vNameTag = $vNameTag & "Unl, "
-						If $vTarget_NameOption_Alt_Value <> "0" Then $vNameTag = $vNameTag & "Alt, "
-						If $vTarget_NameOption_Best_Value <> "0" Then $vNameTag = $vNameTag & "Best, "
+						If _Coalesce($vTarget_NameOption_Clone_Value, "0") <> "0" Then $vNameTag = $vNameTag & "Clone, "
+						If _Coalesce($vTarget_NameOption_Beta_Value, "0") <> "0" Then $vNameTag = $vNameTag & "Beta, "
+						If _Coalesce($vTarget_NameOption_Demo_Value, "0") <> "0" Then $vNameTag = $vNameTag & "Demo, "
+						If _Coalesce($vTarget_NameOption_Proto_Value, "0") <> "0" Then $vNameTag = $vNameTag & "Proto, "
+						If _Coalesce($vTarget_NameOption_Trad_Value, "0") <> "0" Then $vNameTag = $vNameTag & "Trad, "
+						If _Coalesce($vTarget_NameOption_Hack_Value, "0") <> "0" Then $vNameTag = $vNameTag & "Hack, "
+						If _Coalesce($vTarget_NameOption_Unl_Value, "0") <> "0" Then $vNameTag = $vNameTag & "Unl, "
+						If _Coalesce($vTarget_NameOption_Alt_Value, "0") <> "0" Then $vNameTag = $vNameTag & "Alt, "
+						If _Coalesce($vTarget_NameOption_Best_Value, "0") <> "0" Then $vNameTag = $vNameTag & "Best, "
 						If StringRight($vNameTag, 2) = ", " Then $vNameTag = StringTrimRight($vNameTag, 2)
 						If $vNameTag <> "" Then $vValue = $vValue & " (" & $vNameTag & ")"
 

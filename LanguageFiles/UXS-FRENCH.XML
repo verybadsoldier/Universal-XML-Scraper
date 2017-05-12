@@ -35,6 +35,9 @@
 	<mess_continue>Etes vous sur de continuer ?</mess_continue>
 	<mess_Yes>Oui</mess_Yes>
 	<mess_No>Non</mess_No>
+	<mess_filefound_Title>Fichiers temporaires trouvés</mess_filefound_Title>
+	<mess_filefound>Des fichiers temporaires viennent d'etre trouvés, voulez vous generer un fichier XML ?</mess_filefound>
+	<mess_filefound_Path>Ou voulez vous enregistrer le fichier ?</mess_filefound_Path>
 </message>
 
 <gui>

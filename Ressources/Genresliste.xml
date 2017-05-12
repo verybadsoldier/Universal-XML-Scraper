@@ -1,0 +1,1307 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Data>
+	<genres>
+		<genre>
+			<id>10</id>
+			<nom_fr>Action</nom_fr>
+			<nom_de>Action</nom_de>
+			<nom_en>Action</nom_en>
+			<nom_es>Acción</nom_es>
+			<nom_pt>Ação</nom_pt>
+			<parent>0</parent>
+			<medias>
+				<media_pictomonochrome>https://www.screenscraper.fr/api/mediaGroup.php?devid=Screech&amp;devpassword=Screech201601281533y&amp;softname=UniversalXMLScraper(TestDev)&amp;crc=&amp;md5=&amp;sha1=&amp;groupid=10&amp;media=logo-monochrome&amp;mediaformat=png</media_pictomonochrome>
+			</medias>
+		</genre>
+		<genre>
+			<id>3566</id>
+			<nom_fr>Action / Aventure</nom_fr>
+			<nom_de>Action / Abenteuer</nom_de>
+			<nom_en>Action / Adventure</nom_en>
+			<nom_es>Acción / Aventura</nom_es>
+			<parent>10</parent>
+		</genre>
+		<genre>
+			<id>2917</id>
+			<nom_fr>Action / Casse briques</nom_fr>
+			<nom_de>Action / Breakout Spiele</nom_de>
+			<nom_en>Action / Breakout games</nom_en>
+			<nom_es>Acción / Juegos de Breakout</nom_es>
+			<nom_pt>Ação / Jogos de Breakout</nom_pt>
+			<parent>10</parent>
+		</genre>
+		<genre>
+			<id>2909</id>
+			<nom_fr>Action / Escalade</nom_fr>
+			<nom_de>Action / Klettern</nom_de>
+			<nom_en>Action / Climbing</nom_en>
+			<nom_es>Acción / Escalada</nom_es>
+			<nom_pt>Ação / Escalada</nom_pt>
+			<parent>10</parent>
+		</genre>
+		<genre>
+			<id>2937</id>
+			<nom_fr>Action / Labyrinthe</nom_fr>
+			<nom_de>Action / Labyrinth</nom_de>
+			<nom_en>Action / Labyrinth</nom_en>
+			<nom_es>Acción / Laberinto</nom_es>
+			<nom_pt>Ação / Labirinto</nom_pt>
+			<parent>10</parent>
+		</genre>
+		<genre>
+			<id>413</id>
+			<nom_fr>Adulte</nom_fr>
+			<nom_de>Erwachsene</nom_de>
+			<nom_en>Adult</nom_en>
+			<nom_es>Adulto</nom_es>
+			<nom_pt>Adulto</nom_pt>
+			<parent>0</parent>
+			<medias>
+				<media_pictomonochrome>https://www.screenscraper.fr/api/mediaGroup.php?devid=Screech&amp;devpassword=Screech201601281533y&amp;softname=UniversalXMLScraper(TestDev)&amp;crc=&amp;md5=&amp;sha1=&amp;groupid=413&amp;media=logo-monochrome&amp;mediaformat=png</media_pictomonochrome>
+			</medias>
+		</genre>
+		<genre>
+			<id>13</id>
+			<nom_fr>Aventure</nom_fr>
+			<nom_de>Abenteuer</nom_de>
+			<nom_en>Adventure</nom_en>
+			<nom_es>Aventura</nom_es>
+			<nom_pt>Aventura</nom_pt>
+			<parent>0</parent>
+			<medias>
+				<media_pictomonochrome>https://www.screenscraper.fr/api/mediaGroup.php?devid=Screech&amp;devpassword=Screech201601281533y&amp;softname=UniversalXMLScraper(TestDev)&amp;crc=&amp;md5=&amp;sha1=&amp;groupid=13&amp;media=logo-monochrome&amp;mediaformat=png</media_pictomonochrome>
+			</medias>
+		</genre>
+		<genre>
+			<id>1</id>
+			<nom_fr>Beat&apos;em All</nom_fr>
+			<nom_de>Beat&apos;em Up</nom_de>
+			<nom_en>Beat&apos;em Up</nom_en>
+			<nom_es>Beat&apos;em Up</nom_es>
+			<nom_pt>Briga de rua</nom_pt>
+			<parent>0</parent>
+			<medias>
+				<media_pictomonochrome>https://www.screenscraper.fr/api/mediaGroup.php?devid=Screech&amp;devpassword=Screech201601281533y&amp;softname=UniversalXMLScraper(TestDev)&amp;crc=&amp;md5=&amp;sha1=&amp;groupid=1&amp;media=logo-monochrome&amp;mediaformat=png</media_pictomonochrome>
+			</medias>
+		</genre>
+		<genre>
+			<id>320</id>
+			<nom_fr>Casino</nom_fr>
+			<nom_de>Casino</nom_de>
+			<nom_en>Casino</nom_en>
+			<nom_es>Casino</nom_es>
+			<nom_pt>Cassino</nom_pt>
+			<parent>0</parent>
+			<medias>
+				<media_pictomonochrome>https://www.screenscraper.fr/api/mediaGroup.php?devid=Screech&amp;devpassword=Screech201601281533y&amp;softname=UniversalXMLScraper(TestDev)&amp;crc=&amp;md5=&amp;sha1=&amp;groupid=320&amp;media=logo-monochrome&amp;mediaformat=png</media_pictomonochrome>
+			</medias>
+		</genre>
+		<genre>
+			<id>2872</id>
+			<nom_fr>Casino / Cartes</nom_fr>
+			<nom_de>Casino / Karten</nom_de>
+			<nom_en>Casino / Cards</nom_en>
+			<nom_es>Casino / Cartas</nom_es>
+			<nom_pt>Cassino / Cartas</nom_pt>
+			<parent>320</parent>
+		</genre>
+		<genre>
+			<id>2950</id>
+			<nom_fr>Casino / Course</nom_fr>
+			<nom_de>Casino / Rennen</nom_de>
+			<nom_en>Casino / Race</nom_en>
+			<nom_es>Casino / Carreras</nom_es>
+			<nom_pt>Cassino / Corrida</nom_pt>
+			<parent>320</parent>
+		</genre>
+		<genre>
+			<id>2932</id>
+			<nom_fr>Casino / Loterie</nom_fr>
+			<nom_de>Casino / Lotterie</nom_de>
+			<nom_en>Casino / Lottery</nom_en>
+			<nom_es>Casino / Lotería</nom_es>
+			<nom_pt>Cassino / Loteria</nom_pt>
+			<parent>320</parent>
+		</genre>
+		<genre>
+			<id>2860</id>
+			<nom_fr>Casino / Machine a sous</nom_fr>
+			<nom_de>Casino / Slot Machine</nom_de>
+			<nom_en>Casino / Slot machine</nom_en>
+			<nom_es>Casino / Máquina tragamonedas</nom_es>
+			<nom_pt>Cassino / Caça-níqueis</nom_pt>
+			<parent>320</parent>
+		</genre>
+		<genre>
+			<id>2944</id>
+			<nom_fr>Casino / Roulette</nom_fr>
+			<nom_de>Casino / Roulette</nom_de>
+			<nom_en>Casino / Roulette</nom_en>
+			<nom_es>Casino / Ruleta</nom_es>
+			<nom_pt>Cassino / Roleta</nom_pt>
+			<parent>320</parent>
+		</genre>
+		<genre>
+			<id>171</id>
+			<nom_fr>Casual Game</nom_fr>
+			<nom_de>Gelegenheitsspiel</nom_de>
+			<nom_en>Casual Game</nom_en>
+			<nom_es>Juego casual</nom_es>
+			<nom_pt>Jogo casual</nom_pt>
+			<parent>0</parent>
+			<medias>
+				<media_pictomonochrome>https://www.screenscraper.fr/api/mediaGroup.php?devid=Screech&amp;devpassword=Screech201601281533y&amp;softname=UniversalXMLScraper(TestDev)&amp;crc=&amp;md5=&amp;sha1=&amp;groupid=171&amp;media=logo-monochrome&amp;mediaformat=png</media_pictomonochrome>
+			</medias>
+		</genre>
+		<genre>
+			<id>3192</id>
+			<nom_fr>Chasse</nom_fr>
+			<nom_de>Jagen</nom_de>
+			<nom_en>Hunting</nom_en>
+			<nom_es>Caza</nom_es>
+			<nom_pt>Caça</nom_pt>
+			<parent>2648</parent>
+		</genre>
+		<genre>
+			<id>2648</id>
+			<nom_fr>Chasse et Peche</nom_fr>
+			<nom_de>Jagen und Angeln</nom_de>
+			<nom_en>Hunting and Fishing</nom_en>
+			<nom_es>Caza y Pesca</nom_es>
+			<nom_pt>Caça e Pesca</nom_pt>
+			<parent>0</parent>
+			<medias>
+				<media_pictomonochrome>https://www.screenscraper.fr/api/mediaGroup.php?devid=Screech&amp;devpassword=Screech201601281533y&amp;softname=UniversalXMLScraper(TestDev)&amp;crc=&amp;md5=&amp;sha1=&amp;groupid=2648&amp;media=logo-monochrome&amp;mediaformat=png</media_pictomonochrome>
+			</medias>
+		</genre>
+		<genre>
+			<id>14</id>
+			<nom_fr>Combat</nom_fr>
+			<nom_de>Kampf</nom_de>
+			<nom_en>Fight</nom_en>
+			<nom_es>Combate</nom_es>
+			<nom_pt>Luta</nom_pt>
+			<parent>0</parent>
+			<medias>
+				<media_pictomonochrome>https://www.screenscraper.fr/api/mediaGroup.php?devid=Screech&amp;devpassword=Screech201601281533y&amp;softname=UniversalXMLScraper(TestDev)&amp;crc=&amp;md5=&amp;sha1=&amp;groupid=14&amp;media=logo-monochrome&amp;mediaformat=png</media_pictomonochrome>
+			</medias>
+		</genre>
+		<genre>
+			<id>2874</id>
+			<nom_fr>Combat / 2.5D</nom_fr>
+			<nom_de>Kampf / 2.5D</nom_de>
+			<nom_en>Fight / 2.5D</nom_en>
+			<nom_es>Combate / 2.5D</nom_es>
+			<nom_pt>Luta / 2.5D</nom_pt>
+			<parent>14</parent>
+		</genre>
+		<genre>
+			<id>2914</id>
+			<nom_fr>Combat / 2D</nom_fr>
+			<nom_de>Kampf / 2D</nom_de>
+			<nom_en>Fight / 2D</nom_en>
+			<nom_es>Combate / 2D</nom_es>
+			<nom_pt>Luta / 2D</nom_pt>
+			<parent>14</parent>
+		</genre>
+		<genre>
+			<id>2920</id>
+			<nom_fr>Combat / 3D</nom_fr>
+			<nom_de>Kampf / 3D</nom_de>
+			<nom_en>Fight / 3D</nom_en>
+			<nom_es>Combate / 3D</nom_es>
+			<nom_pt>Luta / 3D</nom_pt>
+			<parent>14</parent>
+		</genre>
+		<genre>
+			<id>2885</id>
+			<nom_fr>Combat / Versus</nom_fr>
+			<nom_de>Kampf / Versus</nom_de>
+			<nom_en>Fight / Versus</nom_en>
+			<nom_es>Combate / Versus</nom_es>
+			<nom_pt>Luta / Versus</nom_pt>
+			<parent>14</parent>
+		</genre>
+		<genre>
+			<id>2957</id>
+			<nom_fr>Combat / Versus Co-op</nom_fr>
+			<nom_de>Kampf / Versus Ko-Op</nom_de>
+			<nom_en>Fight /  Co-op</nom_en>
+			<nom_es>Combate / Versus Co-op</nom_es>
+			<nom_pt>Luta / Versus Co-op</nom_pt>
+			<parent>14</parent>
+		</genre>
+		<genre>
+			<id>2922</id>
+			<nom_fr>Combat / Vertical</nom_fr>
+			<nom_de>Kampf / Vertikal</nom_de>
+			<nom_en>Fight / Vertical</nom_en>
+			<nom_es>Combate / Vertical</nom_es>
+			<nom_pt>Luta / Vertical</nom_pt>
+			<parent>14</parent>
+		</genre>
+		<genre>
+			<id>34</id>
+			<nom_fr>Compilation</nom_fr>
+			<nom_de>Sammlung</nom_de>
+			<nom_en>Compilation</nom_en>
+			<nom_es>Copilación</nom_es>
+			<nom_pt>Compilação</nom_pt>
+			<parent>0</parent>
+			<medias>
+				<media_pictomonochrome>https://www.screenscraper.fr/api/mediaGroup.php?devid=Screech&amp;devpassword=Screech201601281533y&amp;softname=UniversalXMLScraper(TestDev)&amp;crc=&amp;md5=&amp;sha1=&amp;groupid=34&amp;media=logo-monochrome&amp;mediaformat=png</media_pictomonochrome>
+			</medias>
+		</genre>
+		<genre>
+			<id>2918</id>
+			<nom_fr>Course de chevaux</nom_fr>
+			<nom_de>Pferderennen</nom_de>
+			<nom_en>Horses race</nom_en>
+			<nom_es>Carreras de caballos</nom_es>
+			<nom_pt>Corrida com Cavalos</nom_pt>
+			<parent>2650</parent>
+		</genre>
+		<genre>
+			<id>2973</id>
+			<nom_fr>Course de Moto vue 1er pers.</nom_fr>
+			<nom_de>Motorradrennen, 1st Pers.</nom_de>
+			<nom_en>Motorcycle Race, 1st Pers.</nom_en>
+			<nom_es>Carreras de moto, 1ª persona</nom_es>
+			<nom_pt>Corrida de moto em 1ª pessoa</nom_pt>
+			<parent>28</parent>
+		</genre>
+		<genre>
+			<id>2871</id>
+			<nom_fr>Course de Moto vue 3eme pers.</nom_fr>
+			<nom_de>Motorradrennen, 3rd Pers.</nom_de>
+			<nom_en>Motorcycle Race, 3rd Pers.</nom_en>
+			<nom_es>Carreras de moto, 3ª persona</nom_es>
+			<nom_pt>Corrida de moto em 3ª pessoa</nom_pt>
+			<parent>28</parent>
+		</genre>
+		<genre>
+			<id>2884</id>
+			<nom_fr>Course vue 1ere pers.</nom_fr>
+			<nom_de>Rennen 1st Pers.</nom_de>
+			<nom_en>Race 1st Pers. view</nom_en>
+			<nom_es>Carreras 1ª persona</nom_es>
+			<nom_pt>Corrida em 1ª pessoa</nom_pt>
+			<parent>28</parent>
+		</genre>
+		<genre>
+			<id>2888</id>
+			<nom_fr>Course vue 3eme pers.</nom_fr>
+			<nom_de>Rennen 3rd Pers.</nom_de>
+			<nom_en>Race 3rd Pers. view</nom_en>
+			<nom_es>Carreras 3ª persona</nom_es>
+			<nom_pt>Corrida em 3ª pessoa</nom_pt>
+			<parent>28</parent>
+		</genre>
+		<genre>
+			<id>28</id>
+			<nom_fr>Course, Conduite</nom_fr>
+			<nom_de>Rennen, Fahren</nom_de>
+			<nom_en>Race, Driving</nom_en>
+			<nom_es>Carreras, Conducción</nom_es>
+			<nom_pt>Corrida, Pilotagem</nom_pt>
+			<parent>0</parent>
+			<medias>
+				<media_pictomonochrome>https://www.screenscraper.fr/api/mediaGroup.php?devid=Screech&amp;devpassword=Screech201601281533y&amp;softname=UniversalXMLScraper(TestDev)&amp;crc=&amp;md5=&amp;sha1=&amp;groupid=28&amp;media=logo-monochrome&amp;mediaformat=png</media_pictomonochrome>
+			</medias>
+		</genre>
+		<genre>
+			<id>2893</id>
+			<nom_fr>Course, Conduite / Avion</nom_fr>
+			<nom_de>Rennen, Fahren / Flugzeug</nom_de>
+			<nom_en>Race, Driving / Plane</nom_en>
+			<nom_es>Carreras, Conducción / Avión</nom_es>
+			<nom_pt>Corrida, Pilotagem / Avião</nom_pt>
+			<parent>28</parent>
+		</genre>
+		<genre>
+			<id>2911</id>
+			<nom_fr>Course, Conduite / Bateau</nom_fr>
+			<nom_de>Rennen, Fahren / Boot</nom_de>
+			<nom_en>Race, Driving / Boat</nom_en>
+			<nom_es>Carreras, Conducción / Bote</nom_es>
+			<nom_pt>Corrida, Pilotagem / Bote</nom_pt>
+			<parent>28</parent>
+		</genre>
+		<genre>
+			<id>2924</id>
+			<nom_fr>Course, Conduite / Course</nom_fr>
+			<nom_de>Rennen, Fahren / Rennen</nom_de>
+			<nom_en>Race, Driving / Race</nom_en>
+			<nom_es>Carreras, Conducción / Carreras</nom_es>
+			<nom_pt>Corrida, Pilotagem / Corrida</nom_pt>
+			<parent>28</parent>
+		</genre>
+		<genre>
+			<id>2953</id>
+			<nom_fr>Course, Conduite / Deltaplane</nom_fr>
+			<nom_de>Rennen, Fahren / Hang Glider</nom_de>
+			<nom_en>Race, Driving / Hang-glider</nom_en>
+			<nom_es>Carreras, Conducción / Ala delta</nom_es>
+			<nom_pt>Corrida, Pilotagem / Asa-Delta</nom_pt>
+			<parent>28</parent>
+		</genre>
+		<genre>
+			<id>2943</id>
+			<nom_fr>Course, Conduite / Moto</nom_fr>
+			<nom_de>Rennen, Fahren / Motorrad</nom_de>
+			<nom_en>Race, Driving / Motorcycle</nom_en>
+			<nom_es>Carreras, Conducción / Motocicleta</nom_es>
+			<nom_pt>Corrida, Pilotagem / Moto</nom_pt>
+			<parent>28</parent>
+		</genre>
+		<genre>
+			<id>2974</id>
+			<nom_fr>Demo</nom_fr>
+			<nom_de>Demo</nom_de>
+			<nom_en>Demo</nom_en>
+			<nom_es>Demo</nom_es>
+			<nom_pt>Demo</nom_pt>
+			<parent>0</parent>
+		</genre>
+		<genre>
+			<id>39</id>
+			<nom_fr>Divers</nom_fr>
+			<nom_de>Verschiedene</nom_de>
+			<nom_en>Various</nom_en>
+			<nom_es>Varios</nom_es>
+			<nom_pt>Variados</nom_pt>
+			<parent>0</parent>
+			<medias>
+				<media_pictomonochrome>https://www.screenscraper.fr/api/mediaGroup.php?devid=Screech&amp;devpassword=Screech201601281533y&amp;softname=UniversalXMLScraper(TestDev)&amp;crc=&amp;md5=&amp;sha1=&amp;groupid=39&amp;media=logo-monochrome&amp;mediaformat=png</media_pictomonochrome>
+			</medias>
+		</genre>
+		<genre>
+			<id>2890</id>
+			<nom_fr>Divers / Electro-mecanique</nom_fr>
+			<nom_de>Verschiedene / Elektromechanisch</nom_de>
+			<nom_en>Various / Electro- Mechanical</nom_en>
+			<nom_es>Varios / Electromecánico</nom_es>
+			<nom_pt>Variados / Eletromecânico</nom_pt>
+			<parent>39</parent>
+		</genre>
+		<genre>
+			<id>2879</id>
+			<nom_fr>Divers / Print Club</nom_fr>
+			<nom_de>Verschiedene / Print Club</nom_de>
+			<nom_en>Various / Print Club</nom_en>
+			<nom_es>Varios / Print Club</nom_es>
+			<nom_pt>Variados / Print Club</nom_pt>
+			<parent>39</parent>
+		</genre>
+		<genre>
+			<id>2855</id>
+			<nom_fr>Divers / Système</nom_fr>
+			<nom_de>Verschiedene / System</nom_de>
+			<nom_en>Various / System</nom_en>
+			<nom_es>Varios / Sistema</nom_es>
+			<nom_pt>Variados / Sistema</nom_pt>
+			<parent>39</parent>
+		</genre>
+		<genre>
+			<id>2904</id>
+			<nom_fr>Divers / Utilitaires</nom_fr>
+			<nom_de>Verschiedene / Dienstprogramme</nom_de>
+			<nom_en>Various / Utilities</nom_en>
+			<nom_es>Varios / Utilidades</nom_es>
+			<nom_pt>Variados / Utilitários</nom_pt>
+			<parent>39</parent>
+		</genre>
+		<genre>
+			<id>31</id>
+			<nom_fr>Flipper</nom_fr>
+			<nom_de>Flipper</nom_de>
+			<nom_en>Pinball</nom_en>
+			<nom_es>Pinball</nom_es>
+			<nom_pt>Pinball</nom_pt>
+			<parent>0</parent>
+			<medias>
+				<media_pictomonochrome>https://www.screenscraper.fr/api/mediaGroup.php?devid=Screech&amp;devpassword=Screech201601281533y&amp;softname=UniversalXMLScraper(TestDev)&amp;crc=&amp;md5=&amp;sha1=&amp;groupid=31&amp;media=logo-monochrome&amp;mediaformat=png</media_pictomonochrome>
+			</medias>
+		</genre>
+		<genre>
+			<id>2958</id>
+			<nom_fr>Go</nom_fr>
+			<nom_de>Go</nom_de>
+			<nom_en>Go</nom_en>
+			<nom_es>Go</nom_es>
+			<nom_pt>Go</nom_pt>
+			<parent>2647</parent>
+		</genre>
+		<genre>
+			<id>2882</id>
+			<nom_fr>Hanafuda</nom_fr>
+			<nom_de>Hanafuda</nom_de>
+			<nom_en>Hanafuda</nom_en>
+			<nom_es>Hanafuda</nom_es>
+			<nom_pt>Hanafuda</nom_pt>
+			<parent>2647</parent>
+		</genre>
+		<genre>
+			<id>42</id>
+			<nom_fr>Jeu de cartes</nom_fr>
+			<nom_de>Kartenspiele</nom_de>
+			<nom_en>Playing cards</nom_en>
+			<nom_es>Juegos de cartas</nom_es>
+			<nom_pt>Jogo de cartas</nom_pt>
+			<parent>0</parent>
+			<medias>
+				<media_pictomonochrome>https://www.screenscraper.fr/api/mediaGroup.php?devid=Screech&amp;devpassword=Screech201601281533y&amp;softname=UniversalXMLScraper(TestDev)&amp;crc=&amp;md5=&amp;sha1=&amp;groupid=42&amp;media=logo-monochrome&amp;mediaformat=png</media_pictomonochrome>
+			</medias>
+		</genre>
+		<genre>
+			<id>8</id>
+			<nom_fr>Jeu de rôles</nom_fr>
+			<nom_de>Rollenspiele</nom_de>
+			<nom_en>Role playing games</nom_en>
+			<nom_es>Juegos de rol</nom_es>
+			<nom_pt> Jogos de RPG</nom_pt>
+			<parent>0</parent>
+			<medias>
+				<media_pictomonochrome>https://www.screenscraper.fr/api/mediaGroup.php?devid=Screech&amp;devpassword=Screech201601281533y&amp;softname=UniversalXMLScraper(TestDev)&amp;crc=&amp;md5=&amp;sha1=&amp;groupid=8&amp;media=logo-monochrome&amp;mediaformat=png</media_pictomonochrome>
+			</medias>
+		</genre>
+		<genre>
+			<id>33</id>
+			<nom_fr>Jeu de societe / plateau</nom_fr>
+			<nom_de>Brettspiele</nom_de>
+			<nom_en>Board game</nom_en>
+			<nom_es>Juegos de mesa</nom_es>
+			<nom_pt>Jogo de tabuleiro</nom_pt>
+			<parent>0</parent>
+			<medias>
+				<media_pictomonochrome>https://www.screenscraper.fr/api/mediaGroup.php?devid=Screech&amp;devpassword=Screech201601281533y&amp;softname=UniversalXMLScraper(TestDev)&amp;crc=&amp;md5=&amp;sha1=&amp;groupid=33&amp;media=logo-monochrome&amp;mediaformat=png</media_pictomonochrome>
+			</medias>
+		</genre>
+		<genre>
+			<id>2647</id>
+			<nom_fr>Jeu de societe asiatique</nom_fr>
+			<nom_de>Asiatische Brettspiele</nom_de>
+			<nom_en>Asiatic board game</nom_en>
+			<nom_es>Juegos de mesa asiático</nom_es>
+			<nom_pt>Jogo de tabuleiro Asiático</nom_pt>
+			<parent>0</parent>
+			<medias>
+				<media_pictomonochrome>https://www.screenscraper.fr/api/mediaGroup.php?devid=Screech&amp;devpassword=Screech201601281533y&amp;softname=UniversalXMLScraper(TestDev)&amp;crc=&amp;md5=&amp;sha1=&amp;groupid=2647&amp;media=logo-monochrome&amp;mediaformat=png</media_pictomonochrome>
+			</medias>
+		</genre>
+		<genre>
+			<id>30</id>
+			<nom_fr>Ludo-Educatif</nom_fr>
+			<nom_de>Lernspiel</nom_de>
+			<nom_en>Educational</nom_en>
+			<nom_es>Educacional</nom_es>
+			<nom_pt>Educacional</nom_pt>
+			<parent>0</parent>
+			<medias>
+				<media_pictomonochrome>https://www.screenscraper.fr/api/mediaGroup.php?devid=Screech&amp;devpassword=Screech201601281533y&amp;softname=UniversalXMLScraper(TestDev)&amp;crc=&amp;md5=&amp;sha1=&amp;groupid=30&amp;media=logo-monochrome&amp;mediaformat=png</media_pictomonochrome>
+			</medias>
+		</genre>
+		<genre>
+			<id>2869</id>
+			<nom_fr>Mahjong</nom_fr>
+			<nom_de>Mahjong</nom_de>
+			<nom_en>Mahjong</nom_en>
+			<nom_es>Mahjong</nom_es>
+			<nom_pt>Mahjong</nom_pt>
+			<parent>2647</parent>
+		</genre>
+		<genre>
+			<id>425</id>
+			<nom_fr>Musique et Dance</nom_fr>
+			<nom_de>Musik und Tanz</nom_de>
+			<nom_en>Music and Dance</nom_en>
+			<nom_es>Música y Baile</nom_es>
+			<nom_pt>Música e dança</nom_pt>
+			<parent>0</parent>
+			<medias>
+				<media_pictomonochrome>https://www.screenscraper.fr/api/mediaGroup.php?devid=Screech&amp;devpassword=Screech201601281533y&amp;softname=UniversalXMLScraper(TestDev)&amp;crc=&amp;md5=&amp;sha1=&amp;groupid=425&amp;media=logo-monochrome&amp;mediaformat=png</media_pictomonochrome>
+			</medias>
+		</genre>
+		<genre>
+			<id>323</id>
+			<nom_fr>N/A</nom_fr>
+			<nom_de>N/A</nom_de>
+			<nom_en>N/A</nom_en>
+			<nom_es>N/A</nom_es>
+			<nom_pt>N/A</nom_pt>
+			<parent>0</parent>
+			<medias>
+				<media_pictomonochrome>https://www.screenscraper.fr/api/mediaGroup.php?devid=Screech&amp;devpassword=Screech201601281533y&amp;softname=UniversalXMLScraper(TestDev)&amp;crc=&amp;md5=&amp;sha1=&amp;groupid=323&amp;media=logo-monochrome&amp;mediaformat=png</media_pictomonochrome>
+			</medias>
+		</genre>
+		<genre>
+			<id>2949</id>
+			<nom_fr>Othello</nom_fr>
+			<nom_de>Othello</nom_de>
+			<nom_en>Othello</nom_en>
+			<nom_es>Reversi</nom_es>
+			<nom_pt>Othello</nom_pt>
+			<parent>2647</parent>
+		</genre>
+		<genre>
+			<id>2907</id>
+			<nom_fr>Outline</nom_fr>
+			<parent>2843</parent>
+		</genre>
+		<genre>
+			<id>2965</id>
+			<nom_fr>Pachinko</nom_fr>
+			<parent>2857</parent>
+		</genre>
+		<genre>
+			<id>2895</id>
+			<nom_fr>Peche</nom_fr>
+			<nom_de>Angeln</nom_de>
+			<nom_en>Fishing</nom_en>
+			<nom_es>Pesca</nom_es>
+			<nom_pt>Pesca</nom_pt>
+			<parent>2648</parent>
+		</genre>
+		<genre>
+			<id>2857</id>
+			<nom_fr>Pinball</nom_fr>
+			<parent>2848</parent>
+		</genre>
+		<genre>
+			<id>7</id>
+			<nom_fr>Plateforme</nom_fr>
+			<nom_de>Plattform</nom_de>
+			<nom_en>Platform</nom_en>
+			<nom_es>Plataforma</nom_es>
+			<nom_pt>Plataforma</nom_pt>
+			<parent>0</parent>
+			<medias>
+				<media_pictomonochrome>https://www.screenscraper.fr/api/mediaGroup.php?devid=Screech&amp;devpassword=Screech201601281533y&amp;softname=UniversalXMLScraper(TestDev)&amp;crc=&amp;md5=&amp;sha1=&amp;groupid=7&amp;media=logo-monochrome&amp;mediaformat=png</media_pictomonochrome>
+			</medias>
+		</genre>
+		<genre>
+			<id>2896</id>
+			<nom_fr>Plateforme / Fighter Scrolling</nom_fr>
+			<nom_de>Plattform / Kampf Scrolling</nom_de>
+			<nom_en>Plateform / Fighter Scrolling</nom_en>
+			<nom_es>Plataforma / Combate con desplazamiento</nom_es>
+			<nom_pt>Plataforma / Combate com rolagem</nom_pt>
+			<parent>7</parent>
+		</genre>
+		<genre>
+			<id>2915</id>
+			<nom_fr>Plateforme / Run Jump</nom_fr>
+			<nom_de>Plattform / Jump&apos;n&apos;Run</nom_de>
+			<nom_en>Plateform / Run Jump</nom_en>
+			<nom_es>Plataforma / Corre y Salta</nom_es>
+			<nom_pt>Plataforma / Corre e Pula</nom_pt>
+			<parent>7</parent>
+		</genre>
+		<genre>
+			<id>2897</id>
+			<nom_fr>Plateforme / Run Jump Scrolling</nom_fr>
+			<nom_de>Plattform / Jump&apos;n&apos;Run Scrolling</nom_de>
+			<nom_en>Plateform / Run Jump Scrolling</nom_en>
+			<nom_es>Plataforma / Corre y Salta con deslizamiento</nom_es>
+			<nom_pt>Plataforma / Corre e Pula com rolagem</nom_pt>
+			<parent>7</parent>
+		</genre>
+		<genre>
+			<id>2887</id>
+			<nom_fr>Plateforme / Shooter Scrolling</nom_fr>
+			<nom_de>Plattform / Shooter Scrolling</nom_de>
+			<nom_en>Plateform / Shooter Scrolling</nom_en>
+			<nom_es>Plataforma / Tirador con deslizamiento</nom_es>
+			<nom_pt>Plataforma / Tiro com rolagem</nom_pt>
+			<parent>7</parent>
+		</genre>
+		<genre>
+			<id>3237</id>
+			<nom_fr>Point and Click</nom_fr>
+			<nom_de>Point und Klick</nom_de>
+			<nom_en>Point and Click</nom_en>
+			<nom_es>Point and Click</nom_es>
+			<parent>13</parent>
+		</genre>
+		<genre>
+			<id>26</id>
+			<nom_fr>Puzzle-Game</nom_fr>
+			<nom_de>Puzzle</nom_de>
+			<nom_en>Puzzle-Game</nom_en>
+			<nom_es>Rompecabezas</nom_es>
+			<nom_pt>Quebra-cabeças</nom_pt>
+			<parent>0</parent>
+			<medias>
+				<media_pictomonochrome>https://www.screenscraper.fr/api/mediaGroup.php?devid=Screech&amp;devpassword=Screech201601281533y&amp;softname=UniversalXMLScraper(TestDev)&amp;crc=&amp;md5=&amp;sha1=&amp;groupid=26&amp;media=logo-monochrome&amp;mediaformat=png</media_pictomonochrome>
+			</medias>
+		</genre>
+		<genre>
+			<id>2864</id>
+			<nom_fr>Puzzle-Game / Egaler</nom_fr>
+			<nom_de>Puzzle / Partie</nom_de>
+			<nom_en>Puzzle-Game / Equalize</nom_en>
+			<nom_es>Rompecabezas / Igualar</nom_es>
+			<nom_pt>Quebra-cabeças / Igualar</nom_pt>
+			<parent>26</parent>
+		</genre>
+		<genre>
+			<id>2891</id>
+			<nom_fr>Puzzle-Game / Glisser</nom_fr>
+			<nom_de>Puzzle / Gleiten</nom_de>
+			<nom_en>Puzzle-Game / Glide</nom_en>
+			<nom_es>Rompecabezas / Deslizar</nom_es>
+			<nom_pt>Quebra-cabeças / Rolar</nom_pt>
+			<parent>26</parent>
+		</genre>
+		<genre>
+			<id>2923</id>
+			<nom_fr>Puzzle-Game / Lancer</nom_fr>
+			<nom_de>Puzzle / Werfen</nom_de>
+			<nom_en>Puzzle-Game / Throw</nom_en>
+			<nom_es>Rompecabezas / Lanzar</nom_es>
+			<nom_pt>Quebra-cabeças / Lançar</nom_pt>
+			<parent>26</parent>
+		</genre>
+		<genre>
+			<id>2912</id>
+			<nom_fr>Puzzle-Game / Tomber</nom_fr>
+			<nom_de>Puzzle / Fallen</nom_de>
+			<nom_en>Puzzle-Game / Fall</nom_en>
+			<nom_es>Rompecabezas / Caída</nom_es>
+			<nom_pt>Quebra-cabeças / Queda</nom_pt>
+			<parent>26</parent>
+		</genre>
+		<genre>
+			<id>2649</id>
+			<nom_fr>Quiz</nom_fr>
+			<nom_de>Quiz</nom_de>
+			<nom_en>Quiz</nom_en>
+			<nom_es>Quiz</nom_es>
+			<nom_pt>Quiz</nom_pt>
+			<parent>0</parent>
+			<medias>
+				<media_pictomonochrome>https://www.screenscraper.fr/api/mediaGroup.php?devid=Screech&amp;devpassword=Screech201601281533y&amp;softname=UniversalXMLScraper(TestDev)&amp;crc=&amp;md5=&amp;sha1=&amp;groupid=2649&amp;media=logo-monochrome&amp;mediaformat=png</media_pictomonochrome>
+			</medias>
+		</genre>
+		<genre>
+			<id>2954</id>
+			<nom_fr>Quiz / Allemand</nom_fr>
+			<nom_de>Quiz / Deutsch</nom_de>
+			<nom_en>Quiz / German</nom_en>
+			<nom_es>Quiz / Alemán</nom_es>
+			<nom_pt>Quiz / Alemão</nom_pt>
+			<parent>2649</parent>
+		</genre>
+		<genre>
+			<id>2931</id>
+			<nom_fr>Quiz / Anglais</nom_fr>
+			<nom_de>Quiz / Englisch</nom_de>
+			<nom_en>Quiz / English</nom_en>
+			<nom_es>Quiz / Inglés</nom_es>
+			<nom_pt>Quiz / Inglês</nom_pt>
+			<parent>2649</parent>
+		</genre>
+		<genre>
+			<id>2951</id>
+			<nom_fr>Quiz / Coréen</nom_fr>
+			<nom_de>Quiz / Koreanisch</nom_de>
+			<nom_en>Quiz / Korean</nom_en>
+			<nom_es>Quiz / Coreano</nom_es>
+			<nom_pt>Quiz / Coreano</nom_pt>
+			<parent>2649</parent>
+		</genre>
+		<genre>
+			<id>2962</id>
+			<nom_fr>Quiz / Espagnol</nom_fr>
+			<nom_de>Quiz / Spanisch</nom_de>
+			<nom_en>Quiz / Spanish</nom_en>
+			<nom_es>Quiz / Español</nom_es>
+			<nom_pt>Quiz / Espanhol</nom_pt>
+			<parent>2649</parent>
+		</genre>
+		<genre>
+			<id>2969</id>
+			<nom_fr>Quiz / Français</nom_fr>
+			<nom_de>Quiz / Französisches</nom_de>
+			<nom_en>Quiz / French</nom_en>
+			<nom_es>Quiz / Francés</nom_es>
+			<nom_pt>Quiz / Francês</nom_pt>
+			<parent>2649</parent>
+		</genre>
+		<genre>
+			<id>2952</id>
+			<nom_fr>Quiz / Italien</nom_fr>
+			<nom_de>Quiz / Italienisch</nom_de>
+			<nom_en>Quiz / Italian</nom_en>
+			<nom_es>Quiz / Italiano</nom_es>
+			<nom_pt>Quiz / Italiano</nom_pt>
+			<parent>2649</parent>
+		</genre>
+		<genre>
+			<id>2894</id>
+			<nom_fr>Quiz / Japonnais</nom_fr>
+			<nom_de>Quiz / Japanisch</nom_de>
+			<nom_en>Quiz / Japanese</nom_en>
+			<nom_es>Quiz / Japonés</nom_es>
+			<nom_pt>Quiz / Japonês</nom_pt>
+			<parent>2649</parent>
+		</genre>
+		<genre>
+			<id>2964</id>
+			<nom_fr>Quiz / Musical Anglais</nom_fr>
+			<nom_de>Quiz / Englische Musik</nom_de>
+			<nom_en>Quiz / Music English</nom_en>
+			<nom_es>Quiz / Música Inglés</nom_es>
+			<nom_pt>Quiz / Musical Inglês</nom_pt>
+			<parent>2649</parent>
+		</genre>
+		<genre>
+			<id>2967</id>
+			<nom_fr>Quiz / Musical Japonnais</nom_fr>
+			<nom_de>Quiz / Japanische Musik</nom_de>
+			<nom_en>Quiz / Music Japanese</nom_en>
+			<nom_es>Quiz / Música Japonés</nom_es>
+			<nom_pt>Quiz / Musical Japonês</nom_pt>
+			<parent>2649</parent>
+		</genre>
+		<genre>
+			<id>3511</id>
+			<nom_fr>Réflexion</nom_fr>
+			<nom_en>Reflection</nom_en>
+			<nom_es>Reflexión</nom_es>
+			<parent>0</parent>
+		</genre>
+		<genre>
+			<id>2956</id>
+			<nom_fr>Renju</nom_fr>
+			<nom_de>Renju</nom_de>
+			<nom_en>Renju</nom_en>
+			<nom_es>Renju</nom_es>
+			<nom_pt>Renju</nom_pt>
+			<parent>2647</parent>
+		</genre>
+		<genre>
+			<id>2925</id>
+			<nom_fr>Rhythme</nom_fr>
+			<nom_de>Rythmus</nom_de>
+			<nom_en>Rhythm</nom_en>
+			<nom_es>Rítmico</nom_es>
+			<nom_pt>Rítmico</nom_pt>
+			<parent>425</parent>
+		</genre>
+		<genre>
+			<id>79</id>
+			<nom_fr>Shoot&apos;em Up</nom_fr>
+			<nom_de>Shoot&apos;em Up</nom_de>
+			<nom_en>Shoot&apos;em Up</nom_en>
+			<nom_es>Shoot&apos;em Up</nom_es>
+			<nom_pt>Shoot&apos;em Up</nom_pt>
+			<parent>0</parent>
+			<medias>
+				<media_pictomonochrome>https://www.screenscraper.fr/api/mediaGroup.php?devid=Screech&amp;devpassword=Screech201601281533y&amp;softname=UniversalXMLScraper(TestDev)&amp;crc=&amp;md5=&amp;sha1=&amp;groupid=79&amp;media=logo-monochrome&amp;mediaformat=png</media_pictomonochrome>
+			</medias>
+		</genre>
+		<genre>
+			<id>2955</id>
+			<nom_fr>Shoot&apos;em up / Diagonal</nom_fr>
+			<nom_de>Shoot&apos;em Up / Diagonal</nom_de>
+			<nom_en>Shoot&apos;em up / Diagonal</nom_en>
+			<nom_es>Shoot&apos;em Up / Diagonal</nom_es>
+			<nom_pt>Shoot&apos;em Up / Diagonal</nom_pt>
+			<parent>79</parent>
+		</genre>
+		<genre>
+			<id>2870</id>
+			<nom_fr>Shoot&apos;em up / Horizontal</nom_fr>
+			<nom_de>Shoot&apos;em Up / Horizontal</nom_de>
+			<nom_en>Shoot&apos;em up / Horizontal</nom_en>
+			<nom_es>Shoot&apos;em Up / Horizontal</nom_es>
+			<nom_pt>Shoot&apos;em Up / Horizontal</nom_pt>
+			<parent>79</parent>
+		</genre>
+		<genre>
+			<id>2851</id>
+			<nom_fr>Shoot&apos;em up / Vertical</nom_fr>
+			<nom_de>Shoot&apos;em Up / Vertikal</nom_de>
+			<nom_en>Shoot&apos;em up / Vertical</nom_en>
+			<nom_es>Shoot&apos;em Up / Vertical</nom_es>
+			<nom_pt>Shoot&apos;em Up / Vertical</nom_pt>
+			<parent>79</parent>
+		</genre>
+		<genre>
+			<id>2898</id>
+			<nom_fr>Shooter Large</nom_fr>
+			<parent>2843</parent>
+		</genre>
+		<genre>
+			<id>2844</id>
+			<nom_fr>Shooter Small</nom_fr>
+			<parent>2843</parent>
+		</genre>
+		<genre>
+			<id>2961</id>
+			<nom_fr>Shougi</nom_fr>
+			<nom_de>Shougi</nom_de>
+			<nom_en>Shougi</nom_en>
+			<nom_es>Shougi</nom_es>
+			<nom_pt>Shougi</nom_pt>
+			<parent>2647</parent>
+		</genre>
+		<genre>
+			<id>40</id>
+			<nom_fr>Simulation</nom_fr>
+			<nom_de>Simulation</nom_de>
+			<nom_en>Simulation</nom_en>
+			<nom_es>Simulación</nom_es>
+			<nom_pt>Simulação</nom_pt>
+			<parent>0</parent>
+			<medias>
+				<media_pictomonochrome>https://www.screenscraper.fr/api/mediaGroup.php?devid=Screech&amp;devpassword=Screech201601281533y&amp;softname=UniversalXMLScraper(TestDev)&amp;crc=&amp;md5=&amp;sha1=&amp;groupid=40&amp;media=logo-monochrome&amp;mediaformat=png</media_pictomonochrome>
+			</medias>
+		</genre>
+		<genre>
+			<id>685</id>
+			<nom_fr>Sport</nom_fr>
+			<nom_de>Sport</nom_de>
+			<nom_en>Sports</nom_en>
+			<nom_es>Deportes</nom_es>
+			<nom_pt>Esporte</nom_pt>
+			<parent>0</parent>
+			<medias>
+				<media_pictomonochrome>https://www.screenscraper.fr/api/mediaGroup.php?devid=Screech&amp;devpassword=Screech201601281533y&amp;softname=UniversalXMLScraper(TestDev)&amp;crc=&amp;md5=&amp;sha1=&amp;groupid=685&amp;media=logo-monochrome&amp;mediaformat=png</media_pictomonochrome>
+			</medias>
+		</genre>
+		<genre>
+			<id>2853</id>
+			<nom_fr>Sport / Baseball</nom_fr>
+			<nom_de>Sport / Baseball</nom_de>
+			<nom_en>Sports / Baseball</nom_en>
+			<nom_es>Deportes / Béisbol</nom_es>
+			<nom_pt>Esporte / Baseball</nom_pt>
+			<parent>685</parent>
+		</genre>
+		<genre>
+			<id>2852</id>
+			<nom_fr>Sport / Basketball</nom_fr>
+			<nom_de>Sport / Basketball</nom_de>
+			<nom_en>Sports / Basketball</nom_en>
+			<nom_es>Deportes / Baloncesto</nom_es>
+			<nom_pt>Esporte / Basquete</nom_pt>
+			<parent>685</parent>
+		</genre>
+		<genre>
+			<id>3028</id>
+			<nom_fr>Sport / Billard</nom_fr>
+			<nom_de>Sport / Billard</nom_de>
+			<nom_en>Sports / Pool</nom_en>
+			<nom_es>Deportes / Billar</nom_es>
+			<nom_pt>Esporte / Sinuca</nom_pt>
+			<parent>685</parent>
+		</genre>
+		<genre>
+			<id>2901</id>
+			<nom_fr>Sport / Bowling</nom_fr>
+			<nom_de>Sport / Bowling</nom_de>
+			<nom_en>Sports / Bowling</nom_en>
+			<nom_es>Deportes / Bowling</nom_es>
+			<nom_pt>Esporte / Boliche</nom_pt>
+			<parent>685</parent>
+		</genre>
+		<genre>
+			<id>2929</id>
+			<nom_fr>Sport / Boxe</nom_fr>
+			<nom_de>Sport / Boxen</nom_de>
+			<nom_en>Sports / Boxing</nom_en>
+			<nom_es>Deportes / Boxeo</nom_es>
+			<nom_pt>Esporte / Boxe</nom_pt>
+			<parent>685</parent>
+		</genre>
+		<genre>
+			<id>2919</id>
+			<nom_fr>Sport / Bras de fer</nom_fr>
+			<nom_de>Sport / Armdrücken</nom_de>
+			<nom_en>Sports / Arm wrestling</nom_en>
+			<nom_es>Deportes / Pulseta</nom_es>
+			<nom_pt>Esporte / Queda de Braço</nom_pt>
+			<parent>685</parent>
+		</genre>
+		<genre>
+			<id>3034</id>
+			<nom_fr>Sport / Combat</nom_fr>
+			<nom_de>Sport / Kampfsport</nom_de>
+			<nom_en>Sports / Fighting</nom_en>
+			<nom_es>Deportes / Combate</nom_es>
+			<nom_pt>Esporte / Combate</nom_pt>
+			<parent>685</parent>
+		</genre>
+		<genre>
+			<id>2877</id>
+			<nom_fr>Sport / Course a pied</nom_fr>
+			<nom_de>Sport / Traillauf</nom_de>
+			<nom_en>Sports / Running trails</nom_en>
+			<nom_es>Deportes / Carrera en pista</nom_es>
+			<nom_pt>Esporte / Pista de Corrida</nom_pt>
+			<parent>685</parent>
+		</genre>
+		<genre>
+			<id>2970</id>
+			<nom_fr>Sport / Dodgeball</nom_fr>
+			<nom_de>Sport / Völkerball</nom_de>
+			<nom_en>Sports / Dodgeball</nom_en>
+			<nom_es>Deportes / Quemadas</nom_es>
+			<nom_pt>Esporte / Queimada</nom_pt>
+			<parent>685</parent>
+		</genre>
+		<genre>
+			<id>2906</id>
+			<nom_fr>Sport / Flechette</nom_fr>
+			<nom_de>Sport / Darts</nom_de>
+			<nom_en>Sports / Dart</nom_en>
+			<nom_es>Deportes / Dardos</nom_es>
+			<nom_pt>Esporte / Dardos</nom_pt>
+			<parent>685</parent>
+		</genre>
+		<genre>
+			<id>2847</id>
+			<nom_fr>Sport / Football</nom_fr>
+			<nom_de>Sport / Fußball</nom_de>
+			<nom_en>Sports / Soccer</nom_en>
+			<nom_es>Deportes / Fútbol</nom_es>
+			<nom_pt>Esporte / Futebol</nom_pt>
+			<parent>685</parent>
+		</genre>
+		<genre>
+			<id>2846</id>
+			<nom_fr>Sport / Football Américain</nom_fr>
+			<nom_de>Sport / American Football</nom_de>
+			<nom_en>Sports / Football</nom_en>
+			<nom_es>Deportes / Fútbol americano</nom_es>
+			<nom_pt>Esporte / Futebol americano</nom_pt>
+			<parent>685</parent>
+		</genre>
+		<genre>
+			<id>2913</id>
+			<nom_fr>Sport / Golf</nom_fr>
+			<nom_de>Sport / Golf</nom_de>
+			<nom_en>Sports / Golf</nom_en>
+			<nom_es>Deportes / Golf</nom_es>
+			<nom_pt>Esporte / Golfe</nom_pt>
+			<parent>685</parent>
+		</genre>
+		<genre>
+			<id>2960</id>
+			<nom_fr>Sport / Handball</nom_fr>
+			<nom_de>Sport / Handball</nom_de>
+			<nom_en>Sports / Handball</nom_en>
+			<nom_es>Deportes / Balonmano</nom_es>
+			<nom_pt>Esporte / Handball</nom_pt>
+			<parent>685</parent>
+		</genre>
+		<genre>
+			<id>2933</id>
+			<nom_fr>Sport / Hockey</nom_fr>
+			<nom_de>Sport / Eishockey</nom_de>
+			<nom_en>Sports / Hockey</nom_en>
+			<nom_es>Deportes / Hockey</nom_es>
+			<nom_pt>Esporte / Hóquei</nom_pt>
+			<parent>685</parent>
+		</genre>
+		<genre>
+			<id>2971</id>
+			<nom_fr>Sport / Jeu de palet</nom_fr>
+			<nom_de>Sport / Shuffleboard</nom_de>
+			<nom_en>Sports / Shuffleboard</nom_en>
+			<nom_es>Deportes / Shuffleboard</nom_es>
+			<nom_pt>Esporte / Futebol de botão</nom_pt>
+			<parent>685</parent>
+		</genre>
+		<genre>
+			<id>2861</id>
+			<nom_fr>Sport / Lutte</nom_fr>
+			<nom_de>Sport / Wrestling</nom_de>
+			<nom_en>Sports / Wrestling</nom_en>
+			<nom_es>Deportes / Lucha libre</nom_es>
+			<nom_pt>Esporte / Luta Livre</nom_pt>
+			<parent>685</parent>
+		</genre>
+		<genre>
+			<id>2878</id>
+			<nom_fr>Sport / Natation</nom_fr>
+			<nom_de>Sport / Schwimmen</nom_de>
+			<nom_en>Sports / Swimming</nom_en>
+			<nom_es>Deportes / Natación</nom_es>
+			<nom_pt>Esporte / Natação</nom_pt>
+			<parent>685</parent>
+		</genre>
+		<genre>
+			<id>2968</id>
+			<nom_fr>Sport / Parachutisme</nom_fr>
+			<nom_de>Sport / Fallschirmspringen</nom_de>
+			<nom_en>Sports / Skydiving</nom_en>
+			<nom_es>Deportes / Paracaidismo</nom_es>
+			<nom_pt>Esporte / Paraquedismo</nom_pt>
+			<parent>685</parent>
+		</genre>
+		<genre>
+			<id>2966</id>
+			<nom_fr>Sport / Ping pong</nom_fr>
+			<nom_de>Sport / Tischtennis</nom_de>
+			<nom_en>Sports / Table tennis</nom_en>
+			<nom_es>Deportes / Ping-pong</nom_es>
+			<nom_pt>Esporte / Ping-pong</nom_pt>
+			<parent>685</parent>
+		</genre>
+		<genre>
+			<id>2948</id>
+			<nom_fr>Sport / Rugby</nom_fr>
+			<nom_de>Sport / Rugby</nom_de>
+			<nom_en>Sports / Rugby</nom_en>
+			<nom_es>Deportes / Rugby</nom_es>
+			<nom_pt>Esporte / Rugby</nom_pt>
+			<parent>685</parent>
+		</genre>
+		<genre>
+			<id>2875</id>
+			<nom_fr>Sport / Skateboard</nom_fr>
+			<nom_de>Sport / Skateboard</nom_de>
+			<nom_en>Sports / Skateboard</nom_en>
+			<nom_es>Deportes / Patineta</nom_es>
+			<nom_pt>Esporte / Skate</nom_pt>
+			<parent>685</parent>
+		</genre>
+		<genre>
+			<id>2902</id>
+			<nom_fr>Sport / Ski</nom_fr>
+			<nom_de>Sport / Ski</nom_de>
+			<nom_en>Sports / Skiing</nom_en>
+			<nom_es>Deportes / Esquí</nom_es>
+			<nom_pt>Esporte / Esqui</nom_pt>
+			<parent>685</parent>
+		</genre>
+		<genre>
+			<id>2947</id>
+			<nom_fr>Sport / Sumo</nom_fr>
+			<nom_de>Sport / Sumo</nom_de>
+			<nom_en>Sports / Sumo</nom_en>
+			<nom_es>Deportes / Sumo</nom_es>
+			<nom_pt>Esporte / Sumô</nom_pt>
+			<parent>685</parent>
+		</genre>
+		<genre>
+			<id>2867</id>
+			<nom_fr>Sport / Tennis</nom_fr>
+			<nom_de>Sport / Tennis</nom_de>
+			<nom_en>Sports / Tennis</nom_en>
+			<nom_es>Deportes / Tenis</nom_es>
+			<nom_pt>Esporte / Tênis</nom_pt>
+			<parent>685</parent>
+		</genre>
+		<genre>
+			<id>2883</id>
+			<nom_fr>Sport / Volleyball</nom_fr>
+			<nom_de>Sport / Volleyball</nom_de>
+			<nom_en>Sports / Volleyball</nom_en>
+			<nom_es>Deportes / Voleibol</nom_es>
+			<nom_pt>Esporte / Voleibol</nom_pt>
+			<parent>685</parent>
+		</genre>
+		<genre>
+			<id>2650</id>
+			<nom_fr>Sport avec animaux</nom_fr>
+			<nom_de>Sport mit Tieren</nom_de>
+			<nom_en>Sports with Animals</nom_en>
+			<nom_es>Deportes con animales</nom_es>
+			<nom_pt>Esporte com animais</nom_pt>
+			<parent>0</parent>
+			<medias>
+				<media_pictomonochrome>https://www.screenscraper.fr/api/mediaGroup.php?devid=Screech&amp;devpassword=Screech201601281533y&amp;softname=UniversalXMLScraper(TestDev)&amp;crc=&amp;md5=&amp;sha1=&amp;groupid=2650&amp;media=logo-monochrome&amp;mediaformat=png</media_pictomonochrome>
+			</medias>
+		</genre>
+		<genre>
+			<id>27</id>
+			<nom_fr>Stratégie</nom_fr>
+			<nom_de>Strategie</nom_de>
+			<nom_en>Strategy</nom_en>
+			<nom_es>Estrategia</nom_es>
+			<nom_pt>Estratégia</nom_pt>
+			<parent>0</parent>
+			<medias>
+				<media_pictomonochrome>https://www.screenscraper.fr/api/mediaGroup.php?devid=Screech&amp;devpassword=Screech201601281533y&amp;softname=UniversalXMLScraper(TestDev)&amp;crc=&amp;md5=&amp;sha1=&amp;groupid=27&amp;media=logo-monochrome&amp;mediaformat=png</media_pictomonochrome>
+			</medias>
+		</genre>
+		<genre>
+			<id>2927</id>
+			<nom_fr>Surround</nom_fr>
+			<parent>2843</parent>
+		</genre>
+		<genre>
+			<id>2646</id>
+			<nom_fr>Tir</nom_fr>
+			<nom_de>Shooter</nom_de>
+			<nom_en>Shooter</nom_en>
+			<nom_es>Tiro</nom_es>
+			<nom_pt>Tiro</nom_pt>
+			<parent>0</parent>
+			<medias>
+				<media_pictomonochrome>https://www.screenscraper.fr/api/mediaGroup.php?devid=Screech&amp;devpassword=Screech201601281533y&amp;softname=UniversalXMLScraper(TestDev)&amp;crc=&amp;md5=&amp;sha1=&amp;groupid=2646&amp;media=logo-monochrome&amp;mediaformat=png</media_pictomonochrome>
+			</medias>
+		</genre>
+		<genre>
+			<id>3024</id>
+			<nom_fr>Tir / 1ere Personne</nom_fr>
+			<nom_de>Shooter / 1st Pers.</nom_de>
+			<nom_en>Shooter / 1st person</nom_en>
+			<nom_es>Tiro / Tiro 1ª persona</nom_es>
+			<nom_pt>Tiro / Tiro em 1ª pessoa</nom_pt>
+			<parent>2646</parent>
+		</genre>
+		<genre>
+			<id>2899</id>
+			<nom_fr>Tir / 3eme Personne</nom_fr>
+			<nom_de>Shooter / 3rd Pers.</nom_de>
+			<nom_en>Shooter / 3rd person</nom_en>
+			<nom_es>Tiro / Tiro 3ª persona</nom_es>
+			<nom_pt>Tiro / Tiro em 3ª pessoa</nom_pt>
+			<parent>2646</parent>
+		</genre>
+		<genre>
+			<id>2903</id>
+			<nom_fr>Tir / A pied</nom_fr>
+			<nom_de>Shooter / Run and Shoot</nom_de>
+			<nom_en>Shooter / Run and Shoot</nom_en>
+			<nom_es>Tiro / Corre y Dispara</nom_es>
+			<nom_pt>Tiro / Corra e Atire</nom_pt>
+			<parent>2646</parent>
+		</genre>
+		<genre>
+			<id>2928</id>
+			<nom_fr>Tir / Avion</nom_fr>
+			<nom_de>Shooter / Flugzeug</nom_de>
+			<nom_en>Shooter / Plane</nom_en>
+			<nom_es>Tiro / Avión</nom_es>
+			<nom_pt>Tiro / Avião</nom_pt>
+			<parent>2646</parent>
+		</genre>
+		<genre>
+			<id>2892</id>
+			<nom_fr>Tir / Avion, 1ere personne</nom_fr>
+			<nom_de>Shooter / Flugzeug, 1st Pers.</nom_de>
+			<nom_en>Shooter / Plane, 1st person</nom_en>
+			<nom_es>Tiro / Avión, 1ª persona</nom_es>
+			<nom_pt>Tiro / Avião em 1ª pessoa</nom_pt>
+			<parent>2646</parent>
+		</genre>
+		<genre>
+			<id>2881</id>
+			<nom_fr>Tir / Avion, 3eme personne</nom_fr>
+			<nom_de>Shooter / Flugzeug, 3rd Pers.</nom_de>
+			<nom_en>Shooter / Plane, 3rd person</nom_en>
+			<nom_es>Tiro / Avión, 3ª persona</nom_es>
+			<nom_pt>Tiro / Avião em 3ª pessoa</nom_pt>
+			<parent>2646</parent>
+		</genre>
+		<genre>
+			<id>2876</id>
+			<nom_fr>Tir / Horizontal</nom_fr>
+			<nom_de>Shooter / Horizontal</nom_de>
+			<nom_en>Shooter / Horizontal</nom_en>
+			<nom_es>Tiro / Horizontal</nom_es>
+			<nom_pt>Tiro / Horizontal</nom_pt>
+			<parent>2646</parent>
+		</genre>
+		<genre>
+			<id>2945</id>
+			<nom_fr>Tir / Missile Command Like</nom_fr>
+			<nom_de>Shooter / Wie Missile Command</nom_de>
+			<nom_en>Shooter / Missile Command Like</nom_en>
+			<nom_es>Tiro / Como Missile Command</nom_es>
+			<nom_pt>Tiro / Estilo Missile Command</nom_pt>
+			<parent>2646</parent>
+		</genre>
+		<genre>
+			<id>3026</id>
+			<nom_fr>Tir / Run and Gun</nom_fr>
+			<nom_de>Shooter / Run and Gun</nom_de>
+			<nom_en>Shooter / Run and Gun</nom_en>
+			<nom_es>Tiro / Run and Gun</nom_es>
+			<nom_pt>Tiro / Run and Gun</nom_pt>
+			<parent>2646</parent>
+		</genre>
+		<genre>
+			<id>2900</id>
+			<nom_fr>Tir / Space Invaders Like</nom_fr>
+			<nom_de>Shooter / Wie Space Invaders</nom_de>
+			<nom_en>Shooter / Space Invaders Like</nom_en>
+			<nom_es>Tiro / Estilo Space Invader</nom_es>
+			<nom_pt>Tiro / Estilo Space Invader</nom_pt>
+			<parent>2646</parent>
+		</genre>
+		<genre>
+			<id>2940</id>
+			<nom_fr>Tir / Véhicule, 1ere personne</nom_fr>
+			<nom_de>Shooter / Fahrzeug, 1st Pers.</nom_de>
+			<nom_en>Shooter / Vehicle, 1st person</nom_en>
+			<nom_es>Tiro / Vehículo 1ª persona</nom_es>
+			<nom_pt>Tiro / Carro 1ª Pessoa</nom_pt>
+			<parent>2646</parent>
+		</genre>
+		<genre>
+			<id>2910</id>
+			<nom_fr>Tir / Vehicule, 3eme personne</nom_fr>
+			<nom_de>Shooter / Fahrzeug, 3rd. Pers.</nom_de>
+			<nom_en>Shooter / Vehicle, 3rd person</nom_en>
+			<nom_es>Tiro / Vehículo 3ª persona</nom_es>
+			<nom_pt>Tiro / Carro 3ª Pessoa</nom_pt>
+			<parent>2646</parent>
+		</genre>
+		<genre>
+			<id>2934</id>
+			<nom_fr>Tir / Véhicule, Diagonal</nom_fr>
+			<nom_de>Shooter / Fahrzeug, Diagonal</nom_de>
+			<nom_en>Shooter / Vehicle, Diagonal</nom_en>
+			<nom_es>Tiro / Vehículo, Diagonal</nom_es>
+			<nom_pt>Tiro / Carro, Diagonal</nom_pt>
+			<parent>2646</parent>
+		</genre>
+		<genre>
+			<id>2938</id>
+			<nom_fr>Tir / Véhicule, Horizontal</nom_fr>
+			<nom_de>Shooter / Fahrzeug, Horizontal</nom_de>
+			<nom_en>Shooter / Vehicle, Horizontal</nom_en>
+			<nom_es>Tiro / Vehículo, Horizontal</nom_es>
+			<nom_pt>Tiro / Carro, Horizontal</nom_pt>
+			<parent>2646</parent>
+		</genre>
+		<genre>
+			<id>2921</id>
+			<nom_fr>Tir / Véhicule, Vertical</nom_fr>
+			<nom_de>Shooter / Fahrzeug, Vertikal</nom_de>
+			<nom_en>Shooter / Vehicle, Vertical</nom_en>
+			<nom_es>Tiro / Vehículo, Vertical</nom_es>
+			<nom_pt>Tiro / Carro, Vertical</nom_pt>
+			<parent>2646</parent>
+		</genre>
+		<genre>
+			<id>2889</id>
+			<nom_fr>Tir / Vertical</nom_fr>
+			<nom_de>Shooter / Vertikal</nom_de>
+			<nom_en>Shooter / Vertical</nom_en>
+			<nom_es>Tiro / Vertical</nom_es>
+			<nom_pt>Tiro / Vertical</nom_pt>
+			<parent>2646</parent>
+		</genre>
+		<genre>
+			<id>32</id>
+			<nom_fr>Tir avec accessoire</nom_fr>
+			<nom_de>Lightgun Shooter</nom_de>
+			<nom_en>Lightgun Shooter</nom_en>
+			<nom_es>Tiro con accesorios</nom_es>
+			<nom_pt>Tiro com acessórios</nom_pt>
+			<parent>0</parent>
+			<medias>
+				<media_pictomonochrome>https://www.screenscraper.fr/api/mediaGroup.php?devid=Screech&amp;devpassword=Screech201601281533y&amp;softname=UniversalXMLScraper(TestDev)&amp;crc=&amp;md5=&amp;sha1=&amp;groupid=32&amp;media=logo-monochrome&amp;mediaformat=png</media_pictomonochrome>
+			</medias>
+		</genre>
+	</genres>
+</Data>

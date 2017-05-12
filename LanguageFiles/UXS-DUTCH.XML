@@ -300,3 +300,7 @@
 <mess_continue>Wil je doorgaan ?</mess_continue>
 <mess_Yes>Ja</mess_Yes>
 <mess_No>Nee</mess_No>
+
+<mess_filefound_Title>Temporary Files Found</mess_filefound_Title>
+<mess_filefound>Some temporary file where found, do you want to generate an xml file ?</mess_filefound>
+<mess_filefound_Path>Where do you want to store the XML File ?</mess_filefound_Path>

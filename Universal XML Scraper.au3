@@ -532,9 +532,9 @@ While 1
 		Case $B_SCRAPE, $MS_Scrape ;Solo Scrape or Cancel
 
 			If FileExists($iTEMPPath & "\scraped\1.xml") Then
-				If MsgBox($MB_ICONWARNING + $MB_YESNO, "Temporary Files Found", "Some temporary file where found, do you want to generate an xml file ?", 0, $F_UniversalScraper) = $IDYES Then
+				If MsgBox($MB_ICONWARNING + $MB_YESNO, _MultiLang_GetText("mess_filefound_Title"), _MultiLang_GetText("mess_filefound"), 0, $F_UniversalScraper) = $IDYES Then
 					Dim $aConfigTemp[1]
-					$aConfigTemp[0] = FileSaveDialog("Where do you want to store the XML File ?", "", "XML files (*.xml)", BitOR($FD_PATHMUSTEXIST, $FD_PROMPTOVERWRITE), "Restored.xml", $F_UniversalScraper)
+					$aConfigTemp[0] = FileSaveDialog(_MultiLang_GetText("mess_filefound_Path"), "", "XML files (*.xml)", BitOR($FD_PATHMUSTEXIST, $FD_PROMPTOVERWRITE), "Restored.xml", $F_UniversalScraper)
 
 					FileDelete($aConfigTemp[0])
 					_FileCreate($aConfigTemp[0])
