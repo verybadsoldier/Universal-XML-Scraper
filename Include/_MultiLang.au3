@@ -1,4 +1,3 @@
-$__iLineNumber=0
 ;=======================================================
 ;	Name:			MultiLang.au3
 ;	Description:	A way to create multi-language GUIs
@@ -15,11 +14,8 @@ $__iLineNumber=0
 ;	Declare Global Variables
 ;=======================================================
 ;Global Handles
-$__iLineNumber=17 & ' - Global $_gh_aLangFileArray = -1•./Include/_MultiLang.au3'
 Global $_gh_aLangFileArray = -1
-$__iLineNumber=18 & ' - Global $_gh_sLangFileSelected = -1•./Include/_MultiLang.au3'
 Global $_gh_sLangFileSelected = -1
-$__iLineNumber=19 & ' - Global $_gh_sLangFileData = -1•./Include/_MultiLang.au3'
 Global $_gh_sLangFileData = -1
 
 ;=======================================================
@@ -42,17 +38,11 @@ Global $_gh_sLangFileData = -1
 ;	Website:		http://www.signa5.com
 ;	Last Updated:	14 August 2010
 ;=======================================================
-$__iLineNumber=41 & ' - Func _MultiLang_SetFileInfo($aLangFileArray)•./Include/_MultiLang.au3'
 Func _MultiLang_SetFileInfo($aLangFileArray)
-	$__iLineNumber=42 & ' - If IsArray($aLangFileArray) = 0 Then Return SetError(1, 0, 0 ...•./Include/_MultiLang.au3'
 	If IsArray($aLangFileArray) = 0 Then Return SetError(1, 0, 0)
-	$__iLineNumber=43 & ' - If UBound($aLangFileArray, 0) <> 2 Then Return SetError(2, 0 ...•./Include/_MultiLang.au3'
 	If UBound($aLangFileArray, 0) <> 2 Then Return SetError(2, 0, 0)
-	$__iLineNumber=44 & ' - If UBound($aLangFileArray, 2) <> 3 Then Return SetError(2, 0 ...•./Include/_MultiLang.au3'
 	If UBound($aLangFileArray, 2) <> 3 Then Return SetError(2, 0, 0)
-	$__iLineNumber=45 & ' - $_gh_aLangFileArray = $aLangFileArray•./Include/_MultiLang.au3'
 	$_gh_aLangFileArray = $aLangFileArray
-	$__iLineNumber=46 & ' - Return 1•./Include/_MultiLang.au3'
 	Return 1
 EndFunc   ;==>_MultiLang_SetFileInfo
 
@@ -75,38 +65,24 @@ EndFunc   ;==>_MultiLang_SetFileInfo
 ;	Website:		http://www.signa5.com
 ;	Last Updated:	14 August 2010
 ;=======================================================
-$__iLineNumber=68 & ' - Func _MultiLang_LoadLangFile($nLangCode)•./Include/_MultiLang.au3'
 Func _MultiLang_LoadLangFile($nLangCode)
-	$__iLineNumber=69 & ' - Local $ret = 1•./Include/_MultiLang.au3'
 	Local $ret = 1
-	$__iLineNumber=70 & ' - $_gh_sLangFileSelected = -1•./Include/_MultiLang.au3'
 	$_gh_sLangFileSelected = -1
-	$__iLineNumber=71 & ' - If $_gh_aLangFileArray = -1 Then Return SetError(1, 0, 0)•./Include/_MultiLang.au3'
 	If $_gh_aLangFileArray = -1 Then Return SetError(1, 0, 0)
-	$__iLineNumber=72 & ' - If IsArray($_gh_aLangFileArray) = 0 Then Return SetError(1,  ...•./Include/_MultiLang.au3'
 	If IsArray($_gh_aLangFileArray) = 0 Then Return SetError(1, 0, 0)
-	$__iLineNumber=73 & ' - For $i = 0 To UBound($_gh_aLangFileArray) - 1•./Include/_MultiLang.au3'
 	For $i = 0 To UBound($_gh_aLangFileArray) - 1
-		$__iLineNumber=74 & ' - If StringInStr($_gh_aLangFileArray[$i][2], $nLangCode) Then•./Include/_MultiLang.au3'
 		If StringInStr($_gh_aLangFileArray[$i][2], $nLangCode) Then
-			$__iLineNumber=75 & ' - $_gh_sLangFileSelected = $_gh_aLangFileArray[$i][1]•./Include/_MultiLang.au3'
 			$_gh_sLangFileSelected = $_gh_aLangFileArray[$i][1]
 			ExitLoop
 		EndIf
 	Next
-	$__iLineNumber=79 & ' - If $_gh_sLangFileSelected == -1 Then•./Include/_MultiLang.au3'
 	If $_gh_sLangFileSelected == -1 Then
-		$__iLineNumber=80 & ' - $_gh_sLangFileSelected = $_gh_aLangFileArray[0][1]•./Include/_MultiLang.au3'
 		$_gh_sLangFileSelected = $_gh_aLangFileArray[0][1]
-		$__iLineNumber=81 & ' - $ret = 2 ;Lets user know we loaded the default•./Include/_MultiLang.au3'
 		$ret = 2 ;Lets user know we loaded the default
 	EndIf
 
-	$__iLineNumber=84 & ' - $_gh_sLangFileData = FileRead($_gh_sLangFileSelected)•./Include/_MultiLang.au3'
 	$_gh_sLangFileData = FileRead($_gh_sLangFileSelected)
-	$__iLineNumber=85 & ' - If @error Then Return SetError(2, 0, 0)•./Include/_MultiLang.au3'
 	If @error Then Return SetError(2, 0, 0)
-	$__iLineNumber=86 & ' - Return $ret•./Include/_MultiLang.au3'
 	Return $ret
 EndFunc   ;==>_MultiLang_LoadLangFile
 
@@ -138,33 +114,20 @@ EndFunc   ;==>_MultiLang_LoadLangFile
 ;	Website:		http://www.signa5.com
 ;	Last Updated:	14 August 2010
 ;=======================================================
-$__iLineNumber=117 & ' - Func _MultiLang_GetText($sControl, $multiline = 1, $default  ...•./Include/_MultiLang.au3'
 Func _MultiLang_GetText($sControl, $multiline = 1, $default = "Unknown Text")
-	$__iLineNumber=118 & ' - If $_gh_aLangFileArray = -1 Then Return SetError(1, 0, 0)•./Include/_MultiLang.au3'
 	If $_gh_aLangFileArray = -1 Then Return SetError(1, 0, 0)
-	$__iLineNumber=119 & ' - If IsArray($_gh_aLangFileArray) = 0 Then Return SetError(1,  ...•./Include/_MultiLang.au3'
 	If IsArray($_gh_aLangFileArray) = 0 Then Return SetError(1, 0, 0)
-	$__iLineNumber=120 & ' - If $_gh_sLangFileData = -1 Then Return SetError(2, 0, 0)•./Include/_MultiLang.au3'
 	If $_gh_sLangFileData = -1 Then Return SetError(2, 0, 0)
-	$__iLineNumber=121 & ' - Local $a_ret = StringRegExp($_gh_sLangFileData, "<(?i)" & $s ...•./Include/_MultiLang.au3'
 	Local $a_ret = StringRegExp($_gh_sLangFileData, '<(?i)' & $sControl & '>(.*?)</(?i)' & $sControl & '>', 3)
-	$__iLineNumber=122 & ' - If Not @error Then•./Include/_MultiLang.au3'
 	If Not @error Then
-		$__iLineNumber=123 & ' - $a_ret = StringStripWS($a_ret[0], 2)•./Include/_MultiLang.au3'
 		$a_ret = StringStripWS($a_ret[0], 2)
-		$__iLineNumber=124 & ' - If $multiline = 1 Then•./Include/_MultiLang.au3'
 		If $multiline = 1 Then
-			$__iLineNumber=125 & ' - $a_ret = StringReplace($a_ret, "@CRLF", @CRLF)•./Include/_MultiLang.au3'
 			$a_ret = StringReplace($a_ret, "@CRLF", @CRLF)
-			$__iLineNumber=126 & ' - $a_ret = StringReplace($a_ret, "@LF", @LF)•./Include/_MultiLang.au3'
 			$a_ret = StringReplace($a_ret, "@LF", @LF)
-			$__iLineNumber=127 & ' - $a_ret = StringReplace($a_ret, "@CR", @CR)•./Include/_MultiLang.au3'
 			$a_ret = StringReplace($a_ret, "@CR", @CR)
 		EndIf
-		$__iLineNumber=129 & ' - Return $a_ret•./Include/_MultiLang.au3'
 		Return $a_ret
 	EndIf
-	$__iLineNumber=131 & ' - Return SetError (3, 0, $default)•./Include/_MultiLang.au3'
 	Return SetError (3, 0, $default)
 EndFunc   ;==>_MultiLang_GetText
 
@@ -187,54 +150,34 @@ EndFunc   ;==>_MultiLang_GetText
 ;	Website:		http://www.signa5.com
 ;	Last Updated:	14 August 2010
 ;=======================================================
-$__iLineNumber=153 & ' - Func _MultiLang_SelectGUI($title, $text, $default = @OSLang)•./Include/_MultiLang.au3'
 Func _MultiLang_SelectGUI($title, $text, $default = @OSLang)
-	$__iLineNumber=154 & ' - If $_gh_aLangFileArray = -1 Then Return SetError(1, 0, 0)•./Include/_MultiLang.au3'
 	If $_gh_aLangFileArray = -1 Then Return SetError(1, 0, 0)
-	$__iLineNumber=155 & ' - If IsArray($_gh_aLangFileArray) = 0 Then Return SetError(1,  ...•./Include/_MultiLang.au3'
 	If IsArray($_gh_aLangFileArray) = 0 Then Return SetError(1, 0, 0)
-	$__iLineNumber=156 & ' - $_multilang_gui_GUI = GUICreate($title, 230, 100)•./Include/_MultiLang.au3'
 	$_multilang_gui_GUI = GUICreate($title, 230, 100)
-	$__iLineNumber=157 & ' - $_multilang_gui_Combo = GUICtrlCreateCombo("(Select A Langua ...•./Include/_MultiLang.au3'
 	$_multilang_gui_Combo = GUICtrlCreateCombo("(Select A Language)", 8, 48, 209, 25, 0x0003)
-	$__iLineNumber=158 & ' - $_multilang_gui_Button = GUICtrlCreateButton("Select", 144,  ...•./Include/_MultiLang.au3'
 	$_multilang_gui_Button = GUICtrlCreateButton("Select", 144, 72, 75, 25)
-	$__iLineNumber=159 & ' - $_multilang_gui_Label = GUICtrlCreateLabel($text, 8, 8, 212, ...•./Include/_MultiLang.au3'
 	$_multilang_gui_Label = GUICtrlCreateLabel($text, 8, 8, 212, 33)
 
 	;Create List of available languages
-	$__iLineNumber=162 & ' - For $i = 0 To UBound($_gh_aLangFileArray) - 1•./Include/_MultiLang.au3'
 	For $i = 0 To UBound($_gh_aLangFileArray) - 1
-		$__iLineNumber=163 & ' - GUICtrlSetData($_multilang_gui_Combo, $_gh_aLangFileArray[$i ...•./Include/_MultiLang.au3'
 		GUICtrlSetData($_multilang_gui_Combo, $_gh_aLangFileArray[$i][0], "(Select A Language)")
 	Next
 
-	$__iLineNumber=166 & ' - GUISetState(@SW_SHOW)•./Include/_MultiLang.au3'
 	GUISetState(@SW_SHOW)
-	$__iLineNumber=167 & ' - While 1•./Include/_MultiLang.au3'
 	While 1
-		$__iLineNumber=168 & ' - $nMsg = GUIGetMsg()•./Include/_MultiLang.au3'
 		$nMsg = GUIGetMsg()
-		$__iLineNumber=169 & ' - Switch $nMsg•./Include/_MultiLang.au3'
-		$__iLineNumber=170 & ' - Case -3, $_multilang_gui_Button•./Include/_MultiLang.au3'
 		Switch $nMsg
 			Case -3, $_multilang_gui_Button
 				ExitLoop
 		EndSwitch
 	WEnd
-	$__iLineNumber=174 & ' - $_selected = GUICtrlRead ($_multilang_gui_Combo)•./Include/_MultiLang.au3'
 	$_selected = GUICtrlRead ($_multilang_gui_Combo)
-	$__iLineNumber=175 & ' - GUIDelete ($_multilang_gui_GUI)•./Include/_MultiLang.au3'
 	GUIDelete ($_multilang_gui_GUI)
-	$__iLineNumber=176 & ' - For $i = 0 To UBound($_gh_aLangFileArray) - 1•./Include/_MultiLang.au3'
 	For $i = 0 To UBound($_gh_aLangFileArray) - 1
-		$__iLineNumber=177 & ' - If StringInStr ($_gh_aLangFileArray[$i][0], $_selected) Then•./Include/_MultiLang.au3'
 		If StringInStr ($_gh_aLangFileArray[$i][0], $_selected) Then
-			$__iLineNumber=178 & ' - Return StringLeft ($_gh_aLangFileArray[$i][2], 4)•./Include/_MultiLang.au3'
 			Return StringLeft ($_gh_aLangFileArray[$i][2], 4)
 		EndIf
 	Next
-	$__iLineNumber=181 & ' - Return $default•./Include/_MultiLang.au3'
 	Return $default
 EndFunc   ;==>_MultiLang_SelectGUI
 
@@ -248,12 +191,8 @@ EndFunc   ;==>_MultiLang_SelectGUI
 ;	Website:		http://www.signa5.com
 ;	Last Updated:	14 August 2010
 ;=======================================================
-$__iLineNumber=194 & ' - Func _MultiLang_Close()•./Include/_MultiLang.au3'
 Func _MultiLang_Close()
-	$__iLineNumber=195 & ' - $_gh_aLangFileArray = -1•./Include/_MultiLang.au3'
 	$_gh_aLangFileArray = -1
-	$__iLineNumber=196 & ' - $_gh_sLangFileSelected = -1•./Include/_MultiLang.au3'
 	$_gh_sLangFileSelected = -1
-	$__iLineNumber=197 & ' - $_gh_sLangFileData = -1•./Include/_MultiLang.au3'
 	$_gh_sLangFileData = -1
 EndFunc   ;==>_MultiLang_Close

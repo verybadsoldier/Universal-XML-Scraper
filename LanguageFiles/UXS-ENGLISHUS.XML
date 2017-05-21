@@ -53,6 +53,8 @@
 		<mnu_cfg_config_Option>Options</mnu_cfg_config_Option>
 		<mnu_cfg_config_PIC>Pictures configuration</mnu_cfg_config_PIC>
 		<mnu_cfg_config_autoconf>Autoconfiguration Path configuration</mnu_cfg_config_autoconf>
+		<mnu_cfg_config_reset_autoconf>Reset default autoconfiguration Path</mnu_cfg_config_reset_autoconf>
+		<mnu_cfg_config_alt_autoconf>Use alt autoconfiguration Path</mnu_cfg_config_alt_autoconf>
 		<mnu_cfg_profil>Change your profil</mnu_cfg_profil>
 		<mnu_cfg_miximage>Change your Mix Images profil</mnu_cfg_miximage>
 		<mnu_cfg_download_miximage>Download Mix Images profil</mnu_cfg_download_miximage>

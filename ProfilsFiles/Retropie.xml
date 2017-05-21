@@ -2,10 +2,10 @@
 	<General>
 		<Source_Image>Retropie.jpg</Source_Image>
 		<UpperCase>True</UpperCase>
-		<Mix>False</Mix>
-		<Target_Image_Extension>jpg</Target_Image_Extension>
-		<Target_Image_Width>640</Target_Image_Width>
-		<Target_Image_Height>480</Target_Image_Height>
+		<Mix>True</Mix>
+		<Target_Image_Extension>png</Target_Image_Extension>
+		<Target_Image_Width>600</Target_Image_Width>
+		<Target_Image_Height>400</Target_Image_Height>
 		<Research>*.32x;*.a26;*.a52;*.a78;*.adf;*.adz;*.asc;*.atr;*.atr.gz;*.bas;*.bat;*.bin;*.bz2;*.cas;*.cbn;*.ccc;*.ccd;*.cdi;*.cdt;*.chd;*.col;*.com;*.cpc;*.crt;*.cso;*.ctr;*.cue;*.d64;*.dcm;*.dmk;*.dms;*.dsk;*.dump;*.exe;*.fba;*.fds;*.fig;*.g64;*.gam;*.gb;*.gba;*.gbc;*.gdi;*.gen;*.gg;*.gz;*.ima;*.img;*.int;*.ipf;*.iso;*.j64;*.jag;*.jvc;*.lnx;*.m3u;*.md;*.mdf;*.mgd;*.mgt;*.mx1;*.mx2;*.n64;*.nds;*.nes;*.ngc;*.ngp;*.nib;*.os9;*.pbp;*.pce;*.po;*.prg;*.raw;*.rom;*.sad;*.sbt;*.scl;*.sfc;*.sg;*.sh;*.smc;*.smd;*.sms;*.sna;*.st;*.stx;*.swc;*.szx;*.t64;*.tap;*.toc;*.trd;*.tzx;*.udi;*.v64;*.vb;*.vdk;*.vec;*.vsf;*.wav;*.ws;*.wsc;*.x64;*.xex;*.xfd;*.xfd.gz;*.z;*.z2;*.z64;*.z80;*.zip;*.znx||</Research>
 	</General>
 	<DefaultAutoConf>
@@ -15,6 +15,13 @@
 		<Source_ImagePath>%host%\configs\all\emulationstation\downloaded_images\%System%</Source_ImagePath>
 		<Target_ImagePath>/home/pi/.emulationstation/downloaded_images/%system%/</Target_ImagePath>
 	</DefaultAutoConf>
+	<AltAutoConf>  
+		<Source_RootPath>\\retropie\roms</Source_RootPath>  
+		<Target_XMLName>%Source_RootPath%\%system%\gamelist.xml</Target_XMLName>  
+		<Target_RomPath>./</Target_RomPath>
+		<Source_ImagePath>%Source_RootPath%\%system%\downloaded_images</Source_ImagePath>
+		<Target_ImagePath>./downloaded_images/</Target_ImagePath>
+	</AltAutoConf>
 	<AutoConf>
 		<Source_RootPath>\\retropie\roms</Source_RootPath>
 		<Target_XMLName>%host%\configs\all\emulationstation\gamelists\%System%\gamelist.xml</Target_XMLName>
@@ -113,7 +120,7 @@
 		<Source_Download_Path>%Local_Path_File%</Source_Download_Path>
 		<Source_Download_Tag>-marquee</Source_Download_Tag>
 		<Source_Download_Ext>jpg</Source_Download_Ext>
-		<Source_Value>None</Source_Value>
+		<Source_Value>Data/jeu/medias/media_fanart</Source_Value>
 		<Target_Type>XML_Path</Target_Type>
 		<Target_Path_Type>%XML_Path_File%</Target_Path_Type>
 		<Target_Value>game/marquee</Target_Value>
@@ -123,7 +130,7 @@
 		<Source_Download_Path>%Local_Path_File%</Source_Download_Path>
 		<Source_Download_Tag>-video</Source_Download_Tag>
 		<Source_Download_Ext>mp4</Source_Download_Ext>
-		<Source_Value>None</Source_Value>
+		<Source_Value>Data/jeu/medias/media_video</Source_Value>
 		<Target_Type>XML_Path</Target_Type>
 		<Target_Path_Type>%XML_Path_File%</Target_Path_Type>
 		<Target_Value>game/video</Target_Value>

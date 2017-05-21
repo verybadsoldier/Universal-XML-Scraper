@@ -16,7 +16,7 @@
 		<Target_ImagePath>./downloaded_images/</Target_ImagePath>
 	</DefaultAutoConf>
 	<AutoConf>
-		<Source_RootPath>Y:\Roms TEST</Source_RootPath>
+		<Source_RootPath>\\RECALBOX\share\roms</Source_RootPath>
 		<Target_XMLName>%Source_RootPath%\%system%\gamelist.xml</Target_XMLName>
 		<Target_RomPath>./</Target_RomPath>
 		<Source_ImagePath>%Source_RootPath%\%system%\downloaded_images</Source_ImagePath>

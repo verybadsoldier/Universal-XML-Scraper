@@ -1,4 +1,3 @@
-Global $__iLineNumber=0
 
 ; For those who would fear the license - don't. I tried to license it as liberal as possible.
 ; It really means you can do what ever you want with this.
@@ -6,841 +5,446 @@ Global $__iLineNumber=0
 ; Thank you for the shiny stuff :kiss:
 
 #comments-start
-	$__iLineNumber=8 & ' - Copyright 2013 Dragana R. <trancexx at yahoo dot com>•'
 	Copyright 2013 Dragana R. <trancexx at yahoo dot com>
 
-	$__iLineNumber=10 & ' - Licensed under the Apache License, Version 2.0 (the "License ...•'
 	Licensed under the Apache License, Version 2.0 (the "License");
-	$__iLineNumber=11 & ' - you may not use this file except in compliance with the Lice ...•'
 	you may not use this file except in compliance with the License.
-	$__iLineNumber=12 & ' - You may obtain a copy of the License at•'
 	You may obtain a copy of the License at
 
-	$__iLineNumber=14 & ' - http://www.apache.org/licenses/LICENSE-2.0•'
 	http://www.apache.org/licenses/LICENSE-2.0
 
-	$__iLineNumber=16 & ' - Unless required by applicable law or agreed to in writing, s ...•'
 	Unless required by applicable law or agreed to in writing, software
-	$__iLineNumber=17 & ' - distributed under the License is distributed on an "AS IS" B ...•'
 	distributed under the License is distributed on an "AS IS" BASIS,
-	$__iLineNumber=18 & ' - WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express ...•'
 	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	$__iLineNumber=19 & ' - See the License for the specific language governing permissi ...•'
 	See the License for the specific language governing permissions and
-	$__iLineNumber=20 & ' - limitations under the License.•'
 	limitations under the License.
 #comments-end
 
 #include-once
 
-$__iLineNumber=25 & ' - Global Const $INTERNET_DEFAULT_PORT = 0•'
 Global Const $INTERNET_DEFAULT_PORT = 0
-$__iLineNumber=26 & ' - Global Const $INTERNET_DEFAULT_HTTP_PORT = 80•'
 Global Const $INTERNET_DEFAULT_HTTP_PORT = 80
-$__iLineNumber=27 & ' - Global Const $INTERNET_DEFAULT_HTTPS_PORT = 443•'
 Global Const $INTERNET_DEFAULT_HTTPS_PORT = 443
 
-$__iLineNumber=29 & ' - Global Const $INTERNET_SCHEME_HTTP = 1•'
 Global Const $INTERNET_SCHEME_HTTP = 1
-$__iLineNumber=30 & ' - Global Const $INTERNET_SCHEME_HTTPS = 2•'
 Global Const $INTERNET_SCHEME_HTTPS = 2
-$__iLineNumber=31 & ' - Global Const $INTERNET_SCHEME_FTP = 3•'
 Global Const $INTERNET_SCHEME_FTP = 3
 
-$__iLineNumber=33 & ' - Global Const $ICU_ESCAPE = 0x80000000•'
 Global Const $ICU_ESCAPE = 0x80000000
 
 ; For WinHttpOpen
-$__iLineNumber=36 & ' - Global Const $WINHTTP_FLAG_ASYNC = 0x10000000•'
 Global Const $WINHTTP_FLAG_ASYNC = 0x10000000
 
 ; For WinHttpOpenRequest  ;
-$__iLineNumber=39 & ' - Global Const $WINHTTP_FLAG_ESCAPE_PERCENT = 0x00000004•'
 Global Const $WINHTTP_FLAG_ESCAPE_PERCENT = 0x00000004
-$__iLineNumber=40 & ' - Global Const $WINHTTP_FLAG_NULL_CODEPAGE = 0x00000008•'
 Global Const $WINHTTP_FLAG_NULL_CODEPAGE = 0x00000008
-$__iLineNumber=41 & ' - Global Const $WINHTTP_FLAG_ESCAPE_DISABLE = 0x00000040•'
 Global Const $WINHTTP_FLAG_ESCAPE_DISABLE = 0x00000040
-$__iLineNumber=42 & ' - Global Const $WINHTTP_FLAG_ESCAPE_DISABLE_QUERY = 0x00000080•'
 Global Const $WINHTTP_FLAG_ESCAPE_DISABLE_QUERY = 0x00000080
-$__iLineNumber=43 & ' - Global Const $WINHTTP_FLAG_BYPASS_PROXY_CACHE = 0x00000100•'
 Global Const $WINHTTP_FLAG_BYPASS_PROXY_CACHE = 0x00000100
-$__iLineNumber=44 & ' - Global Const $WINHTTP_FLAG_REFRESH = $WINHTTP_FLAG_BYPASS_PR ...•'
 Global Const $WINHTTP_FLAG_REFRESH = $WINHTTP_FLAG_BYPASS_PROXY_CACHE
-$__iLineNumber=45 & ' - Global Const $WINHTTP_FLAG_SECURE = 0x00800000•'
 Global Const $WINHTTP_FLAG_SECURE = 0x00800000
 
-$__iLineNumber=47 & ' - Global Const $WINHTTP_ACCESS_TYPE_DEFAULT_PROXY = 0•'
 Global Const $WINHTTP_ACCESS_TYPE_DEFAULT_PROXY = 0
-$__iLineNumber=48 & ' - Global Const $WINHTTP_ACCESS_TYPE_NO_PROXY = 1•'
 Global Const $WINHTTP_ACCESS_TYPE_NO_PROXY = 1
-$__iLineNumber=49 & ' - Global Const $WINHTTP_ACCESS_TYPE_NAMED_PROXY = 3•'
 Global Const $WINHTTP_ACCESS_TYPE_NAMED_PROXY = 3
 
-$__iLineNumber=51 & ' - Global Const $WINHTTP_NO_PROXY_NAME = ""•'
 Global Const $WINHTTP_NO_PROXY_NAME = ""
-$__iLineNumber=52 & ' - Global Const $WINHTTP_NO_PROXY_BYPASS = ""•'
 Global Const $WINHTTP_NO_PROXY_BYPASS = ""
 
-$__iLineNumber=54 & ' - Global Const $WINHTTP_NO_REFERER = ""•'
 Global Const $WINHTTP_NO_REFERER = ""
-$__iLineNumber=55 & ' - Global Const $WINHTTP_DEFAULT_ACCEPT_TYPES = 0•'
 Global Const $WINHTTP_DEFAULT_ACCEPT_TYPES = 0
 
-$__iLineNumber=57 & ' - Global Const $WINHTTP_NO_ADDITIONAL_HEADERS = ""•'
 Global Const $WINHTTP_NO_ADDITIONAL_HEADERS = ""
-$__iLineNumber=58 & ' - Global Const $WINHTTP_NO_REQUEST_DATA = ""•'
 Global Const $WINHTTP_NO_REQUEST_DATA = ""
 
-$__iLineNumber=60 & ' - Global Const $WINHTTP_HEADER_NAME_BY_INDEX = ""•'
 Global Const $WINHTTP_HEADER_NAME_BY_INDEX = ""
-$__iLineNumber=61 & ' - Global Const $WINHTTP_NO_OUTPUT_BUFFER = 0•'
 Global Const $WINHTTP_NO_OUTPUT_BUFFER = 0
-$__iLineNumber=62 & ' - Global Const $WINHTTP_NO_HEADER_INDEX = 0•'
 Global Const $WINHTTP_NO_HEADER_INDEX = 0
 
-$__iLineNumber=64 & ' - Global Const $WINHTTP_ADDREQ_INDEX_MASK = 0x0000FFFF•'
 Global Const $WINHTTP_ADDREQ_INDEX_MASK = 0x0000FFFF
-$__iLineNumber=65 & ' - Global Const $WINHTTP_ADDREQ_FLAGS_MASK = 0xFFFF0000•'
 Global Const $WINHTTP_ADDREQ_FLAGS_MASK = 0xFFFF0000
-$__iLineNumber=66 & ' - Global Const $WINHTTP_ADDREQ_FLAG_ADD_IF_NEW = 0x10000000•'
 Global Const $WINHTTP_ADDREQ_FLAG_ADD_IF_NEW = 0x10000000
-$__iLineNumber=67 & ' - Global Const $WINHTTP_ADDREQ_FLAG_ADD = 0x20000000•'
 Global Const $WINHTTP_ADDREQ_FLAG_ADD = 0x20000000
-$__iLineNumber=68 & ' - Global Const $WINHTTP_ADDREQ_FLAG_COALESCE_WITH_COMMA = 0x40 ...•'
 Global Const $WINHTTP_ADDREQ_FLAG_COALESCE_WITH_COMMA = 0x40000000
-$__iLineNumber=69 & ' - Global Const $WINHTTP_ADDREQ_FLAG_COALESCE_WITH_SEMICOLON =  ...•'
 Global Const $WINHTTP_ADDREQ_FLAG_COALESCE_WITH_SEMICOLON = 0x01000000
-$__iLineNumber=70 & ' - Global Const $WINHTTP_ADDREQ_FLAG_COALESCE = $WINHTTP_ADDREQ ...•'
 Global Const $WINHTTP_ADDREQ_FLAG_COALESCE = $WINHTTP_ADDREQ_FLAG_COALESCE_WITH_COMMA
-$__iLineNumber=71 & ' - Global Const $WINHTTP_ADDREQ_FLAG_REPLACE = 0x80000000•'
 Global Const $WINHTTP_ADDREQ_FLAG_REPLACE = 0x80000000
 
-$__iLineNumber=73 & ' - Global Const $WINHTTP_IGNORE_REQUEST_TOTAL_LENGTH = 0•'
 Global Const $WINHTTP_IGNORE_REQUEST_TOTAL_LENGTH = 0
 
 ; For WinHttp{Set and Query} Options  ;
-$__iLineNumber=76 & ' - Global Const $WINHTTP_OPTION_CALLBACK = 1•'
 Global Const $WINHTTP_OPTION_CALLBACK = 1
-$__iLineNumber=77 & ' - Global Const $WINHTTP_FIRST_OPTION = $WINHTTP_OPTION_CALLBAC ...•'
 Global Const $WINHTTP_FIRST_OPTION = $WINHTTP_OPTION_CALLBACK
-$__iLineNumber=78 & ' - Global Const $WINHTTP_OPTION_RESOLVE_TIMEOUT = 2•'
 Global Const $WINHTTP_OPTION_RESOLVE_TIMEOUT = 2
-$__iLineNumber=79 & ' - Global Const $WINHTTP_OPTION_CONNECT_TIMEOUT = 3•'
 Global Const $WINHTTP_OPTION_CONNECT_TIMEOUT = 3
-$__iLineNumber=80 & ' - Global Const $WINHTTP_OPTION_CONNECT_RETRIES = 4•'
 Global Const $WINHTTP_OPTION_CONNECT_RETRIES = 4
-$__iLineNumber=81 & ' - Global Const $WINHTTP_OPTION_SEND_TIMEOUT = 5•'
 Global Const $WINHTTP_OPTION_SEND_TIMEOUT = 5
-$__iLineNumber=82 & ' - Global Const $WINHTTP_OPTION_RECEIVE_TIMEOUT = 6•'
 Global Const $WINHTTP_OPTION_RECEIVE_TIMEOUT = 6
-$__iLineNumber=83 & ' - Global Const $WINHTTP_OPTION_RECEIVE_RESPONSE_TIMEOUT = 7•'
 Global Const $WINHTTP_OPTION_RECEIVE_RESPONSE_TIMEOUT = 7
-$__iLineNumber=84 & ' - Global Const $WINHTTP_OPTION_HANDLE_TYPE = 9•'
 Global Const $WINHTTP_OPTION_HANDLE_TYPE = 9
-$__iLineNumber=85 & ' - Global Const $WINHTTP_OPTION_READ_BUFFER_SIZE = 12•'
 Global Const $WINHTTP_OPTION_READ_BUFFER_SIZE = 12
-$__iLineNumber=86 & ' - Global Const $WINHTTP_OPTION_WRITE_BUFFER_SIZE = 13•'
 Global Const $WINHTTP_OPTION_WRITE_BUFFER_SIZE = 13
-$__iLineNumber=87 & ' - Global Const $WINHTTP_OPTION_PARENT_HANDLE = 21•'
 Global Const $WINHTTP_OPTION_PARENT_HANDLE = 21
-$__iLineNumber=88 & ' - Global Const $WINHTTP_OPTION_EXTENDED_ERROR = 24•'
 Global Const $WINHTTP_OPTION_EXTENDED_ERROR = 24
-$__iLineNumber=89 & ' - Global Const $WINHTTP_OPTION_SECURITY_FLAGS = 31•'
 Global Const $WINHTTP_OPTION_SECURITY_FLAGS = 31
-$__iLineNumber=90 & ' - Global Const $WINHTTP_OPTION_SECURITY_CERTIFICATE_STRUCT = 3 ...•'
 Global Const $WINHTTP_OPTION_SECURITY_CERTIFICATE_STRUCT = 32
-$__iLineNumber=91 & ' - Global Const $WINHTTP_OPTION_URL = 34•'
 Global Const $WINHTTP_OPTION_URL = 34
-$__iLineNumber=92 & ' - Global Const $WINHTTP_OPTION_SECURITY_KEY_BITNESS = 36•'
 Global Const $WINHTTP_OPTION_SECURITY_KEY_BITNESS = 36
-$__iLineNumber=93 & ' - Global Const $WINHTTP_OPTION_PROXY = 38•'
 Global Const $WINHTTP_OPTION_PROXY = 38
-$__iLineNumber=94 & ' - Global Const $WINHTTP_OPTION_USER_AGENT = 41•'
 Global Const $WINHTTP_OPTION_USER_AGENT = 41
-$__iLineNumber=95 & ' - Global Const $WINHTTP_OPTION_CONTEXT_VALUE = 45•'
 Global Const $WINHTTP_OPTION_CONTEXT_VALUE = 45
-$__iLineNumber=96 & ' - Global Const $WINHTTP_OPTION_CLIENT_CERT_CONTEXT = 47•'
 Global Const $WINHTTP_OPTION_CLIENT_CERT_CONTEXT = 47
-$__iLineNumber=97 & ' - Global Const $WINHTTP_OPTION_REQUEST_PRIORITY = 58•'
 Global Const $WINHTTP_OPTION_REQUEST_PRIORITY = 58
-$__iLineNumber=98 & ' - Global Const $WINHTTP_OPTION_HTTP_VERSION = 59•'
 Global Const $WINHTTP_OPTION_HTTP_VERSION = 59
-$__iLineNumber=99 & ' - Global Const $WINHTTP_OPTION_DISABLE_FEATURE = 63•'
 Global Const $WINHTTP_OPTION_DISABLE_FEATURE = 63
-$__iLineNumber=100 & ' - Global Const $WINHTTP_OPTION_CODEPAGE = 68•'
 Global Const $WINHTTP_OPTION_CODEPAGE = 68
-$__iLineNumber=101 & ' - Global Const $WINHTTP_OPTION_MAX_CONNS_PER_SERVER = 73•'
 Global Const $WINHTTP_OPTION_MAX_CONNS_PER_SERVER = 73
-$__iLineNumber=102 & ' - Global Const $WINHTTP_OPTION_MAX_CONNS_PER_1_0_SERVER = 74•'
 Global Const $WINHTTP_OPTION_MAX_CONNS_PER_1_0_SERVER = 74
-$__iLineNumber=103 & ' - Global Const $WINHTTP_OPTION_AUTOLOGON_POLICY = 77•'
 Global Const $WINHTTP_OPTION_AUTOLOGON_POLICY = 77
-$__iLineNumber=104 & ' - Global Const $WINHTTP_OPTION_SERVER_CERT_CONTEXT = 78•'
 Global Const $WINHTTP_OPTION_SERVER_CERT_CONTEXT = 78
-$__iLineNumber=105 & ' - Global Const $WINHTTP_OPTION_ENABLE_FEATURE = 79•'
 Global Const $WINHTTP_OPTION_ENABLE_FEATURE = 79
-$__iLineNumber=106 & ' - Global Const $WINHTTP_OPTION_WORKER_THREAD_COUNT = 80•'
 Global Const $WINHTTP_OPTION_WORKER_THREAD_COUNT = 80
-$__iLineNumber=107 & ' - Global Const $WINHTTP_OPTION_PASSPORT_COBRANDING_TEXT = 81•'
 Global Const $WINHTTP_OPTION_PASSPORT_COBRANDING_TEXT = 81
-$__iLineNumber=108 & ' - Global Const $WINHTTP_OPTION_PASSPORT_COBRANDING_URL = 82•'
 Global Const $WINHTTP_OPTION_PASSPORT_COBRANDING_URL = 82
-$__iLineNumber=109 & ' - Global Const $WINHTTP_OPTION_CONFIGURE_PASSPORT_AUTH = 83•'
 Global Const $WINHTTP_OPTION_CONFIGURE_PASSPORT_AUTH = 83
-$__iLineNumber=110 & ' - Global Const $WINHTTP_OPTION_SECURE_PROTOCOLS = 84•'
 Global Const $WINHTTP_OPTION_SECURE_PROTOCOLS = 84
-$__iLineNumber=111 & ' - Global Const $WINHTTP_OPTION_ENABLETRACING = 85•'
 Global Const $WINHTTP_OPTION_ENABLETRACING = 85
-$__iLineNumber=112 & ' - Global Const $WINHTTP_OPTION_PASSPORT_SIGN_OUT = 86•'
 Global Const $WINHTTP_OPTION_PASSPORT_SIGN_OUT = 86
-$__iLineNumber=113 & ' - Global Const $WINHTTP_OPTION_PASSPORT_RETURN_URL = 87•'
 Global Const $WINHTTP_OPTION_PASSPORT_RETURN_URL = 87
-$__iLineNumber=114 & ' - Global Const $WINHTTP_OPTION_REDIRECT_POLICY = 88•'
 Global Const $WINHTTP_OPTION_REDIRECT_POLICY = 88
-$__iLineNumber=115 & ' - Global Const $WINHTTP_OPTION_MAX_HTTP_AUTOMATIC_REDIRECTS =  ...•'
 Global Const $WINHTTP_OPTION_MAX_HTTP_AUTOMATIC_REDIRECTS = 89
-$__iLineNumber=116 & ' - Global Const $WINHTTP_OPTION_MAX_HTTP_STATUS_CONTINUE = 90•'
 Global Const $WINHTTP_OPTION_MAX_HTTP_STATUS_CONTINUE = 90
-$__iLineNumber=117 & ' - Global Const $WINHTTP_OPTION_MAX_RESPONSE_HEADER_SIZE = 91•'
 Global Const $WINHTTP_OPTION_MAX_RESPONSE_HEADER_SIZE = 91
-$__iLineNumber=118 & ' - Global Const $WINHTTP_OPTION_MAX_RESPONSE_DRAIN_SIZE = 92•'
 Global Const $WINHTTP_OPTION_MAX_RESPONSE_DRAIN_SIZE = 92
-$__iLineNumber=119 & ' - Global Const $WINHTTP_OPTION_CONNECTION_INFO = 93•'
 Global Const $WINHTTP_OPTION_CONNECTION_INFO = 93
-$__iLineNumber=120 & ' - Global Const $WINHTTP_OPTION_CLIENT_CERT_ISSUER_LIST = 94•'
 Global Const $WINHTTP_OPTION_CLIENT_CERT_ISSUER_LIST = 94
-$__iLineNumber=121 & ' - Global Const $WINHTTP_OPTION_SPN = 96•'
 Global Const $WINHTTP_OPTION_SPN = 96
-$__iLineNumber=122 & ' - Global Const $WINHTTP_OPTION_GLOBAL_PROXY_CREDS = 97•'
 Global Const $WINHTTP_OPTION_GLOBAL_PROXY_CREDS = 97
-$__iLineNumber=123 & ' - Global Const $WINHTTP_OPTION_GLOBAL_SERVER_CREDS = 98•'
 Global Const $WINHTTP_OPTION_GLOBAL_SERVER_CREDS = 98
-$__iLineNumber=124 & ' - Global Const $WINHTTP_OPTION_UNLOAD_NOTIFY_EVENT = 99•'
 Global Const $WINHTTP_OPTION_UNLOAD_NOTIFY_EVENT = 99
-$__iLineNumber=125 & ' - Global Const $WINHTTP_OPTION_REJECT_USERPWD_IN_URL = 100•'
 Global Const $WINHTTP_OPTION_REJECT_USERPWD_IN_URL = 100
-$__iLineNumber=126 & ' - Global Const $WINHTTP_OPTION_USE_GLOBAL_SERVER_CREDENTIALS = ...•'
 Global Const $WINHTTP_OPTION_USE_GLOBAL_SERVER_CREDENTIALS = 101
-$__iLineNumber=127 & ' - Global Const $WINHTTP_OPTION_RECEIVE_PROXY_CONNECT_RESPONSE  ...•'
 Global Const $WINHTTP_OPTION_RECEIVE_PROXY_CONNECT_RESPONSE = 103
-$__iLineNumber=128 & ' - Global Const $WINHTTP_OPTION_IS_PROXY_CONNECT_RESPONSE = 104•'
 Global Const $WINHTTP_OPTION_IS_PROXY_CONNECT_RESPONSE = 104
-$__iLineNumber=129 & ' - Global Const $WINHTTP_OPTION_SERVER_SPN_USED = 106•'
 Global Const $WINHTTP_OPTION_SERVER_SPN_USED = 106
-$__iLineNumber=130 & ' - Global Const $WINHTTP_OPTION_PROXY_SPN_USED = 107•'
 Global Const $WINHTTP_OPTION_PROXY_SPN_USED = 107
-$__iLineNumber=131 & ' - Global Const $WINHTTP_OPTION_SERVER_CBT = 108•'
 Global Const $WINHTTP_OPTION_SERVER_CBT = 108
-$__iLineNumber=132 & ' - Global Const $WINHTTP_OPTION_UNSAFE_HEADER_PARSING = 110•'
 Global Const $WINHTTP_OPTION_UNSAFE_HEADER_PARSING = 110
-$__iLineNumber=133 & ' - Global Const $WINHTTP_OPTION_DECOMPRESSION = 118•'
 Global Const $WINHTTP_OPTION_DECOMPRESSION = 118
-$__iLineNumber=134 & ' - Global Const $WINHTTP_LAST_OPTION = $WINHTTP_OPTION_DECOMPRE ...•'
 Global Const $WINHTTP_LAST_OPTION = $WINHTTP_OPTION_DECOMPRESSION
 
-$__iLineNumber=136 & ' - Global Const $WINHTTP_OPTION_USERNAME = 0x1000•'
 Global Const $WINHTTP_OPTION_USERNAME = 0x1000
-$__iLineNumber=137 & ' - Global Const $WINHTTP_OPTION_PASSWORD = 0x1001•'
 Global Const $WINHTTP_OPTION_PASSWORD = 0x1001
-$__iLineNumber=138 & ' - Global Const $WINHTTP_OPTION_PROXY_USERNAME = 0x1002•'
 Global Const $WINHTTP_OPTION_PROXY_USERNAME = 0x1002
-$__iLineNumber=139 & ' - Global Const $WINHTTP_OPTION_PROXY_PASSWORD = 0x1003•'
 Global Const $WINHTTP_OPTION_PROXY_PASSWORD = 0x1003
 
-$__iLineNumber=141 & ' - Global Const $WINHTTP_CONNS_PER_SERVER_UNLIMITED = 0xFFFFFFF ...•'
 Global Const $WINHTTP_CONNS_PER_SERVER_UNLIMITED = 0xFFFFFFFF
 
 ; For WINHTTP_OPTION_DECOMPRESSION
-$__iLineNumber=144 & ' - Global Const $WINHTTP_DECOMPRESSION_FLAG_GZIP = 0x00000001•'
 Global Const $WINHTTP_DECOMPRESSION_FLAG_GZIP = 0x00000001
-$__iLineNumber=145 & ' - Global Const $WINHTTP_DECOMPRESSION_FLAG_DEFLATE = 0x0000000 ...•'
 Global Const $WINHTTP_DECOMPRESSION_FLAG_DEFLATE = 0x00000002
-$__iLineNumber=146 & ' - Global Const $WINHTTP_DECOMPRESSION_FLAG_ALL = 0x00000003•'
 Global Const $WINHTTP_DECOMPRESSION_FLAG_ALL = 0x00000003
 
-$__iLineNumber=148 & ' - Global Const $WINHTTP_AUTOLOGON_SECURITY_LEVEL_MEDIUM = 0•'
 Global Const $WINHTTP_AUTOLOGON_SECURITY_LEVEL_MEDIUM = 0
-$__iLineNumber=149 & ' - Global Const $WINHTTP_AUTOLOGON_SECURITY_LEVEL_LOW = 1•'
 Global Const $WINHTTP_AUTOLOGON_SECURITY_LEVEL_LOW = 1
-$__iLineNumber=150 & ' - Global Const $WINHTTP_AUTOLOGON_SECURITY_LEVEL_HIGH = 2•'
 Global Const $WINHTTP_AUTOLOGON_SECURITY_LEVEL_HIGH = 2
-$__iLineNumber=151 & ' - Global Const $WINHTTP_AUTOLOGON_SECURITY_LEVEL_DEFAULT = $WI ...•'
 Global Const $WINHTTP_AUTOLOGON_SECURITY_LEVEL_DEFAULT = $WINHTTP_AUTOLOGON_SECURITY_LEVEL_MEDIUM
 
-$__iLineNumber=153 & ' - Global Const $WINHTTP_OPTION_REDIRECT_POLICY_NEVER = 0•'
 Global Const $WINHTTP_OPTION_REDIRECT_POLICY_NEVER = 0
-$__iLineNumber=154 & ' - Global Const $WINHTTP_OPTION_REDIRECT_POLICY_DISALLOW_HTTPS_ ...•'
 Global Const $WINHTTP_OPTION_REDIRECT_POLICY_DISALLOW_HTTPS_TO_HTTP = 1
-$__iLineNumber=155 & ' - Global Const $WINHTTP_OPTION_REDIRECT_POLICY_ALWAYS = 2•'
 Global Const $WINHTTP_OPTION_REDIRECT_POLICY_ALWAYS = 2
-$__iLineNumber=156 & ' - Global Const $WINHTTP_OPTION_REDIRECT_POLICY_LAST = $WINHTTP ...•'
 Global Const $WINHTTP_OPTION_REDIRECT_POLICY_LAST = $WINHTTP_OPTION_REDIRECT_POLICY_ALWAYS
-$__iLineNumber=157 & ' - Global Const $WINHTTP_OPTION_REDIRECT_POLICY_DEFAULT = $WINH ...•'
 Global Const $WINHTTP_OPTION_REDIRECT_POLICY_DEFAULT = $WINHTTP_OPTION_REDIRECT_POLICY_DISALLOW_HTTPS_TO_HTTP
 
-$__iLineNumber=159 & ' - Global Const $WINHTTP_DISABLE_PASSPORT_AUTH = 0x00000000•'
 Global Const $WINHTTP_DISABLE_PASSPORT_AUTH = 0x00000000
-$__iLineNumber=160 & ' - Global Const $WINHTTP_ENABLE_PASSPORT_AUTH = 0x10000000•'
 Global Const $WINHTTP_ENABLE_PASSPORT_AUTH = 0x10000000
-$__iLineNumber=161 & ' - Global Const $WINHTTP_DISABLE_PASSPORT_KEYRING = 0x20000000•'
 Global Const $WINHTTP_DISABLE_PASSPORT_KEYRING = 0x20000000
-$__iLineNumber=162 & ' - Global Const $WINHTTP_ENABLE_PASSPORT_KEYRING = 0x40000000•'
 Global Const $WINHTTP_ENABLE_PASSPORT_KEYRING = 0x40000000
 
-$__iLineNumber=164 & ' - Global Const $WINHTTP_DISABLE_COOKIES = 0x00000001•'
 Global Const $WINHTTP_DISABLE_COOKIES = 0x00000001
-$__iLineNumber=165 & ' - Global Const $WINHTTP_DISABLE_REDIRECTS = 0x00000002•'
 Global Const $WINHTTP_DISABLE_REDIRECTS = 0x00000002
-$__iLineNumber=166 & ' - Global Const $WINHTTP_DISABLE_AUTHENTICATION = 0x00000004•'
 Global Const $WINHTTP_DISABLE_AUTHENTICATION = 0x00000004
-$__iLineNumber=167 & ' - Global Const $WINHTTP_DISABLE_KEEP_ALIVE = 0x00000008•'
 Global Const $WINHTTP_DISABLE_KEEP_ALIVE = 0x00000008
-$__iLineNumber=168 & ' - Global Const $WINHTTP_ENABLE_SSL_REVOCATION = 0x00000001•'
 Global Const $WINHTTP_ENABLE_SSL_REVOCATION = 0x00000001
-$__iLineNumber=169 & ' - Global Const $WINHTTP_ENABLE_SSL_REVERT_IMPERSONATION = 0x00 ...•'
 Global Const $WINHTTP_ENABLE_SSL_REVERT_IMPERSONATION = 0x00000002
-$__iLineNumber=170 & ' - Global Const $WINHTTP_DISABLE_SPN_SERVER_PORT = 0x00000000•'
 Global Const $WINHTTP_DISABLE_SPN_SERVER_PORT = 0x00000000
-$__iLineNumber=171 & ' - Global Const $WINHTTP_ENABLE_SPN_SERVER_PORT = 0x00000001•'
 Global Const $WINHTTP_ENABLE_SPN_SERVER_PORT = 0x00000001
-$__iLineNumber=172 & ' - Global Const $WINHTTP_OPTION_SPN_MASK = $WINHTTP_ENABLE_SPN_ ...•'
 Global Const $WINHTTP_OPTION_SPN_MASK = $WINHTTP_ENABLE_SPN_SERVER_PORT
 
 ; WinHTTP error codes  ;
-$__iLineNumber=175 & ' - Global Const $WINHTTP_ERROR_BASE = 12000•'
 Global Const $WINHTTP_ERROR_BASE = 12000
-$__iLineNumber=176 & ' - Global Const $ERROR_WINHTTP_OUT_OF_HANDLES = 12001•'
 Global Const $ERROR_WINHTTP_OUT_OF_HANDLES = 12001
-$__iLineNumber=177 & ' - Global Const $ERROR_WINHTTP_TIMEOUT = 12002•'
 Global Const $ERROR_WINHTTP_TIMEOUT = 12002
-$__iLineNumber=178 & ' - Global Const $ERROR_WINHTTP_INTERNAL_ERROR = 12004•'
 Global Const $ERROR_WINHTTP_INTERNAL_ERROR = 12004
-$__iLineNumber=179 & ' - Global Const $ERROR_WINHTTP_INVALID_URL = 12005•'
 Global Const $ERROR_WINHTTP_INVALID_URL = 12005
-$__iLineNumber=180 & ' - Global Const $ERROR_WINHTTP_UNRECOGNIZED_SCHEME = 12006•'
 Global Const $ERROR_WINHTTP_UNRECOGNIZED_SCHEME = 12006
-$__iLineNumber=181 & ' - Global Const $ERROR_WINHTTP_NAME_NOT_RESOLVED = 12007•'
 Global Const $ERROR_WINHTTP_NAME_NOT_RESOLVED = 12007
-$__iLineNumber=182 & ' - Global Const $ERROR_WINHTTP_INVALID_OPTION = 12009•'
 Global Const $ERROR_WINHTTP_INVALID_OPTION = 12009
-$__iLineNumber=183 & ' - Global Const $ERROR_WINHTTP_OPTION_NOT_SETTABLE = 12011•'
 Global Const $ERROR_WINHTTP_OPTION_NOT_SETTABLE = 12011
-$__iLineNumber=184 & ' - Global Const $ERROR_WINHTTP_SHUTDOWN = 12012•'
 Global Const $ERROR_WINHTTP_SHUTDOWN = 12012
-$__iLineNumber=185 & ' - Global Const $ERROR_WINHTTP_LOGIN_FAILURE = 12015•'
 Global Const $ERROR_WINHTTP_LOGIN_FAILURE = 12015
-$__iLineNumber=186 & ' - Global Const $ERROR_WINHTTP_OPERATION_CANCELLED = 12017•'
 Global Const $ERROR_WINHTTP_OPERATION_CANCELLED = 12017
-$__iLineNumber=187 & ' - Global Const $ERROR_WINHTTP_INCORRECT_HANDLE_TYPE = 12018•'
 Global Const $ERROR_WINHTTP_INCORRECT_HANDLE_TYPE = 12018
-$__iLineNumber=188 & ' - Global Const $ERROR_WINHTTP_INCORRECT_HANDLE_STATE = 12019•'
 Global Const $ERROR_WINHTTP_INCORRECT_HANDLE_STATE = 12019
-$__iLineNumber=189 & ' - Global Const $ERROR_WINHTTP_CANNOT_CONNECT = 12029•'
 Global Const $ERROR_WINHTTP_CANNOT_CONNECT = 12029
-$__iLineNumber=190 & ' - Global Const $ERROR_WINHTTP_CONNECTION_ERROR = 12030•'
 Global Const $ERROR_WINHTTP_CONNECTION_ERROR = 12030
-$__iLineNumber=191 & ' - Global Const $ERROR_WINHTTP_RESEND_REQUEST = 12032•'
 Global Const $ERROR_WINHTTP_RESEND_REQUEST = 12032
-$__iLineNumber=192 & ' - Global Const $ERROR_WINHTTP_SECURE_CERT_DATE_INVALID = 12037•'
 Global Const $ERROR_WINHTTP_SECURE_CERT_DATE_INVALID = 12037
-$__iLineNumber=193 & ' - Global Const $ERROR_WINHTTP_SECURE_CERT_CN_INVALID = 12038•'
 Global Const $ERROR_WINHTTP_SECURE_CERT_CN_INVALID = 12038
-$__iLineNumber=194 & ' - Global Const $ERROR_WINHTTP_CLIENT_AUTH_CERT_NEEDED = 12044•'
 Global Const $ERROR_WINHTTP_CLIENT_AUTH_CERT_NEEDED = 12044
-$__iLineNumber=195 & ' - Global Const $ERROR_WINHTTP_SECURE_INVALID_CA = 12045•'
 Global Const $ERROR_WINHTTP_SECURE_INVALID_CA = 12045
-$__iLineNumber=196 & ' - Global Const $ERROR_WINHTTP_SECURE_CERT_REV_FAILED = 12057•'
 Global Const $ERROR_WINHTTP_SECURE_CERT_REV_FAILED = 12057
-$__iLineNumber=197 & ' - Global Const $ERROR_WINHTTP_CANNOT_CALL_BEFORE_OPEN = 12100•'
 Global Const $ERROR_WINHTTP_CANNOT_CALL_BEFORE_OPEN = 12100
-$__iLineNumber=198 & ' - Global Const $ERROR_WINHTTP_CANNOT_CALL_BEFORE_SEND = 12101•'
 Global Const $ERROR_WINHTTP_CANNOT_CALL_BEFORE_SEND = 12101
-$__iLineNumber=199 & ' - Global Const $ERROR_WINHTTP_CANNOT_CALL_AFTER_SEND = 12102•'
 Global Const $ERROR_WINHTTP_CANNOT_CALL_AFTER_SEND = 12102
-$__iLineNumber=200 & ' - Global Const $ERROR_WINHTTP_CANNOT_CALL_AFTER_OPEN = 12103•'
 Global Const $ERROR_WINHTTP_CANNOT_CALL_AFTER_OPEN = 12103
-$__iLineNumber=201 & ' - Global Const $ERROR_WINHTTP_HEADER_NOT_FOUND = 12150•'
 Global Const $ERROR_WINHTTP_HEADER_NOT_FOUND = 12150
-$__iLineNumber=202 & ' - Global Const $ERROR_WINHTTP_INVALID_SERVER_RESPONSE = 12152•'
 Global Const $ERROR_WINHTTP_INVALID_SERVER_RESPONSE = 12152
-$__iLineNumber=203 & ' - Global Const $ERROR_WINHTTP_INVALID_HEADER = 12153•'
 Global Const $ERROR_WINHTTP_INVALID_HEADER = 12153
-$__iLineNumber=204 & ' - Global Const $ERROR_WINHTTP_INVALID_QUERY_REQUEST = 12154•'
 Global Const $ERROR_WINHTTP_INVALID_QUERY_REQUEST = 12154
-$__iLineNumber=205 & ' - Global Const $ERROR_WINHTTP_HEADER_ALREADY_EXISTS = 12155•'
 Global Const $ERROR_WINHTTP_HEADER_ALREADY_EXISTS = 12155
-$__iLineNumber=206 & ' - Global Const $ERROR_WINHTTP_REDIRECT_FAILED = 12156•'
 Global Const $ERROR_WINHTTP_REDIRECT_FAILED = 12156
-$__iLineNumber=207 & ' - Global Const $ERROR_WINHTTP_SECURE_CHANNEL_ERROR = 12157•'
 Global Const $ERROR_WINHTTP_SECURE_CHANNEL_ERROR = 12157
-$__iLineNumber=208 & ' - Global Const $ERROR_WINHTTP_BAD_AUTO_PROXY_SCRIPT = 12166•'
 Global Const $ERROR_WINHTTP_BAD_AUTO_PROXY_SCRIPT = 12166
-$__iLineNumber=209 & ' - Global Const $ERROR_WINHTTP_UNABLE_TO_DOWNLOAD_SCRIPT = 1216 ...•'
 Global Const $ERROR_WINHTTP_UNABLE_TO_DOWNLOAD_SCRIPT = 12167
-$__iLineNumber=210 & ' - Global Const $ERROR_WINHTTP_SECURE_INVALID_CERT = 12169•'
 Global Const $ERROR_WINHTTP_SECURE_INVALID_CERT = 12169
-$__iLineNumber=211 & ' - Global Const $ERROR_WINHTTP_SECURE_CERT_REVOKED = 12170•'
 Global Const $ERROR_WINHTTP_SECURE_CERT_REVOKED = 12170
-$__iLineNumber=212 & ' - Global Const $ERROR_WINHTTP_NOT_INITIALIZED = 12172•'
 Global Const $ERROR_WINHTTP_NOT_INITIALIZED = 12172
-$__iLineNumber=213 & ' - Global Const $ERROR_WINHTTP_SECURE_FAILURE = 12175•'
 Global Const $ERROR_WINHTTP_SECURE_FAILURE = 12175
-$__iLineNumber=214 & ' - Global Const $ERROR_WINHTTP_AUTO_PROXY_SERVICE_ERROR = 12178•'
 Global Const $ERROR_WINHTTP_AUTO_PROXY_SERVICE_ERROR = 12178
-$__iLineNumber=215 & ' - Global Const $ERROR_WINHTTP_SECURE_CERT_WRONG_USAGE = 12179•'
 Global Const $ERROR_WINHTTP_SECURE_CERT_WRONG_USAGE = 12179
-$__iLineNumber=216 & ' - Global Const $ERROR_WINHTTP_AUTODETECTION_FAILED = 12180•'
 Global Const $ERROR_WINHTTP_AUTODETECTION_FAILED = 12180
-$__iLineNumber=217 & ' - Global Const $ERROR_WINHTTP_HEADER_COUNT_EXCEEDED = 12181•'
 Global Const $ERROR_WINHTTP_HEADER_COUNT_EXCEEDED = 12181
-$__iLineNumber=218 & ' - Global Const $ERROR_WINHTTP_HEADER_SIZE_OVERFLOW = 12182•'
 Global Const $ERROR_WINHTTP_HEADER_SIZE_OVERFLOW = 12182
-$__iLineNumber=219 & ' - Global Const $ERROR_WINHTTP_CHUNKED_ENCODING_HEADER_SIZE_OVE ...•'
 Global Const $ERROR_WINHTTP_CHUNKED_ENCODING_HEADER_SIZE_OVERFLOW = 12183
-$__iLineNumber=220 & ' - Global Const $ERROR_WINHTTP_RESPONSE_DRAIN_OVERFLOW = 12184•'
 Global Const $ERROR_WINHTTP_RESPONSE_DRAIN_OVERFLOW = 12184
-$__iLineNumber=221 & ' - Global Const $ERROR_WINHTTP_CLIENT_CERT_NO_PRIVATE_KEY = 121 ...•'
 Global Const $ERROR_WINHTTP_CLIENT_CERT_NO_PRIVATE_KEY = 12185
-$__iLineNumber=222 & ' - Global Const $ERROR_WINHTTP_CLIENT_CERT_NO_ACCESS_PRIVATE_KE ...•'
 Global Const $ERROR_WINHTTP_CLIENT_CERT_NO_ACCESS_PRIVATE_KEY = 12186
-$__iLineNumber=223 & ' - Global Const $WINHTTP_ERROR_LAST = 12186•'
 Global Const $WINHTTP_ERROR_LAST = 12186
 
 ; WinHttp status codes  ;
-$__iLineNumber=226 & ' - Global Const $HTTP_STATUS_CONTINUE = 100•'
 Global Const $HTTP_STATUS_CONTINUE = 100
-$__iLineNumber=227 & ' - Global Const $HTTP_STATUS_SWITCH_PROTOCOLS = 101•'
 Global Const $HTTP_STATUS_SWITCH_PROTOCOLS = 101
-$__iLineNumber=228 & ' - Global Const $HTTP_STATUS_OK = 200•'
 Global Const $HTTP_STATUS_OK = 200
-$__iLineNumber=229 & ' - Global Const $HTTP_STATUS_CREATED = 201•'
 Global Const $HTTP_STATUS_CREATED = 201
-$__iLineNumber=230 & ' - Global Const $HTTP_STATUS_ACCEPTED = 202•'
 Global Const $HTTP_STATUS_ACCEPTED = 202
-$__iLineNumber=231 & ' - Global Const $HTTP_STATUS_PARTIAL = 203•'
 Global Const $HTTP_STATUS_PARTIAL = 203
-$__iLineNumber=232 & ' - Global Const $HTTP_STATUS_NO_CONTENT = 204•'
 Global Const $HTTP_STATUS_NO_CONTENT = 204
-$__iLineNumber=233 & ' - Global Const $HTTP_STATUS_RESET_CONTENT = 205•'
 Global Const $HTTP_STATUS_RESET_CONTENT = 205
-$__iLineNumber=234 & ' - Global Const $HTTP_STATUS_PARTIAL_CONTENT = 206•'
 Global Const $HTTP_STATUS_PARTIAL_CONTENT = 206
-$__iLineNumber=235 & ' - Global Const $HTTP_STATUS_WEBDAV_MULTI_STATUS = 207•'
 Global Const $HTTP_STATUS_WEBDAV_MULTI_STATUS = 207
-$__iLineNumber=236 & ' - Global Const $HTTP_STATUS_AMBIGUOUS = 300•'
 Global Const $HTTP_STATUS_AMBIGUOUS = 300
-$__iLineNumber=237 & ' - Global Const $HTTP_STATUS_MOVED = 301•'
 Global Const $HTTP_STATUS_MOVED = 301
-$__iLineNumber=238 & ' - Global Const $HTTP_STATUS_REDIRECT = 302•'
 Global Const $HTTP_STATUS_REDIRECT = 302
-$__iLineNumber=239 & ' - Global Const $HTTP_STATUS_REDIRECT_METHOD = 303•'
 Global Const $HTTP_STATUS_REDIRECT_METHOD = 303
-$__iLineNumber=240 & ' - Global Const $HTTP_STATUS_NOT_MODIFIED = 304•'
 Global Const $HTTP_STATUS_NOT_MODIFIED = 304
-$__iLineNumber=241 & ' - Global Const $HTTP_STATUS_USE_PROXY = 305•'
 Global Const $HTTP_STATUS_USE_PROXY = 305
-$__iLineNumber=242 & ' - Global Const $HTTP_STATUS_REDIRECT_KEEP_VERB = 307•'
 Global Const $HTTP_STATUS_REDIRECT_KEEP_VERB = 307
-$__iLineNumber=243 & ' - Global Const $HTTP_STATUS_BAD_REQUEST = 400•'
 Global Const $HTTP_STATUS_BAD_REQUEST = 400
-$__iLineNumber=244 & ' - Global Const $HTTP_STATUS_DENIED = 401•'
 Global Const $HTTP_STATUS_DENIED = 401
-$__iLineNumber=245 & ' - Global Const $HTTP_STATUS_PAYMENT_REQ = 402•'
 Global Const $HTTP_STATUS_PAYMENT_REQ = 402
-$__iLineNumber=246 & ' - Global Const $HTTP_STATUS_FORBIDDEN = 403•'
 Global Const $HTTP_STATUS_FORBIDDEN = 403
-$__iLineNumber=247 & ' - Global Const $HTTP_STATUS_NOT_FOUND = 404•'
 Global Const $HTTP_STATUS_NOT_FOUND = 404
-$__iLineNumber=248 & ' - Global Const $HTTP_STATUS_BAD_METHOD = 405•'
 Global Const $HTTP_STATUS_BAD_METHOD = 405
-$__iLineNumber=249 & ' - Global Const $HTTP_STATUS_NONE_ACCEPTABLE = 406•'
 Global Const $HTTP_STATUS_NONE_ACCEPTABLE = 406
-$__iLineNumber=250 & ' - Global Const $HTTP_STATUS_PROXY_AUTH_REQ = 407•'
 Global Const $HTTP_STATUS_PROXY_AUTH_REQ = 407
-$__iLineNumber=251 & ' - Global Const $HTTP_STATUS_REQUEST_TIMEOUT = 408•'
 Global Const $HTTP_STATUS_REQUEST_TIMEOUT = 408
-$__iLineNumber=252 & ' - Global Const $HTTP_STATUS_CONFLICT = 409•'
 Global Const $HTTP_STATUS_CONFLICT = 409
-$__iLineNumber=253 & ' - Global Const $HTTP_STATUS_GONE = 410•'
 Global Const $HTTP_STATUS_GONE = 410
-$__iLineNumber=254 & ' - Global Const $HTTP_STATUS_LENGTH_REQUIRED = 411•'
 Global Const $HTTP_STATUS_LENGTH_REQUIRED = 411
-$__iLineNumber=255 & ' - Global Const $HTTP_STATUS_PRECOND_FAILED = 412•'
 Global Const $HTTP_STATUS_PRECOND_FAILED = 412
-$__iLineNumber=256 & ' - Global Const $HTTP_STATUS_REQUEST_TOO_LARGE = 413•'
 Global Const $HTTP_STATUS_REQUEST_TOO_LARGE = 413
-$__iLineNumber=257 & ' - Global Const $HTTP_STATUS_URI_TOO_LONG = 414•'
 Global Const $HTTP_STATUS_URI_TOO_LONG = 414
-$__iLineNumber=258 & ' - Global Const $HTTP_STATUS_UNSUPPORTED_MEDIA = 415•'
 Global Const $HTTP_STATUS_UNSUPPORTED_MEDIA = 415
-$__iLineNumber=259 & ' - Global Const $HTTP_STATUS_RETRY_WITH = 449•'
 Global Const $HTTP_STATUS_RETRY_WITH = 449
-$__iLineNumber=260 & ' - Global Const $HTTP_STATUS_SERVER_ERROR = 500•'
 Global Const $HTTP_STATUS_SERVER_ERROR = 500
-$__iLineNumber=261 & ' - Global Const $HTTP_STATUS_NOT_SUPPORTED = 501•'
 Global Const $HTTP_STATUS_NOT_SUPPORTED = 501
-$__iLineNumber=262 & ' - Global Const $HTTP_STATUS_BAD_GATEWAY = 502•'
 Global Const $HTTP_STATUS_BAD_GATEWAY = 502
-$__iLineNumber=263 & ' - Global Const $HTTP_STATUS_SERVICE_UNAVAIL = 503•'
 Global Const $HTTP_STATUS_SERVICE_UNAVAIL = 503
-$__iLineNumber=264 & ' - Global Const $HTTP_STATUS_GATEWAY_TIMEOUT = 504•'
 Global Const $HTTP_STATUS_GATEWAY_TIMEOUT = 504
-$__iLineNumber=265 & ' - Global Const $HTTP_STATUS_VERSION_NOT_SUP = 505•'
 Global Const $HTTP_STATUS_VERSION_NOT_SUP = 505
-$__iLineNumber=266 & ' - Global Const $HTTP_STATUS_FIRST = $HTTP_STATUS_CONTINUE•'
 Global Const $HTTP_STATUS_FIRST = $HTTP_STATUS_CONTINUE
-$__iLineNumber=267 & ' - Global Const $HTTP_STATUS_LAST = $HTTP_STATUS_VERSION_NOT_SU ...•'
 Global Const $HTTP_STATUS_LAST = $HTTP_STATUS_VERSION_NOT_SUP
 
-$__iLineNumber=269 & ' - Global Const $SECURITY_FLAG_IGNORE_UNKNOWN_CA = 0x00000100•'
 Global Const $SECURITY_FLAG_IGNORE_UNKNOWN_CA = 0x00000100
-$__iLineNumber=270 & ' - Global Const $SECURITY_FLAG_IGNORE_CERT_DATE_INVALID = 0x000 ...•'
 Global Const $SECURITY_FLAG_IGNORE_CERT_DATE_INVALID = 0x00002000
-$__iLineNumber=271 & ' - Global Const $SECURITY_FLAG_IGNORE_CERT_CN_INVALID = 0x00001 ...•'
 Global Const $SECURITY_FLAG_IGNORE_CERT_CN_INVALID = 0x00001000
-$__iLineNumber=272 & ' - Global Const $SECURITY_FLAG_IGNORE_CERT_WRONG_USAGE = 0x0000 ...•'
 Global Const $SECURITY_FLAG_IGNORE_CERT_WRONG_USAGE = 0x00000200
-$__iLineNumber=273 & ' - Global Const $SECURITY_FLAG_SECURE = 0x00000001•'
 Global Const $SECURITY_FLAG_SECURE = 0x00000001
-$__iLineNumber=274 & ' - Global Const $SECURITY_FLAG_STRENGTH_WEAK = 0x10000000•'
 Global Const $SECURITY_FLAG_STRENGTH_WEAK = 0x10000000
-$__iLineNumber=275 & ' - Global Const $SECURITY_FLAG_STRENGTH_MEDIUM = 0x40000000•'
 Global Const $SECURITY_FLAG_STRENGTH_MEDIUM = 0x40000000
-$__iLineNumber=276 & ' - Global Const $SECURITY_FLAG_STRENGTH_STRONG = 0x20000000•'
 Global Const $SECURITY_FLAG_STRENGTH_STRONG = 0x20000000
 
-$__iLineNumber=278 & ' - Global Const $ICU_NO_ENCODE = 0x20000000•'
 Global Const $ICU_NO_ENCODE = 0x20000000
-$__iLineNumber=279 & ' - Global Const $ICU_DECODE = 0x10000000•'
 Global Const $ICU_DECODE = 0x10000000
-$__iLineNumber=280 & ' - Global Const $ICU_NO_META = 0x08000000•'
 Global Const $ICU_NO_META = 0x08000000
-$__iLineNumber=281 & ' - Global Const $ICU_ENCODE_SPACES_ONLY = 0x04000000•'
 Global Const $ICU_ENCODE_SPACES_ONLY = 0x04000000
-$__iLineNumber=282 & ' - Global Const $ICU_BROWSER_MODE = 0x02000000•'
 Global Const $ICU_BROWSER_MODE = 0x02000000
-$__iLineNumber=283 & ' - Global Const $ICU_ENCODE_PERCENT = 0x00001000•'
 Global Const $ICU_ENCODE_PERCENT = 0x00001000
 
 ; Query flags  ;
-$__iLineNumber=286 & ' - Global Const $WINHTTP_QUERY_MIME_VERSION = 0•'
 Global Const $WINHTTP_QUERY_MIME_VERSION = 0
-$__iLineNumber=287 & ' - Global Const $WINHTTP_QUERY_CONTENT_TYPE = 1•'
 Global Const $WINHTTP_QUERY_CONTENT_TYPE = 1
-$__iLineNumber=288 & ' - Global Const $WINHTTP_QUERY_CONTENT_TRANSFER_ENCODING = 2•'
 Global Const $WINHTTP_QUERY_CONTENT_TRANSFER_ENCODING = 2
-$__iLineNumber=289 & ' - Global Const $WINHTTP_QUERY_CONTENT_ID = 3•'
 Global Const $WINHTTP_QUERY_CONTENT_ID = 3
-$__iLineNumber=290 & ' - Global Const $WINHTTP_QUERY_CONTENT_DESCRIPTION = 4•'
 Global Const $WINHTTP_QUERY_CONTENT_DESCRIPTION = 4
-$__iLineNumber=291 & ' - Global Const $WINHTTP_QUERY_CONTENT_LENGTH = 5•'
 Global Const $WINHTTP_QUERY_CONTENT_LENGTH = 5
-$__iLineNumber=292 & ' - Global Const $WINHTTP_QUERY_CONTENT_LANGUAGE = 6•'
 Global Const $WINHTTP_QUERY_CONTENT_LANGUAGE = 6
-$__iLineNumber=293 & ' - Global Const $WINHTTP_QUERY_ALLOW = 7•'
 Global Const $WINHTTP_QUERY_ALLOW = 7
-$__iLineNumber=294 & ' - Global Const $WINHTTP_QUERY_PUBLIC = 8•'
 Global Const $WINHTTP_QUERY_PUBLIC = 8
-$__iLineNumber=295 & ' - Global Const $WINHTTP_QUERY_DATE = 9•'
 Global Const $WINHTTP_QUERY_DATE = 9
-$__iLineNumber=296 & ' - Global Const $WINHTTP_QUERY_EXPIRES = 10•'
 Global Const $WINHTTP_QUERY_EXPIRES = 10
-$__iLineNumber=297 & ' - Global Const $WINHTTP_QUERY_LAST_MODIFIED = 11•'
 Global Const $WINHTTP_QUERY_LAST_MODIFIED = 11
-$__iLineNumber=298 & ' - Global Const $WINHTTP_QUERY_MESSAGE_ID = 12•'
 Global Const $WINHTTP_QUERY_MESSAGE_ID = 12
-$__iLineNumber=299 & ' - Global Const $WINHTTP_QUERY_URI = 13•'
 Global Const $WINHTTP_QUERY_URI = 13
-$__iLineNumber=300 & ' - Global Const $WINHTTP_QUERY_DERIVED_FROM = 14•'
 Global Const $WINHTTP_QUERY_DERIVED_FROM = 14
-$__iLineNumber=301 & ' - Global Const $WINHTTP_QUERY_COST = 15•'
 Global Const $WINHTTP_QUERY_COST = 15
-$__iLineNumber=302 & ' - Global Const $WINHTTP_QUERY_LINK = 16•'
 Global Const $WINHTTP_QUERY_LINK = 16
-$__iLineNumber=303 & ' - Global Const $WINHTTP_QUERY_PRAGMA = 17•'
 Global Const $WINHTTP_QUERY_PRAGMA = 17
-$__iLineNumber=304 & ' - Global Const $WINHTTP_QUERY_VERSION = 18•'
 Global Const $WINHTTP_QUERY_VERSION = 18
-$__iLineNumber=305 & ' - Global Const $WINHTTP_QUERY_STATUS_CODE = 19•'
 Global Const $WINHTTP_QUERY_STATUS_CODE = 19
-$__iLineNumber=306 & ' - Global Const $WINHTTP_QUERY_STATUS_TEXT = 20•'
 Global Const $WINHTTP_QUERY_STATUS_TEXT = 20
-$__iLineNumber=307 & ' - Global Const $WINHTTP_QUERY_RAW_HEADERS = 21•'
 Global Const $WINHTTP_QUERY_RAW_HEADERS = 21
-$__iLineNumber=308 & ' - Global Const $WINHTTP_QUERY_RAW_HEADERS_CRLF = 22•'
 Global Const $WINHTTP_QUERY_RAW_HEADERS_CRLF = 22
-$__iLineNumber=309 & ' - Global Const $WINHTTP_QUERY_CONNECTION = 23•'
 Global Const $WINHTTP_QUERY_CONNECTION = 23
-$__iLineNumber=310 & ' - Global Const $WINHTTP_QUERY_ACCEPT = 24•'
 Global Const $WINHTTP_QUERY_ACCEPT = 24
-$__iLineNumber=311 & ' - Global Const $WINHTTP_QUERY_ACCEPT_CHARSET = 25•'
 Global Const $WINHTTP_QUERY_ACCEPT_CHARSET = 25
-$__iLineNumber=312 & ' - Global Const $WINHTTP_QUERY_ACCEPT_ENCODING = 26•'
 Global Const $WINHTTP_QUERY_ACCEPT_ENCODING = 26
-$__iLineNumber=313 & ' - Global Const $WINHTTP_QUERY_ACCEPT_LANGUAGE = 27•'
 Global Const $WINHTTP_QUERY_ACCEPT_LANGUAGE = 27
-$__iLineNumber=314 & ' - Global Const $WINHTTP_QUERY_AUTHORIZATION = 28•'
 Global Const $WINHTTP_QUERY_AUTHORIZATION = 28
-$__iLineNumber=315 & ' - Global Const $WINHTTP_QUERY_CONTENT_ENCODING = 29•'
 Global Const $WINHTTP_QUERY_CONTENT_ENCODING = 29
-$__iLineNumber=316 & ' - Global Const $WINHTTP_QUERY_FORWARDED = 30•'
 Global Const $WINHTTP_QUERY_FORWARDED = 30
-$__iLineNumber=317 & ' - Global Const $WINHTTP_QUERY_FROM = 31•'
 Global Const $WINHTTP_QUERY_FROM = 31
-$__iLineNumber=318 & ' - Global Const $WINHTTP_QUERY_IF_MODIFIED_SINCE = 32•'
 Global Const $WINHTTP_QUERY_IF_MODIFIED_SINCE = 32
-$__iLineNumber=319 & ' - Global Const $WINHTTP_QUERY_LOCATION = 33•'
 Global Const $WINHTTP_QUERY_LOCATION = 33
-$__iLineNumber=320 & ' - Global Const $WINHTTP_QUERY_ORIG_URI = 34•'
 Global Const $WINHTTP_QUERY_ORIG_URI = 34
-$__iLineNumber=321 & ' - Global Const $WINHTTP_QUERY_REFERER = 35•'
 Global Const $WINHTTP_QUERY_REFERER = 35
-$__iLineNumber=322 & ' - Global Const $WINHTTP_QUERY_RETRY_AFTER = 36•'
 Global Const $WINHTTP_QUERY_RETRY_AFTER = 36
-$__iLineNumber=323 & ' - Global Const $WINHTTP_QUERY_SERVER = 37•'
 Global Const $WINHTTP_QUERY_SERVER = 37
-$__iLineNumber=324 & ' - Global Const $WINHTTP_QUERY_TITLE = 38•'
 Global Const $WINHTTP_QUERY_TITLE = 38
-$__iLineNumber=325 & ' - Global Const $WINHTTP_QUERY_USER_AGENT = 39•'
 Global Const $WINHTTP_QUERY_USER_AGENT = 39
-$__iLineNumber=326 & ' - Global Const $WINHTTP_QUERY_WWW_AUTHENTICATE = 40•'
 Global Const $WINHTTP_QUERY_WWW_AUTHENTICATE = 40
-$__iLineNumber=327 & ' - Global Const $WINHTTP_QUERY_PROXY_AUTHENTICATE = 41•'
 Global Const $WINHTTP_QUERY_PROXY_AUTHENTICATE = 41
-$__iLineNumber=328 & ' - Global Const $WINHTTP_QUERY_ACCEPT_RANGES = 42•'
 Global Const $WINHTTP_QUERY_ACCEPT_RANGES = 42
-$__iLineNumber=329 & ' - Global Const $WINHTTP_QUERY_SET_COOKIE = 43•'
 Global Const $WINHTTP_QUERY_SET_COOKIE = 43
-$__iLineNumber=330 & ' - Global Const $WINHTTP_QUERY_COOKIE = 44•'
 Global Const $WINHTTP_QUERY_COOKIE = 44
-$__iLineNumber=331 & ' - Global Const $WINHTTP_QUERY_REQUEST_METHOD = 45•'
 Global Const $WINHTTP_QUERY_REQUEST_METHOD = 45
-$__iLineNumber=332 & ' - Global Const $WINHTTP_QUERY_REFRESH = 46•'
 Global Const $WINHTTP_QUERY_REFRESH = 46
-$__iLineNumber=333 & ' - Global Const $WINHTTP_QUERY_CONTENT_DISPOSITION = 47•'
 Global Const $WINHTTP_QUERY_CONTENT_DISPOSITION = 47
-$__iLineNumber=334 & ' - Global Const $WINHTTP_QUERY_AGE = 48•'
 Global Const $WINHTTP_QUERY_AGE = 48
-$__iLineNumber=335 & ' - Global Const $WINHTTP_QUERY_CACHE_CONTROL = 49•'
 Global Const $WINHTTP_QUERY_CACHE_CONTROL = 49
-$__iLineNumber=336 & ' - Global Const $WINHTTP_QUERY_CONTENT_BASE = 50•'
 Global Const $WINHTTP_QUERY_CONTENT_BASE = 50
-$__iLineNumber=337 & ' - Global Const $WINHTTP_QUERY_CONTENT_LOCATION = 51•'
 Global Const $WINHTTP_QUERY_CONTENT_LOCATION = 51
-$__iLineNumber=338 & ' - Global Const $WINHTTP_QUERY_CONTENT_MD5 = 52•'
 Global Const $WINHTTP_QUERY_CONTENT_MD5 = 52
-$__iLineNumber=339 & ' - Global Const $WINHTTP_QUERY_CONTENT_RANGE = 53•'
 Global Const $WINHTTP_QUERY_CONTENT_RANGE = 53
-$__iLineNumber=340 & ' - Global Const $WINHTTP_QUERY_ETAG = 54•'
 Global Const $WINHTTP_QUERY_ETAG = 54
-$__iLineNumber=341 & ' - Global Const $WINHTTP_QUERY_HOST = 55•'
 Global Const $WINHTTP_QUERY_HOST = 55
-$__iLineNumber=342 & ' - Global Const $WINHTTP_QUERY_IF_MATCH = 56•'
 Global Const $WINHTTP_QUERY_IF_MATCH = 56
-$__iLineNumber=343 & ' - Global Const $WINHTTP_QUERY_IF_NONE_MATCH = 57•'
 Global Const $WINHTTP_QUERY_IF_NONE_MATCH = 57
-$__iLineNumber=344 & ' - Global Const $WINHTTP_QUERY_IF_RANGE = 58•'
 Global Const $WINHTTP_QUERY_IF_RANGE = 58
-$__iLineNumber=345 & ' - Global Const $WINHTTP_QUERY_IF_UNMODIFIED_SINCE = 59•'
 Global Const $WINHTTP_QUERY_IF_UNMODIFIED_SINCE = 59
-$__iLineNumber=346 & ' - Global Const $WINHTTP_QUERY_MAX_FORWARDS = 60•'
 Global Const $WINHTTP_QUERY_MAX_FORWARDS = 60
-$__iLineNumber=347 & ' - Global Const $WINHTTP_QUERY_PROXY_AUTHORIZATION = 61•'
 Global Const $WINHTTP_QUERY_PROXY_AUTHORIZATION = 61
-$__iLineNumber=348 & ' - Global Const $WINHTTP_QUERY_RANGE = 62•'
 Global Const $WINHTTP_QUERY_RANGE = 62
-$__iLineNumber=349 & ' - Global Const $WINHTTP_QUERY_TRANSFER_ENCODING = 63•'
 Global Const $WINHTTP_QUERY_TRANSFER_ENCODING = 63
-$__iLineNumber=350 & ' - Global Const $WINHTTP_QUERY_UPGRADE = 64•'
 Global Const $WINHTTP_QUERY_UPGRADE = 64
-$__iLineNumber=351 & ' - Global Const $WINHTTP_QUERY_VARY = 65•'
 Global Const $WINHTTP_QUERY_VARY = 65
-$__iLineNumber=352 & ' - Global Const $WINHTTP_QUERY_VIA = 66•'
 Global Const $WINHTTP_QUERY_VIA = 66
-$__iLineNumber=353 & ' - Global Const $WINHTTP_QUERY_WARNING = 67•'
 Global Const $WINHTTP_QUERY_WARNING = 67
-$__iLineNumber=354 & ' - Global Const $WINHTTP_QUERY_EXPECT = 68•'
 Global Const $WINHTTP_QUERY_EXPECT = 68
-$__iLineNumber=355 & ' - Global Const $WINHTTP_QUERY_PROXY_CONNECTION = 69•'
 Global Const $WINHTTP_QUERY_PROXY_CONNECTION = 69
-$__iLineNumber=356 & ' - Global Const $WINHTTP_QUERY_UNLESS_MODIFIED_SINCE = 70•'
 Global Const $WINHTTP_QUERY_UNLESS_MODIFIED_SINCE = 70
-$__iLineNumber=357 & ' - Global Const $WINHTTP_QUERY_PROXY_SUPPORT = 75•'
 Global Const $WINHTTP_QUERY_PROXY_SUPPORT = 75
-$__iLineNumber=358 & ' - Global Const $WINHTTP_QUERY_AUTHENTICATION_INFO = 76•'
 Global Const $WINHTTP_QUERY_AUTHENTICATION_INFO = 76
-$__iLineNumber=359 & ' - Global Const $WINHTTP_QUERY_PASSPORT_URLS = 77•'
 Global Const $WINHTTP_QUERY_PASSPORT_URLS = 77
-$__iLineNumber=360 & ' - Global Const $WINHTTP_QUERY_PASSPORT_CONFIG = 78•'
 Global Const $WINHTTP_QUERY_PASSPORT_CONFIG = 78
-$__iLineNumber=361 & ' - Global Const $WINHTTP_QUERY_MAX = 78•'
 Global Const $WINHTTP_QUERY_MAX = 78
-$__iLineNumber=362 & ' - Global Const $WINHTTP_QUERY_CUSTOM = 65535•'
 Global Const $WINHTTP_QUERY_CUSTOM = 65535
-$__iLineNumber=363 & ' - Global Const $WINHTTP_QUERY_FLAG_REQUEST_HEADERS = 0x8000000 ...•'
 Global Const $WINHTTP_QUERY_FLAG_REQUEST_HEADERS = 0x80000000
-$__iLineNumber=364 & ' - Global Const $WINHTTP_QUERY_FLAG_SYSTEMTIME = 0x40000000•'
 Global Const $WINHTTP_QUERY_FLAG_SYSTEMTIME = 0x40000000
-$__iLineNumber=365 & ' - Global Const $WINHTTP_QUERY_FLAG_NUMBER = 0x20000000•'
 Global Const $WINHTTP_QUERY_FLAG_NUMBER = 0x20000000
 
 ; Callback options  ;
-$__iLineNumber=368 & ' - Global Const $WINHTTP_CALLBACK_STATUS_RESOLVING_NAME = 0x000 ...•'
 Global Const $WINHTTP_CALLBACK_STATUS_RESOLVING_NAME = 0x00000001
-$__iLineNumber=369 & ' - Global Const $WINHTTP_CALLBACK_STATUS_NAME_RESOLVED = 0x0000 ...•'
 Global Const $WINHTTP_CALLBACK_STATUS_NAME_RESOLVED = 0x00000002
-$__iLineNumber=370 & ' - Global Const $WINHTTP_CALLBACK_STATUS_CONNECTING_TO_SERVER = ...•'
 Global Const $WINHTTP_CALLBACK_STATUS_CONNECTING_TO_SERVER = 0x00000004
-$__iLineNumber=371 & ' - Global Const $WINHTTP_CALLBACK_STATUS_CONNECTED_TO_SERVER =  ...•'
 Global Const $WINHTTP_CALLBACK_STATUS_CONNECTED_TO_SERVER = 0x00000008
-$__iLineNumber=372 & ' - Global Const $WINHTTP_CALLBACK_STATUS_SENDING_REQUEST = 0x00 ...•'
 Global Const $WINHTTP_CALLBACK_STATUS_SENDING_REQUEST = 0x00000010
-$__iLineNumber=373 & ' - Global Const $WINHTTP_CALLBACK_STATUS_REQUEST_SENT = 0x00000 ...•'
 Global Const $WINHTTP_CALLBACK_STATUS_REQUEST_SENT = 0x00000020
-$__iLineNumber=374 & ' - Global Const $WINHTTP_CALLBACK_STATUS_RECEIVING_RESPONSE = 0 ...•'
 Global Const $WINHTTP_CALLBACK_STATUS_RECEIVING_RESPONSE = 0x00000040
-$__iLineNumber=375 & ' - Global Const $WINHTTP_CALLBACK_STATUS_RESPONSE_RECEIVED = 0x ...•'
 Global Const $WINHTTP_CALLBACK_STATUS_RESPONSE_RECEIVED = 0x00000080
-$__iLineNumber=376 & ' - Global Const $WINHTTP_CALLBACK_STATUS_CLOSING_CONNECTION = 0 ...•'
 Global Const $WINHTTP_CALLBACK_STATUS_CLOSING_CONNECTION = 0x00000100
-$__iLineNumber=377 & ' - Global Const $WINHTTP_CALLBACK_STATUS_CONNECTION_CLOSED = 0x ...•'
 Global Const $WINHTTP_CALLBACK_STATUS_CONNECTION_CLOSED = 0x00000200
-$__iLineNumber=378 & ' - Global Const $WINHTTP_CALLBACK_STATUS_HANDLE_CREATED = 0x000 ...•'
 Global Const $WINHTTP_CALLBACK_STATUS_HANDLE_CREATED = 0x00000400
-$__iLineNumber=379 & ' - Global Const $WINHTTP_CALLBACK_STATUS_HANDLE_CLOSING = 0x000 ...•'
 Global Const $WINHTTP_CALLBACK_STATUS_HANDLE_CLOSING = 0x00000800
-$__iLineNumber=380 & ' - Global Const $WINHTTP_CALLBACK_STATUS_DETECTING_PROXY = 0x00 ...•'
 Global Const $WINHTTP_CALLBACK_STATUS_DETECTING_PROXY = 0x00001000
-$__iLineNumber=381 & ' - Global Const $WINHTTP_CALLBACK_STATUS_REDIRECT = 0x00004000•'
 Global Const $WINHTTP_CALLBACK_STATUS_REDIRECT = 0x00004000
-$__iLineNumber=382 & ' - Global Const $WINHTTP_CALLBACK_STATUS_INTERMEDIATE_RESPONSE  ...•'
 Global Const $WINHTTP_CALLBACK_STATUS_INTERMEDIATE_RESPONSE = 0x00008000
-$__iLineNumber=383 & ' - Global Const $WINHTTP_CALLBACK_STATUS_SECURE_FAILURE = 0x000 ...•'
 Global Const $WINHTTP_CALLBACK_STATUS_SECURE_FAILURE = 0x00010000
-$__iLineNumber=384 & ' - Global Const $WINHTTP_CALLBACK_STATUS_HEADERS_AVAILABLE = 0x ...•'
 Global Const $WINHTTP_CALLBACK_STATUS_HEADERS_AVAILABLE = 0x00020000
-$__iLineNumber=385 & ' - Global Const $WINHTTP_CALLBACK_STATUS_DATA_AVAILABLE = 0x000 ...•'
 Global Const $WINHTTP_CALLBACK_STATUS_DATA_AVAILABLE = 0x00040000
-$__iLineNumber=386 & ' - Global Const $WINHTTP_CALLBACK_STATUS_READ_COMPLETE = 0x0008 ...•'
 Global Const $WINHTTP_CALLBACK_STATUS_READ_COMPLETE = 0x00080000
-$__iLineNumber=387 & ' - Global Const $WINHTTP_CALLBACK_STATUS_WRITE_COMPLETE = 0x001 ...•'
 Global Const $WINHTTP_CALLBACK_STATUS_WRITE_COMPLETE = 0x00100000
-$__iLineNumber=388 & ' - Global Const $WINHTTP_CALLBACK_STATUS_REQUEST_ERROR = 0x0020 ...•'
 Global Const $WINHTTP_CALLBACK_STATUS_REQUEST_ERROR = 0x00200000
-$__iLineNumber=389 & ' - Global Const $WINHTTP_CALLBACK_STATUS_SENDREQUEST_COMPLETE = ...•'
 Global Const $WINHTTP_CALLBACK_STATUS_SENDREQUEST_COMPLETE = 0x00400000
-$__iLineNumber=390 & ' - Global Const $WINHTTP_CALLBACK_FLAG_RESOLVE_NAME = 0x0000000 ...•'
 Global Const $WINHTTP_CALLBACK_FLAG_RESOLVE_NAME = 0x00000003
-$__iLineNumber=391 & ' - Global Const $WINHTTP_CALLBACK_FLAG_CONNECT_TO_SERVER = 0x00 ...•'
 Global Const $WINHTTP_CALLBACK_FLAG_CONNECT_TO_SERVER = 0x0000000C
-$__iLineNumber=392 & ' - Global Const $WINHTTP_CALLBACK_FLAG_SEND_REQUEST = 0x0000003 ...•'
 Global Const $WINHTTP_CALLBACK_FLAG_SEND_REQUEST = 0x00000030
-$__iLineNumber=393 & ' - Global Const $WINHTTP_CALLBACK_FLAG_RECEIVE_RESPONSE = 0x000 ...•'
 Global Const $WINHTTP_CALLBACK_FLAG_RECEIVE_RESPONSE = 0x000000C0
-$__iLineNumber=394 & ' - Global Const $WINHTTP_CALLBACK_FLAG_CLOSE_CONNECTION = 0x000 ...•'
 Global Const $WINHTTP_CALLBACK_FLAG_CLOSE_CONNECTION = 0x00000300
-$__iLineNumber=395 & ' - Global Const $WINHTTP_CALLBACK_FLAG_HANDLES = 0x00000C00•'
 Global Const $WINHTTP_CALLBACK_FLAG_HANDLES = 0x00000C00
-$__iLineNumber=396 & ' - Global Const $WINHTTP_CALLBACK_FLAG_DETECTING_PROXY = $WINHT ...•'
 Global Const $WINHTTP_CALLBACK_FLAG_DETECTING_PROXY = $WINHTTP_CALLBACK_STATUS_DETECTING_PROXY
-$__iLineNumber=397 & ' - Global Const $WINHTTP_CALLBACK_FLAG_REDIRECT = $WINHTTP_CALL ...•'
 Global Const $WINHTTP_CALLBACK_FLAG_REDIRECT = $WINHTTP_CALLBACK_STATUS_REDIRECT
-$__iLineNumber=398 & ' - Global Const $WINHTTP_CALLBACK_FLAG_INTERMEDIATE_RESPONSE =  ...•'
 Global Const $WINHTTP_CALLBACK_FLAG_INTERMEDIATE_RESPONSE = $WINHTTP_CALLBACK_STATUS_INTERMEDIATE_RESPONSE
-$__iLineNumber=399 & ' - Global Const $WINHTTP_CALLBACK_FLAG_SECURE_FAILURE = $WINHTT ...•'
 Global Const $WINHTTP_CALLBACK_FLAG_SECURE_FAILURE = $WINHTTP_CALLBACK_STATUS_SECURE_FAILURE
-$__iLineNumber=400 & ' - Global Const $WINHTTP_CALLBACK_FLAG_SENDREQUEST_COMPLETE = $ ...•'
 Global Const $WINHTTP_CALLBACK_FLAG_SENDREQUEST_COMPLETE = $WINHTTP_CALLBACK_STATUS_SENDREQUEST_COMPLETE
-$__iLineNumber=401 & ' - Global Const $WINHTTP_CALLBACK_FLAG_HEADERS_AVAILABLE = $WIN ...•'
 Global Const $WINHTTP_CALLBACK_FLAG_HEADERS_AVAILABLE = $WINHTTP_CALLBACK_STATUS_HEADERS_AVAILABLE
-$__iLineNumber=402 & ' - Global Const $WINHTTP_CALLBACK_FLAG_DATA_AVAILABLE = $WINHTT ...•'
 Global Const $WINHTTP_CALLBACK_FLAG_DATA_AVAILABLE = $WINHTTP_CALLBACK_STATUS_DATA_AVAILABLE
-$__iLineNumber=403 & ' - Global Const $WINHTTP_CALLBACK_FLAG_READ_COMPLETE = $WINHTTP ...•'
 Global Const $WINHTTP_CALLBACK_FLAG_READ_COMPLETE = $WINHTTP_CALLBACK_STATUS_READ_COMPLETE
-$__iLineNumber=404 & ' - Global Const $WINHTTP_CALLBACK_FLAG_WRITE_COMPLETE = $WINHTT ...•'
 Global Const $WINHTTP_CALLBACK_FLAG_WRITE_COMPLETE = $WINHTTP_CALLBACK_STATUS_WRITE_COMPLETE
-$__iLineNumber=405 & ' - Global Const $WINHTTP_CALLBACK_FLAG_REQUEST_ERROR = $WINHTTP ...•'
 Global Const $WINHTTP_CALLBACK_FLAG_REQUEST_ERROR = $WINHTTP_CALLBACK_STATUS_REQUEST_ERROR
-$__iLineNumber=406 & ' - Global Const $WINHTTP_CALLBACK_FLAG_ALL_COMPLETIONS = 0x007E ...•'
 Global Const $WINHTTP_CALLBACK_FLAG_ALL_COMPLETIONS = 0x007E0000
-$__iLineNumber=407 & ' - Global Const $WINHTTP_CALLBACK_FLAG_ALL_NOTIFICATIONS = 0xFF ...•'
 Global Const $WINHTTP_CALLBACK_FLAG_ALL_NOTIFICATIONS = 0xFFFFFFFF
 
-$__iLineNumber=409 & ' - Global Const $API_RECEIVE_RESPONSE = 1•'
 Global Const $API_RECEIVE_RESPONSE = 1
-$__iLineNumber=410 & ' - Global Const $API_QUERY_DATA_AVAILABLE = 2•'
 Global Const $API_QUERY_DATA_AVAILABLE = 2
-$__iLineNumber=411 & ' - Global Const $API_READ_DATA = 3•'
 Global Const $API_READ_DATA = 3
-$__iLineNumber=412 & ' - Global Const $API_WRITE_DATA = 4•'
 Global Const $API_WRITE_DATA = 4
-$__iLineNumber=413 & ' - Global Const $API_SEND_REQUEST = 5•'
 Global Const $API_SEND_REQUEST = 5
 
-$__iLineNumber=415 & ' - Global Const $WINHTTP_HANDLE_TYPE_SESSION = 1•'
 Global Const $WINHTTP_HANDLE_TYPE_SESSION = 1
-$__iLineNumber=416 & ' - Global Const $WINHTTP_HANDLE_TYPE_CONNECT = 2•'
 Global Const $WINHTTP_HANDLE_TYPE_CONNECT = 2
-$__iLineNumber=417 & ' - Global Const $WINHTTP_HANDLE_TYPE_REQUEST = 3•'
 Global Const $WINHTTP_HANDLE_TYPE_REQUEST = 3
 
-$__iLineNumber=419 & ' - Global Const $WINHTTP_CALLBACK_STATUS_FLAG_CERT_REV_FAILED = ...•'
 Global Const $WINHTTP_CALLBACK_STATUS_FLAG_CERT_REV_FAILED = 0x00000001
-$__iLineNumber=420 & ' - Global Const $WINHTTP_CALLBACK_STATUS_FLAG_INVALID_CERT = 0x ...•'
 Global Const $WINHTTP_CALLBACK_STATUS_FLAG_INVALID_CERT = 0x00000002
-$__iLineNumber=421 & ' - Global Const $WINHTTP_CALLBACK_STATUS_FLAG_CERT_REVOKED = 0x ...•'
 Global Const $WINHTTP_CALLBACK_STATUS_FLAG_CERT_REVOKED = 0x00000004
-$__iLineNumber=422 & ' - Global Const $WINHTTP_CALLBACK_STATUS_FLAG_INVALID_CA = 0x00 ...•'
 Global Const $WINHTTP_CALLBACK_STATUS_FLAG_INVALID_CA = 0x00000008
-$__iLineNumber=423 & ' - Global Const $WINHTTP_CALLBACK_STATUS_FLAG_CERT_CN_INVALID = ...•'
 Global Const $WINHTTP_CALLBACK_STATUS_FLAG_CERT_CN_INVALID = 0x00000010
-$__iLineNumber=424 & ' - Global Const $WINHTTP_CALLBACK_STATUS_FLAG_CERT_DATE_INVALID ...•'
 Global Const $WINHTTP_CALLBACK_STATUS_FLAG_CERT_DATE_INVALID = 0x00000020
-$__iLineNumber=425 & ' - Global Const $WINHTTP_CALLBACK_STATUS_FLAG_CERT_WRONG_USAGE  ...•'
 Global Const $WINHTTP_CALLBACK_STATUS_FLAG_CERT_WRONG_USAGE = 0x00000040
-$__iLineNumber=426 & ' - Global Const $WINHTTP_CALLBACK_STATUS_FLAG_SECURITY_CHANNEL_ ...•'
 Global Const $WINHTTP_CALLBACK_STATUS_FLAG_SECURITY_CHANNEL_ERROR = 0x80000000
 
-$__iLineNumber=428 & ' - Global Const $WINHTTP_FLAG_SECURE_PROTOCOL_SSL2 = 0x00000008•'
 Global Const $WINHTTP_FLAG_SECURE_PROTOCOL_SSL2 = 0x00000008
-$__iLineNumber=429 & ' - Global Const $WINHTTP_FLAG_SECURE_PROTOCOL_SSL3 = 0x00000020•'
 Global Const $WINHTTP_FLAG_SECURE_PROTOCOL_SSL3 = 0x00000020
-$__iLineNumber=430 & ' - Global Const $WINHTTP_FLAG_SECURE_PROTOCOL_TLS1 = 0x00000080•'
 Global Const $WINHTTP_FLAG_SECURE_PROTOCOL_TLS1 = 0x00000080
-$__iLineNumber=431 & ' - Global Const $WINHTTP_FLAG_SECURE_PROTOCOL_TLS1_1 = 0x000002 ...•'
 Global Const $WINHTTP_FLAG_SECURE_PROTOCOL_TLS1_1 = 0x00000200
-$__iLineNumber=432 & ' - Global Const $WINHTTP_FLAG_SECURE_PROTOCOL_TLS1_2 = 0x000008 ...•'
 Global Const $WINHTTP_FLAG_SECURE_PROTOCOL_TLS1_2 = 0x00000800
-$__iLineNumber=433 & ' - Global Const $WINHTTP_FLAG_SECURE_PROTOCOL_ALL = 0x000000A8•'
 Global Const $WINHTTP_FLAG_SECURE_PROTOCOL_ALL = 0x000000A8
 
-$__iLineNumber=435 & ' - Global Const $WINHTTP_AUTH_SCHEME_BASIC = 0x00000001•'
 Global Const $WINHTTP_AUTH_SCHEME_BASIC = 0x00000001
-$__iLineNumber=436 & ' - Global Const $WINHTTP_AUTH_SCHEME_NTLM = 0x00000002•'
 Global Const $WINHTTP_AUTH_SCHEME_NTLM = 0x00000002
-$__iLineNumber=437 & ' - Global Const $WINHTTP_AUTH_SCHEME_PASSPORT = 0x00000004•'
 Global Const $WINHTTP_AUTH_SCHEME_PASSPORT = 0x00000004
-$__iLineNumber=438 & ' - Global Const $WINHTTP_AUTH_SCHEME_DIGEST = 0x00000008•'
 Global Const $WINHTTP_AUTH_SCHEME_DIGEST = 0x00000008
-$__iLineNumber=439 & ' - Global Const $WINHTTP_AUTH_SCHEME_NEGOTIATE = 0x00000010•'
 Global Const $WINHTTP_AUTH_SCHEME_NEGOTIATE = 0x00000010
 
-$__iLineNumber=441 & ' - Global Const $WINHTTP_AUTH_TARGET_SERVER = 0x00000000•'
 Global Const $WINHTTP_AUTH_TARGET_SERVER = 0x00000000
-$__iLineNumber=442 & ' - Global Const $WINHTTP_AUTH_TARGET_PROXY = 0x00000001•'
 Global Const $WINHTTP_AUTH_TARGET_PROXY = 0x00000001
 
 
-$__iLineNumber=445 & ' - Global Const $WINHTTP_AUTOPROXY_AUTO_DETECT = 0x00000001•'
 Global Const $WINHTTP_AUTOPROXY_AUTO_DETECT = 0x00000001
-$__iLineNumber=446 & ' - Global Const $WINHTTP_AUTOPROXY_CONFIG_URL = 0x00000002•'
 Global Const $WINHTTP_AUTOPROXY_CONFIG_URL = 0x00000002
-$__iLineNumber=447 & ' - Global Const $WINHTTP_AUTOPROXY_RUN_INPROCESS = 0x00010000•'
 Global Const $WINHTTP_AUTOPROXY_RUN_INPROCESS = 0x00010000
-$__iLineNumber=448 & ' - Global Const $WINHTTP_AUTOPROXY_RUN_OUTPROCESS_ONLY = 0x0002 ...•'
 Global Const $WINHTTP_AUTOPROXY_RUN_OUTPROCESS_ONLY = 0x00020000
-$__iLineNumber=449 & ' - Global Const $WINHTTP_AUTO_DETECT_TYPE_DHCP = 0x00000001•'
 Global Const $WINHTTP_AUTO_DETECT_TYPE_DHCP = 0x00000001
-$__iLineNumber=450 & ' - Global Const $WINHTTP_AUTO_DETECT_TYPE_DNS_A = 0x00000002•'
 Global Const $WINHTTP_AUTO_DETECT_TYPE_DNS_A = 0x00000002

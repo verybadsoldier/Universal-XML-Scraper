@@ -1,7 +1,39 @@
+2.2.0.2
+Corrected :
+ - Full Scrape don't neverend anymore.
+ - SSH kill works now on scrape demande.
+ - Date with only a 'Year' will work now (the date will be 'Year/01/01')
+ - When adding Missing Rom, Name were "(Clone, Beta, Demo, ...)". It's OK now ;)
+ - When you force JPG or PNG, Video stay in MP4.  
+
+Modification :
+ - New ProgressBar changing color (Green = OK, Red = Timeout or error download, Yellow = Not found)  
+
+Added :
+ - New, in case UXS Hang (it never happen ^^), when you re-launch a Scrape, it will ask you if you want to generate a gamelist.xml with the temporary file found.
+ - New Shortcut was created at the first launch : 'Silent_UXS'. You can now run UXS silently ;)
+ - New Visual info about Engine Use. Some check box corresponding to the Thread Number will tell you if the Engine is used or not.
+ - 2 New Advanced Menu : Reset Autoconfiguration Path and Alt Autoconfiguration Path (only for Retropie, it put the Rom's Folder Path)
+ - New Element Type : RomExcluded   
+
+Exemple :
+
+	<Element Type="RomExcluded">
+		<Source_Type>Variable_Value</Source_Type>
+		<Source_Value>%AutoExclude%</Source_Value>
+		<AutoExcludeEXT>bin|img|iso|ccd|sub</AutoExcludeEXT>
+		<AutoExcludeValue>(Track |[Bios]|(Bios)</AutoExcludeValue>
+	</Element>
+
+Mean :
+	When a duplicate name file (without extension) is found:
+	- it check the extension. If in list (bin|img|iso|ccd|sub) it won't scrape it
+	- it check if the file contain a value ("(Track ","[Bios]","(Bios)"). If yes, it won't scrape it
+
 2.2.0.1
 * Corrected :
  - SSH command are ok now
- - Thread number are now keept
+ - Thread number are now kept
 * Modification :
  - New ProgressBar with count on it
  - New Algo for estimated time

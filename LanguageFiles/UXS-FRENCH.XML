@@ -53,10 +53,13 @@
 		<mnu_cfg_config_Option>Options</mnu_cfg_config_Option>
 		<mnu_cfg_config_PIC>Configuration des images</mnu_cfg_config_PIC>
 		<mnu_cfg_config_autoconf>Configuration des chemins de la configuration automatique</mnu_cfg_config_autoconf>
+		<mnu_cfg_config_reset_autoconf>Réinitialiser les chemins de la configuration automatique</mnu_cfg_config_reset_autoconf>
+		<mnu_cfg_config_alt_autoconf>Utiliser les chemins alternatifs de la configuration automatique</mnu_cfg_config_alt_autoconf>
 		<mnu_cfg_profil>Charger un profil</mnu_cfg_profil>
 		<mnu_cfg_miximage>Changer le profil Mix Images</mnu_cfg_miximage>
 		<mnu_cfg_download_miximage>Telecharger des profil Mix Images</mnu_cfg_download_miximage>
 		<mnu_cfg_langue>Changer de langue</mnu_cfg_langue>
+		
 		<mnu_scrape>Scraper</mnu_scrape>
 		<mnu_scrape_autoconf>Sélection du système (Conf Auto)</mnu_scrape_autoconf>
 		<mnu_scrape_solo>Scraper </mnu_scrape_solo>

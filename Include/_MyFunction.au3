@@ -849,7 +849,7 @@ Func _GDIPlus_ResizeMax($iPath, $iMAX_Width, $iMAX_Height)
 	$iWidth = _GDIPlus_ImageGetWidth($hImage)
 	If $iWidth = 4294967295 Then $iWidth = 0 ;4294967295 en cas d'erreur.
 	$iHeight = _GDIPlus_ImageGetHeight($hImage)
-	If $iWidth = -1 Or $iHeight = -1 Then MsgBox(0, "error", $iPath & " or " & $iPath_Temp & " Fucked")
+	If $iWidth = -1 Or $iHeight = -1 Then MsgBox(0, "error", $iPath & " or " & $iPath_Temp & " Problem")
 	$iRatio = $iHeight / $iWidth
 	If $iMAX_Width <= 0 And $iMAX_Height > 0 Then $iMAX_Width = $iMAX_Height / $iRatio
 	If $iMAX_Height <= 0 And $iMAX_Width > 0 Then $iMAX_Height = $iMAX_Width * $iRatio
@@ -1488,6 +1488,12 @@ EndFunc   ;==>_GDIPlus_GraphicsDrawImageRectRectTrans
 ;				 	$aPicParameters[6] = Target_BottomLeftX
 ;				 	$aPicParameters[7] = Target_BottomLeftY
 ;				 	$aPicParameters[8] = Target_Maximize
+;					$aPicParameters[9] = Target_OriginX
+;					$aPicParameters[10] = Target_OriginY
+;					$aPicParameters[11] = Target_BottomRightX
+;					$aPicParameters[12] = Target_BottomRightY
+;					$aPicParameters[13] = Target_OriginPicX
+;					$aPicParameters[14] = Target_OriginPicY
 ; Related .......:
 ; Link ..........;
 ; Example .......; No
@@ -1630,9 +1636,20 @@ Func _GDIPlus_Imaging($iPath, $aPicParameters, $vTarget_Width, $vTarget_Height)
 	$Image_C4X = $Image_C4X + _GDIPlus_RelativePos($aPicParameters[9], $vTarget_Width) - $Image_OriginX
 	$Image_C4Y = $Image_C4Y + _GDIPlus_RelativePos($aPicParameters[10], $vTarget_Height) - $Image_OriginY
 
+	_LOG("$Image_C1X = " & $Image_C1X, 2, $iLOGPath)
+	_LOG("$Image_C1Y = " & $Image_C1Y, 2, $iLOGPath)
+	_LOG("$Image_C2X = " & $Image_C2X, 2, $iLOGPath)
+	_LOG("$Image_C2Y = " & $Image_C2Y, 2, $iLOGPath)
+	_LOG("$Image_C3X = " & $Image_C3X, 2, $iLOGPath)
+	_LOG("$Image_C3Y = " & $Image_C3Y, 2, $iLOGPath)
+	_LOG("$Image_C4X = " & $Image_C4X, 2, $iLOGPath)
+	_LOG("$Image_C4Y = " & $Image_C4Y, 2, $iLOGPath)
+
 	If $vNo4thPoint = 1 Then
+		_LOG("_GDIPlus_DrawImagePoints", 2, $iLOGPath)
 		_GDIPlus_DrawImagePoints($hGraphic, $hImage, $Image_C1X, $Image_C1Y, $Image_C2X, $Image_C2Y, $Image_C3X, $Image_C3Y)
 	Else
+		_LOG("_GDIPlus_GraphicsDrawImage_4Points", 2, $iLOGPath)
 		_GDIPlus_GraphicsDrawImage_4Points($hGraphic, $hImage, $Image_C1X, $Image_C1Y, $Image_C2X, $Image_C2Y, $Image_C3X, $Image_C3Y, $Image_C4X, $Image_C4Y)
 	EndIf
 	_GDIPlus_ImageSaveToFile($hBMPBuff, $iPath)

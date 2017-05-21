@@ -5,7 +5,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper
-#AutoIt3Wrapper_Res_Fileversion=1.2.0.7
+#AutoIt3Wrapper_Res_Fileversion=1.2.0.8
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -255,26 +255,25 @@ Func _Game_Make($aRomList, $vBoucle, $aConfig, $oXMLProfil)
 						Local $vTarget_NameOption_Alt_Value = "0"
 						Local $vTarget_NameOption_Best_Value = "0"
 
-						If _XML_Read('Profil/Element[@Type="Name"]/Target_NameOption_Clone', 0, "", $oXMLProfil) = "Yes" Then $vTarget_NameOption_Clone_Value = _Coalesce(_XML_Read("Data/jeu/cloneof", 0, $aRomList[8]), "0")
-						If _XML_Read('Profil/Element[@Type="Name"]/Target_NameOption_Beta', 0, "", $oXMLProfil) = "Yes" Then $vTarget_NameOption_Beta_Value = _Coalesce(_XML_Read('Data/jeu/roms/rom[romid="' & $vRomId & '"]/beta', 0, $aRomList[8]), "0")
-						If _XML_Read('Profil/Element[@Type="Name"]/Target_NameOption_Demo', 0, "", $oXMLProfil) = "Yes" Then $vTarget_NameOption_Demo_Value = _Coalesce(_XML_Read('Data/jeu/roms/rom[romid="' & $vRomId & '"]/demo', 0, $aRomList[8]), "0")
-						If _XML_Read('Profil/Element[@Type="Name"]/Target_NameOption_Proto', 0, "", $oXMLProfil) = "Yes" Then $vTarget_NameOption_Proto_Value = _Coalesce(_XML_Read('Data/jeu/roms/rom[romid="' & $vRomId & '"]/proto', 0, $aRomList[8]), "0")
-						If _XML_Read('Profil/Element[@Type="Name"]/Target_NameOption_Trad', 0, "", $oXMLProfil) = "Yes" Then $vTarget_NameOption_Trad_Value = _Coalesce(_XML_Read('Data/jeu/roms/rom[romid="' & $vRomId & '"]/trad', 0, $aRomList[8]), "0")
-						If _XML_Read('Profil/Element[@Type="Name"]/Target_NameOption_Hack', 0, "", $oXMLProfil) = "Yes" Then $vTarget_NameOption_Hack_Value = _Coalesce(_XML_Read('Data/jeu/roms/rom[romid="' & $vRomId & '"]/hack', 0, $aRomList[8]), "0")
-						If _XML_Read('Profil/Element[@Type="Name"]/Target_NameOption_Unl', 0, "", $oXMLProfil) = "Yes" Then $vTarget_NameOption_Unl_Value = _Coalesce(_XML_Read('Data/jeu/roms/rom[romid="' & $vRomId & '"]/unl', 0, $aRomList[8]), "0")
-						If _XML_Read('Profil/Element[@Type="Name"]/Target_NameOption_Alt', 0, "", $oXMLProfil) = "Yes" Then $vTarget_NameOption_Alt_Value = _Coalesce(_XML_Read('Data/jeu/roms/rom[romid="' & $vRomId & '"]/alt', 0, $aRomList[8]), "0")
-						If _XML_Read('Profil/Element[@Type="Name"]/Target_NameOption_Best', 0, "", $oXMLProfil) = "Yes" Then $vTarget_NameOption_Best_Value = _Coalesce(_XML_Read('Data/jeu/roms/rom[romid="' & $vRomId & '"]/best', 0, $aRomList[8]), "0")
-
 						$vNameTag = ""
-						If _Coalesce($vTarget_NameOption_Clone_Value, "0") <> "0" Then $vNameTag = $vNameTag & "Clone, "
-						If _Coalesce($vTarget_NameOption_Beta_Value, "0") <> "0" Then $vNameTag = $vNameTag & "Beta, "
-						If _Coalesce($vTarget_NameOption_Demo_Value, "0") <> "0" Then $vNameTag = $vNameTag & "Demo, "
-						If _Coalesce($vTarget_NameOption_Proto_Value, "0") <> "0" Then $vNameTag = $vNameTag & "Proto, "
-						If _Coalesce($vTarget_NameOption_Trad_Value, "0") <> "0" Then $vNameTag = $vNameTag & "Trad, "
-						If _Coalesce($vTarget_NameOption_Hack_Value, "0") <> "0" Then $vNameTag = $vNameTag & "Hack, "
-						If _Coalesce($vTarget_NameOption_Unl_Value, "0") <> "0" Then $vNameTag = $vNameTag & "Unl, "
-						If _Coalesce($vTarget_NameOption_Alt_Value, "0") <> "0" Then $vNameTag = $vNameTag & "Alt, "
-						If _Coalesce($vTarget_NameOption_Best_Value, "0") <> "0" Then $vNameTag = $vNameTag & "Best, "
+						If _XML_Read('Profil/Element[@Type="Name"]/Target_NameOption_Clone', 0, "", $oXMLProfil) = "Yes" _
+								And _XML_Read("Data/jeu/cloneof", 0, $aRomList[8]) = "1" Then $vNameTag = $vNameTag & "Clone, "
+						If _XML_Read('Profil/Element[@Type="Name"]/Target_NameOption_Beta', 0, "", $oXMLProfil) = "Yes" _
+								And _XML_Read('Data/jeu/roms/rom[romid="' & $vRomId & '"]/beta', 0, $aRomList[8]) = "1" Then $vNameTag = $vNameTag & "Beta, "
+						If _XML_Read('Profil/Element[@Type="Name"]/Target_NameOption_Demo', 0, "", $oXMLProfil) = "Yes" _
+								And _XML_Read('Data/jeu/roms/rom[romid="' & $vRomId & '"]/demo', 0, $aRomList[8]) = "1" Then $vNameTag = $vNameTag & "Demo, "
+						If _XML_Read('Profil/Element[@Type="Name"]/Target_NameOption_Proto', 0, "", $oXMLProfil) = "Yes" _
+								And _XML_Read('Data/jeu/roms/rom[romid="' & $vRomId & '"]/proto', 0, $aRomList[8]) = "1" Then $vNameTag = $vNameTag & "Proto, "
+						If _XML_Read('Profil/Element[@Type="Name"]/Target_NameOption_Trad', 0, "", $oXMLProfil) = "Yes" _
+								And _XML_Read('Data/jeu/roms/rom[romid="' & $vRomId & '"]/trad', 0, $aRomList[8]) = "1" Then $vNameTag = $vNameTag & "Trad, "
+						If _XML_Read('Profil/Element[@Type="Name"]/Target_NameOption_Hack', 0, "", $oXMLProfil) = "Yes" _
+								And _XML_Read('Data/jeu/roms/rom[romid="' & $vRomId & '"]/hack', 0, $aRomList[8]) = "1" Then $vNameTag = $vNameTag & "Hack, "
+						If _XML_Read('Profil/Element[@Type="Name"]/Target_NameOption_Unl', 0, "", $oXMLProfil) = "Yes" _
+								And _XML_Read('Data/jeu/roms/rom[romid="' & $vRomId & '"]/unl', 0, $aRomList[8]) = "1" Then $vNameTag = $vNameTag & "Unl, "
+						If _XML_Read('Profil/Element[@Type="Name"]/Target_NameOption_Alt', 0, "", $oXMLProfil) = "Yes" _
+								And _XML_Read('Data/jeu/roms/rom[romid="' & $vRomId & '"]/alt', 0, $aRomList[8]) = "1" Then $vNameTag = $vNameTag & "Alt, "
+						If _XML_Read('Profil/Element[@Type="Name"]/Target_NameOption_Best', 0, "", $oXMLProfil) = "Yes" _
+								And _XML_Read('Data/jeu/roms/rom[romid="' & $vRomId & '"]/best', 0, $aRomList[8]) = "1" Then $vNameTag = $vNameTag & "Best, "
 						If StringRight($vNameTag, 2) = ", " Then $vNameTag = StringTrimRight($vNameTag, 2)
 						If $vNameTag <> "" Then $vValue = $vValue & " (" & $vNameTag & ")"
 
@@ -355,6 +354,7 @@ Func _XML_Read_Source($aRomList, $vBoucle, $aConfig, $oXMLProfil, $vWhile)
 					$vDownloadTag = _XML_Read("/Profil/" & $vNodeType & "[" & $vWhile & "]/Source_Download_Tag", 0, "", $oXMLProfil)
 					If $vNodeType = "Folder" Then $vDownloadTag = $vDownloadTag & "-folder"
 					$vDownloadExt = _Coalesce(IniRead($iINIPath, "LAST_USE", "$vTarget_Image_Ext", ""), _XML_Read("/Profil/" & $vNodeType & "[" & $vWhile & "]/Source_Download_Ext", 0, "", $oXMLProfil))
+					If StringInStr($vDownloadURL, "mediaformat=mp4") Then $vDownloadExt = "mp4"
 					$aPathSplit = _PathSplit(StringReplace($aRomList[0], "\", "_"), $sDrive, $sDir, $sFileName, $sExtension)
 					$vSource_ImagePath = $aConfig[3] & "\" & $sFileName & $vDownloadTag & "." & $vDownloadExt
 					$vSource_ImagePath = _Picture_Download($vDownloadURL, $vSource_ImagePath, $oXMLProfil, $vDownloadMaxWidth, $vDownloadMaxHeight)
@@ -635,6 +635,7 @@ Func _MIX_Engine_Dim($vWhile, $oMixConfig)
 	$aPicParameters[12] = _XML_Read("/Profil/Element[" & $vWhile & "]/Target_BottomRightY", 0, "", $oMixConfig)
 	$aPicParameters[13] = _Coalesce(_XML_Read("/Profil/Element[" & $vWhile & "]/Target_OriginPicX", 0, "", $oMixConfig), Default)
 	$aPicParameters[14] = _Coalesce(_XML_Read("/Profil/Element[" & $vWhile & "]/Target_OriginPicY", 0, "", $oMixConfig), Default)
+	_ArrayDisplay($aPicParameters, "$aPicParameters") ;Debug
 	Return $aPicParameters
 EndFunc   ;==>_MIX_Engine_Dim
 

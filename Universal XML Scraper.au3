@@ -257,9 +257,13 @@ Local $MC_MixDownload = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_cfg_downlo
 Local $MC_Separation3 = GUICtrlCreateMenuItem("", $MC)
 Local $MC_config_MISC = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_cfg_config_MISC"), $MC)
 Local $MC_config_Advanced = GUICtrlCreateMenu("Advanced", $MC)
+Local $MC_reset_autoconf = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_cfg_config_reset_autoconf"), $MC_config_Advanced)
+Local $MC_alt_autoconf = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_cfg_config_alt_autoconf"), $MC_config_Advanced)
+Local $MC_Separation4 = GUICtrlCreateMenuItem("", $MC_config_Advanced)
+Local $MC_config_autoconf = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_cfg_config_autoconf"), $MC_config_Advanced)
 Local $MC_config_PIC = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_cfg_config_PIC"), $MC_config_Advanced)
 Local $MC_Config_LU = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_cfg_config_LU"), $MC_config_Advanced)
-Local $MC_config_autoconf = GUICtrlCreateMenuItem(_MultiLang_GetText("mnu_cfg_config_autoconf"), $MC_config_Advanced)
+GUICtrlSetState($MC_alt_autoconf, $GUI_DISABLE)
 
 Global $MOption = GUICtrlCreateMenu(_MultiLang_GetText("mnu_cfg_config_Option"), -1, 3)
 
@@ -483,6 +487,41 @@ While 1
 					EndIf
 				Next
 			EndIf
+
+		Case $MC_reset_autoconf
+			_XML_Replace("Profil/AutoConf/Target_XMLName", _XML_Read("Profil/DefaultAutoConf/Target_XMLName", 0, "", $oXMLProfil), 0, "", $oXMLProfil)
+			_XML_Replace("Profil/AutoConf/Target_RomPath", _XML_Read("Profil/DefaultAutoConf/Target_RomPath", 0, "", $oXMLProfil), 0, "", $oXMLProfil)
+			_XML_Replace("Profil/AutoConf/Source_ImagePath", _XML_Read("Profil/DefaultAutoConf/Source_ImagePath", 0, "", $oXMLProfil), 0, "", $oXMLProfil)
+			_XML_Replace("Profil/AutoConf/Target_ImagePath", _XML_Read("Profil/DefaultAutoConf/Target_ImagePath", 0, "", $oXMLProfil), 0, "", $oXMLProfil)
+			FileDelete($vProfilsPath)
+			_XML_SaveToFile($oXMLProfil, $vProfilsPath)
+			$aDIRList = _Check_autoconf($oXMLProfil)
+			If IsArray($aDIRList) Then
+				IniWrite($iINIPath, "LAST_USE", "$vSource_RomPath", $aDIRList[1][1])
+				IniWrite($iINIPath, "LAST_USE", "$vTarget_RomPath", $aDIRList[1][2])
+				IniWrite($iINIPath, "LAST_USE", "$vTarget_XMLName", $aDIRList[1][3])
+				IniWrite($iINIPath, "LAST_USE", "$vSource_ImagePath", $aDIRList[1][4])
+				IniWrite($iINIPath, "LAST_USE", "$vTarget_ImagePath", $aDIRList[1][5])
+				_LoadConfig()
+				_GUI_Refresh($oXMLProfil)
+			EndIf
+		Case $MC_alt_autoconf
+			_XML_Replace("Profil/AutoConf/Target_XMLName", _XML_Read("Profil/AltAutoConf/Target_XMLName", 0, "", $oXMLProfil), 0, "", $oXMLProfil)
+			_XML_Replace("Profil/AutoConf/Target_RomPath", _XML_Read("Profil/AltAutoConf/Target_RomPath", 0, "", $oXMLProfil), 0, "", $oXMLProfil)
+			_XML_Replace("Profil/AutoConf/Source_ImagePath", _XML_Read("Profil/AltAutoConf/Source_ImagePath", 0, "", $oXMLProfil), 0, "", $oXMLProfil)
+			_XML_Replace("Profil/AutoConf/Target_ImagePath", _XML_Read("Profil/AltAutoConf/Target_ImagePath", 0, "", $oXMLProfil), 0, "", $oXMLProfil)
+			FileDelete($vProfilsPath)
+			_XML_SaveToFile($oXMLProfil, $vProfilsPath)
+			$aDIRList = _Check_autoconf($oXMLProfil)
+			If IsArray($aDIRList) Then
+				IniWrite($iINIPath, "LAST_USE", "$vSource_RomPath", $aDIRList[1][1])
+				IniWrite($iINIPath, "LAST_USE", "$vTarget_RomPath", $aDIRList[1][2])
+				IniWrite($iINIPath, "LAST_USE", "$vTarget_XMLName", $aDIRList[1][3])
+				IniWrite($iINIPath, "LAST_USE", "$vSource_ImagePath", $aDIRList[1][4])
+				IniWrite($iINIPath, "LAST_USE", "$vTarget_ImagePath", $aDIRList[1][5])
+				_LoadConfig()
+				_GUI_Refresh($oXMLProfil)
+			EndIf
 		Case $MP_Parameter
 			$GUI_Config_SSHParameter = _GUI_Config_SSHParameter($oXMLProfil)
 			If $GUI_Config_SSHParameter = 1 Then
@@ -571,6 +610,7 @@ While 1
 					Next
 				EndIf
 				$vScrapeCancelled = 0
+				DirRemove($iTEMPPath, 1)
 				_GUI_Refresh($oXMLProfil)
 			EndIf
 		Case $MS_FullScrape ;FullScrape
@@ -1509,6 +1549,8 @@ Func _GUI_Refresh($oXMLProfil = -1, $ScrapIP = 0, $vScrapeOK = 0) ;Refresh GUI
 			GUICtrlSetData($MC_Wizard, _MultiLang_GetText("mnu_cfg_Wizard"))
 			GUICtrlSetData($MC_Config_LU, _MultiLang_GetText("mnu_cfg_config_LU"))
 			GUICtrlSetData($MC_config_autoconf, _MultiLang_GetText("mnu_cfg_config_autoconf"))
+			GUICtrlSetData($MC_reset_autoconf, _MultiLang_GetText("mnu_cfg_config_reset_autoconf"))
+			GUICtrlSetData($MC_alt_autoconf, _MultiLang_GetText("mnu_cfg_config_alt_autoconf"))
 			GUICtrlSetData($MC_config_PIC, _MultiLang_GetText("mnu_cfg_config_PIC"))
 			GUICtrlSetData($MC_config_MISC, _MultiLang_GetText("mnu_cfg_config_MISC"))
 			GUICtrlSetData($MC_MixDownload, _MultiLang_GetText("mnu_cfg_download_miximage"))
@@ -1527,6 +1569,13 @@ Func _GUI_Refresh($oXMLProfil = -1, $ScrapIP = 0, $vScrapeOK = 0) ;Refresh GUI
 
 			GUICtrlSetData($MP_Parameter, _MultiLang_GetText("mnu_ssh_Parameter"))
 
+			;Alt Autoconf Menu
+			If _XML_NodeExists($oXMLProfil, "Profil/AltAutoConf/Source_RootPath") = $XML_RET_FAILURE Then
+				GUICtrlSetState($MC_alt_autoconf, $GUI_DISABLE)
+			Else
+				GUICtrlSetState($MC_alt_autoconf, $GUI_ENABLE)
+			EndIf
+
 			;SSH Menu
 			If _XML_NodeExists($oXMLProfil, "Profil/Plink/Ip") = $XML_RET_FAILURE Then
 				_LOG("SSH Disable", 1, $iLOGPath)
@@ -1536,7 +1585,6 @@ Func _GUI_Refresh($oXMLProfil = -1, $ScrapIP = 0, $vScrapeOK = 0) ;Refresh GUI
 						GUICtrlDelete($MP_[$vBoucle])
 					Next
 				EndIf
-
 			Else
 				_LOG("SSH Enable", 1, $iLOGPath)
 				GUICtrlSetState($MP, $GUI_ENABLE)
@@ -2891,7 +2939,7 @@ Func _Wizz_SSId()
 	$L_SSPwd = GUICtrlCreateLabel(_MultiLang_GetText("Win_Wizard_SSIdChoice_Pwd"), 116, 50, 70, 25, $SS_CENTERIMAGE, -1)
 	$I_SSId = GUICtrlCreateInput(IniRead($iINIPath, "LAST_USE", "$vSSLogin", ""), 186, 25, 145, 25, $ES_CENTER, $WS_EX_CLIENTEDGE)
 	GUICtrlSetTip(-1, _MultiLang_GetText("Win_Wizard_SSIdChoice_Tip_Id"))
-	$I_SSPwd = GUICtrlCreateInput(BinaryToString(_Crypt_DecryptData(IniRead($iINIPath, "LAST_USE", "$vSSPassword", ""), "1gdf1g1gf", $CALG_RC4)), 186, 50, 145, 25, BitOR($ES_CENTER, $ES_PASSWORD), $WS_EX_CLIENTEDGE)
+	$I_SSPwd = GUICtrlCreateInput(BinaryToString(_Crypt_DecryptData(IniRead($iINIPath, "LAST_USE", "$vSSPassword", ""), "1gdf1g1gf", $CALG_RC4)), 186, 50, 145, 25, BitOR($GUI_SS_DEFAULT_INPUT, $ES_PASSWORD), $WS_EX_CLIENTEDGE)
 	GUICtrlSetTip(-1, _MultiLang_GetText("Win_Wizard_SSIdChoice_Tip_Pwd"))
 	$B_SSTest = GUICtrlCreateButton(_MultiLang_GetText("Win_Wizard_SSIdChoice_Test"), 116, 85, 215, 30, -1, -1)
 	GUICtrlSetTip(-1, _MultiLang_GetText("Win_Wizard_SSIdChoice_Tip_Test"))
@@ -3052,7 +3100,7 @@ Func _TestServer($vNbThreadMax = 1)
 	Switch StringLower($aServerList[0])
 		Case 'fallback'
 			For $Boucle = 1 To UBound($aServerList) - 1
-				If _CheckURL($aServerList[$Boucle] & "/api/ssuserInfos.php?devid=xxx&devpassword=yyy&softname=zzz&output=xml&ssid=test&sspassword=test") Then
+				If _CheckURL($aServerList[$Boucle] & "api/ssuserInfos.php?devid=xxx&devpassword=yyy&softname=zzz&output=xml&ssid=test&sspassword=test") Then
 					_LOG("Server (fallback) = " & $aServerList[$Boucle], 1, $iLOGPath)
 ;~ 					Return "http://new.screenscraper.fr/"
 					Return $aServerList[$Boucle]
@@ -3061,7 +3109,7 @@ Func _TestServer($vNbThreadMax = 1)
 		Case 'priorisation'
 			If $vNbThreadMax = 1 Then
 				For $Boucle = UBound($aServerList) - 1 To 1 Step -1
-					If _CheckURL($aServerList[$Boucle] & "/api/ssuserInfos.php?devid=xxx&devpassword=yyy&softname=zzz&output=xml&ssid=test&sspassword=test") Then
+					If _CheckURL($aServerList[$Boucle] & "api/ssuserInfos.php?devid=xxx&devpassword=yyy&softname=zzz&output=xml&ssid=test&sspassword=test") Then
 						_LOG("Server (priorisation Unreg) = " & $aServerList[$Boucle], 1, $iLOGPath)
 ;~ 						Return "http://new.screenscraper.fr/"
 						Return $aServerList[$Boucle]
@@ -3069,7 +3117,7 @@ Func _TestServer($vNbThreadMax = 1)
 				Next
 			Else
 				For $Boucle = 1 To UBound($aServerList) - 1
-					If _CheckURL($aServerList[$Boucle] & "/api/ssuserInfos.php?devid=xxx&devpassword=yyy&softname=zzz&output=xml&ssid=test&sspassword=test") Then
+					If _CheckURL($aServerList[$Boucle] & "api/ssuserInfos.php?devid=xxx&devpassword=yyy&softname=zzz&output=xml&ssid=test&sspassword=test") Then
 						_LOG("Server (priorisation Reg)= " & $aServerList[$Boucle], 1, $iLOGPath)
 ;~ 						Return "http://new.screenscraper.fr/"
 						Return $aServerList[$Boucle]
