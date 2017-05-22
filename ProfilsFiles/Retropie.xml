@@ -120,7 +120,7 @@
 		<Source_Download_Path>%Local_Path_File%</Source_Download_Path>
 		<Source_Download_Tag>-marquee</Source_Download_Tag>
 		<Source_Download_Ext>jpg</Source_Download_Ext>
-		<Source_Value>Data/jeu/medias/media_fanart</Source_Value>
+		<Source_Value>None</Source_Value>
 		<Target_Type>XML_Path</Target_Type>
 		<Target_Path_Type>%XML_Path_File%</Target_Path_Type>
 		<Target_Value>game/marquee</Target_Value>
@@ -130,7 +130,7 @@
 		<Source_Download_Path>%Local_Path_File%</Source_Download_Path>
 		<Source_Download_Tag>-video</Source_Download_Tag>
 		<Source_Download_Ext>mp4</Source_Download_Ext>
-		<Source_Value>Data/jeu/medias/media_video</Source_Value>
+		<Source_Value>None</Source_Value>
 		<Target_Type>XML_Path</Target_Type>
 		<Target_Path_Type>%XML_Path_File%</Target_Path_Type>
 		<Target_Value>game/video</Target_Value>

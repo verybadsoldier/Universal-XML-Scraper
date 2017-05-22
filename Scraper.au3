@@ -635,7 +635,7 @@ Func _MIX_Engine_Dim($vWhile, $oMixConfig)
 	$aPicParameters[12] = _XML_Read("/Profil/Element[" & $vWhile & "]/Target_BottomRightY", 0, "", $oMixConfig)
 	$aPicParameters[13] = _Coalesce(_XML_Read("/Profil/Element[" & $vWhile & "]/Target_OriginPicX", 0, "", $oMixConfig), Default)
 	$aPicParameters[14] = _Coalesce(_XML_Read("/Profil/Element[" & $vWhile & "]/Target_OriginPicY", 0, "", $oMixConfig), Default)
-	_ArrayDisplay($aPicParameters, "$aPicParameters") ;Debug
+;~ 	_ArrayDisplay($aPicParameters, "$aPicParameters") ;Debug
 	Return $aPicParameters
 EndFunc   ;==>_MIX_Engine_Dim
 
