@@ -158,7 +158,7 @@
 	<Element Type="RomExcluded">
 		<Source_Type>Variable_Value</Source_Type>
 		<Source_Value>%AutoExclude%</Source_Value>
-		<AutoExcludeEXT>bin|img|iso|ccd|sub</AutoExcludeEXT>
+		<AutoExcludeEXT>bin|img|iso|ccd|sub|wav</AutoExcludeEXT>
 		<AutoExcludeValue>(Track |[Bios]|(Bios)</AutoExcludeValue>
 	</Element>
 	<Options>

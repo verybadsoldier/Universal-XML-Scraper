@@ -878,7 +878,7 @@ Func _GDIPlus_ResizeMax($iPath, $iMAX_Width, $iMAX_Height)
 	_GDIPlus_ImageDispose($hImageResized)
 	_WinAPI_DeleteObject($hImageResized)
 	_GDIPlus_ImageDispose($hImage)
-	_WinAPI_DeleteObject($hImageResized)
+	_WinAPI_DeleteObject($hImage)
 	_GDIPlus_Shutdown()
 	If Not FileDelete($iPath_Temp) Then
 		_LOG("Error deleting " & $iPath_Temp, 2, $iLOGPath)
@@ -1523,8 +1523,8 @@ Func _GDIPlus_Imaging($iPath, $aPicParameters, $vTarget_Width, $vTarget_Height)
 	Local $Image_C2Y = _GDIPlus_RelativePos($aPicParameters[5], $vTarget_Height)
 	Local $Image_C3X = _GDIPlus_RelativePos($aPicParameters[6], $vTarget_Width)
 	Local $Image_C3Y = _GDIPlus_RelativePos($aPicParameters[7], $vTarget_Height)
-	Local $Image_C4X = _GDIPlus_RelativePos($aPicParameters[11], $vTarget_Width)
-	Local $Image_C4Y = _GDIPlus_RelativePos($aPicParameters[12], $vTarget_Height)
+;~ 	Local $Image_C4X = _GDIPlus_RelativePos($aPicParameters[11], $vTarget_Width)
+;~ 	Local $Image_C4Y = _GDIPlus_RelativePos($aPicParameters[12], $vTarget_Height)
 	Local $Image_OriginX = _GDIPlus_RelativePos($aPicParameters[13], $iWidth)
 	Local $Image_OriginY = _GDIPlus_RelativePos($aPicParameters[14], $iHeight)
 	Switch $Image_OriginX
@@ -1603,28 +1603,28 @@ Func _GDIPlus_Imaging($iPath, $aPicParameters, $vTarget_Width, $vTarget_Height)
 		Case ''
 			$Image_C3Y = $Image_C1Y + $iHeight
 	EndSwitch
-	Switch $Image_C4X
-		Case 'CENTER'
-			$Image_C4X = Int($vTarget_Width / 2) + $iWidth
-		Case 'LEFT'
-			$Image_C4X = $iWidth
-		Case 'RIGHT'
-			$Image_C4X = $vTarget_Width + $iWidth
-		Case ''
-			$vNo4thPoint = 1
-			$Image_C4X = $Image_C1X + $iWidth
-	EndSwitch
-	Switch $Image_C4Y
-		Case 'CENTER'
-			$Image_C4Y = Int($vTarget_Height / 2) + $iHeight
-		Case 'UP'
-			$Image_C4Y = 0 + $iHeight
-		Case 'DOWN'
-			$Image_C4Y = $vTarget_Height + $iHeight
-		Case ''
-			$vNo4thPoint = 1
-			$Image_C4Y = $Image_C1Y + $iHeight
-	EndSwitch
+;~ 	Switch $Image_C4X
+;~ 		Case 'CENTER'
+;~ 			$Image_C4X = Int($vTarget_Width / 2) + $iWidth
+;~ 		Case 'LEFT'
+;~ 			$Image_C4X = $iWidth
+;~ 		Case 'RIGHT'
+;~ 			$Image_C4X = $vTarget_Width + $iWidth
+;~ 		Case ''
+;~ 			$vNo4thPoint = 1
+;~ 			$Image_C4X = $Image_C1X + $iWidth
+;~ 	EndSwitch
+;~ 	Switch $Image_C4Y
+;~ 		Case 'CENTER'
+;~ 			$Image_C4Y = Int($vTarget_Height / 2) + $iHeight
+;~ 		Case 'UP'
+;~ 			$Image_C4Y = 0 + $iHeight
+;~ 		Case 'DOWN'
+;~ 			$Image_C4Y = $vTarget_Height + $iHeight
+;~ 		Case ''
+;~ 			$vNo4thPoint = 1
+;~ 			$Image_C4Y = $Image_C1Y + $iHeight
+;~ 	EndSwitch
 
 
 	$Image_C1X = $Image_C1X + _GDIPlus_RelativePos($aPicParameters[9], $vTarget_Width) - $Image_OriginX
@@ -1633,8 +1633,8 @@ Func _GDIPlus_Imaging($iPath, $aPicParameters, $vTarget_Width, $vTarget_Height)
 	$Image_C2Y = $Image_C2Y + _GDIPlus_RelativePos($aPicParameters[10], $vTarget_Height) - $Image_OriginY
 	$Image_C3X = $Image_C3X + _GDIPlus_RelativePos($aPicParameters[9], $vTarget_Width) - $Image_OriginX
 	$Image_C3Y = $Image_C3Y + _GDIPlus_RelativePos($aPicParameters[10], $vTarget_Height) - $Image_OriginY
-	$Image_C4X = $Image_C4X + _GDIPlus_RelativePos($aPicParameters[9], $vTarget_Width) - $Image_OriginX
-	$Image_C4Y = $Image_C4Y + _GDIPlus_RelativePos($aPicParameters[10], $vTarget_Height) - $Image_OriginY
+;~ 	$Image_C4X = $Image_C4X + _GDIPlus_RelativePos($aPicParameters[9], $vTarget_Width) - $Image_OriginX
+;~ 	$Image_C4Y = $Image_C4Y + _GDIPlus_RelativePos($aPicParameters[10], $vTarget_Height) - $Image_OriginY
 
 	_LOG("$Image_C1X = " & $Image_C1X, 2, $iLOGPath)
 	_LOG("$Image_C1Y = " & $Image_C1Y, 2, $iLOGPath)
@@ -1642,16 +1642,16 @@ Func _GDIPlus_Imaging($iPath, $aPicParameters, $vTarget_Width, $vTarget_Height)
 	_LOG("$Image_C2Y = " & $Image_C2Y, 2, $iLOGPath)
 	_LOG("$Image_C3X = " & $Image_C3X, 2, $iLOGPath)
 	_LOG("$Image_C3Y = " & $Image_C3Y, 2, $iLOGPath)
-	_LOG("$Image_C4X = " & $Image_C4X, 2, $iLOGPath)
-	_LOG("$Image_C4Y = " & $Image_C4Y, 2, $iLOGPath)
+;~ 	_LOG("$Image_C4X = " & $Image_C4X, 2, $iLOGPath)
+;~ 	_LOG("$Image_C4Y = " & $Image_C4Y, 2, $iLOGPath)
 
-	If $vNo4thPoint = 1 Then
-		_LOG("_GDIPlus_DrawImagePoints", 2, $iLOGPath)
-		_GDIPlus_DrawImagePoints($hGraphic, $hImage, $Image_C1X, $Image_C1Y, $Image_C2X, $Image_C2Y, $Image_C3X, $Image_C3Y)
-	Else
-		_LOG("_GDIPlus_GraphicsDrawImage_4Points", 2, $iLOGPath)
-		_GDIPlus_GraphicsDrawImage_4Points($hGraphic, $hImage, $Image_C1X, $Image_C1Y, $Image_C2X, $Image_C2Y, $Image_C3X, $Image_C3Y, $Image_C4X, $Image_C4Y)
-	EndIf
+;~ 	If $vNo4thPoint = 1 Then
+	_LOG("_GDIPlus_DrawImagePoints", 2, $iLOGPath)
+	_GDIPlus_DrawImagePoints($hGraphic, $hImage, $Image_C1X, $Image_C1Y, $Image_C2X, $Image_C2Y, $Image_C3X, $Image_C3Y)
+;~ 	Else
+;~ 		_LOG("_GDIPlus_GraphicsDrawImage_4Points", 2, $iLOGPath)
+;~ 		_GDIPlus_GraphicsDrawImage_4Points($hGraphic, $hImage, $Image_C1X, $Image_C1Y, $Image_C2X, $Image_C2Y, $Image_C3X, $Image_C3Y, $Image_C4X, $Image_C4Y)
+;~ 	EndIf
 	_GDIPlus_ImageSaveToFile($hBMPBuff, $iPath)
 	_GDIPlus_GraphicsDispose($hGraphic)
 	_WinAPI_DeleteObject($hGraphic)

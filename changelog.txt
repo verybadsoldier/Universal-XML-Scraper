@@ -1,3 +1,13 @@
+2.2.0.3
+Corrected :
+ - Random Error making UXS crash. (Changing a part of MAIN <-> ENGINE communication system)
+ - Changing color progressbar is now only green (Maybe a raison of random crash)
+ - SSH finally will work (sorry for that)
+ - Apostrophes in filename now works... (Thanks Marblemad)
+ 
+Added :
+ - ProgressBar when creating the XML File
+ 
 2.2.0.2
 Corrected :
  - Full Scrape don't neverend anymore.

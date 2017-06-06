@@ -5,7 +5,7 @@
 #AutoIt3Wrapper_Compile_Both=y
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Scraper
-#AutoIt3Wrapper_Res_Fileversion=1.2.0.8
+#AutoIt3Wrapper_Res_Fileversion=1.2.0.11
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 #AutoIt3Wrapper_Res_LegalCopyright=LEGRAS David
 #AutoIt3Wrapper_Res_Language=1036
@@ -87,6 +87,9 @@ If $oXMLGenre = -1 Then Exit
 
 Sleep(1000)
 
+_FileCreate($iTEMPPathGlobal & "\Engine" & $vThreadNumber)
+FileWrite($iTEMPPathGlobal & "\Engine" & $vThreadNumber, "0")
+
 _SendMail($sMailSlotCheckEngine, $vThreadNumber & "|0")
 
 While $iNumberOfMessagesOverall < 5
@@ -96,6 +99,7 @@ While $iNumberOfMessagesOverall < 5
 		Exit
 	EndIf
 	If _MailSlotGetMessageCount($hMailSlot) >= 1 Then
+		_FileWriteToLine($iTEMPPathGlobal & "\Engine" & $vThreadNumber, 1, "1", True)
 		Switch $iNumberOfMessagesOverall
 			Case 1
 				$aRomList = _ReadMessage($hMailSlot)
@@ -130,7 +134,7 @@ While $iNumberOfMessagesOverall < 5
 		Sleep(200)
 	EndIf
 	If $iNumberOfMessagesOverall = 5 Then
-		_SendMail($sMailSlotCheckEngine, $vThreadNumber & "|1")
+;~ 		_SendMail($sMailSlotCheckEngine, $vThreadNumber & "|1")
 		$vRomTimer = TimerInit()
 		_LOG("-----Making " & $aRomList[2], 1, $iLOGPath)
 		$aRomList = _Game_Make($aRomList, $vBoucle, $aConfig, $oXMLProfil)
@@ -143,7 +147,8 @@ While $iNumberOfMessagesOverall < 5
 		$vScrapedTime = Round((TimerDiff($vRomTimer) / 1000), 2)
 		_SendMail($sMailSlotMother, $vBoucle & "|" & $vScrapedTime)
 		_LOG("-----" & $aRomList[2] & " scraped in " & $vScrapedTime & "s", 3, $iLOGPath)
-		_SendMail($sMailSlotCheckEngine, $vThreadNumber & "|0")
+;~ 		_SendMail($sMailSlotCheckEngine, $vThreadNumber & "|0")
+		_FileWriteToLine($iTEMPPathGlobal & "\Engine" & $vThreadNumber, 1, "0", True)
 		If _CheckCount($hMailSlotCancel) >= 1 Then Exit
 	EndIf
 WEnd
