@@ -192,6 +192,7 @@
 			<Source_Value_Option Name="Wheels" Desc="The game Logo">Data/jeu/medias/media_wheels/media_wheel_%COUNTRY%</Source_Value_Option>
 			<Source_Value_Option Name="WheelsCarbon" Desc="The game Logo in a Carbon Wheel">Data/jeu/medias/media_wheelscarbon/media_wheelcarbon_%COUNTRY%</Source_Value_Option>
 			<Source_Value_Option Name="WheelsSteel" Desc="The game Logo in a Steel Wheel">Data/jeu/medias/media_wheelssteel/media_wheelsteel_%COUNTRY%</Source_Value_Option>
+			<Source_Value_Option Name="Flyers" Desc="The game Flyers (for arcade)">Data/jeu/medias/media_flyer/media_flyer_%COUNTRY%</Source_Value_Option>
 		</Option>
 		<Option>
 			<Option_Group>Media</Option_Group>
@@ -209,6 +210,7 @@
 			<Source_Value_Option Name="Wheels" Desc="The game Logo">Data/jeu/medias/media_wheels/media_wheel_%COUNTRY%</Source_Value_Option>
 			<Source_Value_Option Name="WheelsCarbon" Desc="The game Logo in a Carbon Wheel">Data/jeu/medias/media_wheelscarbon/media_wheelcarbon_%COUNTRY%</Source_Value_Option>
 			<Source_Value_Option Name="WheelsSteel" Desc="The game Logo in a Steel Wheel">Data/jeu/medias/media_wheelssteel/media_wheelsteel_%COUNTRY%</Source_Value_Option>
+			<Source_Value_Option Name="Flyers" Desc="The game Flyers (for arcade)">Data/jeu/medias/media_flyers/media_flyer_%COUNTRY%</Source_Value_Option>
 		</Option>
 		<Option>
 			<Option_Group>Name</Option_Group>
