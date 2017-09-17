@@ -23,6 +23,8 @@ FoolScreen (Vectrex)
 FoolScreen (VirtualBoy)
 FoolScreen (WonderSwan)
 Full Back
+Retrorama 3D Console
+Retrorama arcade
 Standard (2img)
 Standard (3img)
 Standard (4img)
