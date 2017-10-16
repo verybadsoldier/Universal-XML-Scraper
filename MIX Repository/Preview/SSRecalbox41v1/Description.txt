@@ -1,0 +1,4 @@
+Author : Screech
+Description :
+Mix like the default ScreenScraper Mixe for Recalbox 4.1 version 1.
+Link : https://www.screenscraper.fr
