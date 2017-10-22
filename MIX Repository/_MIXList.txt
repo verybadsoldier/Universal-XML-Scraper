@@ -23,6 +23,7 @@ FoolScreen (Vectrex)
 FoolScreen (VirtualBoy)
 FoolScreen (WonderSwan)
 Full Back
+New Standard (4img)
 Retrorama 3D Console
 Retrorama arcade
 SSRecalbox41v1

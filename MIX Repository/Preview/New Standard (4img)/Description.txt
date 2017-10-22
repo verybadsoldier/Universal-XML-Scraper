@@ -1,0 +1,3 @@
+Author : Screech
+Description :
+The new Standard 4img with Mini ScreenMarquee (or wheel in the Marquee), screenshot, 3D Case and support
