@@ -8,36 +8,36 @@
 	<err_PathRom>Roms path can't be reached</err_PathRom>
 	<err_FillRomList>No file found</err_FillRomList>
 	<err_autoconfPathRom>Roms Path for autoconfiguration can't be reached</err_autoconfPathRom>
-	<err_UXSGlobal>Universal XML Scraper fatal error !</err_UXSGlobal>
+	<err_UXSGlobal>Universal XML Scraper fatal error!</err_UXSGlobal>
 	<err_Connection>(Problem connecting to the database)</err_Connection>
 	<err_TimeOut>(Time Out)</err_TimeOut>
 	<err_SystemList>(err_SystemList)</err_SystemList>
-	<err_ScrapeEngine>(Scrape Engine launch Failed. Thank you to check your Antivirus)</err_ScrapeEngine>
+	<err_ScrapeEngine>(Scrape Engine launch Failed. Please check your Antivirus)</err_ScrapeEngine>
 	<err_PlinkGlobal>SSH Command had a problem</err_PlinkGlobal>
-	<err_PlinkConnection>(Connexion can't be established)</err_PlinkConnection>
+	<err_PlinkConnection>(Connection can't be established)</err_PlinkConnection>
 	<err_NotRegistered>Sorry, your account can't be found (Check your login and password)</err_NotRegistered>
 </error>
 
 <message>
 	<mess_autoconf>Autoconfiguration preparation in progress</mess_autoconf>
 	<mess_autoconf_ask_Title>Autoconfiguration</mess_autoconf_ask_Title>
-	<mess_autoconf_ask_Question>Do you want to use autoconfiguration ?</mess_autoconf_ask_Question>
-	<mess_ssh_killall>Are you sure you want to kill EmulationStation ?</mess_ssh_killall>
+	<mess_autoconf_ask_Question>Do you want to use autoconfiguration?</mess_autoconf_ask_Question>
+	<mess_ssh_killall>Are you sure you want to kill EmulationStation?</mess_ssh_killall>
 	<mess_ssh_killallForced>UXS will kill EmulationStation to scrape.</mess_ssh_killallForced>
-	<mess_ssh_start>Are you sure you want to start EmulationStation ?</mess_ssh_start>
-	<mess_ssh_reboot>Are you sure you want to reboot distant peripheral ?</mess_ssh_reboot>
-	<mess_ssh_poweroff>Are you sure you want to halt distant peripheral ?</mess_ssh_poweroff>
+	<mess_ssh_start>Are you sure you want to start EmulationStation?</mess_ssh_start>
+	<mess_ssh_reboot>Are you sure you want to reboot distant peripheral?</mess_ssh_reboot>
+	<mess_ssh_poweroff>Are you sure you want to halt distant peripheral?</mess_ssh_poweroff>
 	<mess_update_Title>Update needed</mess_update_Title>
 	<mess_update_Question>Update</mess_update_Question>
 	<mess_ssregister_title>Account logged</mess_ssregister_title>
 	<mess_ssregister_OK>Your account give you maximum </mess_ssregister_OK>
-	<mess_ssregister_GodMode>You are : a god, an half god (or at least a 2/3 god) or Chuck Norris. Be carreful !!!</mess_ssregister_GodMode>
-	<mess_continue>Do you want to continue ?</mess_continue>
+	<mess_ssregister_GodMode>You are: a god, an half god (or at least a 2/3 god) or Chuck Norris. Be careful!!!</mess_ssregister_GodMode>
+	<mess_continue>Do you want to continue?</mess_continue>
 	<mess_Yes>Yes</mess_Yes>
 	<mess_No>No</mess_No>
 	<mess_filefound_Title>Temporary Files Found</mess_filefound_Title>
-	<mess_filefound>Some temporary file where found, do you want to generate an xml file ?</mess_filefound>
-	<mess_filefound_Path>Where do you want to store the XML File ?</mess_filefound_Path>
+	<mess_filefound>Some temporary files were found, do you want to generate an xml file?</mess_filefound>
+	<mess_filefound_Path>Where do you want to store the XML File?</mess_filefound_Path>
 </message>
 
 <gui>
@@ -55,15 +55,15 @@
 		<mnu_cfg_config_autoconf>Autoconfiguration Path configuration</mnu_cfg_config_autoconf>
 		<mnu_cfg_config_reset_autoconf>Reset default autoconfiguration Path</mnu_cfg_config_reset_autoconf>
 		<mnu_cfg_config_alt_autoconf>Use alt autoconfiguration Path</mnu_cfg_config_alt_autoconf>
-		<mnu_cfg_profil>Change your profil</mnu_cfg_profil>
-		<mnu_cfg_miximage>Change your Mix Images profil</mnu_cfg_miximage>
-		<mnu_cfg_download_miximage>Download Mix Images profil</mnu_cfg_download_miximage>
+		<mnu_cfg_profil>Change your profile</mnu_cfg_profil>
+		<mnu_cfg_miximage>Change your Mix Images profile</mnu_cfg_miximage>
+		<mnu_cfg_download_miximage>Download Mix Images profile</mnu_cfg_download_miximage>
 		<mnu_cfg_langue>Change your language</mnu_cfg_langue>
 		
 		<mnu_scrape>Scrape</mnu_scrape>
 		<mnu_scrape_autoconf>Select your system (Autoconf)</mnu_scrape_autoconf>
 		<mnu_scrape_solo>Scrape </mnu_scrape_solo>
-		<mnu_scrape_fullscrape>Scrape all your system</mnu_scrape_fullscrape>
+		<mnu_scrape_fullscrape>Scrape all systems</mnu_scrape_fullscrape>
 		
 		<mnu_ssh>SSH Command</mnu_ssh>
 		<mnu_ssh_Parameter>SSH Parameter</mnu_ssh_Parameter>
@@ -87,8 +87,8 @@
 			<win_sel_langue_button>Select</win_sel_langue_button>
 		</win_sel_langue>
 		<win_sel_profil>
-			<win_sel_profil_Title>Select your profil</win_sel_profil_Title>
-			<win_sel_profil_text>Select your profil</win_sel_profil_text>
+			<win_sel_profil_Title>Select your profile</win_sel_profil_Title>
+			<win_sel_profil_text>Select your profile</win_sel_profil_text>
 			<win_sel_profil_button>Select</win_sel_profil_button>
 		</win_sel_profil>
 		<win_sel_system>
@@ -105,9 +105,9 @@
 			<win_config_LU_GroupScrap_Target_RomPath>Path to the roms in your XML file</win_config_LU_GroupScrap_Target_RomPath>
 			<win_config_LU_GroupImage>Pictures</win_config_LU_GroupImage>
 			<win_config_LU_GroupImage_Source_ImagePath>Directory where pictures will be downloaded</win_config_LU_GroupImage_Source_ImagePath>
-			<win_config_LU_GroupImage_Target_ImagePath>Path to the picture in your XML file</win_config_LU_GroupImage_Target_ImagePath>
+			<win_config_LU_GroupImage_Target_ImagePath>Path to the pictures in your XML file</win_config_LU_GroupImage_Target_ImagePath>
 			
-			<win_config_PIC_Title>Pictures configuration</win_config_PIC_Title>
+			<win_config_PIC_Title>Picture configuration</win_config_PIC_Title>
 			<win_config_PIC_GroupPICParam>Picture parameters</win_config_PIC_GroupPICParam>
 			<win_config_PIC_GroupPICParam_PicSize>Picture Size</win_config_PIC_GroupPICParam_PicSize>
 			<win_config_PIC_GroupPICParam_PicExt>Picture extension</win_config_PIC_GroupPICParam_PicExt>
@@ -132,7 +132,7 @@
 			<win_config_MISC_GroupMISC_MissingMode>Add missing roms in XML</win_config_MISC_GroupMISC_MissingMode>
 			<win_config_MISC_GroupMISC_RechSys>Auto select your system</win_config_MISC_GroupMISC_RechSys>
 			<win_config_MISC_GroupMISC_Mirror>Use DigiMirror</win_config_MISC_GroupMISC_Mirror>
-			<win_config_MISC_GroupMISC_ScrapeZip>UnZip files</win_config_MISC_GroupMISC_ScrapeZip>
+			<win_config_MISC_GroupMISC_ScrapeZip>Unzip files</win_config_MISC_GroupMISC_ScrapeZip>
 			<win_config_MISC_GroupScreenScraper>Screenscraper</win_config_MISC_GroupScreenScraper>
 			<win_config_MISC_GroupScreenScraper_Login>Screenscraper Login</win_config_MISC_GroupScreenScraper_Login>
 			<win_config_MISC_GroupScreenScraper_Password>Screenscraper Password</win_config_MISC_GroupScreenScraper_Password>
@@ -152,7 +152,7 @@
 			<win_config_autoconf_GroupScrap_Target_RomPath>Path to the roms in your XML file</win_config_autoconf_GroupScrap_Target_RomPath>
 			<win_config_autoconf_GroupImage>Picture</win_config_autoconf_GroupImage>
 			<win_config_autoconf_GroupImage_Source_ImagePath>Folder Name where pictures will be downloaded</win_config_autoconf_GroupImage_Source_ImagePath>
-			<win_config_autoconf_GroupImage_Target_ImagePath>Path to the picture in your XML file</win_config_autoconf_GroupImage_Target_ImagePath>
+			<win_config_autoconf_GroupImage_Target_ImagePath>Path to pictures in your XML file</win_config_autoconf_GroupImage_Target_ImagePath>
 
 			<win_config_Enreg>Save</win_config_Enreg>
 			<win_config_Cancel>Cancel</win_config_Cancel>
@@ -174,18 +174,18 @@
 		</win_config_mix_Download>
 		<win_About>
 			<win_About_Title>About</win_About_Title>
-			<win_About_By>Autor : Screech</win_About_By>
-			<win_About_Thanks>Thanks to :</win_About_Thanks>
+			<win_About_By>Author: Screech</win_About_By>
+			<win_About_Thanks>Thanks to:</win_About_Thanks>
 		</win_About>
 		<win_Results>
 			<win_Results_Title>Scrape Results</win_Results_Title>
 			<win_Results_Text>Scrape finished</win_Results_Text>
-			<win_Results_FilesFound>Files found : </win_Results_FilesFound>
-			<win_Results_RomsFound>Roms found : </win_Results_RomsFound>
-			<win_Results_PercentFound>Roms found percent : </win_Results_PercentFound>
-			<win_Results_MoyTime>Average time by Roms : </win_Results_MoyTime>
-			<win_Results_FullTime>Total Time : </win_Results_FullTime>
-			<win_Results_NbThread>Thread(s) used : </win_Results_NbThread>
+			<win_Results_FilesFound>Files found: </win_Results_FilesFound>
+			<win_Results_RomsFound>Roms found: </win_Results_RomsFound>
+			<win_Results_PercentFound>Roms found percent: </win_Results_PercentFound>
+			<win_Results_MoyTime>Average time by Roms: </win_Results_MoyTime>
+			<win_Results_FullTime>Total Time: </win_Results_FullTime>
+			<win_Results_NbThread>Thread(s) used: </win_Results_NbThread>
 		</win_Results>
 		<Win_Wizard>
 			<win_Wizard_Next>Next</win_Wizard_Next>
@@ -212,7 +212,7 @@
 			</Win_Wizard_MediaSimpleChoice>
 			<Win_Wizard_MediaSimpleAltChoice>
 				<Win_Wizard_MediaSimpleAltChoice_Group>Alt visual choice</Win_Wizard_MediaSimpleAltChoice_Group>
-				<Win_Wizard_MediaSimpleAltChoice_Libelle>Select your alt visual@CRLF(If the default one don't exist)</Win_Wizard_MediaSimpleAltChoice_Libelle>
+				<Win_Wizard_MediaSimpleAltChoice_Libelle>Select your alt visual@CRLF(If the default doesn't exist)</Win_Wizard_MediaSimpleAltChoice_Libelle>
 				<Win_Wizard_MediaSimpleAltChoice_Tip_SS>A Screenshot</Win_Wizard_MediaSimpleAltChoice_Tip_SS>
 				<Win_Wizard_MediaSimpleAltChoice_Tip_Wheel>A wheel</Win_Wizard_MediaSimpleAltChoice_Tip_Wheel>
 				<Win_Wizard_MediaSimpleAltChoice_Tip_2DBox>A 2D Cover</Win_Wizard_MediaSimpleAltChoice_Tip_2DBox>
@@ -220,31 +220,31 @@
 			</Win_Wizard_MediaSimpleAltChoice>
 			<Win_Wizard_RomChoice>
 				<Win_Wizard_RomChoice_Group>Rom folder choice</Win_Wizard_RomChoice_Group>
-				<Win_Wizard_RomChoice_Libelle>Where are your roms</Win_Wizard_RomChoice_Libelle>
+				<Win_Wizard_RomChoice_Libelle>Where are your roms?</Win_Wizard_RomChoice_Libelle>
 				<Win_Wizard_RomChoice_Tip_RPI>On your RaspberryPi</Win_Wizard_RomChoice_Tip_RPI>
-				<Win_Wizard_RomChoice_Tip_Local>Localy (external hard drive, USB Key,...)</Win_Wizard_RomChoice_Tip_Local>
+				<Win_Wizard_RomChoice_Tip_Local>Local (external hard drive, USB Key...)</Win_Wizard_RomChoice_Tip_Local>
 				<Win_Wizard_RomChoice_Browse>Specify the root path of your roms directories</Win_Wizard_RomChoice_Browse>
 				<Win_Wizard_RomChoice_Browse_Warning_Title>WARNING</Win_Wizard_RomChoice_Browse_Warning_Title>
-				<Win_Wizard_RomChoice_Browse_Warning_Label>The folder you choose seem to have no rom folder.@CRLFDo you want to continue ?</Win_Wizard_RomChoice_Browse_Warning_Label>
+				<Win_Wizard_RomChoice_Browse_Warning_Label>The folder you chose doesn't seem to have a rom folder.@CRLFDo you want to continue?</Win_Wizard_RomChoice_Browse_Warning_Label>
 			</Win_Wizard_RomChoice>
 			<Win_Wizard_SSChoice>
 				<Win_Wizard_SSChoice_Group>ScreenScraper</Win_Wizard_SSChoice_Group>
-				<Win_Wizard_SSChoice_Libelle>Are you registered on ScreenScraper ?</Win_Wizard_SSChoice_Libelle>
+				<Win_Wizard_SSChoice_Libelle>Are you registered on ScreenScraper?</Win_Wizard_SSChoice_Libelle>
 				<Win_Wizard_SSChoice_Tip_Yes>Yes</Win_Wizard_SSChoice_Tip_Yes>
 				<Win_Wizard_SSChoice_Tip_No>No</Win_Wizard_SSChoice_Tip_No>
 			</Win_Wizard_SSChoice>
 			<Win_Wizard_SSIdChoice>
 				<Win_Wizard_SSIdChoice_Group>ScreenScraper</Win_Wizard_SSIdChoice_Group>
-				<Win_Wizard_SSIdChoice_Id>Your Id :</Win_Wizard_SSIdChoice_Id>
+				<Win_Wizard_SSIdChoice_Id>Your Id:</Win_Wizard_SSIdChoice_Id>
 				<Win_Wizard_SSIdChoice_Tip_Id>Your ScreenScraper identification</Win_Wizard_SSIdChoice_Tip_Id>
-				<Win_Wizard_SSIdChoice_Pwd>Your Pwd :</Win_Wizard_SSIdChoice_Pwd>
+				<Win_Wizard_SSIdChoice_Pwd>Your Pwd:</Win_Wizard_SSIdChoice_Pwd>
 				<Win_Wizard_SSIdChoice_Tip_Pwd>Your ScreenScraper Password</Win_Wizard_SSIdChoice_Tip_Pwd>
 				<Win_Wizard_SSIdChoice_Test>Check your Id</Win_Wizard_SSIdChoice_Test>
-				<Win_Wizard_SSIdChoice_Tip_Test>Check your connexion to the website with your Id</Win_Wizard_SSIdChoice_Tip_Test>
+				<Win_Wizard_SSIdChoice_Tip_Test>Check your connection to the website with your Id</Win_Wizard_SSIdChoice_Tip_Test>
 			</Win_Wizard_SSIdChoice>
 			<Win_Wizard_ScrapeChoice>
 				<Win_Wizard_ScrapeChoice_Group>Scrape</Win_Wizard_ScrapeChoice_Group>
-				<Win_Wizard_ScrapeChoice_Libelle>Do you wan't to scrape ?</Win_Wizard_ScrapeChoice_Libelle>
+				<Win_Wizard_ScrapeChoice_Libelle>Do you want to scrape?</Win_Wizard_ScrapeChoice_Libelle>
 				<Win_Wizard_ScrapeChoice_Tip_Yes>Yes</Win_Wizard_ScrapeChoice_Tip_Yes>
 				<Win_Wizard_ScrapeChoice_Tip_No>No - Back to the interface</Win_Wizard_ScrapeChoice_Tip_No>
 			</Win_Wizard_ScrapeChoice>
@@ -257,7 +257,7 @@
 	<Option_Group_Name>Name</Option_Group_Name>
 	<Option_Group_Case>Case</Option_Group_Case>
 
-	<Option_Name_MediaType>Visuel type</Option_Name_MediaType>
+	<Option_Name_MediaType>Visual type</Option_Name_MediaType>
 	<Option_Name_DefaultPicture>Default visual</Option_Name_DefaultPicture>
 	<Option_Name_AlternativePicture>Alt visual</Option_Name_AlternativePicture>
 	<Option_Name_Marquee>Marquee</Option_Name_Marquee>
@@ -271,7 +271,7 @@
 	<Option_Name_Trad>Translation</Option_Name_Trad>
 	<Option_Name_Hack>Hack</Option_Name_Hack>
 	<Option_Name_Unl>Unlicensed</Option_Name_Unl>
-	<Option_Name_Alt>Alternatif</Option_Name_Alt>
+	<Option_Name_Alt>Alternative</Option_Name_Alt>
 	<Option_Name_Best>Best</Option_Name_Best>
 	<Option_Name_NameCase>Name case</Option_Name_NameCase>
 	<Option_Name_DescriptionCase>Description Case</Option_Name_DescriptionCase>
