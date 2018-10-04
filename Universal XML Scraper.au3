@@ -206,7 +206,7 @@ EndIf
 _LOG("Update Checking", 1, $iLOGPath)
 Local $iChangelogPath = $iScriptPath & "\changelog.txt"
 FileDelete($iChangelogPath)
-Local $Result = _DownloadWRetry("https://raw.githubusercontent.com/Universal-Rom-Tools/Universal-XML-Scraper/master/changelog.txt", $iChangelogPath)
+Local $Result = _DownloadWRetry("https://raw.githubusercontent.com/verybadsoldier/Universal-XML-Scraper/master/changelog.txt", $iChangelogPath)
 Switch $Result
 	Case -1
 		_LOG("Error downloading Changelog", 2, $iLOGPath)
@@ -1821,7 +1821,8 @@ Func _RomList_Create($aConfig, $vFullScrape = 0, $oXMLProfil = "")
 		$vRechFiles = $vRechFiles & ";" & $vPicDir[UBound($vPicDir) - 1]
 	EndIf
 	_LOG("Listing ROM (" & $vRechFiles & ")", 1, $iLOGPath)
-	$aRomList = _FileListToArrayRec($aConfig[1], $vRechFiles, $FLTAR_FILES, $FLTAR_RECUR, $FLTAR_SORT)
+	; disabled recursive scanning due to a bug in AutoIt: https://github.com/Universal-Rom-Tools/Universal-XML-Scraper/issues/311#issuecomment-425714359
+	$aRomList = _FileListToArrayRec($aConfig[1], $vRechFiles, $FLTAR_FILES, $FLTAR_NORECUR, $FLTAR_SORT)
 
 	If @error = 1 Then
 		_LOG("Invalid Rom Path : " & $aConfig[1], 2, $iLOGPath)

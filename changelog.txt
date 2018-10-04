@@ -1,3 +1,7 @@
+2.2.0.4
+Corrected:
+ - disabled recursive directory scanning for ROMs. This fixes potential deadlocks (https://github.com/Universal-Rom-Tools/Universal-XML-Scraper/issues/311)
+ 
 2.2.0.3
 Corrected :
  - Random Error making UXS crash. (Changing a part of MAIN <-> ENGINE communication system)
